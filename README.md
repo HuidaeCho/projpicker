@@ -8,7 +8,7 @@ Read [a related feature request for GRASS](https://github.com/OSGeo/grass/issues
 
 # API
 
-Read a tuple of latitude and longitude, and return a tuple of
+Read latitude and longitude, and return a tuple of
 ```yaml
 {
   'epsg': epsg_code,
