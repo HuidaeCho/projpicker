@@ -2,9 +2,13 @@
 
 This projection picker will allow the user to select all projections whose extent intersects with given latitude and longitude. The goal is to make it easy and visual to select a desired projection by location.
 
+This repository is for planning purposes and the project is a work in progress.
+
+Read [a related feature request for GRASS](https://github.com/OSGeo/grass/issues/1253).
+
 # API
 
-Reads lat/long and returns a tuple of
+Read a tuple of latitude and longitude, and return a tuple of
 ```yaml
 {
   'epsg': epsg_code,
