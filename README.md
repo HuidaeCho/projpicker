@@ -2,6 +2,8 @@
 
 This projection picker will allow the user to select all projections whose extent intersects with given latitude and longitude. The goal is to make it easy and visual to select a desired projection by location.
 
+![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
+
 This repository is for planning purposes and the project is a work in progress.
 
 Read [a related feature request for GRASS](https://github.com/OSGeo/grass/issues/1253).
