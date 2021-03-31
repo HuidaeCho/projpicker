@@ -16,7 +16,7 @@ Read a tuple of latitude and longitude, and return a tuple of
   'extent': [[ulx, uly], [urx, ury], [lrx, lry], [llx, lly]]
 }
 ```
-Just four corners may not be enough to correctly represent this projection on an epsg:4326 map.
+Just four corners may not be enough to correctly represent the boundary of a certain projection on an EPSG:4326 map.
 
 # Plan
 
