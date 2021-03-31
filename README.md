@@ -5,7 +5,7 @@ This projection picker will allow the user to select all projections whose exten
 # API
 
 Reads lat/long and returns a tuple of
-```json
+```yaml
 {
   'epsg': epsg_code,
   'proj': proj_code,
