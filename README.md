@@ -21,3 +21,10 @@ Just four corners may not be enough to correctly represent the boundary of a cer
 # Plan
 
 For now, this project will be written in Python for prototyping. Once it is implement, if its performance is slow, it will be rewritten in C.
+
+# Discussions
+
+https://github.com/OSGeo/grass/issues/1253#issuecomment-776849517
+> WKT2 has a optional  [EXTENT](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html#29)::BBOX attribute -- "the geographic bounding box is an approximate description of location".
+> For a given CRS, it shouldn't be too complicated to implement a qgis-like solution.
+> The other way around, all CRS' for a given coordinate, is more complicated as you need some kind of searchable database for this. There is a [SE post](https://gis.stackexchange.com/questions/274670/finding-correct-extent-of-projection) on this topic, see the section "EPSG.io" for possible database solution.
