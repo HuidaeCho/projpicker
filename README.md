@@ -22,7 +22,7 @@ Just four corners may not be enough to correctly represent the boundary of a cer
 
 # Plan
 
-For now, this project will be written in Python for prototyping. Once it is implement, if its performance is slow, it will be rewritten in C.
+For now, this project will be written in Python for prototyping. Once it is implemented, if its performance is slow, it will be rewritten in C.
 
 # Discussions
 
