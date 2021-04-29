@@ -34,7 +34,7 @@ This project is funded by [the Institute for Environmental and Spatial Analysis]
 
 ## License
 
-Copyright (C) 2021, Huidae Cho, Institute for Environmental and Spatial Analysis <<https://faculty.ung.edu/hcho/>>
+Copyright (C) 2021, Huidae Cho <<https://faculty.ung.edu/hcho/>>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
