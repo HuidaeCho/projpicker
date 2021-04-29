@@ -27,3 +27,7 @@ For now, this project will be written in Python for prototyping. Once it is impl
 # Discussions
 
 https://github.com/HuidaeCho/projpicker/wiki
+
+# Sponsor
+
+This project is funded by [the Institute for Environmental and Spatial Analysis](https://ung.edu/institute-environmental-spatial-analysis/) (IESA).
