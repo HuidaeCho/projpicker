@@ -8,18 +8,6 @@ This repository is for planning purposes and the project is a work in progress.
 
 Read [a related feature request for GRASS](https://github.com/OSGeo/grass/issues/1253).
 
-## API
-
-Read latitude and longitude, and return a tuple of
-```yaml
-{
-  'epsg': epsg_code,
-  'proj': proj_code,
-  'extent': [[ulx, uly], [urx, ury], [lrx, lry], [llx, lly]]
-}
-```
-Just four corners may not be enough to correctly represent the boundary of a certain projection on an EPSG:4326 map. Extent will be in coordinates in EPSG:4326.
-
 ## Plan
 
 For now, this project will be written in Python for prototyping. Once it is implemented, if its performance is slow, it will be rewritten in C.
