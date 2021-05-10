@@ -32,7 +32,3 @@ def proj_connection():
 
     return sqlite3.connect(proj_db)
 
-
-cur = proj_connection().cursor()
-cur.execute("SELECT * from usage limit 5")
-print(cur.fetchall())
