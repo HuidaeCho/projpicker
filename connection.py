@@ -23,6 +23,9 @@ def proj_connection():
     # proj installations, and potential conda installs.
     # See https://github.com/pyproj4/pyproj/pyproj/datadir.py for
     # example implementation.
+
+    # However, dynamic solution would only be needed if we plan on making our
+    # connection reproducible.
     resource_path = Path(sys.prefix, "share", "proj")
     print(resource_path)
     if _validate_proj(resource_path):
