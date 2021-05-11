@@ -27,7 +27,6 @@ def proj_connection():
     # However, dynamic solution would only be needed if we plan on making our
     # connection reproducible.
     resource_path = Path(sys.prefix, "share", "proj")
-    print(resource_path)
     if _validate_proj(resource_path):
         proj_db = Path(resource_path, "proj.db")
     else:
