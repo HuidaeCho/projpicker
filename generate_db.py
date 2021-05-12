@@ -100,6 +100,12 @@ def get_extent(code: dict, auth="EPSG") -> dict:
     return extent
 
 
+def get_full_usage(code: dict, auth="EPSG") -> dict:
+    scope = get_scope(code, auth)
+    extent = get_extent(code, auth)
+    return {'scope': scope, 'area': extent}
+
+
 def main():
     start = time.time()
     # Create parser
@@ -122,10 +128,9 @@ def main():
 
     usage_codes = code_index(auth_codes)
 
-    print(get_scope(usage_codes['9674']))
-    print(get_extent(usage_codes['9674']))
-
-
+    usage_dict = {}
+    for code in usage_codes:
+        usage_dict[code] = get_full_usage(usage_codes[str(code)])
 
     print(time.time() - start)
 
