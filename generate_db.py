@@ -5,11 +5,9 @@ import re
 import sqlite3
 from pathlib import Path
 from connection import proj_connection
-from pyproj import CRS
-
 
 # Make CLI argument
-new_database = 'projpicker.db'
+new_database = "projpicker.db"
 
 tables = {
     "projbbox": """
@@ -47,33 +45,37 @@ tables = {
 }
 
 
-def main():
-
-    epsgs = []
+def authority_codes(auth="EPSG", table="projected_crs") -> list:
+    '''
+    Get list of authority_codes
+    '''
     proj_con = proj_connection()
     proj_cur = proj_con.cursor()
-    proj_cur.execute("select auth_name||':'||code from projected_crs")
-    for crs in proj_cur.fetchall():
-        if "EPSG" in crs[0]:
-            epsgs.append(crs[0])
 
-    bbox = {}
-    for epsg in epsgs:
-        epsg_code = epsg.partition(":")[-1]
-        crs = CRS.from_epsg(epsg_code)
-        wkt = crs.to_wkt()
-        # Need string matching. Either regex or pythonic
-        #bbox[epsg_code] = wkt.get('BBOX')
+    proj_cur.execute(f"SELECT code FROM {table} WHERE auth_name = '{auth}'")
+    return [code[0] for code in proj_cur.fetchall()]
 
 
-    if Path(new_database).exists():
-        print(f"{new_database} exists.")
-    else:
-        connection = sqlite3.connect(new_database)
-        cursor = connection.cursor()
-        for table in tables.values():
-            cursor.execute(table)
+def ancillary_codes(auth_code) -> dict:
+    '''
+    Get extent and scope keys from usage table
+    '''
+    proj_con = proj_connection()
+    proj_cur = proj_con.cursor()
+
+    proj_cur.execute(
+        f"SELECT extent_code, scope_code FROM usage WHERE object_code = {auth_code}"
+    )
+
+    codes = proj_cur.fetchall()[0]
+    codes_dict = {"extent_code": codes[0], "scope_code": codes[1]}
+
+    return codes_dict
 
 
-if __name__ == '__main__':
+def main():
+    pass
+
+
+if __name__ == "__main__":
     main()
