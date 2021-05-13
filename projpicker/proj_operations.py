@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 from connection import proj_connection
 
+
 def authority_codes(cursor, auth="EPSG", table="projected_crs") -> list:
     """
     Get list of authority_codes
@@ -40,9 +41,9 @@ def get_scope(cursor, code: dict, auth="EPSG") -> list:
     Retrieve scope from CRS code usage index
     """
     scope_code = code["scope_code"]
-    sql = f'''SELECT scope FROM scope
+    sql = f"""SELECT scope FROM scope
               WHERE auth_name = '{auth}'
-              AND code = {scope_code}'''
+              AND code = {scope_code}"""
     cursor.execute(sql)
     return list(cursor.fetchall()[0])
 
@@ -52,16 +53,16 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     Retrieve extent from CRS code usage index
     """
     extent_code = code["extent_code"]
-    sql = f'''SELECT name, description FROM extent
+    sql = f"""SELECT name, description FROM extent
               WHERE auth_name = '{auth}'
-              AND code = {extent_code}'''
+              AND code = {extent_code}"""
     cursor.execute(sql)
     area = cursor.fetchall()[0]
     extent = {"name": area[0], "description": area[1]}
 
-    sql = f'''SELECT south_lat, north_lat, west_lon, east_lon FROM extent
+    sql = f"""SELECT south_lat, north_lat, west_lon, east_lon FROM extent
               WHERE auth_name = '{auth}'
-              AND code = {extent_code}'''
+              AND code = {extent_code}"""
     cursor.execute(sql)
     bbox = list(cursor.fetchall()[0])
     extent["bbox"] = bbox
@@ -78,9 +79,9 @@ def pop_usage_index(cursor, code: dict, auth="EPSG") -> dict:
 
 
 def get_usage_dict(cursor, code_idx) -> dict:
-    '''
+    """
     Generate full populated usage dictionary for list of CRS.
-    '''
+    """
     usage = {}
     for code in code_idx:
         usage[code] = pop_usage_index(cursor, code_idx[str(code)])
@@ -89,9 +90,9 @@ def get_usage_dict(cursor, code_idx) -> dict:
 
 
 def crs_usage(cursor, auth="EPSG", table="projected_crs") -> dict:
-    '''
+    """
     Generate a full usage dictionary for a specified CRS.
-    '''
+    """
     auth_codes = authority_codes(cursor, auth, table)
     usage_idx = usage_index(cursor, auth_codes)
     usage_dict = get_usage_dict(cursor, usage_idx)

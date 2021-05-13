@@ -33,4 +33,3 @@ def proj_connection():
         raise Exception("No proj.db")
 
     return sqlite3.connect(proj_db)
-
