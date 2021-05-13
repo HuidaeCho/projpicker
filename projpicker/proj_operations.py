@@ -66,10 +66,10 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     cursor.execute(sql)
     bbox = list(cursor.fetchall()[0])
     bbox_poly = [
-        [bbox[2], bbox[1]],
-        [bbox[2], bbox[3]],
-        [bbox[0], bbox[3]],
-        [bbox[0], bbox[1]],
+        [bbox[1], bbox[2]],
+        [bbox[3], bbox[2]],
+        [bbox[3], bbox[0]],
+        [bbox[1], bbox[0]],
     ]
     extent["bbox"] = bbox_poly
     return extent
