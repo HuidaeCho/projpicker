@@ -8,8 +8,8 @@ def authority_codes(cursor, auth="EPSG", table="projected_crs") -> list:
     """
     Get list of authority_codes
     """
-    cursor.execute(f"SELECT code FROM {table} WHERE auth_name = '{auth}'")
-    return [code[0] for code in cursor.fetchall()]
+    cursor.execute(f"SELECT code, deprecated FROM {table} WHERE auth_name = '{auth}'")
+    return [code[0] for code in cursor.fetchall() if code[1] == 0]
 
 
 def usage_codes(cursor, auth_code) -> dict:
