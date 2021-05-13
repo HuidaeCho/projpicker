@@ -71,7 +71,7 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
         [bbox[0], bbox[3]],
         [bbox[0], bbox[1]],
     ]
-    extent["bbox"] = bbox
+    extent["bbox"] = bbox_poly
     return extent
 
 
