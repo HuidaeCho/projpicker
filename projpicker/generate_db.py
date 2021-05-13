@@ -81,10 +81,10 @@ def get_scope(cursor, code: dict, auth="EPSG") -> list:
     Retrieve scope from CRS code usage index
     """
     scope_code = code["scope_code"]
-    query = (
-        f"select scope from scope where auth_name = '{auth}' and code = {scope_code}"
-    )
-    cursor.execute(query)
+    sql = f'''SELECT scope FROM scope
+              WHERE auth_name = '{auth}'
+              AND code = {scope_code}'''
+    cursor.execute(sql)
     return list(cursor.fetchall()[0])
 
 
@@ -93,13 +93,17 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     Retrieve extent from CRS code usage index
     """
     extent_code = code["extent_code"]
-    query = f"select name, description from extent where auth_name = '{auth}' and code = {extent_code}"
-    cursor.execute(query)
+    sql = f'''SELECT name, description FROM extent
+              WHERE auth_name = '{auth}'
+              AND code = {extent_code}'''
+    cursor.execute(sql)
     area = cursor.fetchall()[0]
     extent = {"name": area[0], "description": area[1]}
 
-    query = f"select south_lat, north_lat, west_lon, east_lon from extent where auth_name = '{auth}' and code = {extent_code}"
-    cursor.execute(query)
+    sql = f'''SELECT south_lat, north_lat, west_lon, east_lon FROM extent
+              WHERE auth_name = '{auth}'
+              AND code = {extent_code}'''
+    cursor.execute(sql)
     bbox = list(cursor.fetchall()[0])
     extent["bbox"] = bbox
     return extent
