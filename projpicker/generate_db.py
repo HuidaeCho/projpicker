@@ -2,7 +2,7 @@
 import argparse
 import time
 from pathlib import Path
-from proj_operations import *
+from proj_operations import crs_usage
 from connection import proj_connection
 
 # Constant projpicker database name
@@ -73,21 +73,13 @@ def main():
     proj_cur = proj_con.cursor()
 
     # Full list of CRS codes in the specified table
-    auth_codes = authority_codes(proj_cur, args.authority, args.table)
-
-    # Usage index codes for CRS
-    usage_codes = code_index(proj_cur, auth_codes)
-
-    # Create full usage dictionary with scope and extent for each CRS code
-    usage_dict = {}
-    for code in usage_codes:
-        usage_dict[code] = get_full_usage(proj_cur, usage_codes[str(code)])
+    usage = crs_usage(proj_cur, args.authority, args.table)
 
     print(time.time() - start)
 
     # temporary return
     proj_con.close()
-    return usage_dict
+    return usage
 
 
 if __name__ == "__main__":

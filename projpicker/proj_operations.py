@@ -11,7 +11,7 @@ def authority_codes(cursor, auth="EPSG", table="projected_crs") -> list:
     return [code[0] for code in cursor.fetchall()]
 
 
-def ancillary_codes(cursor, auth_code) -> dict:
+def usage_codes(cursor, auth_code) -> dict:
     """
     Get extent and scope keys from usage table
     """
@@ -25,13 +25,13 @@ def ancillary_codes(cursor, auth_code) -> dict:
     return codes_dict
 
 
-def code_index(cursor, auth_codes, auth="EPSG") -> dict:
+def usage_index(cursor, auth_codes, auth="EPSG") -> dict:
     """
     Create full dictionary of CRS codes and their respective usage codes.
     """
     codex = {}
     for code in auth_codes:
-        codex[code] = ancillary_codes(cursor, code)
+        codex[code] = usage_codes(cursor, code)
     return codex
 
 
@@ -68,11 +68,32 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     return extent
 
 
-def get_full_usage(cursor, code: dict, auth="EPSG") -> dict:
+def pop_usage_index(cursor, code: dict, auth="EPSG") -> dict:
     """
-    Get full usage attributes for a give CRS code
+    Populate individual usage entry
     """
     scope = get_scope(cursor, code, auth)
     extent = get_extent(cursor, code, auth)
     return {"scope": scope, "area": extent}
 
+
+def get_usage_dict(cursor, code_idx) -> dict:
+    '''
+    Generate full populated usage dictionary for list of CRS.
+    '''
+    usage = {}
+    for code in code_idx:
+        usage[code] = pop_usage_index(cursor, code_idx[str(code)])
+
+    return usage
+
+
+def crs_usage(cursor, auth="EPSG", table="projected_crs") -> dict:
+    '''
+    Generate a full usage dictionary for a specified CRS.
+    '''
+    auth_codes = authority_codes(cursor, auth, table)
+    usage_idx = usage_index(cursor, auth_codes)
+    usage_dict = get_usage_dict(cursor, usage_idx)
+
+    return usage_dict
