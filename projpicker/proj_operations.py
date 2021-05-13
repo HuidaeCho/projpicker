@@ -75,3 +75,4 @@ def get_full_usage(cursor, code: dict, auth="EPSG") -> dict:
     scope = get_scope(cursor, code, auth)
     extent = get_extent(cursor, code, auth)
     return {"scope": scope, "area": extent}
+
