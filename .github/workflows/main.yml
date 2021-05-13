@@ -1,0 +1,18 @@
+name: General linting
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  super-linter:
+    name: GitHub Super Linter
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Super-Linter
+        uses: github/super-linter@v3.17.1
+        env:
+          VALIDATE_MD: false
