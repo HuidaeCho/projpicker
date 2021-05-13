@@ -129,8 +129,8 @@ def main():
     # Parse arguments
     args = parser.parse_args()
     # Check table
-    if args.table not in ['projected_crs', 'geodetic_crs', 'verticle_crs']:
-        raise Exception('Choose one of projected_crs, geodetic_crs, verticle_crs')
+    if args.table not in ['projected_crs', 'geodetic_crs', 'vertical_crs']:
+        raise Exception('Choose one of projected_crs, geodetic_crs, vertical_crs')
     # Output table path
     out_path = Path(args.location, PROJPICKER_DB)
 
