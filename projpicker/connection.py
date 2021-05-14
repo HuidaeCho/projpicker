@@ -33,3 +33,10 @@ def proj_connection():
         raise Exception("No proj.db")
 
     return sqlite3.connect(proj_db)
+
+def projpicker_connection(path):
+    con = sqlite3.connect(path)
+    con.enable_load_extension(True)
+    con.load_extension("mod_spatialite")
+    return con
+
