@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import argparse
 import time
+import re
 from pathlib import Path
-from proj_operations import crs_usage
-from connection import proj_connection
+from db_operations import crs_usage, bbox_coors, bbox_poly
+from connection import proj_connection, projpicker_connection
+from densify import densified_bbox
+from spatial_operations import POLYGON
 
 # Constant projpicker database name
 PROJPICKER_DB = "projpicker.db"
@@ -20,6 +23,13 @@ tables = {
                     east_longitude real not null
                 );
                 """,
+    "densbbox": """
+                create table densbbox (
+                    auth_code varchar(100) primary key,
+                    name varchar(100) not null,
+                    geom BLOB NOT NULL
+                );
+            """,
     "projbbox_to_products": """
                 create table projbbox_to_products (
                     id int primary key,
@@ -60,6 +70,13 @@ def main():
     parser.add_argument(
         "-a", "--authority", type=str, default="EPSG", help="CRS Authority"
     )
+    parser.add_argument(
+        "-p",
+        "--points",
+        type=int,
+        default=100,
+        help="Number of points in densified bbox",
+    )
     # Parse arguments
     args = parser.parse_args()
     # Check table
@@ -67,6 +84,8 @@ def main():
         raise Exception("Choose one of projected_crs, geodetic_crs, vertical_crs")
     # Output table path
     out_path = Path(args.location, PROJPICKER_DB)
+    pp_con = projpicker_connection(out_path)
+    pp_cur = pp_con.cursor()
 
     # Open only one connection
     proj_con = proj_connection()
@@ -75,10 +94,29 @@ def main():
     # Full list of CRS codes in the specified table
     usage = crs_usage(proj_cur, args.authority, args.table)
 
+    pp_cur.execute(tables["projbbox"])
+    pp_cur.execute(tables["densbbox"])
+
+    for code in usage:
+        bbox = usage[code]["area"]["bbox"]
+
+        name = usage[code]["area"]["name"]
+        sql = """INSERT INTO projbbox (auth_code, name, south_latitude,
+                  west_longitude, north_latitude, east_longitude)
+                  VALUES(?, ?, ?, ?, ?, ?)"""
+        pp_cur.execute(sql, (code, name, bbox[0], bbox[1], bbox[2], bbox[3]))
+
+        sql = """INSERT INTO densbbox (auth_code, name, geom)
+                  VALUES(?, ?, GeomFromText(?))"""
+        geom = POLYGON(densified_bbox(bbox_coors(bbox), args.points))
+        pp_cur.execute(sql, (code, name, geom))
+
     print(time.time() - start)
 
     # temporary return
     proj_con.close()
+    pp_con.commit()
+    pp_con.close()
     return usage
 
 
