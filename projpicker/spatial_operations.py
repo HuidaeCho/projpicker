@@ -6,6 +6,7 @@ def _replace_closure(input: str) -> str:
         input = input.replace('(', '').replace(')', '')
     if any(x in input for x in ['[', ']']):
         input = input.replace('[', '').replace(']', '')
+    return input
 
 
 def POLYGON(input: (tuple, list)) -> str:
