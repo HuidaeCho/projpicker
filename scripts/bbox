@@ -1,4 +1,8 @@
 #!/bin/sh
+# 0 for not plotting
+# 1 for plotting using gnuplot
+plot=0
+
 # 0 for rectangular bbox in lat/long
 # 1 for rectangular bbox in crs
 rect_in_crs=0
@@ -10,7 +14,9 @@ crs=
 n=1
 
 for i; do
-	if [ "$i" = "-r" ]; then
+	if [ "$i" = "-p" ]; then
+		plot=1
+	elif [ "$i" = "-r" ]; then
 		rect_in_crs=1
 	elif [ "$crs" = "" ]; then
 		crs=$i
@@ -21,11 +27,12 @@ done
 
 if [ "$crs" = "" ]; then
 	cat<<EOT
-Usage: bbox [-r] crs [n]
+Usage: bbox [-p] [-r] crs [n]
 
 Prints bbox coordinates in the specified coordinate reference system; bbox is
 assumed to be rectangular in lat/long.
 
+ -p	Plot bbox using gnuplot
  -r	Assume a rectangular bbox in the specified coordinate reference system
 	and print bbox coordinates in lat/long
  crs	Coordinate reference system
@@ -71,9 +78,10 @@ END{
 		y=ury+(lly-ury)/n*i
 		printf "%f %f\n", x, y
 	}
-	for(i=1; i<n; i++){
+	for(i=1; i<=n; i++){
 		x=urx+(llx-urx)/n*i
 		y=lly
 		printf "%f %f\n", x, y
 	}
-}' | cs2cs -f %f $bbox_crs $out_crs | sed 's/ 0\.0*$//'
+}' | cs2cs -f %f $bbox_crs $out_crs | sed 's/ 0\.0*$//' |
+((test $plot -eq 1 && gnuplot -p -e 'plot "/dev/stdin" with line') || cat)
