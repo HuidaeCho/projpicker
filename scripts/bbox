@@ -42,7 +42,9 @@ while [ $# -ne 0 ]; do
 		done
 		;;
 	*)
-		crs=$1
+		if [ "$crs" = "" ]; then
+			crs=$1
+		fi
 		;;
 	esac
 	shift
