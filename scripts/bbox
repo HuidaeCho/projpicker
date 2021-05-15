@@ -13,21 +13,44 @@ crs=
 # one line segment on each side by default
 n=1
 
-for i; do
-	if [ "$i" = "-p" ]; then
-		plot=1
-	elif [ "$i" = "-r" ]; then
-		rect_in_crs=1
-	elif [ "$crs" = "" ]; then
-		crs=$i
-	else
-		n=$i
-	fi
+while [ $# -ne 0 ]; do
+	case $1 in
+	-*)
+		for i in $(echo " $1" | sed 's/-//g; s/\(.\)/\1\n/g'); do
+			case $i in
+			p)
+				plot=1
+				;;
+			r)
+				rect_in_crs=1
+				;;
+			n)
+				shift
+				err=1
+				if [ $(echo "0$1" | sed 's/[^0-9]//g') = "0$1" ]; then
+					n=$(echo $1 | sed 's/^0*\|[^0-9]//g')
+					if [ "$n" != "" ]; then
+						err=0
+					fi
+				fi
+				if [ $err -eq 1 ]; then
+					echo "-n option must be a positive integer"
+					exit 1
+				fi
+				;;
+			esac
+		done
+		;;
+	*)
+		crs=$1
+		;;
+	esac
+	shift
 done
 
 if [ "$crs" = "" ]; then
 	cat<<EOT
-Usage: bbox [-p] [-r] crs [n]
+Usage: bbox [-p] [-r] [-n N] crs
 
 Prints bbox coordinates in the specified coordinate reference system; bbox is
 assumed to be rectangular in lat/long.
@@ -35,6 +58,7 @@ assumed to be rectangular in lat/long.
  -p	Plot bbox using gnuplot
  -r	Assume a rectangular bbox in the specified coordinate reference system
 	and print bbox coordinates in lat/long
+ -n N	Number of line segments on each side; 1 by default
  crs	Coordinate reference system
  n	Number of line segments on each side of bbox
 EOT
@@ -44,9 +68,11 @@ fi
 if [ $rect_in_crs -eq 1 ]; then
 	bbox_crs=$crs
 	out_crs=epsg:4326
+	gnuplot_using=2:1
 else
 	bbox_crs=epsg:4326
 	out_crs=$crs
+	gnuplot_using=1:2
 fi
 
 projinfo $crs |
@@ -86,4 +112,4 @@ END{
 }' |
 cs2cs -f %f $bbox_crs $out_crs |
 sed 's/ 0\.0*$//' |
-((test $plot -eq 1 && gnuplot -p -e 'plot "/dev/stdin" with line') || cat)
+((test $plot -eq 1 && gnuplot -p -e "plot '/dev/stdin' using $gnuplot_using with line") || cat)
