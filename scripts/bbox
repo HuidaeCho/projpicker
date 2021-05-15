@@ -44,7 +44,8 @@ fi
 
 projinfo $crs |
 sed '/BBOX/!d; s/^.*\[\|[][]//g; s/,/ /g' |
-xargs -n 2 | ((test $rect_in_crs -eq 1 && cs2cs epsg:4236 $crs ) || cat) |
+xargs -n 2 |
+((test $rect_in_crs -eq 1 && cs2cs epsg:4236 $crs ) || cat) |
 awk -v n=$n '{
 	if(NR==1){
 		llx=$1
