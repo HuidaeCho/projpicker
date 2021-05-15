@@ -83,5 +83,7 @@ END{
 		y=lly
 		printf "%f %f\n", x, y
 	}
-}' | cs2cs -f %f $bbox_crs $out_crs | sed 's/ 0\.0*$//' |
+}' |
+cs2cs -f %f $bbox_crs $out_crs |
+sed 's/ 0\.0*$//' |
 ((test $plot -eq 1 && gnuplot -p -e 'plot "/dev/stdin" with line') || cat)
