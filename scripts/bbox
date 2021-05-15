@@ -1,5 +1,5 @@
 #!/bin/sh
-# 0 for rectangular bbox in latlong
+# 0 for rectangular bbox in lat/long
 # 1 for rectangular bbox in crs
 rect_in_crs=0
 
