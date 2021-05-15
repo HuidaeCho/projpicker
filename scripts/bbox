@@ -1,0 +1,108 @@
+#!/bin/sh
+# 0 for rectangular bbox in latlong
+# 1 for rectangular bbox in crs
+rect_in_crs=0
+
+# target coordinate reference system
+crs=
+
+# one line segment on each side by default
+n=1
+
+for i; do
+	if [ "$i" = "-r" ]; then
+		rect_in_crs=1
+	elif [ "$crs" = "" ]; then
+		crs=$i
+	else
+		n=$i
+	fi
+done
+
+if [ "$crs" = "" ]; then
+	cat<<EOT
+Usage: bbox [-r] crs [n]
+
+Prints bbox coordinates in the specified coordinate reference system; bbox is
+assumed to be rectangular in lat/long.
+
+ -r	Assume a rectangular bbox in the specified coordinate reference system
+	and print bbox coordinates in lat/long
+ crs	Coordinate reference system
+ n	Number of line segments on each side of bbox
+EOT
+	exit
+fi
+
+if [ $rect_in_crs -eq 1 ]; then
+	projinfo $crs |
+	sed '/BBOX/!d; s/^.*\[\|[][]//g; s/,/ /g' |
+	xargs -n 2 |
+	cs2cs epsg:4236 $crs |
+	awk -v n=$n '{
+		if(NR==1){
+			llx=$1
+			lly=$2
+		}else{
+			urx=$1
+			ury=$2
+		}
+	}
+	END{
+		for(i=0; i<=n; i++){
+			x=llx
+			y=lly+(ury-lly)/n*i
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<=n; i++){
+			x=llx+(urx-llx)/n*i
+			y=ury
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<=n; i++){
+			x=urx
+			y=ury+(lly-ury)/n*i
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<n; i++){
+			x=urx+(llx-urx)/n*i
+			y=lly
+			printf "%f %f\n", x, y
+		}
+	}' | cs2cs $crs epsg:4326 -f %f | sed 's/ 0\.0*$//'
+else
+	projinfo $crs |
+	sed '/BBOX/!d; s/^.*\[\|[][]//g; s/,/ /g' |
+	xargs -n 2 |
+	awk -v n=$n '{
+		if(NR==1){
+			llx=$1
+			lly=$2
+		}else{
+			urx=$1
+			ury=$2
+		}
+	}
+	END{
+		for(i=0; i<=n; i++){
+			x=llx
+			y=lly+(ury-lly)/n*i
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<=n; i++){
+			x=llx+(urx-llx)/n*i
+			y=ury
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<=n; i++){
+			x=urx
+			y=ury+(lly-ury)/n*i
+			printf "%f %f\n", x, y
+		}
+		for(i=1; i<n; i++){
+			x=urx+(llx-urx)/n*i
+			y=lly
+			printf "%f %f\n", x, y
+		}
+	}' | cs2cs epsg:4326 $crs -f %f | sed 's/ 0\.0*$//'
+fi
