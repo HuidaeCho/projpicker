@@ -1,4 +1,5 @@
 import re
+import json
 
 
 def _replace_closure(input: str) -> str:
@@ -45,4 +46,16 @@ def bbox_poly(bbox):
     bbox_geom = bbox_coors(bbox)
     bbox_geom.append(bbox_geom[0])
     return POLYGON(bbox_geom)
+
+
+def get_geom(cursor, table: str, geom_col: str, code: str):
+
+    sql = f'''SELECT AsGeoJson({geom_col}) from {table}
+              where auth_code = {code}'''
+
+    cursor.execute(sql)
+    geom = cursor.fetchall()[0]
+    geom = json.loads(geom[0])
+    return geom.get('coordinates')
+
 
