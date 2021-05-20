@@ -32,18 +32,18 @@ def POINT(input: (tuple, list)) -> str:
     return f'POINT(({geom_str}))'
 
 
-def bbox_coors(bbox):
+def bbox_coors(bbox: list) -> list:
     bbox_geom = [
-        [bbox[2], bbox[1]],
-        [bbox[3], bbox[1]],
+        [bbox[1], bbox[2]],
+        [bbox[3], bbox[2]],
         [bbox[3], bbox[0]],
-        [bbox[2], bbox[0]],
+        [bbox[1], bbox[0]],
     ]
 
     return bbox_geom
 
 
-def bbox_poly(bbox):
+def bbox_poly(bbox: list) -> str:
     bbox_geom = bbox_coors(bbox)
     bbox_geom.append(bbox_geom[0])
     return POLYGON(bbox_geom)
@@ -79,3 +79,10 @@ def get_geom(cursor, table: str, geom_col: str, code: str):
     return geom.get('coordinates')
 
 
+def get_bounds(cursor, code):
+    sql = f'''SELECT south_latitude, west_longitude,
+                    north_latitude, east_longitude from projbbox
+                    where auth_code = {code}'''
+    cursor.execute(sql)
+    coordinates = cursor.fetchall()[0]
+    return coordinates
