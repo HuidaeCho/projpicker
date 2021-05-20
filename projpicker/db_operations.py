@@ -54,12 +54,13 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     area = cursor.fetchall()[0]
     extent = {"name": area[0], "description": area[1]}
 
-    sql = f"""SELECT south_lat, north_lat, west_lon, east_lon FROM extent
+    sql = f"""SELECT south_lat, west_lon, north_lat, east_lon FROM extent
               WHERE auth_name = '{auth}'
               AND code = {extent_code}"""
     cursor.execute(sql)
     bbox = list(cursor.fetchall()[0])
-    extent['bbox'] = bbox
+    bbox_round = list(map(lambda x: round(x, ndigits=2), bbox))
+    extent['bbox'] = bbox_round
     return extent
 
 
@@ -92,3 +93,4 @@ def crs_usage(cursor, auth="EPSG", table="projected_crs") -> dict:
     usage_dict = get_usage_dict(cursor, usage_idx)
 
     return usage_dict
+
