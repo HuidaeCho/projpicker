@@ -14,7 +14,7 @@ PROJPICKER_DB = "projpicker.db"
 # Tables specified on the wiki
 tables = {
     "projbbox": """
-                create table projbbox (
+                create table if not exists projbbox (
                     auth_code varchar(100) primary key,
                     name varchar(100) not null,
                     south_latitude real not null,
@@ -24,14 +24,14 @@ tables = {
                 );
                 """,
     "densbbox": """
-                create table densbbox (
+                create table if not exists densbbox (
                     auth_code varchar(100) primary key,
                     name varchar(100) not null,
                     geom BLOB NOT NULL
                 );
             """,
     "projbbox_to_products": """
-                create table projbbox_to_products (
+                create table if not exists projbbox_to_products (
                     id int primary key,
                     auth_code varchar(100) not null,
                     product varchar(100),
@@ -39,14 +39,14 @@ tables = {
                 );
             """,
     "grid": """
-                create table grid (
+                create table if not exists grid (
                     idx int primary key,
                     row int not null,
                     column int not null
                 );
             """,
     "grid_to_projbbox": """
-                create table grid_to_projbbox (
+                create table if not exists grid_to_projbbox (
                     id int primary key,
                     idx int not null,
                     auth_code varchar(100) not null
