@@ -5,8 +5,8 @@ import re
 from pathlib import Path
 from db_operations import crs_usage
 from connection import proj_connection, projpicker_connection
-from densify import densified_bbox
-from geom import POLYGON, bbox_coors
+from geom import POLYGON, bbox_coors, densified_bbox
+
 
 # Constant projpicker database name
 PROJPICKER_DB = "projpicker.db"
