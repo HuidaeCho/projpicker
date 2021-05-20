@@ -3,10 +3,10 @@ import argparse
 import time
 import re
 from pathlib import Path
-from db_operations import crs_usage, bbox_coors, bbox_poly
+from db_operations import crs_usage
 from connection import proj_connection, projpicker_connection
 from densify import densified_bbox
-from spatial_operations import POLYGON
+from spatial_operations import POLYGON, bbox_coors
 
 # Constant projpicker database name
 PROJPICKER_DB = "projpicker.db"
@@ -59,7 +59,6 @@ def main():
     start = time.time()
     # Create parser
     parser = argparse.ArgumentParser(description="Generate ProjPicker sqlite database")
-    parser.add_argument("table", type=str, help="proj.db crs table to query")
     parser.add_argument(
         "-l",
         "--location",
@@ -77,11 +76,18 @@ def main():
         default=100,
         help="Number of points in densified bbox",
     )
+    parser.add_argument("table", type=str, help="proj.db crs table to query", nargs="+")
     # Parse arguments
     args = parser.parse_args()
     # Check table
-    if args.table not in ["projected_crs", "geodetic_crs", "vertical_crs"]:
-        raise Exception("Choose one of projected_crs, geodetic_crs, vertical_crs")
+    print(args.table)
+    if any(
+        x not in ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
+        for x in args.table
+    ):
+        raise Exception(
+            "Choose one of projected_crs, geodetic_crs, vertical_crs, compound_crs"
+        )
     # Output table path
     out_path = Path(args.location, PROJPICKER_DB)
     pp_con = projpicker_connection(out_path)
@@ -91,11 +97,13 @@ def main():
     proj_con = proj_connection()
     proj_cur = proj_con.cursor()
 
-    # Full list of CRS codes in the specified table
-    usage = crs_usage(proj_cur, args.authority, args.table)
+    for table in tables:
+        pp_cur.execute(tables[table])
 
-    pp_cur.execute(tables["projbbox"])
-    pp_cur.execute(tables["densbbox"])
+    # Full list of CRS codes in the specified tables
+    usage = {}
+    for table in args.table:
+        usage.update(crs_usage(proj_cur, args.authority, table))
 
     for code in usage:
         bbox = usage[code]["area"]["bbox"]
