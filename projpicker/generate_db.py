@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from db_operations import crs_usage
 from connection import proj_connection, projpicker_connection
-from geom import POLYGON, bbox_coors, densified_bbox
+from geom import POLYGON, bbox_coors, bbox_poly
 
 
 # Constant projpicker database name
@@ -73,7 +73,7 @@ def main():
         "-p",
         "--points",
         type=int,
-        default=100,
+        default=0,
         help="Number of points in densified bbox",
     )
     parser.add_argument("table", type=str, help="proj.db crs table to query", nargs="+")
@@ -116,7 +116,11 @@ def main():
 
         sql = """INSERT INTO densbbox (auth_code, name, geom)
                   VALUES(?, ?, GeomFromText(?))"""
-        geom = POLYGON(densified_bbox(bbox_coors(bbox), args.points))
+
+        if args.points > 0:
+            geom = POLYGON(densified_bbox(bbox_coors(bbox), args.points))
+        else:
+            geom = bbox_poly(bbox)
         pp_cur.execute(sql, (code, name, geom))
 
     print(time.time() - start)
