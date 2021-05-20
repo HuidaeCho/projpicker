@@ -32,7 +32,7 @@ tables = {
             """,
     "projbbox_to_products": """
                 create table if not exists projbbox_to_products (
-                    id int primary key,
+                    id integer primary key autoincrement,
                     auth_code varchar(100) not null,
                     product varchar(100),
                     agency varchar(100)
