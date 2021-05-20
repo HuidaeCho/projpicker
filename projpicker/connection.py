@@ -34,6 +34,7 @@ def proj_connection():
 
     return sqlite3.connect(proj_db)
 
+
 def projpicker_connection(path):
     con = sqlite3.connect(path)
     con.enable_load_extension(True)
