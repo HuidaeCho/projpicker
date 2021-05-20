@@ -1,10 +1,3 @@
-import argparse
-import time
-from pathlib import Path
-from connection import proj_connection
-from spatial_operations import POLYGON
-
-
 def authority_codes(cursor, auth="EPSG", table="projected_crs") -> list:
     """
     Get list of authority_codes
@@ -68,23 +61,6 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     bbox = list(cursor.fetchall()[0])
     extent['bbox'] = bbox
     return extent
-
-
-def bbox_coors(bbox):
-    bbox_geom = [
-        [bbox[2], bbox[1]],
-        [bbox[3], bbox[1]],
-        [bbox[3], bbox[0]],
-        [bbox[2], bbox[0]],
-    ]
-
-    return bbox_geom
-
-
-def bbox_poly(bbox):
-    bbox_geom = bbox_coors(bbox)
-    bbox_geom.append(bbox_geom[0])
-    return POLYGON(bbox_geom)
 
 
 def pop_usage_index(cursor, code: dict, auth="EPSG") -> dict:

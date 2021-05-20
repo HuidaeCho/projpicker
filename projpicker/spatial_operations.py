@@ -1,5 +1,6 @@
 import re
 
+
 def _replace_closure(input: str) -> str:
 
     if any(x in input for x in ['(', ')']):
@@ -27,4 +28,21 @@ def POINT(input: (tuple, list)) -> str:
     geom_str = _replace_closure(geom_str)
 
     return f'POINT(({geom_str}))'
+
+
+def bbox_coors(bbox):
+    bbox_geom = [
+        [bbox[2], bbox[1]],
+        [bbox[3], bbox[1]],
+        [bbox[3], bbox[0]],
+        [bbox[2], bbox[0]],
+    ]
+
+    return bbox_geom
+
+
+def bbox_poly(bbox):
+    bbox_geom = bbox_coors(bbox)
+    bbox_geom.append(bbox_geom[0])
+    return POLYGON(bbox_geom)
 
