@@ -1,6 +1,8 @@
 import re
 import json
 import numpy as np
+from rtree import index
+from const import RTREE
 
 
 def _replace_closure(input: str) -> str:
@@ -76,6 +78,7 @@ def get_geom(cursor, table: str, geom_col: str, code: str):
     cursor.execute(sql)
     geom = cursor.fetchall()[0]
     geom = json.loads(geom[0])
+
     return geom.get('coordinates')
 
 
@@ -86,3 +89,11 @@ def get_bounds(cursor, code):
     cursor.execute(sql)
     coordinates = cursor.fetchall()[0]
     return coordinates
+
+
+def intersect(geometry):
+    idx = index.Index(RTREE)
+    query = list(idx.intersection((geometry), objects=True))
+    bboxs = [(item.id, item.bbox) for item in query]
+    return bboxs
+
