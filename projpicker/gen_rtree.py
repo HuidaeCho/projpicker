@@ -2,17 +2,17 @@
 import argparse
 from geom import get_bounds
 from connection import projpicker_connection
+from const import PROJPICKER_DB, RTREE
 from rtree import index
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generate Rtree index")
-    parser.add_argument('projpickerDB', type=str, help="Path to projpicker database")
     args = parser.parse_args()
     # Constant index
-    INDEX = index.Index('rtree')
+    INDEX = index.Index(RTREE)
 
-    con = projpicker_connection(args.projpickerDB)
+    con = projpicker_connection()
     cur = con.cursor()
 
     def __get_ppick_codes():
