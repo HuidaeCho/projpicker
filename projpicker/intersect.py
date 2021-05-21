@@ -18,10 +18,13 @@ def json_entry(cursor, code):
     extent = get_geom(cursor, 'densbbox', 'geom', code)
     extent = extent[0][:-1]
 
+    for i in range(len(extent)):
+        extent[i][0] = f'{float(extent[i][0]):.2f}'
+        extent[i][1] = f'{float(extent[i][0]):.2f}'
+
     entry = {'epsg': epsg,
              'extent': extent,
              'products': [
-                 {}
                  ],
              }
     return entry
