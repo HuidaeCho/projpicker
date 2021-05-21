@@ -1,8 +1,8 @@
-import os
 import sys
 import sqlite3
 from distutils.spawn import find_executable
 from pathlib import Path
+from const import PROJPICKER_DB
 
 
 def _validate_proj(data_dir):
@@ -35,8 +35,8 @@ def proj_connection():
     return sqlite3.connect(proj_db)
 
 
-def projpicker_connection(path):
-    con = sqlite3.connect(path)
+def projpicker_connection():
+    con = sqlite3.connect(PROJPICKER_DB)
     con.enable_load_extension(True)
     con.load_extension("mod_spatialite")
     return con

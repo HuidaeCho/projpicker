@@ -3,13 +3,10 @@ import argparse
 import time
 import re
 from pathlib import Path
+from const import PROJPICKER_DB
 from db_operations import crs_usage
 from connection import proj_connection, projpicker_connection
 from geom import POLYGON, bbox_coors, bbox_poly
-
-
-# Constant projpicker database name
-PROJPICKER_DB = "projpicker.db"
 
 # Tables specified on the wiki
 tables = {
