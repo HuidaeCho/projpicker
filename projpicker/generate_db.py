@@ -87,7 +87,7 @@ def main():
         )
     # Output table path
     out_path = Path(args.location, PROJPICKER_DB)
-    pp_con = projpicker_connection(out_path)
+    pp_con = projpicker_connection()
     pp_cur = pp_con.cursor()
 
     # Open only one connection
