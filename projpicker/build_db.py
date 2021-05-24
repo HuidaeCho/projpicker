@@ -83,8 +83,12 @@ def main():
         raise Exception(
             "Choose one of projected_crs, geodetic_crs, vertical_crs, compound_crs"
         )
+
     # Output table path
     out_path = Path(args.location, PROJPICKER_DB)
+    if out_path.exists():
+        out_path.unlink()
+
     pp_con = projpicker_connection()
     pp_cur = pp_con.cursor()
 
