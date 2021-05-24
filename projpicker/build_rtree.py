@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
-from geom import get_bounds
-from connection import projpicker_connection
-from const import PROJPICKER_DB, RTREE
+from utils.geom import get_bounds
+from utils.connection import projpicker_connection
+from utils.const import RTREE
 from rtree import index
 
 
