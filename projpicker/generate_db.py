@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import time
-import re
 from pathlib import Path
 from utils.const import PROJPICKER_DB
 from utils.db_operations import crs_usage
