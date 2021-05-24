@@ -1,8 +1,3 @@
-from projpicker.utils import (
-    const,
-    geom,
-    db_operations,
-    connection
-)
+from utils import const, geom, db_operations, connection
 
-__all__ = ['const', 'geom', 'connection', 'db_operations']
+__all__ = ["const", "geom", "connection", "db_operations"]
