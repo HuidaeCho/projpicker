@@ -5,7 +5,7 @@ from pathlib import Path
 from utils.const import PROJPICKER_DB
 from utils.db_operations import crs_usage
 from utils.connection import proj_connection, projpicker_connection
-from utils.geom import POLYGON, bbox_coors, bbox_poly
+from utils.geom import POLYGON, bbox_coors, bbox_poly, densified_bbox
 
 # Tables specified on the wiki
 tables = {
