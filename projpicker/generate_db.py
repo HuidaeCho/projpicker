@@ -77,7 +77,6 @@ def main():
     # Parse arguments
     args = parser.parse_args()
     # Check table
-    print(args.table)
     if any(
         x not in ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
         for x in args.table
