@@ -2,7 +2,7 @@ import sys
 import sqlite3
 from distutils.spawn import find_executable
 from pathlib import Path
-from const import PROJPICKER_DB
+from .const import PROJPICKER_DB
 
 
 def _validate_proj(data_dir):

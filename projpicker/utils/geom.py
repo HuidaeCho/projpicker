@@ -2,7 +2,7 @@ import re
 import json
 import numpy as np
 from rtree import index
-from const import RTREE
+from .const import RTREE
 
 
 def _replace_closure(input: str) -> str:

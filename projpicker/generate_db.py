@@ -3,10 +3,10 @@ import argparse
 import time
 import re
 from pathlib import Path
-from const import PROJPICKER_DB
-from db_operations import crs_usage
-from connection import proj_connection, projpicker_connection
-from geom import POLYGON, bbox_coors, bbox_poly
+from utils.const import PROJPICKER_DB
+from utils.db_operations import crs_usage
+from utils.connection import proj_connection, projpicker_connection
+from utils.geom import POLYGON, bbox_coors, bbox_poly
 
 # Tables specified on the wiki
 tables = {
