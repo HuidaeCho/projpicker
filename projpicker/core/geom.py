@@ -1,5 +1,4 @@
 import json
-import numpy as np
 from rtree import index
 from .const import RTREE
 

@@ -21,10 +21,10 @@
 ################################################################################
 
 from pathlib import Path
-from utils.const import PROJPICKER_DB
-from utils.db_operations import crs_usage
-from utils.connection import proj_connection, projpicker_connection
-from utils.geom import bbox_poly
+from core.const import PROJPICKER_DB
+from core.db_operations import crs_usage
+from core.connection import proj_connection, projpicker_connection
+from core.geom import bbox_poly
 
 PROJ_TABLES = ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
 AUTHORITY = "EPSG"

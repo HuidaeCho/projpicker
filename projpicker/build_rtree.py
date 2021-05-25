@@ -20,9 +20,9 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-from utils.geom import get_bounds
-from utils.connection import projpicker_connection
-from utils.const import RTREE
+from core.geom import get_bounds
+from core.connection import projpicker_connection
+from core.const import RTREE
 from rtree import index
 
 
