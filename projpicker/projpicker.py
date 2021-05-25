@@ -24,8 +24,8 @@
 import pprint
 import argparse
 import json
-from utils.connection import projpicker_connection
-from utils.geom import bbox_coors, intersect
+from core.connection import projpicker_connection
+from core.geom import bbox_coors, intersect
 
 
 def json_entry(cursor, code, bbox):
