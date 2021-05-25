@@ -20,13 +20,14 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-import argparse
-import time
 from pathlib import Path
 from utils.const import PROJPICKER_DB
 from utils.db_operations import crs_usage
 from utils.connection import proj_connection, projpicker_connection
 from utils.geom import bbox_poly
+
+PROJ_TABLES = ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
+AUTHORITY = "EPSG"
 
 # Tables specified on the wiki
 tables = {
@@ -59,33 +60,8 @@ tables = {
 
 
 def main():
-    start = time.time()
-    # Create parser
-    parser = argparse.ArgumentParser(description="Generate ProjPicker sqlite database")
-    parser.add_argument(
-        "-l",
-        "--location",
-        type=str,
-        default="./",
-        help="Directory where to create database. Default: ./",
-    )
-    parser.add_argument(
-        "-a", "--authority", type=str, default="EPSG", help="CRS Authority"
-    )
-    parser.add_argument("table", type=str, help="proj.db crs table to query", nargs="+")
-    # Parse arguments
-    args = parser.parse_args()
-    # Check table
-    if any(
-        x not in ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
-        for x in args.table
-    ):
-        raise Exception(
-            "Choose one of projected_crs, geodetic_crs, vertical_crs, compound_crs"
-        )
-
     # Output table path
-    out_path = Path(args.location, PROJPICKER_DB)
+    out_path = Path(PROJPICKER_DB)
     if out_path.exists():
         out_path.unlink()
 
@@ -97,13 +73,12 @@ def main():
     proj_cur = proj_con.cursor()
 
     for table in tables:
-        print(table)
         pp_cur.execute(tables[table])
 
     # Full list of CRS codes in the specified tables
     usage = {}
-    for table in args.table:
-        usage.update(crs_usage(proj_cur, args.authority, table))
+    for table in PROJ_TABLES:
+        usage.update(crs_usage(proj_cur, AUTHORITY, table))
 
     for code in usage:
         bbox = usage[code]["area"]["bbox"]
@@ -119,8 +94,6 @@ def main():
                   VALUES(?, ?, ?)"""
 
         pp_cur.execute(sql, (code, name, geom))
-
-    print(time.time() - start)
 
     # Close connections
     proj_con.close()
