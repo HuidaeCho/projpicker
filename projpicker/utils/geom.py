@@ -1,37 +1,7 @@
-import re
 import json
 import numpy as np
 from rtree import index
 from .const import RTREE
-
-
-def _replace_closure(input: str) -> str:
-
-    if any(x in input for x in ['(', ')']):
-        input = input.replace('(', '').replace(')', '')
-    if any(x in input for x in ['[', ']']):
-        input = input.replace('[', '').replace(']', '')
-    return input
-
-
-def POLYGON(input: (tuple, list)) -> str:
-    if input[0] != input[-1]:
-        raise Exception("Polygon geometry does not close!")
-
-    geom_str = re.sub(',([^,]*,?)', r'\1', str(input))
-
-    geom_str = _replace_closure(geom_str)
-
-    return f'POLYGON(({geom_str}))'
-
-
-def POINT(input: (tuple, list)) -> str:
-
-    geom_str = str(input).replace(',', ' ')
-
-    geom_str = _replace_closure(geom_str)
-
-    return f'POINT(({geom_str}))'
 
 
 def bbox_coors(bbox: list) -> list:
@@ -48,41 +18,21 @@ def bbox_coors(bbox: list) -> list:
 def bbox_poly(bbox: list) -> str:
     bbox_geom = bbox_coors(bbox)
     bbox_geom.append(bbox_geom[0])
-    return POLYGON(bbox_geom)
+    return str(bbox_geom)
 
 
-def fill_line(pnt1, pnt2, num_points) -> list:
-    xs = np.linspace(pnt1[0], pnt2[0], num_points)
-    ys = np.linspace(pnt1[1], pnt2[1], num_points)
-    return list(zip(list(xs), list(ys)))
+def get_geom(cursor, table: str, geom_col: str, code: str) -> list:
 
-
-def densified_bbox(bbox, num_points) -> list:
-    '''
-    Generate densified bbox for a CRS extent
-    '''
-    poly = []
-    for i in range(1, len(bbox) + 1):
-        if i > len(bbox) - 1:
-            i = 0
-        line = fill_line(bbox[i - 1], bbox[i], num_points)
-        poly.extend(line)
-    return poly
-
-
-def get_geom(cursor, table: str, geom_col: str, code: str):
-
-    sql = f'''SELECT AsGeoJson({geom_col}) from {table}
+    sql = f'''SELECT {geom_col} from {table}
               where auth_code = {code}'''
 
     cursor.execute(sql)
     geom = cursor.fetchall()[0]
-    geom = json.loads(geom[0])
 
-    return geom.get('coordinates')
+    return json.loads(geom[0])
 
 
-def get_bounds(cursor, code):
+def get_bounds(cursor, code: str) -> tuple:
     sql = f'''SELECT south_latitude, west_longitude,
                     north_latitude, east_longitude from projbbox
                     where auth_code = {code}'''
@@ -91,7 +41,7 @@ def get_bounds(cursor, code):
     return coordinates
 
 
-def intersect(geometry):
+def intersect(geometry: tuple) -> tuple:
     idx = index.Index(RTREE)
     query = list(idx.intersection((geometry), objects=True))
     bboxs = [(item.id, item.bbox) for item in query]

@@ -26,7 +26,7 @@ from pathlib import Path
 from utils.const import PROJPICKER_DB
 from utils.db_operations import crs_usage
 from utils.connection import proj_connection, projpicker_connection
-from utils.geom import POLYGON, bbox_coors, bbox_poly, densified_bbox
+from utils.geom import bbox_poly
 
 # Tables specified on the wiki
 tables = {
@@ -40,11 +40,11 @@ tables = {
                     east_longitude real not null
                 );
                 """,
-    "densbbox": """
-                create table if not exists densbbox (
+    "geombbox": """
+                create table if not exists geombbox (
                     auth_code varchar(100) primary key,
                     name varchar(100) not null,
-                    geom BLOB NOT NULL
+                    bboxpoly varchar(100)
                 );
             """,
     "projbbox_to_products": """
@@ -53,20 +53,6 @@ tables = {
                     auth_code varchar(100) not null,
                     product varchar(100),
                     agency varchar(100)
-                );
-            """,
-    "grid": """
-                create table if not exists grid (
-                    idx int primary key,
-                    row int not null,
-                    column int not null
-                );
-            """,
-    "grid_to_projbbox": """
-                create table if not exists grid_to_projbbox (
-                    id int primary key,
-                    idx int not null,
-                    auth_code varchar(100) not null
                 );
             """,
 }
@@ -85,13 +71,6 @@ def main():
     )
     parser.add_argument(
         "-a", "--authority", type=str, default="EPSG", help="CRS Authority"
-    )
-    parser.add_argument(
-        "-p",
-        "--points",
-        type=int,
-        default=0,
-        help="Number of points in densified bbox",
     )
     parser.add_argument("table", type=str, help="proj.db crs table to query", nargs="+")
     # Parse arguments
@@ -118,6 +97,7 @@ def main():
     proj_cur = proj_con.cursor()
 
     for table in tables:
+        print(table)
         pp_cur.execute(tables[table])
 
     # Full list of CRS codes in the specified tables
@@ -132,20 +112,17 @@ def main():
         sql = """INSERT INTO projbbox (auth_code, name, south_latitude,
                   west_longitude, north_latitude, east_longitude)
                   VALUES(?, ?, ?, ?, ?, ?)"""
+
         pp_cur.execute(sql, (code, name, bbox[0], bbox[1], bbox[2], bbox[3]))
+        geom = bbox_poly(bbox)
+        sql = """INSERT INTO geombbox (auth_code, name, bboxpoly)
+                  VALUES(?, ?, ?)"""
 
-        sql = """INSERT INTO densbbox (auth_code, name, geom)
-                  VALUES(?, ?, GeomFromText(?))"""
-
-        if args.points > 0:
-            geom = POLYGON(densified_bbox(bbox_coors(bbox), args.points))
-        else:
-            geom = bbox_poly(bbox)
         pp_cur.execute(sql, (code, name, geom))
 
     print(time.time() - start)
 
-    # temporary return
+    # Close connections
     proj_con.close()
     pp_con.commit()
     pp_con.close()
@@ -154,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # Close connection
