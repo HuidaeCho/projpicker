@@ -20,6 +20,7 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+from core.db_operations import query_auth_code
 from core.geom import get_bounds
 from core.connection import projpicker_connection
 from core.const import RTREE
@@ -33,12 +34,13 @@ def main():
     con = projpicker_connection()
     cur = con.cursor()
 
-    def __get_ppick_codes():
-        sql = '''select auth_code from projbbox'''
+    def __get_ppick_ids():
+        sql = '''select id from codes'''
         cur.execute(sql)
-        return [str(code[0]) for code in cur.fetchall()]
+        return [code[0] for code in cur.fetchall()]
 
     def __rtree_insert(cur, code):
+        print(code)
         b, l, t, r = get_bounds(cur, code)
         if b > t:
             b, t = t, b
@@ -46,7 +48,7 @@ def main():
             l, r = r, l
         INDEX.insert(int(code), (b, l, t, r))
 
-    codes = __get_ppick_codes()
+    codes = __get_ppick_ids()
 
     for i in codes:
         __rtree_insert(cur, i)

@@ -45,12 +45,16 @@ def main():
                         help="Point coordinates in lat/lon")
     parser.add_argument('-o', '--output', type=str,
                         help='Create output file of intersection')
+    parser.add_argument('-c', action='store_true', help="Returns count of CRS available")
     args = parser.parse_args()
 
     con = projpicker_connection()
     cur = con.cursor()
 
-    inter_crs = intersect(args.coordinates)
+    inter_crs = intersect(cur, args.coordinates)
+    if args.c:
+        print(len(inter_crs))
+        return
 
     output = {}
     for i in inter_crs:

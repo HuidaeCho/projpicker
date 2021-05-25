@@ -1,3 +1,20 @@
+def query_auth_code(cursor, id):
+
+    sql = f"""
+           SELECT auth_code FROM codes WHERE id = {id}
+           """
+    cursor.execute(sql)
+    return cursor.fetchall()[0][0]
+
+
+def query_id(cursor, auth_code):
+    sql = f"""
+           SELECT id FROM codes WHERE auth_code = {auth_code}
+           """
+    cursor.execute(sql)
+    return cursor.fetchall()[0][0]
+
+
 def authority_codes(cursor, auth="EPSG", table="projected_crs") -> list:
     """
     Get list of authority_codes
@@ -20,7 +37,7 @@ def usage_codes(cursor, auth_code) -> dict:
     return codes_dict
 
 
-def usage_index(cursor, auth_codes, auth="EPSG") -> dict:
+def usage_index(cursor, auth_codes) -> dict:
     """
     Create full dictionary of CRS codes and their respective usage codes.
     """
@@ -36,8 +53,7 @@ def get_scope(cursor, code: dict, auth="EPSG") -> list:
     """
     scope_code = code["scope_code"]
     sql = f"""SELECT scope FROM scope
-              WHERE auth_name = '{auth}'
-              AND code = {scope_code}"""
+              WHERE code = {scope_code}"""
     cursor.execute(sql)
     return list(cursor.fetchall()[0])
 
@@ -48,8 +64,7 @@ def get_extent(cursor, code: dict, auth="EPSG") -> dict:
     """
     extent_code = code["extent_code"]
     sql = f"""SELECT name, description FROM extent
-              WHERE auth_name = '{auth}'
-              AND code = {extent_code}"""
+              WHERE code = {extent_code}"""
     cursor.execute(sql)
     area = cursor.fetchall()[0]
     extent = {"name": area[0], "description": area[1]}

@@ -1,6 +1,7 @@
 import json
 from rtree import index
 from .const import RTREE
+from .db_operations import query_auth_code
 
 
 def bbox_coors(bbox: list) -> list:
@@ -34,15 +35,15 @@ def get_geom(cursor, table: str, geom_col: str, code: str) -> list:
 def get_bounds(cursor, code: str) -> tuple:
     sql = f'''SELECT south_latitude, west_longitude,
                     north_latitude, east_longitude from projbbox
-                    where auth_code = {code}'''
+                    where id = {code}'''
     cursor.execute(sql)
     coordinates = cursor.fetchall()[0]
     return coordinates
 
 
-def intersect(geometry: tuple) -> tuple:
+def intersect(cur, geometry: tuple) -> tuple:
     idx = index.Index(RTREE)
     query = list(idx.intersection((geometry), objects=True))
-    bboxs = [(item.id, item.bbox) for item in query]
+    bboxs = [(query_auth_code(cur, item.id), item.bbox) for item in query]
     return bboxs
 

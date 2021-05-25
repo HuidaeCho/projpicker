@@ -31,9 +31,15 @@ AUTHORITY = "EPSG"
 
 # Tables specified on the wiki
 tables = {
+    "codes":    """
+                create table if not exists codes (
+                    id integer primary key,
+                    auth_code varchar(100)
+                    );
+                """,
     "projbbox": """
                 create table if not exists projbbox (
-                    auth_code varchar(100) primary key,
+                    id integer primary key,
                     name varchar(100) not null,
                     south_latitude real not null,
                     west_longitude real not null,
@@ -43,7 +49,7 @@ tables = {
                 """,
     "geombbox": """
                 create table if not exists geombbox (
-                    auth_code varchar(100) primary key,
+                    id integer primary key,
                     name varchar(100) not null,
                     bboxpoly varchar(100)
                 );
@@ -80,20 +86,26 @@ def main():
     for table in PROJ_TABLES:
         usage.update(crs_usage(proj_cur, AUTHORITY, table))
 
+    id = 0
     for code in usage:
+        sql = """ INSERT INTO codes (id, auth_code) VALUES(?, ?) """
+        pp_cur.execute(sql, (id, code))
+
         bbox = usage[code]["area"]["bbox"]
 
         name = usage[code]["area"]["name"]
-        sql = """INSERT INTO projbbox (auth_code, name, south_latitude,
+        sql = """INSERT INTO projbbox (id, name, south_latitude,
                   west_longitude, north_latitude, east_longitude)
                   VALUES(?, ?, ?, ?, ?, ?)"""
 
-        pp_cur.execute(sql, (code, name, bbox[0], bbox[1], bbox[2], bbox[3]))
+        pp_cur.execute(sql, (id, name, bbox[0], bbox[1], bbox[2], bbox[3]))
         geom = bbox_poly(bbox)
-        sql = """INSERT INTO geombbox (auth_code, name, bboxpoly)
+        sql = """INSERT INTO geombbox (id, name, bboxpoly)
                   VALUES(?, ?, ?)"""
 
-        pp_cur.execute(sql, (code, name, geom))
+        pp_cur.execute(sql, (id, name, geom))
+
+        id += 1
 
     # Close connections
     proj_con.close()
