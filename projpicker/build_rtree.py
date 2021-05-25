@@ -20,16 +20,13 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-import argparse
-from utils.geom import get_bounds, get_geom
+from utils.geom import get_bounds
 from utils.connection import projpicker_connection
 from utils.const import RTREE
 from rtree import index
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Rtree index")
-    args = parser.parse_args()
     # Constant index
     INDEX = index.Index(RTREE)
 
