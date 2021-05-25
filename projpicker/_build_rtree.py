@@ -40,7 +40,6 @@ def main():
         return [code[0] for code in cur.fetchall()]
 
     def __rtree_insert(cur, code):
-        print(code)
         b, l, t, r = get_bounds(cur, code)
         if b > t:
             b, t = t, b
