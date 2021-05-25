@@ -37,7 +37,5 @@ def proj_connection():
 
 def projpicker_connection():
     con = sqlite3.connect(PROJPICKER_DB)
-    con.enable_load_extension(True)
-    con.load_extension("mod_spatialite")
     return con
 
