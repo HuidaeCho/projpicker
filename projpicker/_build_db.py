@@ -72,13 +72,12 @@ def main():
         out_path.unlink()
 
     projpick = ProjPicker()
-    print(type(projpick))
 
     # Open only one connection
     projcon = ProjConnection()
 
     for table in tables:
-        projpick.cur.execute(tables[table])
+        projpick.add(tables[table])
 
     # Full list of CRS codes in the specified tables
     usage = {}
@@ -88,7 +87,7 @@ def main():
     id = 0
     for code in usage:
         sql = """ INSERT INTO codes (id, auth_code) VALUES(?, ?) """
-        projpick.cur.execute(sql, (id, code))
+        projpick.add(sql, (id, code))
 
         bbox = usage[code]["area"]["bbox"]
 
@@ -97,12 +96,12 @@ def main():
                   west_longitude, north_latitude, east_longitude)
                   VALUES(?, ?, ?, ?, ?, ?)"""
 
-        projpick.cur.execute(sql, (id, name, bbox[0], bbox[1], bbox[2], bbox[3]))
+        projpick.add(sql, (id, name, bbox[0], bbox[1], bbox[2], bbox[3]))
         geom = bbox_poly(bbox)
         sql = """INSERT INTO geombbox (id, name, bboxpoly)
                   VALUES(?, ?, ?)"""
 
-        projpick.cur.execute(sql, (id, name, geom))
+        projpick.add(sql, (id, name, geom))
 
         id += 1
 
