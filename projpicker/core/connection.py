@@ -49,7 +49,7 @@ def projpicker_connection():
     return con
 
 
-class ProjPickCon:
+class ProjPicker:
     '''
     Loose wrapper for the projpicker database
     '''

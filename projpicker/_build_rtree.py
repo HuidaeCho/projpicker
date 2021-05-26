@@ -20,9 +20,8 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-from core.db_operations import query_auth_code
 from core.geom import get_bounds
-from core.connection import projpicker_connection, ProjPickCon
+from core.connection import ProjPicker
 from core.const import RTREE
 from rtree import index
 
@@ -31,7 +30,7 @@ def main():
     # Constant index
     INDEX = index.Index(RTREE)
 
-    projpick = ProjPickCon()
+    projpick = ProjPicker()
 
     def __get_ppick_ids():
         sql = '''select id from codes'''
@@ -48,7 +47,7 @@ def main():
     codes = __get_ppick_ids()
 
     for i in codes:
-        __rtree_insert(projpick.cur, i)
+        __rtree_insert(projpick, i)
 
     projpick.close()
 

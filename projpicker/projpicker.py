@@ -24,11 +24,11 @@
 import pprint
 import argparse
 import json
-from core.connection import projpicker_connection
+from core.connection import ProjPicker
 from core.geom import bbox_coors, intersect
 
 
-def json_entry(cursor, code, bbox):
+def json_entry(code, bbox):
     epsg = code
     extent = bbox_coors(bbox)
     entry = {'epsg': epsg,
@@ -48,17 +48,16 @@ def main():
     parser.add_argument('-c', action='store_true', help="Returns count of CRS available")
     args = parser.parse_args()
 
-    con = projpicker_connection()
-    cur = con.cursor()
+    projpick = ProjPicker()
 
-    inter_crs = intersect(cur, args.coordinates)
+    inter_crs = intersect(projpick, args.coordinates)
     if args.c:
         print(len(inter_crs))
         return
 
     output = {}
     for i in inter_crs:
-        output[i[0]] = json_entry(cur, i[0], i[1])
+        output[i[0]] = json_entry(i[0], i[1])
 
     if args.output:
         with open(args.output, 'w') as file:

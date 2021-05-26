@@ -23,7 +23,7 @@
 from pathlib import Path
 from core.const import PROJPICKER_DB
 from core.db_operations import crs_usage
-from core.connection import ProjConnection, ProjPickCon
+from core.connection import ProjConnection, ProjPicker
 from core.geom import bbox_poly
 
 PROJ_TABLES = ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
@@ -71,7 +71,7 @@ def main():
     if out_path.exists():
         out_path.unlink()
 
-    projpick = ProjPickCon()
+    projpick = ProjPicker()
     print(type(projpick))
 
     # Open only one connection
