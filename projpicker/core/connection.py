@@ -65,3 +65,7 @@ class ProjPicker:
     def query(self, sql):
         self.cur.execute(sql)
         return self.cur.fetchall()
+
+    def add(self, sql, values: tuple = ''):
+        self.cur.execute(sql, values)
+
