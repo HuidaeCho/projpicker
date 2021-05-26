@@ -2,11 +2,14 @@
 ################################################################################
 # Project: ProjPicker
 # Purpose: This Python script builds the sqlite3 database needed for ProjPicker.
-# Author:  Owen Smith, Huidae Cho
+# Authors: Owen Smith, Huidae Cho
+#          Institute for Environmental and Spatial Analysis
+#          University of North Georgia
 # Since:   June 4, 2021
 #
 # Copyright (C) 2021, Huidae Cho <https://faculty.ung.edu/hcho/>,
 #                     Owen Smith <https://www.gaderian.io/>
+#
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation, either version 3 of the License, or (at your option) any later
