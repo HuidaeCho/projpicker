@@ -23,7 +23,7 @@
 from pathlib import Path
 from core.const import PROJPICKER_DB
 from core.db_operations import crs_usage
-from core.connection import proj_connection, ProjPickCon
+from core.connection import ProjConnection, ProjPickCon
 from core.geom import bbox_poly
 
 PROJ_TABLES = ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
@@ -72,10 +72,10 @@ def main():
         out_path.unlink()
 
     projpick = ProjPickCon()
+    print(type(projpick))
 
     # Open only one connection
-    proj_con = proj_connection()
-    proj_cur = proj_con.cursor()
+    projcon = ProjConnection()
 
     for table in tables:
         projpick.cur.execute(tables[table])
@@ -83,7 +83,7 @@ def main():
     # Full list of CRS codes in the specified tables
     usage = {}
     for table in PROJ_TABLES:
-        usage.update(crs_usage(proj_cur, AUTHORITY, table))
+        usage.update(crs_usage(projcon, AUTHORITY, table))
 
     id = 0
     for code in usage:
@@ -107,9 +107,7 @@ def main():
         id += 1
 
     # Close connections
-    proj_con.close()
-    #pp_con.commit()
-    #pp_con.close()
+    projcon.close()
     projpick.close(commit=True)
     return usage
 

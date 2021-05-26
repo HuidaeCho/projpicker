@@ -21,29 +21,26 @@ def bbox_poly(bbox: list) -> str:
     return str(bbox_geom)
 
 
-def get_geom(cursor, table: str, geom_col: str, code: str) -> list:
+def get_geom(pp_con: object, table: str, geom_col: str, code: str) -> list:
 
     sql = f'''SELECT {geom_col} from {table}
               where auth_code = {code}'''
 
-    cursor.execute(sql)
-    geom = cursor.fetchall()[0]
-
+    geom = pp_con.query(sql)[0]
     return json.loads(geom[0])
 
 
-def get_bounds(cursor, code: str) -> tuple:
+def get_bounds(pp_con: object, code: str) -> tuple:
     sql = f'''SELECT south_latitude, west_longitude,
                     north_latitude, east_longitude from projbbox
                     where id = {code}'''
-    cursor.execute(sql)
-    coordinates = cursor.fetchall()[0]
+    coordinates = pp_con.query(sql)[0]
     return coordinates
 
 
-def intersect(cur, geometry: tuple) -> tuple:
+def intersect(pp_con: object, geometry: tuple) -> tuple:
     idx = index.Index(RTREE)
     query = list(idx.intersection((geometry), objects=True))
-    bboxs = [(query_auth_code(cur, item.id), item.bbox) for item in query]
+    bboxs = [(query_auth_code(pp_con, item.id), item.bbox) for item in query]
     return bboxs
 
