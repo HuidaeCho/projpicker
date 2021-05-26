@@ -23,7 +23,7 @@
 from pathlib import Path
 from core.const import PROJPICKER_DB
 from core.db_operations import crs_usage
-from core.connection import proj_connection, projpicker_connection
+from core.connection import proj_connection, ProjPickCon
 from core.geom import bbox_poly
 
 PROJ_TABLES = ["projected_crs", "geodetic_crs", "vertical_crs", "compound_crs"]
@@ -71,15 +71,14 @@ def main():
     if out_path.exists():
         out_path.unlink()
 
-    pp_con = projpicker_connection()
-    pp_cur = pp_con.cursor()
+    projpick = ProjPickCon()
 
     # Open only one connection
     proj_con = proj_connection()
     proj_cur = proj_con.cursor()
 
     for table in tables:
-        pp_cur.execute(tables[table])
+        projpick.cur.execute(tables[table])
 
     # Full list of CRS codes in the specified tables
     usage = {}
@@ -89,7 +88,7 @@ def main():
     id = 0
     for code in usage:
         sql = """ INSERT INTO codes (id, auth_code) VALUES(?, ?) """
-        pp_cur.execute(sql, (id, code))
+        projpick.cur.execute(sql, (id, code))
 
         bbox = usage[code]["area"]["bbox"]
 
@@ -98,19 +97,20 @@ def main():
                   west_longitude, north_latitude, east_longitude)
                   VALUES(?, ?, ?, ?, ?, ?)"""
 
-        pp_cur.execute(sql, (id, name, bbox[0], bbox[1], bbox[2], bbox[3]))
+        projpick.cur.execute(sql, (id, name, bbox[0], bbox[1], bbox[2], bbox[3]))
         geom = bbox_poly(bbox)
         sql = """INSERT INTO geombbox (id, name, bboxpoly)
                   VALUES(?, ?, ?)"""
 
-        pp_cur.execute(sql, (id, name, geom))
+        projpick.cur.execute(sql, (id, name, geom))
 
         id += 1
 
     # Close connections
     proj_con.close()
-    pp_con.commit()
-    pp_con.close()
+    #pp_con.commit()
+    #pp_con.close()
+    projpick.close(commit=True)
     return usage
 
 

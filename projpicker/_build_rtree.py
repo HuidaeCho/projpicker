@@ -22,7 +22,7 @@
 
 from core.db_operations import query_auth_code
 from core.geom import get_bounds
-from core.connection import projpicker_connection
+from core.connection import projpicker_connection, ProjPickCon
 from core.const import RTREE
 from rtree import index
 
@@ -31,13 +31,11 @@ def main():
     # Constant index
     INDEX = index.Index(RTREE)
 
-    con = projpicker_connection()
-    cur = con.cursor()
+    projpick = ProjPickCon()
 
     def __get_ppick_ids():
         sql = '''select id from codes'''
-        cur.execute(sql)
-        return [code[0] for code in cur.fetchall()]
+        return [code[0] for code in projpick.query(sql)]
 
     def __rtree_insert(cur, code):
         b, l, t, r = get_bounds(cur, code)
@@ -50,9 +48,9 @@ def main():
     codes = __get_ppick_ids()
 
     for i in codes:
-        __rtree_insert(cur, i)
+        __rtree_insert(projpick.cur, i)
 
-    con.close()
+    projpick.close()
 
 
 if __name__ == "__main__":
