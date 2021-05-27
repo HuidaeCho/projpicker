@@ -31,6 +31,7 @@ import sys
 import sqlite3
 import re
 import json
+from math import pi, cos, sin, tan, atan2, sqrt, ceil
 
 # environment variables for default paths
 projpicker_db_env = "PROJPICKER_DB"
@@ -51,6 +52,7 @@ CREATE TABLE bbox (
     north_lat FLOAT CHECK (north_lat BETWEEN -90 AND 90),
     west_lon FLOAT CHECK (west_lon BETWEEN -180 AND 180),
     east_lon FLOAT CHECK (east_lon BETWEEN -180 AND 180),
+    area_sqkm FLOAT CHECK (area_sqkm > 0),
     CONSTRAINT pk_bbox PRIMARY KEY (
         crs_auth_name, crs_code,
         usage_auth_name, usage_code,
@@ -64,12 +66,85 @@ CREATE TABLE bbox (
 latlon_re = re.compile("^([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))"
                        ",([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))$")
 
+# Earth parameters from https://en.wikipedia.org/wiki/Earth_radius#Global_radii
+# equatorial radius in km
+rx = 6378.1370
+# polar radius in km
+ry = 6356.7523
 
 ################################################################################
 # generic
 
-def warning(msg):
-    print(msg, file=sys.stderr)
+def message(msg="", end=None):
+    print(msg, end=end, file=sys.stderr, flush=True)
+
+
+################################################################################
+# Earth parameters
+
+def calc_xy_at_lat_scaling(lat):
+    # x, y space is scaled to [1, 1], which is then scaled back to x, y
+    # (x/rx)**2 + (y/ry)**2 = 1
+    # x = rx*cos(theta2)
+    # y = ry*sin(theta2)
+    # theta2 = atan2(rx*tan(theta), ry)
+    theta = lat/180*pi
+    theta2 = atan2(rx*tan(theta), ry)
+    x = rx*cos(theta2)
+    y = ry*sin(theta2)
+    return x, y
+
+
+def calc_xy_at_lat_noscaling(lat):
+    # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
+    r = calc_radius_at_lat(lat)
+    x = r*c
+    y = r*s
+    return x, y
+
+
+calc_xy_at_lat = calc_xy_at_lat_scaling
+
+
+def calc_horiz_radius_at_lat(lat):
+    return calc_xy_at_lat(lat)[0]
+
+
+def calc_radius_at_lat(lat):
+    # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
+    theta = lat/180*pi
+    c = cos(theta)
+    s = sin(theta)
+    r = sqrt((rx*ry)**2/((c*ry)**2+(s*rx)**2))
+    return r
+
+
+def calc_area(s, n, w, e):
+    lats = []
+    nlats = ceil(n-s)+1
+    for i in range(nlats-1):
+        lats.append(s+i)
+    lats.append(n)
+
+    lons = []
+    dlon = e-w
+    nlons = ceil(dlon)+1
+    for i in range(nlons-1):
+        lons.append(w+i)
+    lons.append(e)
+    dlon *= pi/180
+
+    area = 0
+    for i in range(nlats-1):
+        b = lats[i]
+        t = lats[i+1]
+        r = calc_horiz_radius_at_lat((b+t)/2)
+        width = r*dlon
+        xb, yb = calc_xy_at_lat(b)
+        xt, yt = calc_xy_at_lat(t)
+        height = sqrt((xt-xb)**2+(yt-yb)**2)
+        area += width*height
+    return abs(area)
 
 
 ################################################################################
@@ -111,40 +186,50 @@ def create_projpicker_db(
         projpicker_con.commit()
         with sqlite3.connect(proj_db) as proj_con:
             proj_cur = proj_con.cursor()
-            sql = f"""SELECT c.table_name,
-                             c.auth_name, c.code,
-                             u.auth_name, u.code,
-                             e.auth_name, e.code,
-                             south_lat, north_lat,
-                             west_lon, east_lon
-                      FROM crs_view c
-                      JOIN usage u
-                        ON c.auth_name=u.object_auth_name AND
-                           c.code=u.object_code
-                      JOIN extent e
-                        ON u.extent_auth_name=e.auth_name AND
-                           u.extent_code=e.code
-                      WHERE south_lat IS NOT NULL AND
-                            north_lat IS NOT NULL AND
-                            west_lon IS NOT NULL AND
-                            east_lon IS NOT NULL"""
+            sql_tpl = """SELECT {columns}
+                         FROM crs_view c
+                         JOIN usage u
+                            ON c.auth_name=u.object_auth_name AND
+                               c.code=u.object_code
+                         JOIN extent e
+                            ON u.extent_auth_name=e.auth_name AND
+                               u.extent_code=e.code
+                         WHERE south_lat IS NOT NULL AND
+                               north_lat IS NOT NULL AND
+                               west_lon IS NOT NULL AND
+                               east_lon IS NOT NULL"""
+            sql = sql_tpl.replace("{columns}", "count(c.table_name)")
             proj_cur.execute(sql)
+            nrows = proj_cur.fetchone()[0]
+            sql = sql_tpl.replace("{columns}", """c.table_name,
+                                                  c.auth_name, c.code,
+                                                  u.auth_name, u.code,
+                                                  e.auth_name, e.code,
+                                                  south_lat, north_lat,
+                                                  west_lon, east_lon""")
+            proj_cur.execute(sql)
+            nrow = 1
             for row in proj_cur.fetchall():
+                message("\b"*80+f"{nrow}/{nrows}", end="")
                 (proj_table,
                  crs_auth, crs_code,
                  usg_auth, usg_code,
                  ext_auth, ext_code,
                  s, n, w, e) = row
+                area = calc_area(s, n, w, e)
                 sql = f"""INSERT INTO bbox
                           VALUES (
                             '{proj_table}',
                             '{crs_auth}', '{crs_code}',
                             '{usg_auth}', '{usg_code}',
                             '{ext_auth}', '{ext_code}',
-                            {s}, {n}, {w}, {e}
+                            {s}, {n}, {w}, {e},
+                            {area}
                           )"""
                 projpicker_con.execute(sql)
                 projpicker_con.commit()
+                nrow += 1
+            message()
 
 
 ################################################################################
@@ -157,23 +242,25 @@ def query_point_using_cursor(
     bbox = []
 
     if not -90 <= lat <= 90:
-        warning(f"{lat}: Invalid latitude")
+        message(f"{lat}: Invalid latitude")
         return bbox
     if not -180 <= lon <= 180:
-        warning(f"{lon}: Invalid longitude")
+        message(f"{lon}: Invalid longitude")
         return bbox
 
     if not add_reversed_lon:
         sql = f"""SELECT *
                   FROM bbox
                   WHERE {lat} BETWEEN south_lat AND north_lat AND
-                        {lon} BETWEEN west_lon AND east_lon"""
+                        {lon} BETWEEN west_lon AND east_lon
+                  ORDER BY area_sqkm"""
     else:
         sql = f"""SELECT *
                   FROM bbox
                   WHERE {lat} BETWEEN south_lat AND north_lat AND
                         ({lon} BETWEEN west_lon AND east_lon OR
-                         {lon} BETWEEN east_lon AND west_lon)"""
+                         {lon} BETWEEN east_lon AND west_lon)
+                  ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in projpicker_cur.fetchall():
         bbox.append(row)
@@ -219,7 +306,7 @@ def query_points(
                         except:
                             lon = None
             if lat is None or lon is None:
-                warning(f"{point}: Invalid coordinates skipped")
+                message(f"{point}: Invalid coordinates skipped")
                 continue
             bb = query_point_using_cursor(lat, lon, projpicker_cur,
                                           add_reversed_lon)
@@ -267,7 +354,8 @@ def stringify_bbox(bbox, header=True, separator=","):
                "crs_auth_name,crs_code,"
                "usage_auth_name,usage_code,"
                "extent_auth_name,extent_code,"
-               "south_lat,north_lat,west_lon,east_lon\n"
+               "south_lat,north_lat,west_lon,east_lon,"
+               "area_sqkm\n"
                .replace(",", separator))
     else:
         txt = ""
@@ -276,12 +364,14 @@ def stringify_bbox(bbox, header=True, separator=","):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         s, n, w, e) = row
+         s, n, w, e,
+         area) = row
         txt += (f"{proj_table},"
                 f"{crs_auth},{crs_code},"
                 f"{usg_auth},{usg_code},"
                 f"{ext_auth},{ext_code},"
-                f"{s},{n},{w},{e}\n"
+                f"{s},{n},{w},{e},"
+                f"{area}\n"
                 .replace(",", separator))
     return txt
 
@@ -293,7 +383,8 @@ def arrayify_bbox(bbox):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         s, n, w, e) = row
+         s, n, w, e,
+         area) = row
         arr.append({
             "proj_table": proj_table,
             "crs_auth_name": crs_auth,
@@ -305,7 +396,8 @@ def arrayify_bbox(bbox):
             "south_lat": s,
             "north_lat": n,
             "west_lon": w,
-            "east_lon": e})
+            "east_lon": e,
+            "area_sqkm": area})
     return arr
 
 
@@ -463,6 +555,6 @@ if __name__ == "__main__":
     try:
         exit_code = main()
     except Exception as err:
-        warning(err)
+        message(err)
         exit_code = 1
     sys.exit(exit_code)
