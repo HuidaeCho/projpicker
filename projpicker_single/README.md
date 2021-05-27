@@ -32,9 +32,7 @@ From Python,
 ```python
 import projpicker as ppik
 
-bbox = ppik.arrayify_bbox(
-	ppik.query_points(
-		[[34.2348, 83.8677], [33.7490, 84.3880]]))
+bbox = ppik.arrayify_bbox(ppik.query_points([[34.2348, 83.8677], [33.7490, 84.3880]]))
 ```
 
 ## TODO
