@@ -36,3 +36,7 @@ bbox = ppik.arrayify_bbox(
 	ppik.query_points(
 		[[34.2348, 83.8677], [33.7490, 84.3880]]))
 ```
+
+## TODO
+
+Polylines, polygons => Convex hull => Completely contained CRSs
