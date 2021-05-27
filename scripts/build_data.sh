@@ -7,5 +7,5 @@ set -e
 
 cd ../projpicker
 
-python _build_db.py
-python _build_rtree.py
+python3 build_db.py
+python3 build_rtree.py
