@@ -248,22 +248,54 @@ def query_point_using_cursor(
         message(f"{lon}: Invalid longitude")
         return bbox
 
-    if not add_reversed_lon:
-        sql = f"""SELECT *
-                  FROM bbox
-                  WHERE {lat} BETWEEN south_lat AND north_lat AND
-                        {lon} BETWEEN west_lon AND east_lon
-                  ORDER BY area_sqkm"""
-    else:
+    if add_reversed_lon:
         sql = f"""SELECT *
                   FROM bbox
                   WHERE {lat} BETWEEN south_lat AND north_lat AND
                         ({lon} BETWEEN west_lon AND east_lon OR
                          {lon} BETWEEN east_lon AND west_lon)
                   ORDER BY area_sqkm"""
+    else:
+        sql = f"""SELECT *
+                  FROM bbox
+                  WHERE {lat} BETWEEN south_lat AND north_lat AND
+                        {lon} BETWEEN west_lon AND east_lon
+                  ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in projpicker_cur.fetchall():
         bbox.append(row)
+
+    return bbox
+
+
+def query_point_using_bbox(
+        lat, lon,
+        bbox,
+        add_reversed_lon=False):
+    if not -90 <= lat <= 90:
+        message(f"{lat}: Invalid latitude")
+        return bbox
+    if not -180 <= lon <= 180:
+        message(f"{lon}: Invalid longitude")
+        return bbox
+
+    idx = []
+
+    for i in range(len(bbox)):
+        (proj_table,
+         crs_auth, crs_code,
+         usg_auth, usg_code,
+         ext_auth, ext_code,
+         s, n, w, e,
+         area) = bbox[i]
+        if add_reversed_lon:
+            if s <= lat <= n and (w <= lon <= e or e <= lon <= w):
+                idx.append(i)
+        else:
+            if s <= lat <= n and w <= lon <= e:
+                idx.append(i)
+
+    bbox = [bbox[i] for i in idx]
 
     return bbox
 
@@ -279,7 +311,7 @@ def query_point(
     return bbox
 
 
-def query_points(
+def query_points_and(
         points,
         add_reversed_lon=False,
         projpicker_db=get_projpicker_db_path()):
@@ -308,9 +340,63 @@ def query_points(
             if lat is None or lon is None:
                 message(f"{point}: Invalid coordinates skipped")
                 continue
+
+            if len(bbox) == 0:
+                bbox = query_point_using_cursor(lat, lon, projpicker_cur,
+                                                add_reversed_lon)
+            else:
+                bbox = query_point_using_bbox(lat, lon, bbox, add_reversed_lon)
+            print("X", len(bbox))
+
+    return bbox
+
+
+def query_points_or(
+        points,
+        add_reversed_lon=False,
+        projpicker_db=get_projpicker_db_path()):
+    bbox = []
+
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        for point in points:
+            lat = lon = None
+            typ = type(point)
+            if typ == str:
+                lat, lon = parse_latlon(point)
+            elif typ == list or typ == tuple:
+                if len(point) >= 2:
+                    lat, lon = point[:2]
+                    if type(lat) != float:
+                        try:
+                            lat = float(lat)
+                        except:
+                            lat = None
+                    if type(lon) != float:
+                        try:
+                            lon = float(lon)
+                        except:
+                            lon = None
+            if lat is None or lon is None:
+                message(f"{point}: Invalid coordinates skipped")
+                continue
+
             bb = query_point_using_cursor(lat, lon, projpicker_cur,
                                           add_reversed_lon)
             bbox.extend(bb)
+
+    return bbox
+
+
+def query_points(
+        points,
+        query_mode="and", # and, or
+        add_reversed_lon=False,
+        projpicker_db=get_projpicker_db_path()):
+    if query_mode == "and":
+        bbox = query_points_and(points, add_reversed_lon, projpicker_db)
+    else:
+        bbox = query_points_or(points, add_reversed_lon, projpicker_db)
     return bbox
 
 
@@ -422,6 +508,7 @@ def projpicker(
         fmt="plain",
         no_header=False,
         separator=",",
+        query_mode="and",
         add_reversed_lon=False,
         overwrite=False,
         append=False,
@@ -443,7 +530,7 @@ def projpicker(
     if infile:
         coors = read_points_file(infile)
 
-    bbox = query_points(coors, add_reversed_lon, projpicker_db)
+    bbox = query_points(coors, query_mode, add_reversed_lon, projpicker_db)
 
     if len(coors) == 0:
         return
@@ -493,11 +580,14 @@ def main():
     parser.add_argument("-p", "--proj-db",
             default=proj_db,
             help=f"Proj database path (default: {proj_db}); Use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this option")
+    parser.add_argument("-q", "--query-mode",
+            choices=("and", "or"), default="and",
+            help=f"Query mode for multiple points (default: and)")
     parser.add_argument("-r", "--reversed-longitude",
             action="store_true",
             help=f"Add results from CRSs whose east longitude is less than west longitude")
     parser.add_argument("-f", "--format",
-            default="plain", choices=("plain", "json"),
+            choices=("plain", "json"), default="plain",
             help=f"Output format")
     parser.add_argument("-n", "--no-header",
             action="store_true",
@@ -521,6 +611,7 @@ def main():
     append = args.append
     projpicker_db = args.projpicker_db
     proj_db = args.proj_db
+    query_mode = args.query_mode
     add_reversed_lon = args.reversed_longitude
     fmt = args.format
     no_header = args.no_header
@@ -540,6 +631,7 @@ def main():
         fmt,
         no_header,
         separator,
+        query_mode,
         add_reversed_lon,
         overwrite,
         append,
