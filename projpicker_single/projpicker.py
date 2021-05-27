@@ -24,6 +24,7 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+# no third-party modules!
 import argparse
 import os
 import sys
@@ -31,10 +32,12 @@ import sqlite3
 import re
 import json
 
+# environment variables for default paths
 projpicker_db_env = "PROJPICKER_DB"
 proj_db_env = "PROJ_DB"
 proj_lib_env = "PROJ_LIB"
 
+# bbox table schema
 bbox_schema = """
 CREATE TABLE bbox (
     proj_table TEXT NOT NULL CHECK (length(proj_table) >= 1),
@@ -57,13 +60,20 @@ CREATE TABLE bbox (
 )
 """
 
+# lat,lon regular expression
 latlon_re = re.compile("^([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))"
                        ",([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))$")
 
 
+################################################################################
+# generic
+
 def warning(msg):
     print(msg, file=sys.stderr)
 
+
+################################################################################
+# default paths
 
 def get_projpicker_db_path(projpicker_db=None):
     if projpicker_db is None:
@@ -86,6 +96,9 @@ def get_proj_db_path(proj_db=None):
             proj_db = os.path.join(proj_lib, "proj.db")
     return proj_db
 
+
+################################################################################
+# projpicker.db creation
 
 def create_projpicker_db(
         overwrite=False,
@@ -133,6 +146,9 @@ def create_projpicker_db(
                 projpicker_con.execute(sql)
                 projpicker_con.commit()
 
+
+################################################################################
+# queries
 
 def query_point_using_cursor(
         lat, lon,
@@ -211,6 +227,9 @@ def query_points(
     return bbox
 
 
+################################################################################
+# parsing
+
 def read_points_file(infile="-"):
     points = []
     if infile == "-":
@@ -238,6 +257,9 @@ def parse_latlon(latlon):
             lon = x
     return lat, lon
 
+
+################################################################################
+# conversions
 
 def stringify_bbox(bbox, header=True, separator=","):
     if header:
@@ -291,9 +313,15 @@ def jsonify_bbox(bbox):
     return json.dumps(arrayify_bbox(bbox))
 
 
+################################################################################
+# plain printing
+
 def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
     print(stringify_bbox(bbox, header, separator), end="", file=outfile)
 
+
+################################################################################
+# main
 
 def projpicker(
         coors=[],
@@ -348,6 +376,9 @@ def projpicker(
     if outfile != "-":
         f.close()
 
+
+################################################################################
+# command-line interface
 
 def main():
     projpicker_db = get_projpicker_db_path()
@@ -424,6 +455,9 @@ def main():
         proj_db,
         create)
 
+
+################################################################################
+# go!
 
 if __name__ == "__main__":
     try:
