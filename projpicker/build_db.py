@@ -5,7 +5,7 @@
 # Authors: Owen Smith, Huidae Cho
 #          Institute for Environmental and Spatial Analysis
 #          University of North Georgia
-# Since:   June 4, 2021
+# Since:   May 13, 2021
 #
 # Copyright (C) 2021, Huidae Cho <https://faculty.ung.edu/hcho/>,
 #                     Owen Smith <https://www.gaderian.io/>
