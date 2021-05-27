@@ -567,42 +567,42 @@ def main():
             description="ProjPicker: Find coordinate reference systems (CRSs) whose bounding box contains given coordinates")
     parser.add_argument("-c", "--create",
             action="store_true",
-            help="Create ProjPicker database")
+            help="create ProjPicker database")
     parser.add_argument("-O", "--overwrite",
             action="store_true",
-            help="Overwrite output files; Applies to both projpicker.db and query output file")
+            help="overwrite output files; applies to both projpicker.db and query output file")
     parser.add_argument("-a", "--append",
             action="store_true",
-            help="Append to output file if any; Applies only to query output file")
+            help="append to output file if any; applies only to query output file")
     parser.add_argument("-d", "--projpicker-db",
             default=projpicker_db,
-            help=f"ProjPicker database path (default: {projpicker_db}); Use PROJPICKER_DB environment variable to skip this option")
+            help=f"projPicker database path (default: {projpicker_db}); use PROJPICKER_DB environment variable to skip this option")
     parser.add_argument("-p", "--proj-db",
             default=proj_db,
-            help=f"Proj database path (default: {proj_db}); Use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this option")
+            help=f"proj database path (default: {proj_db}); use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this option")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or"), default="and",
-            help=f"Query mode for multiple points (default: and)")
+            help="query mode for multiple points (default: and)")
     parser.add_argument("-r", "--reversed-longitude",
             action="store_true",
-            help=f"Add results from CRSs whose east longitude is less than west longitude")
+            help="add results from CRSs whose east longitude is less than west longitude")
     parser.add_argument("-f", "--format",
             choices=("plain", "json"), default="plain",
-            help=f"Output format")
+            help="output format")
     parser.add_argument("-n", "--no-header",
             action="store_true",
-            help="Do not print header for plain output format")
+            help="do not print header for plain output format")
     parser.add_argument("-s", "--separator",
             default=",",
-            help=f"Separator for plain output format (default: ,)")
+            help="separator for plain output format (default: ,)")
     parser.add_argument("-i", "--input",
             default="",
-            help=f"Input coordinates path (default: coordinates argument); Use - for stdin")
+            help="input coordinates path (default: coordinates argument); use - for stdin")
     parser.add_argument("-o", "--output",
             default="-",
-            help=f"Output path (default: stdout); Use - for stdout")
+            help="output path (default: stdout); use - for stdout")
     parser.add_argument("coordinates", nargs="*",
-            help="Query coordinates in latitude,longitude")
+            help="query coordinates in latitude,longitude")
 
     args = parser.parse_args()
 
