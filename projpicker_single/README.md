@@ -37,4 +37,6 @@ bbox = ppik.arrayify_bbox(ppik.query_points([[34.2348, 83.8677], [33.7490, 84.38
 
 ## TODO
 
-Polylines, polygons => Convex hull => Completely contained CRSs
+* Polylines, polygons => Convex hull => Completely contained CRSs
+* Smallest CRSs
+* CRSs closest to query centroid
