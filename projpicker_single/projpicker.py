@@ -38,31 +38,24 @@ proj_lib_env = "PROJ_LIB"
 bbox_schema = """
 CREATE TABLE bbox (
     proj_table TEXT NOT NULL CHECK (length(proj_table) >= 1),
-    auth_name TEXT NOT NULL CHECK (length(auth_name) >= 1),
-    code TEXT NOT NULL CHECK (length(code) >= 1),
-    usage_auth_name TEXT NOT NULL CHECK (length(auth_name) >= 1),
-    usage_code TEXT NOT NULL CHECK (length(code) >= 1),
-    extent_auth_name TEXT NOT NULL CHECK (length(auth_name) >= 1),
-    extent_code TEXT NOT NULL CHECK (length(code) >= 1),
+    crs_auth_name TEXT NOT NULL CHECK (length(crs_auth_name) >= 1),
+    crs_code TEXT NOT NULL CHECK (length(crs_code) >= 1),
+    usage_auth_name TEXT NOT NULL CHECK (length(usage_auth_name) >= 1),
+    usage_code TEXT NOT NULL CHECK (length(usage_code) >= 1),
+    extent_auth_name TEXT NOT NULL CHECK (length(extent_auth_name) >= 1),
+    extent_code TEXT NOT NULL CHECK (length(extent_code) >= 1),
     south_lat FLOAT CHECK (south_lat BETWEEN -90 AND 90),
     north_lat FLOAT CHECK (north_lat BETWEEN -90 AND 90),
     west_lon FLOAT CHECK (west_lon BETWEEN -180 AND 180),
     east_lon FLOAT CHECK (east_lon BETWEEN -180 AND 180),
     CONSTRAINT pk_bbox PRIMARY KEY (
-        auth_name, code,
+        crs_auth_name, crs_code,
         usage_auth_name, usage_code,
         extent_auth_name, extent_code
     ),
     CONSTRAINT check_bbox_lat CHECK (south_lat <= north_lat)
 )
 """
-
-proj_tables = [
-        "projected_crs",
-        "geodetic_crs",
-        "vertical_crs",
-        "compound_crs"
-]
 
 latlon_re = re.compile("^([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))"
                        ",([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))$")
@@ -105,49 +98,46 @@ def create_projpicker_db(
         projpicker_con.commit()
         with sqlite3.connect(proj_db) as proj_con:
             proj_cur = proj_con.cursor()
-            for proj_table in proj_tables:
-                sql = f"""SELECT auth_name, code
-                          FROM {proj_table}"""
-                proj_cur.execute(sql)
-                for crs_row in proj_cur.fetchall():
-                    crs_auth, crs_code = crs_row
-                    sql = f"""SELECT auth_name, code,
-                                     extent_auth_name, extent_code
-                              FROM usage
-                              WHERE object_auth_name='{crs_auth}' AND
-                                    object_code='{crs_code}'"""
-                    proj_cur.execute(sql)
-                    for usg_row in proj_cur.fetchall():
-                        usg_auth, usg_code, ext_auth, ext_code = usg_row
-                        sql = f"""SELECT south_lat, north_lat,
-                                         west_lon, east_lon
-                                  FROM extent
-                                  WHERE auth_name='{ext_auth}' AND
-                                        code='{ext_code}' AND
-                                        south_lat IS NOT NULL AND
-                                        north_lat IS NOT NULL AND
-                                        west_lon IS NOT NULL AND
-                                        east_lon IS NOT NULL"""
-                        proj_cur.execute(sql)
-                        for ext_row in proj_cur.fetchall():
-                            s, n, w, e = ext_row
-                            sql = f"""INSERT INTO bbox
-                                      VALUES (
-                                        '{proj_table}',
-                                        '{crs_auth}', '{crs_code}',
-                                        '{usg_auth}', '{usg_code}',
-                                        '{ext_auth}', '{ext_code}',
-                                        {s}, {n}, {w}, {e}
-                                      )"""
-                            projpicker_con.execute(sql)
-                            projpicker_con.commit()
+            sql = f"""SELECT c.table_name,
+                             c.auth_name, c.code,
+                             u.auth_name, u.code,
+                             e.auth_name, e.code,
+                             south_lat, north_lat,
+                             west_lon, east_lon
+                      FROM crs_view c
+                      JOIN usage u
+                        ON c.auth_name=u.object_auth_name AND
+                           c.code=u.object_code
+                      JOIN extent e
+                        ON u.extent_auth_name=e.auth_name AND
+                           u.extent_code=e.code
+                      WHERE south_lat IS NOT NULL AND
+                            north_lat IS NOT NULL AND
+                            west_lon IS NOT NULL AND
+                            east_lon IS NOT NULL"""
+            proj_cur.execute(sql)
+            for row in proj_cur.fetchall():
+                (proj_table,
+                 crs_auth, crs_code,
+                 usg_auth, usg_code,
+                 ext_auth, ext_code,
+                 s, n, w, e) = row
+                sql = f"""INSERT INTO bbox
+                          VALUES (
+                            '{proj_table}',
+                            '{crs_auth}', '{crs_code}',
+                            '{usg_auth}', '{usg_code}',
+                            '{ext_auth}', '{ext_code}',
+                            {s}, {n}, {w}, {e}
+                          )"""
+                projpicker_con.execute(sql)
+                projpicker_con.commit()
 
 
 def query_point_using_cursor(
         lat, lon,
         projpicker_cur,
-        add_reversed_lon=False,
-        proj_tables=proj_tables):
+        add_reversed_lon=False):
     bbox = []
 
     if not -90 <= lat <= 90:
@@ -169,8 +159,8 @@ def query_point_using_cursor(
                         ({lon} BETWEEN west_lon AND east_lon OR
                          {lon} BETWEEN east_lon AND west_lon)"""
     projpicker_cur.execute(sql)
-    for projpicker_row in projpicker_cur.fetchall():
-        bbox.append(projpicker_row)
+    for row in projpicker_cur.fetchall():
+        bbox.append(row)
 
     return bbox
 
@@ -178,19 +168,17 @@ def query_point_using_cursor(
 def query_point(
         lat, lon,
         add_reversed_lon=False,
-        proj_tables=proj_tables,
         projpicker_db=get_projpicker_db_path()):
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         bbox = query_point_using_cursor(lat, lon, projpicker_cur,
-                                        add_reversed_lon, proj_tables)
+                                        add_reversed_lon)
     return bbox
 
 
 def query_points(
         points,
         add_reversed_lon=False,
-        proj_tables=proj_tables,
         projpicker_db=get_projpicker_db_path()):
     bbox = []
 
@@ -218,7 +206,7 @@ def query_points(
                 warning(f"{point}: Invalid coordinates skipped")
                 continue
             bb = query_point_using_cursor(lat, lon, projpicker_cur,
-                                          add_reversed_lon, proj_tables)
+                                          add_reversed_lon)
             bbox.extend(bb)
     return bbox
 
@@ -335,7 +323,7 @@ def projpicker(
     if infile:
         coors = read_points_file(infile)
 
-    bbox = query_points(coors, add_reversed_lon, proj_tables, projpicker_db)
+    bbox = query_points(coors, add_reversed_lon, projpicker_db)
 
     if len(coors) == 0:
         return
