@@ -1,6 +1,6 @@
-= Single-file ProjPicker
+# Single-file ProjPicker
 
-== Creating the ProjPicker database
+## Creating the ProjPicker database
 
 From shell,
 ```bash
@@ -14,7 +14,7 @@ import projpicker as ppik
 ppik.create_projpicker_db()
 ```
 
-== Querying points
+## Querying points
 
 From shell,
 ```bash
