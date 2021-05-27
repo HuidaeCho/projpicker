@@ -322,7 +322,7 @@ def read_points_file(infile="-"):
     if infile == "-":
         f = sys.stdin
     elif not os.path.exists(infile):
-        raise Exception(f"{infile}: No such file found")
+        raise Eception(f"{infile}: No such file found")
     else:
         f = open(infile)
     for point in f:
@@ -430,7 +430,7 @@ def projpicker(
         create=False):
     if create:
         if not overwrite and os.path.exists(projpicker_db):
-            raise Exception(f"{projpicker_db}: File already exists")
+            raise Exception(f"{projpicker_db}: File alreay exists")
         if not os.path.exists(proj_db):
             raise Exception(f"{proj_db}: No such file found")
         create_projpicker_db(overwrite, projpicker_db, proj_db)
