@@ -835,7 +835,12 @@ def projpicker(
     if fmt == "json":
         print(jsonify_bbox(bbox), file=f)
     elif fmt == "pretty":
-        pprint(arrayify_bbox(bbox))
+        # sort_dicts was added in Python 3.8, but I'm stuck with 3.7
+        # https://docs.python.org/3/library/pprint.html
+        if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+            pprint(arrayify_bbox(bbox), sort_dicts=False)
+        else:
+            pprint(arrayify_bbox(bbox))
     else:
         print_bbox(bbox, f, header, separator)
     if outfile != "-":
