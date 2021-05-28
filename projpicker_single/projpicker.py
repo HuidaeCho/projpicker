@@ -294,6 +294,34 @@ def parse_bbox(bbox):
     return s, n, w, e
 
 
+def parse_flat_polys(points):
+    polys = []
+    poly = []
+
+    for point in points:
+        lat = lon = None
+        typ = type(point)
+        if typ == str:
+            lat, lon = parse_latlon(point)
+        elif typ in (list, tuple):
+            if len(point) == 2:
+                lat, lon = point
+                lat = get_float(lat)
+                lon = get_float(lon)
+        if lat is None or lon is None:
+            # use invalid coordinates as a flag for a new poly
+            if len(poly) > 0:
+                polys.append(poly)
+                poly = []
+            continue
+        poly.append([lat, lon])
+
+    if len(poly) > 0:
+        polys.append(poly)
+
+    return polys
+
+
 ################################################################################
 # validation
 
@@ -460,74 +488,58 @@ def query_points(
 
 
 def query_poly(
-        points,
+        poly,
         projpicker_db=get_projpicker_db_path()):
     bbox = []
-    outbbox = query_polys(points, "and", True, projpicker_db)
+    outbbox = query_polys([poly], "and", True, projpicker_db)
     if len(outbbox) > 0:
         bbox.append(outbbox[0])
     return bbox
 
 
 def query_polys(
-        points,
+        polys,
         query_mode="and", # and, or
         projpicker_db=get_projpicker_db_path()):
     bboxes = []
 
-    s = n = w = e = None
-    plat = plon = None
-    append = False
+    if (len(polys) > 0 and type(polys[0]) in (list, tuple) and
+        len(polys[0]) > 0 and type(polys[0][0]) not in (list, tuple)):
+        polys = parse_flat_polys(polys)
 
-    for point in points:
-        lat = lon = None
-        typ = type(point)
-        if typ == str:
-            lat, lon = parse_latlon(point)
-        elif typ in (list, tuple):
-            if len(point) >= 2:
-                lat, lon = point[:2]
-                lat = get_float(lat)
-                lon = get_float(lon)
-        if lat is None or lon is None:
-            # use invalid coordinates as a flag for a new poly
-            # append current bbox if any
-            if append:
-                bboxes.append([s, n, w, e])
-                append = False
-            s = n = w = e = None
-            # move to new poly
-            continue
-        if s is None:
-            s = n = lat
-            w = e = lon
-            append = True
-        else:
-            if lat < s:
-                s = lat
-            elif lat > n:
-                n = lat
-            if plon is None or plon*lon >= 0:
-                # if not crossing the antimeridian, w < e
-                if lon < w:
-                    w = lon
-                elif lon > e:
-                    e = lon
-            elif plon is not None and plon*lon < 0:
-                # if crossing the antimeridian, w > e
-                # XXX: tricky to handle geometries crossing the antimeridian
-                # need more testing
-                if lon < 0 and (e > 0 or lon > e):
-                    # +lon to -lon
-                    e = lon
-                elif lon > 0 and (w < 0 or lon < w):
-                    # -lon to +lon
-                    w = lon
-        if plat is None:
-            plat = lat
-            plon = lon
-    # append last bbox if needed
-    if append:
+    for poly in polys:
+        s = n = w = e = None
+        plat = plon = None
+        for point in poly:
+            lat, lon = point
+
+            if s is None:
+                s = n = lat
+                w = e = lon
+            else:
+                if lat < s:
+                    s = lat
+                elif lat > n:
+                    n = lat
+                if plon is None or plon*lon >= 0:
+                    # if not crossing the antimeridian, w < e
+                    if lon < w:
+                        w = lon
+                    elif lon > e:
+                        e = lon
+                elif plon is not None and plon*lon < 0:
+                    # if crossing the antimeridian, w > e
+                    # XXX: tricky to handle geometries crossing the antimeridian
+                    # need more testing
+                    if lon < 0 and (e > 0 or lon > e):
+                        # +lon to -lon
+                        e = lon
+                    elif lon > 0 and (w < 0 or lon < w):
+                        # -lon to +lon
+                        w = lon
+            if plat is None:
+                plat = lat
+                plon = lon
         bboxes.append([s, n, w, e])
 
     return query_bboxes(bboxes, query_mode, projpicker_db)
@@ -623,7 +635,7 @@ def query_bboxes_and(
             if typ == str:
                 s, n, w, e = parse_bbox(inbbox)
             elif typ in (list, tuple):
-                if len(inbbox) >= 4:
+                if len(inbbox) == 4:
                     s, n, w, e = inbbox[:4]
                     s = get_float(s)
                     n = get_float(n)
