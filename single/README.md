@@ -1,5 +1,21 @@
 # Single-file ProjPicker
 
+This Python script provides the CLI and API for ProjPicker.
+
+## Requirements
+
+Tested with PROJ 7.2.1 in Python 3.7.2
+
+Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) and the following standard modules:
+* argparse
+* os
+* sys
+* sqlite3
+* re
+* json
+* pprint
+* math
+
 ## Command-line usage
 
 ```
@@ -48,20 +64,6 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         output path (default: stdout); use - for stdout
 ```
-
-## Requirements
-
-Tested with PROJ 7.2.1 in Python 3.7.2
-
-Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) and the following standard modules:
-* argparse
-* os
-* sys
-* sqlite3
-* re
-* json
-* pprint
-* math
 
 ## Creating the ProjPicker database
 
