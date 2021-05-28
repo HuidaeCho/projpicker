@@ -53,7 +53,7 @@ optional arguments:
                         geometry type (default: point)
   -q {and,or,all}, --query-mode {and,or,all}
                         query mode for multiple points (default: and); use all
-                        to list all bboxes ignoring geometries
+                        to list all bboxes and ignore geometries
   -f {plain,pretty,json}, --format {plain,pretty,json}
                         output format
   -n, --no-header       do not print header for plain output format

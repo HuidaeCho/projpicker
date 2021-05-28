@@ -902,7 +902,7 @@ def main():
             help="geometry type (default: point)")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
-            help="query mode for multiple points (default: and); use all to list all bboxes ignoring geometries")
+            help="query mode for multiple points (default: and); use all to list all bboxes and ignore geometries")
     parser.add_argument("-f", "--format",
             choices=("plain", "pretty", "json"), default="plain",
             help="output format")
