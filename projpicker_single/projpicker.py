@@ -341,9 +341,11 @@ def query_point_using_cursor(
     sql = f"""SELECT *
               FROM bbox
               WHERE {lat} BETWEEN south_lat AND north_lat AND
-                    ((west_lon < east_lon AND
+                    (west_lon = east_lon OR
+                     (west_lon = -180 AND east_lon = 180) OR
+                     (west_lon < east_lon AND
                       {lon} BETWEEN west_lon AND east_lon) OR
-                     (west_lon >= east_lon AND
+                     (west_lon > east_lon AND
                       ({lon} BETWEEN -180 AND east_lon OR
                        {lon} BETWEEN west_lon AND 180)))
               ORDER BY area_sqkm"""
@@ -542,17 +544,19 @@ def query_bbox_using_cursor(
               FROM bbox
               WHERE {s} BETWEEN south_lat AND north_lat AND
                     {n} BETWEEN south_lat AND north_lat AND
-                    ((west_lon < east_lon AND
+                    (west_lon = east_lon OR
+                     (west_lon = -180 AND east_lon = 180) OR
+                     (west_lon < east_lon AND
                       {w} < {e} AND
                       {w} BETWEEN west_lon AND east_lon AND
                       {e} BETWEEN west_lon AND east_lon) OR
-                     (west_lon >= east_lon AND
+                     (west_lon > east_lon AND
                       (({w} < {e} AND
                         (({w} BETWEEN -180 AND east_lon AND
                           {e} BETWEEN -180 AND east_lon) OR
                          ({w} BETWEEN west_lon AND 180 AND
                           {e} BETWEEN west_lon AND 180))) OR
-                       ({w} >= {e} AND
+                       ({w} > {e} AND
                         {e} BETWEEN -180 AND east_lon AND
                         {w} BETWEEN west_lon AND 180))))
               ORDER BY area_sqkm"""
