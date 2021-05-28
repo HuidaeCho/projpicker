@@ -51,9 +51,9 @@ optional arguments:
 
 ## Requirements
 
-Tested in Python 3.7.2
+Tested with PROJ 7.2.1 in Python 3.7.2
 
-Requires the following standard modules:
+Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) and the following standard modules:
 * argparse
 * os
 * sys
