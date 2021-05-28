@@ -30,6 +30,7 @@ import sys
 import sqlite3
 import re
 import json
+from pprint import pprint
 from math import pi, cos, sin, tan, atan2, sqrt, ceil
 
 # environment variables for default paths
@@ -833,6 +834,8 @@ def projpicker(
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "json":
         print(jsonify_bbox(bbox), file=f)
+    elif fmt == "pretty":
+        pprint(arrayify_bbox(bbox))
     else:
         print_bbox(bbox, f, header, separator)
     if outfile != "-":
@@ -870,7 +873,7 @@ def main():
             choices=("and", "or"), default="and",
             help="query mode for multiple points (default: and)")
     parser.add_argument("-f", "--format",
-            choices=("plain", "json"), default="plain",
+            choices=("plain", "pretty", "json"), default="plain",
             help="output format")
     parser.add_argument("-n", "--no-header",
             action="store_true",
