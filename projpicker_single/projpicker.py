@@ -401,10 +401,10 @@ def query_point_using_bbox(
          s, n, w, e,
          area) = bbox[i]
         if s <= lat <= n and (
-           w == e or
-           (w == -180 and e == 180) or
-           (w < e and w <= lon <= e) or
-           (w > e and (-180 <= lon <= e or w <= lon <= 180))):
+            w == e or
+            (w == -180 and e == 180) or
+            (w < e and w <= lon <= e) or
+            (w > e and (-180 <= lon <= e or w <= lon <= 180))):
             idx.append(i)
 
     bbox = [bbox[i] for i in idx]
@@ -504,8 +504,9 @@ def query_polys(
         projpicker_db=get_projpicker_db_path()):
     bboxes = []
 
-    if (len(polys) > 0 and type(polys[0]) in (list, tuple) and
-        len(polys[0]) > 0 and type(polys[0][0]) not in (list, tuple)):
+    if len(polys) > 0 and (
+        type(polys[0]) not in (list, tuple) or
+        (len(polys[0]) > 0 and type(polys[0][0]) not in (list, tuple))):
         polys = parse_flat_polys(polys)
 
     for poly in polys:
@@ -598,15 +599,15 @@ def query_bbox_using_bbox(
          b, t, l, r,
          area) = bbox[i]
         if b <= s <= t and b <= n <= t and (
-           l == r or
-           (l == -180 and r == 180) or
-           (l < r and w < e and l <= w <= r and l <= e <= r) or
-           (l > r and
-            ((w < e and
-             ((-180 <= w <= r and -180 <= e <= r) or
-              l <= w <= 180 and l <= e <= 180)) or
-             (w > e and
-              -180 <= e <= r and l <= w <= 180)))):
+            l == r or
+            (l == -180 and r == 180) or
+            (l < r and w < e and l <= w <= r and l <= e <= r) or
+            (l > r and
+             ((w < e and
+              ((-180 <= w <= r and -180 <= e <= r) or
+               l <= w <= 180 and l <= e <= 180)) or
+              (w > e and
+               -180 <= e <= r and l <= w <= 180)))):
             idx.append(i)
 
     bbox = [bbox[i] for i in idx]
