@@ -20,7 +20,7 @@ Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) and the following s
 
 ```
 usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
-                     [-g {point,poly,bbox}] [-q {and,or}]
+                     [-g {point,poly,bbox}] [-q {and,or,all}]
                      [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
                      [-o OUTPUT]
                      [geometry [geometry ...]]
@@ -51,8 +51,9 @@ optional arguments:
                         variables to skip this option
   -g {point,poly,bbox}, --geometry-type {point,poly,bbox}
                         geometry type (default: point)
-  -q {and,or}, --query-mode {and,or}
-                        query mode for multiple points (default: and)
+  -q {and,or,all}, --query-mode {and,or,all}
+                        query mode for multiple points (default: and); use all
+                        to list all bboxes ignoring geometries
   -f {plain,pretty,json}, --format {plain,pretty,json}
                         output format
   -n, --no-header       do not print header for plain output format
