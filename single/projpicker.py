@@ -256,15 +256,20 @@ def create_projpicker_db(
 # parsing
 
 def read_geoms_file(infile="-"):
-    geoms = []
+    if infile in (None, ""):
+        infile = "-"
+
     if infile == "-":
         f = sys.stdin
     elif not os.path.exists(infile):
         raise Exception(f"{infile}: No such file found")
     else:
         f = open(infile)
+
+    geoms = []
     for geom in f:
         geoms.append(geom.rstrip())
+
     if infile != "-":
         f.close()
     return geoms
@@ -806,7 +811,7 @@ def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
 
 def projpicker(
         geoms=[],
-        infile="",
+        infile="-",
         outfile="-",
         fmt="plain",
         no_header=False,
@@ -833,7 +838,8 @@ def projpicker(
     if query_mode == "all":
         bbox = query_all(projpicker_db)
     else:
-        if infile:
+        if ((create and (infile != "-" or not sys.stdin.isatty())) or
+            (not create and infile)):
             geoms.extend(read_geoms_file(infile))
         if len(geoms) == 0:
             return
