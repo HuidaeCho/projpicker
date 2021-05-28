@@ -62,9 +62,14 @@ CREATE TABLE bbox (
 )
 """
 
+# coordinate regular expression pattern
+coor_pat = "([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))"
+
 # lat,lon regular expression
-latlon_re = re.compile("^([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))"
-                       ",([+-]?(?:[0-9]*(?:\.[0-9]*)?|\.[0-9]*))$")
+latlon_re = re.compile(f"^{coor_pat},{coor_pat}$")
+
+# bbox (s,n,w,e) regular expression
+bbox_re = re.compile(f"^{coor_pat},{coor_pat},{coor_pat},{coor_pat}$")
 
 # Earth parameters from https://en.wikipedia.org/wiki/Earth_radius#Global_radii
 # equatorial radius in km
@@ -77,6 +82,15 @@ ry = 6356.7523
 
 def message(msg="", end=None):
     print(msg, end=end, file=sys.stderr, flush=True)
+
+
+def get_float(x):
+    if type(x) != float:
+        try:
+            x = float(x)
+        except:
+            x = None
+    return x
 
 
 ################################################################################
@@ -233,6 +247,38 @@ def create_projpicker_db(
 
 
 ################################################################################
+# validation
+
+def check_point(lat, lon):
+    if not -90 <= lat <= 90:
+        message(f"{lat}: Invalid latitude")
+        return False
+    if not -180 <= lon <= 180:
+        message(f"{lon}: Invalid longitude")
+        return False
+    return True
+
+
+def check_bbox(s, n, w, e):
+    if not -90 <= s <= 90:
+        message(f"{s}: Invalid south latitude")
+        return False
+    if not -90 <= n <= 90:
+        message(f"{n}: Invalid north latitude")
+        return False
+    if s > n:
+        message(f"South latitude ({s}) greater than north latitude ({n})")
+        return False
+    if not -180 <= w <= 180:
+        message(f"{w}: Invalid west longitude")
+        return False
+    if not -180 <= e <= 180:
+        message(f"{w}: Invalid east longitude")
+        return False
+    return True
+
+
+################################################################################
 # queries
 
 def query_point_using_cursor(
@@ -240,11 +286,7 @@ def query_point_using_cursor(
         projpicker_cur):
     bbox = []
 
-    if not -90 <= lat <= 90:
-        message(f"{lat}: Invalid latitude")
-        return bbox
-    if not -180 <= lon <= 180:
-        message(f"{lon}: Invalid longitude")
+    if not check_point(lat, lon):
         return bbox
 
     # if west_lon >= east_lon, bbox crosses the antimeridian
@@ -267,11 +309,7 @@ def query_point_using_cursor(
 def query_point_using_bbox(
         lat, lon,
         bbox):
-    if not -90 <= lat <= 90:
-        message(f"{lat}: Invalid latitude")
-        return bbox
-    if not -180 <= lon <= 180:
-        message(f"{lon}: Invalid longitude")
+    if not check_point(lat, lon):
         return bbox
 
     idx = []
@@ -314,19 +352,11 @@ def query_points_and(
             typ = type(point)
             if typ == str:
                 lat, lon = parse_latlon(point)
-            elif typ == list or typ == tuple:
+            elif typ in (list, tuple):
                 if len(point) >= 2:
                     lat, lon = point[:2]
-                    if type(lat) != float:
-                        try:
-                            lat = float(lat)
-                        except:
-                            lat = None
-                    if type(lon) != float:
-                        try:
-                            lon = float(lon)
-                        except:
-                            lon = None
+                    lat = get_float(lat)
+                    lon = get_float(lon)
             if lat is None or lon is None:
                 message(f"{point}: Invalid coordinates skipped")
                 continue
@@ -351,25 +381,62 @@ def query_points_or(
             typ = type(point)
             if typ == str:
                 lat, lon = parse_latlon(point)
-            elif typ == list or typ == tuple:
+            elif typ in (list, tuple):
                 if len(point) >= 2:
                     lat, lon = point[:2]
-                    if type(lat) != float:
-                        try:
-                            lat = float(lat)
-                        except:
-                            lat = None
-                    if type(lon) != float:
-                        try:
-                            lon = float(lon)
-                        except:
-                            lon = None
+                    lat = get_float(lat)
+                    lon = get_float(lon)
             if lat is None or lon is None:
                 message(f"{point}: Invalid coordinates skipped")
                 continue
 
-            bb = query_point_using_cursor(lat, lon, projpicker_cur)
-            bbox.extend(bb)
+            outbbox = query_point_using_cursor(lat, lon, projpicker_cur)
+            bbox.extend(outbbox)
+
+    return bbox
+
+
+def query_points_bbox(
+        points,
+        projpicker_db=get_projpicker_db_path()):
+
+    s = n = w = e = None
+    for point in points:
+        lat = lon = None
+        typ = type(point)
+        if typ == str:
+            lat, lon = parse_latlon(point)
+        elif typ in (list, tuple):
+            if len(point) >= 2:
+                lat, lon = point[:2]
+                lat = get_float(lat)
+                lon = get_float(lon)
+        if lat is None or lon is None:
+            message(f"{point}: Invalid coordinates skipped")
+            continue
+
+    bbox = []
+
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        for point in points:
+            lat = lon = None
+            typ = type(point)
+            if typ == str:
+                lat, lon = parse_latlon(point)
+            elif typ in (list, tuple):
+                if len(point) >= 2:
+                    lat, lon = point[:2]
+                    lat = get_float(lat)
+                    lon = get_float(lon)
+            if lat is None or lon is None:
+                message(f"{point}: Invalid coordinates skipped")
+                continue
+
+            if len(bbox) == 0:
+                bbox = query_point_using_cursor(lat, lon, projpicker_cur)
+            else:
+                bbox = query_point_using_bbox(lat, lon, bbox)
 
     return bbox
 
@@ -385,22 +452,228 @@ def query_points(
     return bbox
 
 
+def query_polys(
+        points,
+        query_mode="and", # and, or
+        projpicker_db=get_projpicker_db_path()):
+    bboxes = []
+
+    s = n = w = e = None
+    append = False
+
+    for point in points:
+        lat = lon = None
+        typ = type(point)
+        if typ == str:
+            lat, lon = parse_latlon(point)
+        elif typ in (list, tuple):
+            if len(point) >= 2:
+                lat, lon = point[:2]
+                lat = get_float(lat)
+                lon = get_float(lon)
+        if lat is None or lon is None:
+            # use invalid coordinates as a flag for a new poly
+            # append current bbox if any
+            if append:
+                bboxes.append([s, n, w, e])
+                append = False
+            s = n = w = e = None
+            # move to new poly
+            continue
+        if s is None:
+            s = n = lat
+            w = e = lon
+            append = True
+        else:
+            if lat < s:
+                s = lat
+            elif lat > n:
+                n = lat
+            # XXX: tricky to handle geometries crossing the antimeridian
+            # TODO, but how?
+            if lon < w:
+                w = lon
+            elif lon > e:
+                e = lon
+    # append last bbox if needed
+    if append:
+        bboxes.append([s, n, w, e])
+
+    return query_bboxes(bboxes, query_mode, projpicker_db)
+
+
+def query_bbox_using_cursor(
+        s, n, w, e,
+        projpicker_cur):
+    bbox = []
+
+    if not check_bbox(s, n, w, e):
+        return bbox
+
+    # if west_lon >= east_lon, bbox crosses the antimeridian
+    sql = f"""SELECT *
+              FROM bbox
+              WHERE {s} BETWEEN south_lat AND north_lat AND
+                    {n} BETWEEN south_lat AND north_lat AND
+                    ((west_lon < east_lon AND
+                      {w} < {e} AND
+                      {w} BETWEEN west_lon AND east_lon AND
+                      {e} BETWEEN west_lon AND east_lon) OR
+                     (west_lon >= east_lon AND
+                      (({w} < {e} AND
+                        (({w} BETWEEN -180 AND east_lon AND
+                          {e} BETWEEN -180 AND east_lon) OR
+                         ({w} BETWEEN west_lon AND 180 AND
+                          {e} BETWEEN west_lon AND 180))) OR
+                       ({w} >= {e} AND
+                        {e} BETWEEN -180 AND east_lon AND
+                        {w} BETWEEN west_lon AND 180))))
+              ORDER BY area_sqkm"""
+    projpicker_cur.execute(sql)
+    for row in projpicker_cur.fetchall():
+        bbox.append(row)
+
+    return bbox
+
+
+def query_bbox_using_bbox(
+        s, n, w, e,
+        bbox):
+    if not check_bbox(s, n, w, e):
+        return bbox
+
+    idx = []
+
+    for i in range(len(bbox)):
+        (proj_table,
+         crs_auth, crs_code,
+         usg_auth, usg_code,
+         ext_auth, ext_code,
+         b, t, l, r,
+         area) = bbox[i]
+        if b <= s <= t and b <= n <= t and (
+           (l < r and w < e and l <= w <= r and l <= e <= r) or
+           (l >= r and
+            ((w < e and
+             ((-180 <= w <= r and -180 <= e <= r) or
+              l <= w <= 180 and l <= e <= 180)) or
+             (w >= e and
+              -180 <= e <= r and l <= w <= 180)))):
+            idx.append(i)
+
+    bbox = [bbox[i] for i in idx]
+
+    return bbox
+
+
+def query_bboxes_and(
+        bboxes,
+        projpicker_db=get_projpicker_db_path()):
+    bbox = []
+
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        for inbbox in bboxes:
+            s = n = w = e = None
+            typ = type(inbbox)
+            if typ == str:
+                s, n, w, e = parse_bbox(inbbox)
+            elif typ in (list, tuple):
+                if len(inbbox) >= 4:
+                    s, n, w, e = inbbox[:4]
+                    s = get_float(s)
+                    n = get_float(n)
+                    w = get_float(w)
+                    e = get_float(e)
+            if s is None or n is None or w is None or e is None:
+                message(f"{inbbox}: Invalid bbox skipped")
+                continue
+
+            if len(bbox) == 0:
+                bbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
+            else:
+                bbox = query_bbox_using_bbox(s, n, w, e, bbox)
+
+    return bbox
+
+
+def query_bboxes_or(
+        bboxes,
+        projpicker_db=get_projpicker_db_path()):
+    bbox = []
+
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        for inbbox in bboxes:
+            s = n = w = e = None
+            typ = type(inbbox)
+            if typ == str:
+                s, n, w, e = parse_bbox(inbbox)
+            elif typ in (list, tuple):
+                if len(inbbox) >= 4:
+                    s, n, w, e = inbbox[:4]
+                    s = get_float(s)
+                    n = get_float(n)
+                    w = get_float(w)
+                    e = get_float(e)
+            if s is None or n is None or w is None or e is None:
+                message(f"{inbbox}: Invalid bbox skipped")
+                continue
+
+            outbbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
+            bbox.extend(outbbox)
+
+    return bbox
+
+
+def query_bboxes(
+        bboxes,
+        query_mode="and", # and, or
+        projpicker_db=get_projpicker_db_path()):
+    if query_mode == "and":
+        bbox = query_bboxes_and(bboxes, projpicker_db)
+    else:
+        bbox = query_bboxes_or(bboxes, projpicker_db)
+    return bbox
+
+
+def query_geoms(
+        geoms,
+        geom_type="point", # point, poly, bbox
+        query_mode="and", # and, or
+        projpicker_db=get_projpicker_db_path()):
+    if geom_type not in ("point", "poly", "bbox"):
+        raise Exception(f"{query_mode}: Invalid query mode")
+
+    if query_mode not in ("and", "or"):
+        raise Exception(f"{query_mode}: Invalid query mode")
+
+    if geom_type == "point":
+        bbox = query_points(geoms, query_mode, projpicker_db)
+    elif geom_type == "poly":
+        bbox = query_polys(geoms, query_mode, projpicker_db)
+    else:
+        bbox = query_bboxes(geoms, query_mode, projpicker_db)
+
+    return bbox
+
+
 ################################################################################
 # parsing
 
-def read_points_file(infile="-"):
-    points = []
+def read_geoms_file(infile="-"):
+    geoms = []
     if infile == "-":
         f = sys.stdin
     elif not os.path.exists(infile):
         raise Exception(f"{infile}: No such file found")
     else:
         f = open(infile)
-    for point in f:
-        points.append(point.rstrip())
+    for geom in f:
+        geoms.append(geom.rstrip())
     if infile != "-":
         f.close()
-    return points
+    return geoms
 
 
 def parse_latlon(latlon):
@@ -414,6 +687,24 @@ def parse_latlon(latlon):
         if -180 <= x <= 180:
             lon = x
     return lat, lon
+
+
+def parse_bbox(bbox):
+    s = n = w = e = None
+    m = bbox_re.match(bbox)
+    if m:
+        b = float(m[1])
+        t = float(m[2])
+        l = float(m[3])
+        r = float(m[4])
+        if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
+            s = b
+            n = t
+        if -180 <= l <= 180:
+            w = l
+        if -180 <= r <= 180:
+            e = r
+    return s, n, w, e
 
 
 ################################################################################
@@ -487,12 +778,13 @@ def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
 # main
 
 def projpicker(
-        coors=[],
+        geoms=[],
         infile="",
         outfile="-",
         fmt="plain",
         no_header=False,
         separator=",",
+        geom_type="point",
         query_mode="and",
         overwrite=False,
         append=False,
@@ -512,12 +804,12 @@ def projpicker(
         raise Exception(f"{outfile}: File already exists")
 
     if infile:
-        coors = read_points_file(infile)
+        geoms = read_geoms_file(infile)
 
-    bbox = query_points(coors, query_mode, projpicker_db)
-
-    if len(coors) == 0:
+    if len(geoms) == 0:
         return
+
+    bbox = query_geoms(geoms, geom_type, query_mode, projpicker_db)
 
     mode = "w"
     header = not no_header
@@ -564,6 +856,9 @@ def main():
     parser.add_argument("-p", "--proj-db",
             default=proj_db,
             help=f"proj database path (default: {proj_db}); use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this option")
+    parser.add_argument("-g", "--geometry-type",
+            choices=("point", "poly", "bbox"), default="point",
+            help="geometry type (default: point)")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or"), default="and",
             help="query mode for multiple points (default: and)")
@@ -582,8 +877,8 @@ def main():
     parser.add_argument("-o", "--output",
             default="-",
             help="output path (default: stdout); use - for stdout")
-    parser.add_argument("coordinates", nargs="*",
-            help="query coordinates in latitude,longitude")
+    parser.add_argument("geometry", nargs="*",
+            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox)")
 
     args = parser.parse_args()
 
@@ -592,25 +887,27 @@ def main():
     append = args.append
     projpicker_db = args.projpicker_db
     proj_db = args.proj_db
+    geom_type = args.geometry_type
     query_mode = args.query_mode
     fmt = args.format
     no_header = args.no_header
     separator = args.separator
     infile = args.input
     outfile = args.output
-    coors = args.coordinates
+    geoms = args.geometry
 
-    if len(sys.argv) == 1 or (not create and infile == "" and len(coors) == 0):
+    if len(sys.argv) == 1 or (not create and infile == "" and len(geoms) == 0):
         parser.print_help(sys.stderr)
         return 1
 
     projpicker(
-        coors,
+        geoms,
         infile,
         outfile,
         fmt,
         no_header,
         separator,
+        geom_type,
         query_mode,
         overwrite,
         append,
