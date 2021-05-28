@@ -247,6 +247,55 @@ def create_projpicker_db(
 
 
 ################################################################################
+# parsing
+
+def read_geoms_file(infile="-"):
+    geoms = []
+    if infile == "-":
+        f = sys.stdin
+    elif not os.path.exists(infile):
+        raise Exception(f"{infile}: No such file found")
+    else:
+        f = open(infile)
+    for geom in f:
+        geoms.append(geom.rstrip())
+    if infile != "-":
+        f.close()
+    return geoms
+
+
+def parse_latlon(latlon):
+    lat = lon = None
+    m = latlon_re.match(latlon)
+    if m:
+        y = float(m[1])
+        x = float(m[2])
+        if -90 <= y <= 90:
+            lat = y
+        if -180 <= x <= 180:
+            lon = x
+    return lat, lon
+
+
+def parse_bbox(bbox):
+    s = n = w = e = None
+    m = bbox_re.match(bbox)
+    if m:
+        b = float(m[1])
+        t = float(m[2])
+        l = float(m[3])
+        r = float(m[4])
+        if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
+            s = b
+            n = t
+        if -180 <= l <= 180:
+            w = l
+        if -180 <= r <= 180:
+            e = r
+    return s, n, w, e
+
+
+################################################################################
 # validation
 
 def check_point(lat, lon):
@@ -644,55 +693,6 @@ def query_geoms(
         bbox = query_bboxes(geoms, query_mode, projpicker_db)
 
     return bbox
-
-
-################################################################################
-# parsing
-
-def read_geoms_file(infile="-"):
-    geoms = []
-    if infile == "-":
-        f = sys.stdin
-    elif not os.path.exists(infile):
-        raise Exception(f"{infile}: No such file found")
-    else:
-        f = open(infile)
-    for geom in f:
-        geoms.append(geom.rstrip())
-    if infile != "-":
-        f.close()
-    return geoms
-
-
-def parse_latlon(latlon):
-    lat = lon = None
-    m = latlon_re.match(latlon)
-    if m:
-        y = float(m[1])
-        x = float(m[2])
-        if -90 <= y <= 90:
-            lat = y
-        if -180 <= x <= 180:
-            lon = x
-    return lat, lon
-
-
-def parse_bbox(bbox):
-    s = n = w = e = None
-    m = bbox_re.match(bbox)
-    if m:
-        b = float(m[1])
-        t = float(m[2])
-        l = float(m[3])
-        r = float(m[4])
-        if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
-            s = b
-            n = t
-        if -180 <= l <= 180:
-            w = l
-        if -180 <= r <= 180:
-            e = r
-    return s, n, w, e
 
 
 ################################################################################
