@@ -4,8 +4,9 @@
 
 ```
 usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
-                     [-g {point,poly,bbox}] [-q {and,or}] [-f {plain,json}]
-                     [-n] [-s SEPARATOR] [-i INPUT] [-o OUTPUT]
+                     [-g {point,poly,bbox}] [-q {and,or}]
+                     [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
+                     [-o OUTPUT]
                      [geometry [geometry ...]]
 
 ProjPicker: Find coordinate reference systems (CRSs) whose bounding box
@@ -35,7 +36,7 @@ optional arguments:
                         geometry type (default: point)
   -q {and,or}, --query-mode {and,or}
                         query mode for multiple points (default: and)
-  -f {plain,json}, --format {plain,json}
+  -f {plain,pretty,json}, --format {plain,pretty,json}
                         output format
   -n, --no-header       do not print header for plain output format
   -s SEPARATOR, --separator SEPARATOR
