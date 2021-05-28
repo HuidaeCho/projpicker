@@ -211,7 +211,13 @@ def create_projpicker_db(
                          WHERE south_lat IS NOT NULL AND
                                north_lat IS NOT NULL AND
                                west_lon IS NOT NULL AND
-                               east_lon IS NOT NULL"""
+                               east_lon IS NOT NULL
+                         ORDER BY c.table_name,
+                                  c.auth_name, c.code,
+                                  u.auth_name, u.code,
+                                  e.auth_name, e.code,
+                                  south_lat, north_lat,
+                                  west_lon, east_lon"""
             sql = sql_tpl.replace("{columns}", "count(c.table_name)")
             proj_cur.execute(sql)
             nrows = proj_cur.fetchone()[0]
@@ -716,6 +722,18 @@ def query_geoms(
     return bbox
 
 
+def query_all(projpicker_db=get_projpicker_db_path()):
+    bbox = []
+
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        sql = "SELECT * FROM bbox"
+        projpicker_cur.execute(sql)
+        for row in projpicker_cur.fetchall():
+            bbox.append(row)
+    return bbox
+
+
 ################################################################################
 # conversions
 
@@ -812,13 +830,14 @@ def projpicker(
     if not overwrite and not append and os.path.exists(outfile):
         raise Exception(f"{outfile}: File already exists")
 
-    if infile:
-        geoms.extend(read_geoms_file(infile))
-
-    if len(geoms) == 0:
-        return
-
-    bbox = query_geoms(geoms, geom_type, query_mode, projpicker_db)
+    if query_mode == "all":
+        bbox = query_all(projpicker_db)
+    else:
+        if infile:
+            geoms.extend(read_geoms_file(infile))
+        if len(geoms) == 0:
+            return
+        bbox = query_geoms(geoms, geom_type, query_mode, projpicker_db)
 
     mode = "w"
     header = not no_header
@@ -876,8 +895,8 @@ def main():
             choices=("point", "poly", "bbox"), default="point",
             help="geometry type (default: point)")
     parser.add_argument("-q", "--query-mode",
-            choices=("and", "or"), default="and",
-            help="query mode for multiple points (default: and)")
+            choices=("and", "or", "all"), default="and",
+            help="query mode for multiple points (default: and); use all to list all bboxes ignoring geometries")
     parser.add_argument("-f", "--format",
             choices=("plain", "pretty", "json"), default="plain",
             help="output format")
