@@ -857,7 +857,7 @@ def main():
             help="do not print header for plain output format")
     parser.add_argument("-s", "--separator",
             default=",",
-            help="separator for plain output format (default: ,)")
+            help="separator for plain output format (default: comma)")
     parser.add_argument("-i", "--input",
             default="-",
             help="input geometries path (default: stdin); use - for stdin; not used if geometries are given as arguments")
@@ -865,7 +865,7 @@ def main():
             default="-",
             help="output path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
-            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox)")
+            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox); points or bboxes are separated by a space and polys are separated by any non-coordinate character such as a comma")
 
     args = parser.parse_args()
 
