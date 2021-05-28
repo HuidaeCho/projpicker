@@ -248,19 +248,18 @@ def query_point_using_cursor(
         message(f"{lon}: Invalid longitude")
         return bbox
 
+    sql_tpl = f"""SELECT *
+                  FROM bbox
+                  WHERE {lat} BETWEEN south_lat AND north_lat AND
+                        {{lon_conditions}}
+                  ORDER BY area_sqkm"""
     if add_reversed_lon:
-        sql = f"""SELECT *
-                  FROM bbox
-                  WHERE {lat} BETWEEN south_lat AND north_lat AND
-                        ({lon} BETWEEN west_lon AND east_lon OR
-                         {lon} BETWEEN east_lon AND west_lon)
-                  ORDER BY area_sqkm"""
+        sql = sql_tpl.replace("{lon_conditions}",
+                              f"""({lon} BETWEEN west_lon AND east_lon OR
+                                   {lon} BETWEEN east_lon AND west_lon)""")
     else:
-        sql = f"""SELECT *
-                  FROM bbox
-                  WHERE {lat} BETWEEN south_lat AND north_lat AND
-                        {lon} BETWEEN west_lon AND east_lon
-                  ORDER BY area_sqkm"""
+        sql = sql_tpl.replace("{lon_conditions}",
+                              f"{lon} BETWEEN west_lon AND east_lon")
     projpicker_cur.execute(sql)
     for row in projpicker_cur.fetchall():
         bbox.append(row)
