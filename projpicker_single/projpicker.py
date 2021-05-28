@@ -856,7 +856,7 @@ def main():
     proj_db = get_proj_db_path()
 
     parser = argparse.ArgumentParser(
-            description="ProjPicker: Find coordinate reference systems (CRSs) whose bounding box contains given geometries")
+            description="ProjPicker finds coordinate reference systems (CRSs) whose bounding box contains given geometries; visit https://github.com/HuidaeCho/projpicker for more details")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")

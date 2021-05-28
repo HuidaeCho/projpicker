@@ -9,8 +9,9 @@ usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
                      [-o OUTPUT]
                      [geometry [geometry ...]]
 
-ProjPicker: Find coordinate reference systems (CRSs) whose bounding box
-contains given geometries
+ProjPicker finds coordinate reference systems (CRSs) whose bounding box
+contains given geometries; visit https://github.com/HuidaeCho/projpicker for
+more details
 
 positional arguments:
   geometry              query geometry in latitude,longitude (point and poly)
