@@ -424,6 +424,7 @@ def query_polys(
     bboxes = []
 
     s = n = w = e = None
+    plat = plon = None
     append = False
 
     for point in points:
@@ -454,12 +455,25 @@ def query_polys(
                 s = lat
             elif lat > n:
                 n = lat
-            # XXX: tricky to handle geometries crossing the antimeridian
-            # TODO, but how?
-            if lon < w:
-                w = lon
-            elif lon > e:
-                e = lon
+            if plon is None or plon*lon >= 0:
+                # if not crossing the antimeridian, w < e
+                if lon < w:
+                    w = lon
+                elif lon > e:
+                    e = lon
+            elif plon is not None and plon*lon < 0:
+                # if crossing the antimeridian, w > e
+                # XXX: tricky to handle geometries crossing the antimeridian
+                # need more testing
+                if lon < 0 and (e > 0 or lon > e):
+                    # +lon to -lon
+                    e = lon
+                elif lon > 0 and (w < 0 or lon < w):
+                    # -lon to +lon
+                    w = lon
+        if plat is None:
+            plat = lat
+            plon = lon
     # append last bbox if needed
     if append:
         bboxes.append([s, n, w, e])
