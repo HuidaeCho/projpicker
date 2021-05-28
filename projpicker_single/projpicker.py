@@ -643,7 +643,7 @@ def query_geoms(
         query_mode="and", # and, or
         projpicker_db=get_projpicker_db_path()):
     if geom_type not in ("point", "poly", "bbox"):
-        raise Exception(f"{query_mode}: Invalid query mode")
+        raise Exception(f"{geom_type}: Invalid geometry type")
 
     if query_mode not in ("and", "or"):
         raise Exception(f"{query_mode}: Invalid query mode")
