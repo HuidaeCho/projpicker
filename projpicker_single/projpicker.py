@@ -345,7 +345,6 @@ def query_points_and(
                                                 add_reversed_lon)
             else:
                 bbox = query_point_using_bbox(lat, lon, bbox, add_reversed_lon)
-            print("X", len(bbox))
 
     return bbox
 
