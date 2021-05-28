@@ -729,7 +729,6 @@ def query_geoms(
 
 def query_all(projpicker_db=get_projpicker_db_path()):
     bbox = []
-
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         sql = "SELECT * FROM bbox"
