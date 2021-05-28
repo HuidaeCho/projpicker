@@ -22,7 +22,7 @@ From shell,
 projpicker.py 34.2348,83.8677 33.7490,84.3880
 
 # read coordinates from stdin
-projpicker.py -i- <<EOT
+projpicker.py <<EOT
 34.2348,83.8677
 33.7490,84.3880
 EOT
@@ -37,5 +37,6 @@ bbox = ppik.arrayify_bbox(ppik.query_points([[34.2348, 83.8677], [33.7490, 84.38
 
 ## TODO
 
-1. Polylines, polygons => Convex hull => Completely containing CRSs; need to avoid the *stepping* problem from one vertex to another
-2. CRSs closest to query centroid (useful?)
+1. GUI
+   * Desktop
+   * Web
