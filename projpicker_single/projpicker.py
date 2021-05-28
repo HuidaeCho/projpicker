@@ -885,7 +885,7 @@ def main():
             default="-",
             help="output path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
-            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox); points or bboxes are separated by a space and polys are separated by any non-coordinate character such as a comma")
+            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox); points, points in a poly, or bboxes are separated by a space and polys are separated by any non-coordinate character such as a comma")
 
     args = parser.parse_args()
 

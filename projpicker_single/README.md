@@ -13,9 +13,9 @@ contains given geometries
 
 positional arguments:
   geometry              query geometry in latitude,longitude (point and poly)
-                        or s,n,w,e (bbox); points or bboxes are separated by a
-                        space and polys are separated by any non-coordinate
-                        character such as a comma
+                        or s,n,w,e (bbox); points, points in a poly, or bboxes
+                        are separated by a space and polys are separated by
+                        any non-coordinate character such as a comma
 
 optional arguments:
   -h, --help            show this help message and exit
