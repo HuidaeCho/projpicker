@@ -49,6 +49,20 @@ optional arguments:
                         output path (default: stdout); use - for stdout
 ```
 
+## Requirements
+
+Tested in Python 3.7.2
+
+Requires the following standard modules:
+* argparse
+* os
+* sys
+* sqlite3
+* re
+* json
+* pprint
+* math
+
 ## Creating the ProjPicker database
 
 From shell,
