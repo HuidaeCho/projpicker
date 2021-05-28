@@ -396,51 +396,6 @@ def query_points_or(
     return bbox
 
 
-def query_points_bbox(
-        points,
-        projpicker_db=get_projpicker_db_path()):
-
-    s = n = w = e = None
-    for point in points:
-        lat = lon = None
-        typ = type(point)
-        if typ == str:
-            lat, lon = parse_latlon(point)
-        elif typ in (list, tuple):
-            if len(point) >= 2:
-                lat, lon = point[:2]
-                lat = get_float(lat)
-                lon = get_float(lon)
-        if lat is None or lon is None:
-            message(f"{point}: Invalid coordinates skipped")
-            continue
-
-    bbox = []
-
-    with sqlite3.connect(projpicker_db) as projpicker_con:
-        projpicker_cur = projpicker_con.cursor()
-        for point in points:
-            lat = lon = None
-            typ = type(point)
-            if typ == str:
-                lat, lon = parse_latlon(point)
-            elif typ in (list, tuple):
-                if len(point) >= 2:
-                    lat, lon = point[:2]
-                    lat = get_float(lat)
-                    lon = get_float(lon)
-            if lat is None or lon is None:
-                message(f"{point}: Invalid coordinates skipped")
-                continue
-
-            if len(bbox) == 0:
-                bbox = query_point_using_cursor(lat, lon, projpicker_cur)
-            else:
-                bbox = query_point_using_bbox(lat, lon, bbox)
-
-    return bbox
-
-
 def query_points(
         points,
         query_mode="and", # and, or
