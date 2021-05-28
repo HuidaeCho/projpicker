@@ -407,6 +407,16 @@ def query_points(
     return bbox
 
 
+def query_poly(
+        points,
+        projpicker_db=get_projpicker_db_path()):
+    bbox = []
+    outbbox = query_polys(points, "and", True, projpicker_db)
+    if len(outbbox) > 0:
+        bbox.append(outbbox[0])
+    return bbox
+
+
 def query_polys(
         points,
         query_mode="and", # and, or
@@ -518,6 +528,15 @@ def query_bbox_using_bbox(
 
     bbox = [bbox[i] for i in idx]
 
+    return bbox
+
+
+def query_bbox(
+        s, n, w, e,
+        projpicker_db=get_projpicker_db_path()):
+    with sqlite3.connect(projpicker_db) as projpicker_con:
+        projpicker_cur = projpicker_con.cursor()
+        bbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
     return bbox
 
 
