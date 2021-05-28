@@ -791,7 +791,7 @@ def projpicker(
         raise Exception(f"{outfile}: File already exists")
 
     if infile:
-        geoms = read_geoms_file(infile)
+        geoms.extend(read_geoms_file(infile))
 
     if len(geoms) == 0:
         return
@@ -859,8 +859,8 @@ def main():
             default=",",
             help="separator for plain output format (default: ,)")
     parser.add_argument("-i", "--input",
-            default="",
-            help="input coordinates path (default: coordinates argument); use - for stdin")
+            default="-",
+            help="input geometries path (default: stdin); use - for stdin; not used if geometries are given as arguments")
     parser.add_argument("-o", "--output",
             default="-",
             help="output path (default: stdout); use - for stdout")
@@ -883,9 +883,8 @@ def main():
     outfile = args.output
     geoms = args.geometry
 
-    if len(sys.argv) == 1 or (not create and infile == "" and len(geoms) == 0):
-        parser.print_help(sys.stderr)
-        return 1
+    if len(geoms) > 0:
+        infile = ""
 
     projpicker(
         geoms,
