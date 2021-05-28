@@ -1,6 +1,6 @@
 # Single-file ProjPicker
 
-## Usage
+## Command-line usage
 
 ```
 usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
