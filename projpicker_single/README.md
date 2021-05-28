@@ -1,5 +1,52 @@
 # Single-file ProjPicker
 
+## Usage
+
+```
+usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
+                     [-g {point,poly,bbox}] [-q {and,or}] [-f {plain,json}]
+                     [-n] [-s SEPARATOR] [-i INPUT] [-o OUTPUT]
+                     [geometry [geometry ...]]
+
+ProjPicker: Find coordinate reference systems (CRSs) whose bounding box
+contains given coordinates
+
+positional arguments:
+  geometry              query geometry in latitude,longitude (point and poly)
+                        or s,n,w,e (bbox); points or bboxes are separated by a
+                        space and polys are separated by any non-coordinate
+                        character such as a comma
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c, --create          create ProjPicker database
+  -O, --overwrite       overwrite output files; applies to both projpicker.db
+                        and query output file
+  -a, --append          append to output file if any; applies only to query
+                        output file
+  -d PROJPICKER_DB, --projpicker-db PROJPICKER_DB
+                        projPicker database path (default: projpicker.db); use
+                        PROJPICKER_DB environment variable to skip this option
+  -p PROJ_DB, --proj-db PROJ_DB
+                        proj database path (default: /usr/share/proj/proj.db);
+                        use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment
+                        variables to skip this option
+  -g {point,poly,bbox}, --geometry-type {point,poly,bbox}
+                        geometry type (default: point)
+  -q {and,or}, --query-mode {and,or}
+                        query mode for multiple points (default: and)
+  -f {plain,json}, --format {plain,json}
+                        output format
+  -n, --no-header       do not print header for plain output format
+  -s SEPARATOR, --separator SEPARATOR
+                        separator for plain output format (default: comma)
+  -i INPUT, --input INPUT
+                        input geometries path (default: stdin); use - for
+                        stdin; not used if geometries are given as arguments
+  -o OUTPUT, --output OUTPUT
+                        output path (default: stdout); use - for stdout
+```
+
 ## Creating the ProjPicker database
 
 From shell,
