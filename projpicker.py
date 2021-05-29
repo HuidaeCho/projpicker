@@ -372,21 +372,27 @@ def parse_point(point):
     """
     Parse a str of latitude and longitude in degrees separated by a comma.
     Return latitude and longitude floats. Any missing or invalid coordinate is
-    returned as None.
+    returned as None. If an output from this function is passed, the same
+    output is returned.
 
     For example, "10,20" returns (10.0, 20.0).
 
     point (str): latitude,longitude in degrees
     """
     lat = lon = None
-    m = latlon_re.match(point)
-    if m:
-        y = float(m[1])
-        x = float(m[2])
-        if -90 <= y <= 90:
-            lat = y
-        if -180 <= x <= 180:
-            lon = x
+    typ = type(point)
+    if typ == str:
+        m = latlon_re.match(point)
+        if m:
+            y = float(m[1])
+            x = float(m[2])
+            if -90 <= y <= 90:
+                lat = y
+            if -180 <= x <= 180:
+                lon = x
+    elif typ in (list, tuple) and len(point) == 2:
+        lat = get_float(point[0])
+        lon = get_float(point[1])
     return lat, lon
 
 
@@ -395,7 +401,8 @@ def parse_points(points):
     Parse a list of a str of latitude and longitude in degrees separated by a
     comma and return a list of lists of latitude and longitude floats in
     degrees. A list of two floats can be used in place of a latitude,longitude
-    str. Any unparseable str is ignored with a warning.
+    str. Any unparseable str is ignored with a warning. If an output from this
+    function is passed, the same output is returned.
 
     For example,
     ["1,2", "3,4", ",", "5,6", "7,8"] or
@@ -432,7 +439,8 @@ def parse_polys(polys):
     Parse a list of a str of latitude and longitude in degrees separated by a
     comma and return a list of lists of lists of latitude and longitude floats
     in degrees. A list of two floats can be used in place of a
-    latitude,longitude str. Any unparseable str starts a new poly.
+    latitude,longitude str. Any unparseable str starts a new poly. If an output
+    from this function is passed, the same output is returned.
 
     For example,
     ["1,2", "3,4", ",", "5,6", "7,8"] or
@@ -488,26 +496,34 @@ def parse_bbox(bbox):
     """
     Parse a str of south, north, west, and east in degrees separated by a
     comma. Return south, north, west, and east floats. Any missing or invalid
-    coordinate is returned as None.
+    coordinate is returned as None. If an output from this function is passed,
+    the same output is returned.
 
     For example, "10,20,30,40" returns (10.0, 20.0, 30.0, 40.0).
 
     bbox (str): south,north,west,east in degrees
     """
     s = n = w = e = None
-    m = bbox_re.match(bbox)
-    if m:
-        b = float(m[1])
-        t = float(m[2])
-        l = float(m[3])
-        r = float(m[4])
-        if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
-            s = b
-            n = t
-        if -180 <= l <= 180:
-            w = l
-        if -180 <= r <= 180:
-            e = r
+    typ = type(bbox)
+    if typ == str:
+        m = bbox_re.match(bbox)
+        if m:
+            b = float(m[1])
+            t = float(m[2])
+            l = float(m[3])
+            r = float(m[4])
+            if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
+                s = b
+                n = t
+            if -180 <= l <= 180:
+                w = l
+            if -180 <= r <= 180:
+                e = r
+    elif typ in (list, tuple) and len(bbox) == 4:
+        s = get_float(bbox[0])
+        n = get_float(bbox[1])
+        w = get_float(bbox[2])
+        e = get_float(bbox[3])
     return s, n, w, e
 
 
@@ -516,7 +532,8 @@ def parse_bboxes(bboxes):
     Parse a list of a str of south, north, west, and east in degrees separated
     by a comma and return a list of lists of south, north, west, and east
     floats. A list of four floats can be used in place of a
-    south,north,west,east str. Any unparseable str is ignored.
+    south,north,west,east str. Any unparseable str is ignored. If an output
+    from this function is passed, the same output is returned.
 
     For example, ["10,20,30,40", [50,60,70,80]] returns
     [[10.0, 20.0, 30.0, 40.0], [50.0, 60.0, 70.0, 80.0]]
