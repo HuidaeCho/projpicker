@@ -33,6 +33,26 @@ standard modules:
 * pprint
 * math
 
+## Installation
+
+```
+pip3 install projpicker
+```
+
+If you want to run `projpicker.py` from the shell, add
+`lib/pythonX.Y/site-packages/projpicker` to `PATH` or create a wrapper Python
+script `ppik.py` in `PATH`:
+```python
+#!/usr/bin/env python3
+import projpicker as ppik
+ppik.main()
+```
+
+Just don't copy `projpicker.py` to `PATH` because it will look for the
+`projpicker.db` file in the same directory and fail to find it. Also, the name
+of the warapper script must be different from `projpicker.py` because you don't
+want to import the warapper itself as the projpicker module.
+
 ## Command-line usage
 
 ```
@@ -85,7 +105,7 @@ optional arguments:
 
 ## Creating the ProjPicker database
 
-From shell,
+From the shell,
 ```bash
 projpicker.py -c
 ```
@@ -98,7 +118,7 @@ ppik.create_projpicker_db()
 
 ## Querying points
 
-From shell,
+From the shell,
 ```bash
 # read latitude,longitude from arguments
 projpicker.py 34.2348,83.8677 33.7490,84.3880
@@ -119,7 +139,7 @@ bbox = ppik.listify_bbox(ppik.query_points([[34.2348, 83.8677],
 
 ## Querying polylines/polygons
 
-From shell,
+From the shell,
 ```bash
 # read latitude,longitude from arguments
 projpicker.py -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
@@ -148,7 +168,7 @@ bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
 
 ## Querying bboxes
 
-From shell,
+From the shell,
 ```bash
 # read s,n,w,e from arguments
 projpicker.py -g bbox 0,0,10,10 20,20,50,50
