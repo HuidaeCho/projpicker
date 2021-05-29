@@ -306,8 +306,12 @@ def create_projpicker_db(
                          (default: provided by get_projpicker_db_path())
     proj_db (str): proj.db path (default: provided by get_proj_db_path())
     """
-    if overwrite and os.path.exists(projpicker_db):
-        os.remove(projpicker_db)
+    if os.path.exists(projpicker_db):
+        if overwrite:
+            os.remove(projpicker_db)
+        else:
+            raise Exception(f"{projpicker_db}: File already exists")
+
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_con.execute(bbox_schema)
         projpicker_con.commit()
