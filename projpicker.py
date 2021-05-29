@@ -63,14 +63,15 @@ CREATE TABLE bbox (
 )
 """
 
-# coordinate regular expression pattern
+# coordinate regular expression patterns
 coor_pat = "([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))"
+coor_sep_pat = "[, \t][ \t]*"
 
 # lat,lon regular expression
-latlon_re = re.compile(f"^{coor_pat},{coor_pat}$")
+latlon_re = re.compile(f"^{coor_pat}{coor_sep_pat}{coor_pat}$")
 
 # bbox (s,n,w,e) regular expression
-bbox_re = re.compile(f"^{coor_pat},{coor_pat},{coor_pat},{coor_pat}$")
+bbox_re = re.compile("^"+f"{coor_pat}{coor_sep_pat}"*3+f"{coor_pat}$")
 
 # Earth parameters from https://en.wikipedia.org/wiki/Earth_radius#Global_radii
 # equatorial radius in km
@@ -410,9 +411,11 @@ def parse_points(points):
         lat = lon = None
         typ = type(point)
         if typ == str:
+            # "lat,lon"
             lat, lon = parse_point(point)
         elif typ in (list, tuple):
             if len(point) == 2:
+                # [ lat, lon ]
                 lat, lon = point
                 lat = get_float(lat)
                 lon = get_float(lon)
@@ -422,6 +425,63 @@ def parse_points(points):
         outpoints.append([lat, lon])
 
     return outpoints
+
+
+def parse_polys(polys):
+    """
+    Parse a list of a str of latitude and longitude in degrees separated by a
+    comma and return a list of lists of lists of latitude and longitude floats
+    in degrees. A list of two floats can be used in place of a
+    latitude,longitude str. Any unparseable str starts a new poly.
+
+    For example,
+    ["1,2", "3,4", ",", "5,6", "7,8"] or
+    [[1,2], "3,4", ",", "5,6", [7,8]] returns the same
+    [[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]].
+
+    points (list): list of strs of latitude,longitude in degrees with
+                   unparseable str as a poly separator
+    """
+    outpolys = []
+    poly = []
+
+    for point in polys:
+        lat = lon = None
+        typ = type(point)
+        if typ == str:
+            # "lat,lon"
+            lat, lon = parse_point(point)
+        elif typ in (list, tuple):
+            if len(point) == 2:
+                typ0 = type(point[0])
+                typ1 = type(point[1])
+            else:
+                typ0 = typ1 = None
+            if ((typ0 in (int, float) and typ1 in (int, float)) or
+                  (typ0 == str and not latlon_re.match(point[0]) and
+                   typ1 == str and not latlon_re.match(point[1]))):
+                # [ lat, lon ]
+                lat, lon = point
+                lat = get_float(lat)
+                lon = get_float(lon)
+            else:
+                # [ "lat,lon", ... ]
+                # [ [ lat, lon ], ...]
+                p = parse_points(point)
+                if len(p) > 0:
+                    outpolys.append(p)
+        if lat is None or lon is None:
+            # use invalid coordinates as a flag for a new poly
+            if len(poly) > 0:
+                outpolys.append(poly)
+                poly = []
+            continue
+        poly.append([lat, lon])
+
+    if len(poly) > 0:
+        outpolys.append(poly)
+
+    return outpolys
 
 
 def parse_bbox(bbox):
@@ -483,48 +543,6 @@ def parse_bboxes(bboxes):
         outbboxes.append([s, n, w, e])
 
     return outbboxes
-
-
-def parse_polys(polys):
-    """
-    Parse a list of a str of latitude and longitude in degrees separated by a
-    comma and return a list of lists of lists of latitude and longitude floats
-    in degrees. A list of two floats can be used in place of a
-    latitude,longitude str. Any unparseable str starts a new poly.
-
-    For example,
-    ["1,2", "3,4", ",", "5,6", "7,8"] or
-    [[1,2], "3,4", ",", "5,6", [7,8]] returns the same
-    [[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]].
-
-    points (list): list of strs of latitude,longitude in degrees with
-                   unparseable str as a poly separator
-    """
-    outpolys = []
-    poly = []
-
-    for point in polys:
-        lat = lon = None
-        typ = type(point)
-        if typ == str:
-            lat, lon = parse_point(point)
-        elif typ in (list, tuple):
-            if len(point) == 2:
-                lat, lon = point
-                lat = get_float(lat)
-                lon = get_float(lon)
-        if lat is None or lon is None:
-            # use invalid coordinates as a flag for a new poly
-            if len(poly) > 0:
-                outpolys.append(poly)
-                poly = []
-            continue
-        poly.append([lat, lon])
-
-    if len(poly) > 0:
-        outpolys.append(poly)
-
-    return outpolys
 
 
 ################################################################################
