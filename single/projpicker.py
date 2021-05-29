@@ -713,6 +713,7 @@ def query_points_or(
                          (default: provided by get_projpicker_db_path())
     """
     bbox = []
+    points = parse_points(points)
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
