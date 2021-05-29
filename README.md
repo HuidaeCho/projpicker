@@ -11,6 +11,25 @@ It is a work in progress. Read [a related feature request for
 GRASS](https://github.com/OSGeo/grass/issues/1253) and join
 [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 
+This [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
+uses the rtree module to build the spatial index of projection extents. It
+supports point intersection.
+
+## Requirements
+
+This branch requires the following modules:
+* argparse
+* sys
+* sqlite3
+* json
+* pprint
+* pathlib
+* distutils.spawn
+* rtree >= 0.8 (3rd party)
+
+For testing,
+* pytest >= 3.1.0 (3rd party)
+
 ## Sponsor
 
 This project is kindly funded by [the Institute for Environmental and Spatial
