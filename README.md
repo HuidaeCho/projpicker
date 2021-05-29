@@ -141,7 +141,8 @@ EOT
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0], [10, 10], [10, 0]],
+bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
+					    [10, 10], [10, 0]],
 					   [[10, 20], [30, 40]]]))
 ```
 
@@ -162,8 +163,7 @@ EOT
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10],
-					    [20, 20, 50, 50]]))
+bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
 ```
 
 ## TODO
