@@ -7,7 +7,7 @@
 #           University of North Georgia
 # Since:    May 27, 2021
 #
-# Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/>,
+# Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/> and
 #                    Owen Smith <https://www.gaderian.io/>
 #
 # This program is free software: you can redistribute it and/or modify
