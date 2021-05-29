@@ -1232,13 +1232,15 @@ def projpicker(
     no_header (bool): whether or not to print header for plain (default: False)
     separator (str): separator for plain (default: comma)
     geom_type (str): geometry type (point, poly, bbox) (default: point)
-    query_mode (str): query mode for multiple geometries (and, or) (default: and)
+    query_mode (str): query mode for multiple geometries (and, or)
+                      (default: and)
     overwrite (bool): whether or not to overwrite output file (default: False)
     append (bool): whether or not to append output to file (default: False)
     projpicker_db (str): projpicker.db path
                          (default: provided by get_projpicker_db_path())
     proj_db (str): proj.db path (default: provided by get_proj_db_path())
-    create (bool): whether or not to create a new projpicker.db (default: False)
+    create (bool): whether or not to create a new projpicker.db
+                   (default: False)
     """
     if overwrite and append:
         raise Exception("Both overwrite and append requested")
@@ -1316,29 +1318,37 @@ def main():
     proj_db = get_proj_db_path()
 
     parser = argparse.ArgumentParser(
-            description="ProjPicker finds coordinate reference systems (CRSs) whose bounding box contains given geometries; visit https://github.com/HuidaeCho/projpicker for more details")
+            description="""ProjPicker finds coordinate reference systems (CRSs)
+                whose bounding box contains given geometries; visit
+                https://github.com/HuidaeCho/projpicker for more details""")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
     output_exclusive = parser.add_mutually_exclusive_group()
     output_exclusive.add_argument("-O", "--overwrite",
             action="store_true",
-            help="overwrite output files; applies to both projpicker.db and query output file")
+            help="""overwrite output files; applies to both projpicker.db and
+                query output file""")
     output_exclusive.add_argument("-a", "--append",
             action="store_true",
-            help="append to output file if any; applies only to query output file")
+            help="""append to output file if any; applies only to query output
+                file""")
     parser.add_argument("-d", "--projpicker-db",
             default=projpicker_db,
-            help=f"projPicker database path (default: {projpicker_db}); use PROJPICKER_DB environment variable to skip this option")
+            help=f"""projPicker database path (default: {projpicker_db}); use
+                PROJPICKER_DB environment variable to skip this option""")
     parser.add_argument("-p", "--proj-db",
             default=proj_db,
-            help=f"proj database path (default: {proj_db}); use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this option")
+            help=f"""proj database path (default: {proj_db}); use PROJ_DB or
+                PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this
+                option""")
     parser.add_argument("-g", "--geometry-type",
             choices=("point", "poly", "bbox"), default="point",
             help="geometry type (default: point)")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
-            help="query mode for multiple points (default: and); use all to list all bboxes and ignore geometries")
+            help="""query mode for multiple points (default: and); use all to
+                list all bboxes and ignore geometries""")
     parser.add_argument("-f", "--format",
             choices=("plain", "pretty", "json"), default="plain",
             help="output format")
@@ -1350,12 +1360,16 @@ def main():
             help="separator for plain output format (default: comma)")
     parser.add_argument("-i", "--input",
             default="-",
-            help="input geometries path (default: stdin); use - for stdin; not used if geometries are given as arguments")
+            help="""input geometries path (default: stdin); use - for stdin;
+                not used if geometries are given as arguments""")
     parser.add_argument("-o", "--output",
             default="-",
             help="output path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
-            help="query geometry in latitude,longitude (point and poly) or s,n,w,e (bbox); points, points in a poly, or bboxes are separated by a space and polys are separated by any non-coordinate character such as a comma")
+            help="""query geometry in latitude,longitude (point and poly) or
+                s,n,w,e (bbox); points, points in a poly, or bboxes are
+                separated by a space and polys are separated by any
+                non-coordinate character such as a comma""")
 
     args = parser.parse_args()
 

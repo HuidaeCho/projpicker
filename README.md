@@ -36,7 +36,7 @@ standard modules:
 ## Command-line usage
 
 ```
-usage: projpicker.py [-h] [-c] [-O] [-a] [-d PROJPICKER_DB] [-p PROJ_DB]
+usage: projpicker.py [-h] [-c] [-O | -a] [-d PROJPICKER_DB] [-p PROJ_DB]
                      [-g {point,poly,bbox}] [-q {and,or,all}]
                      [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
                      [-o OUTPUT]
