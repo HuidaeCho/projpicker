@@ -174,6 +174,8 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
      mapping functionalities. We'll be able to see almost immediate returns.
    * Web
    * Desktop
+2. CRS hints
+   * Crowdsourcing agency and product information?
 
 ## Sponsor
 
