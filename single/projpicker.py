@@ -1191,9 +1191,6 @@ def projpicker(
     proj_db (str): proj.db path (default: provided by get_proj_db_path())
     create (bool): whether or not to create a new projpicker.db (default: False)
     """
-    if len(geoms) > 0:
-        infile = ""
-
     if create:
         if not overwrite and os.path.exists(projpicker_db):
             raise Exception(f"{projpicker_db}: File already exists")
@@ -1210,7 +1207,8 @@ def projpicker(
         bbox = query_all(projpicker_db)
     else:
         if ((create and (infile != "-" or not sys.stdin.isatty())) or
-            (not create and infile)):
+            (not create and (len(geoms) == 0 or infile != "-" or
+                             not sys.stdin.isatty()))):
             geoms.extend(read_file(infile))
         if len(geoms) == 0:
             return
