@@ -805,8 +805,8 @@ def query_polys(
                         e = lon
                 elif plon is not None and plon*lon < 0:
                     # if crossing the antimeridian, w > e
-                    # XXX: tricky to handle geometries crossing the antimeridian
-                    # need more testing
+                    # XXX: tricky to handle geometries crossing the
+                    # antimeridian need more testing
                     if lon < 0 and (e > 0 or lon > e):
                         # +lon to -lon
                         e = lon
