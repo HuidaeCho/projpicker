@@ -1,8 +1,8 @@
 # ProjPicker
 
 ProjPicker (projection picker) allows the user to select all projections whose
-extent intersects with given points, polylines, polygons, and bounding boxes.
-The goal is to make it easy and visual to select a desired projection by
+extent completely contains given points, polylines, polygons, and bounding
+boxes. The goal is to make it easy and visual to select a desired projection by
 location.
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
