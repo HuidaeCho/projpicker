@@ -13,7 +13,9 @@ GRASS](https://github.com/OSGeo/grass/issues/1253) and join
 
 This [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
 uses the rtree module to build the spatial index of projection extents. It
-supports point intersection.
+supports point intersection. Check the
+[main](https://github.com/HuidaeCho/projpicker) branch for other geometries
+including polylines, polygons, and bounding boxes.
 
 ## Requirements
 
