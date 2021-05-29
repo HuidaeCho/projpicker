@@ -14,6 +14,10 @@ GRASS](https://github.com/OSGeo/grass/issues/1253) and join
 The single Python script `projpicker.py` provides the CLI and API for
 ProjPicker.
 
+The [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
+utilizes the rtree module in an object-oriented programming (OOP) way. This
+branch supports point intersection.
+
 ## Requirements
 
 Tested with PROJ 7.2.1 in Python 3.7.2
