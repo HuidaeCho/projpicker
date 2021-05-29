@@ -1212,7 +1212,18 @@ def projpicker(
         proj_db=get_proj_db_path(),
         create=False):
     """
-    Process options and perform requested tasks.
+    Process options and perform requested tasks. This is the main API function.
+    If geometries and an input file are specified at the same time, both
+    sources are used except when the default stdin input file is specified and
+    the function is run from a termal. In the latter case, only geometries are
+    used and stdin is ignored. No header and separator options only apply to
+    the plain output format. Supported geometry types include points (point),
+    polylines (poly), polygons (poly), and bounding boxes (bbox). When multiple
+    geometries are given, the query mode determines which set theoretic
+    opertion is performed between intersection (default) and union. The
+    overwrite option applies to both projpicker.db and the output file, but the
+    append option only appends to the output file. Only one of the overwrite or
+    append options must be given.
 
     geoms (list): geometries (default: [])
     infile (str): input geometries file (default: - for stdin)
@@ -1229,6 +1240,9 @@ def projpicker(
     proj_db (str): proj.db path (default: provided by get_proj_db_path())
     create (bool): whether or not to create a new projpicker.db (default: False)
     """
+    if overwrite and append:
+        raise Exception("Both overwrite and append requested")
+
     if create:
         if not overwrite and os.path.exists(projpicker_db):
             raise Exception(f"{projpicker_db}: File already exists")
@@ -1306,10 +1320,11 @@ def main():
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
-    parser.add_argument("-O", "--overwrite",
+    output_exclusive = parser.add_mutually_exclusive_group()
+    output_exclusive.add_argument("-O", "--overwrite",
             action="store_true",
             help="overwrite output files; applies to both projpicker.db and query output file")
-    parser.add_argument("-a", "--append",
+    output_exclusive.add_argument("-a", "--append",
             action="store_true",
             help="append to output file if any; applies only to query output file")
     parser.add_argument("-d", "--projpicker-db",
