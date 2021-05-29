@@ -37,7 +37,7 @@ standard modules:
 
 Python package: https://pypi.org/project/projpicker/
 
-```
+```bash
 pip3 install projpicker
 ```
 
