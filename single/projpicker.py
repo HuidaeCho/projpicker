@@ -1191,6 +1191,9 @@ def projpicker(
     proj_db (str): proj.db path (default: provided by get_proj_db_path())
     create (bool): whether or not to create a new projpicker.db (default: False)
     """
+    if len(geoms) > 0:
+        infile = ""
+
     if create:
         if not overwrite and os.path.exists(projpicker_db):
             raise Exception(f"{projpicker_db}: File already exists")
@@ -1310,9 +1313,6 @@ def main():
     infile = args.input
     outfile = args.output
     geoms = args.geometry
-
-    if len(geoms) > 0:
-        infile = ""
 
     projpicker(
         geoms,
