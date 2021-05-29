@@ -35,6 +35,8 @@ standard modules:
 
 ## Installation
 
+Python package: https://pypi.org/project/projpicker/
+
 ```
 pip3 install projpicker
 ```
