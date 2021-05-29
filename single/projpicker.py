@@ -1219,26 +1219,34 @@ def projpicker(
     if append and outfile != "-" and os.path.exists(outfile):
         if fmt == "json":
             with open(outfile) as f:
-                old_bbox = json.load(f)
-            old_bbox.extend(bbox)
-            bbox = old_bbox
-        elif fmt == "plain":
+                bbox_list = json.load(f)
+            bbox_list.extend(listify_bbox(bbox))
+            bbox_json = json.dumps(bbox_list)
+        elif fmt == "pretty":
+            with open(outfile) as f:
+                # https://stackoverflow.com/a/65647108
+                lcls = locals()
+                exec("bbox_list = " + f.read(), globals(), lcls)
+                bbox_list = lcls["bbox_list"]
+            bbox_list.extend(listify_bbox(bbox))
+        else:
             mode = "a"
             header = False
-        else:
-            # TODO?
-            raise Exception("Append not supported for pretty format")
+    elif fmt == "json":
+        bbox_json = jsonify_bbox(bbox)
+    elif fmt == "pretty":
+        bbox_list = listify_bbox(bbox)
 
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "json":
-        print(jsonify_bbox(bbox), file=f)
+        print(bbox_json, file=f)
     elif fmt == "pretty":
         # sort_dicts was added in Python 3.8, but I'm stuck with 3.7
         # https://docs.python.org/3/library/pprint.html
         if sys.version_info.major == 3 and sys.version_info.minor >= 8:
-            pprint.pprint(listify_bbox(bbox), sort_dicts=False)
+            pprint.pprint(bbox_list, f, sort_dicts=False)
         else:
-            pprint.pprint(listify_bbox(bbox))
+            pprint.pprint(bbox_list, f)
     else:
         print_bbox(bbox, f, header, separator)
     if outfile != "-":
