@@ -267,7 +267,7 @@ def get_projpicker_db_path(projpicker_db=None):
         if projpicker_db_env in os.environ:
             projpicker_db = os.environ[projpicker_db_env]
         else:
-            projpicker_db = "projpicker.db"
+            projpicker_db = os.path.join(os.path.dirname(__file__), "projpicker.db")
     return projpicker_db
 
 
