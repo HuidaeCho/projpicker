@@ -367,7 +367,7 @@ def create_projpicker_db(
 ################################################################################
 # parsing
 
-def parse_point(latlon):
+def parse_point(point):
     """
     Parse a str of latitude and longitude in degrees separated by a comma.
     Return latitude and longitude floats. Any missing or invalid coordinate is
@@ -375,10 +375,10 @@ def parse_point(latlon):
 
     For example, "10,20" returns (10.0, 20.0).
 
-    latlon (str): latitude,longitude in degrees
+    point (str): latitude,longitude in degrees
     """
     lat = lon = None
-    m = latlon_re.match(latlon)
+    m = latlon_re.match(point)
     if m:
         y = float(m[1])
         x = float(m[2])
@@ -463,29 +463,29 @@ def parse_bboxes(bboxes):
 
     bboxes (list): list of strs of south,north,west,east in degrees
     """
-    bbox = []
+    outbboxes = []
 
-    for inbbox in bboxes:
+    for bbox in bboxes:
         s = n = w = e = None
-        typ = type(inbbox)
+        typ = type(bbox)
         if typ == str:
-            s, n, w, e = parse_bbox(inbbox)
+            s, n, w, e = parse_bbox(bbox)
         elif typ in (list, tuple):
-            if len(inbbox) == 4:
-                s, n, w, e = inbbox
+            if len(bbox) == 4:
+                s, n, w, e = bbox
                 s = get_float(s)
                 n = get_float(n)
                 w = get_float(w)
                 e = get_float(e)
         if s is None or n is None or w is None or e is None:
-            message(f"{inbbox}: Invalid bbox skipped")
+            message(f"{bbox}: Invalid bbox skipped")
             continue
-        bbox.append([s, n, w, e])
+        outbboxes.append([s, n, w, e])
 
-    return bbox
+    return outbboxes
 
 
-def parse_polys(points):
+def parse_polys(polys):
     """
     Parse a list of a str of latitude and longitude in degrees separated by a
     comma and return a list of lists of lists of latitude and longitude floats
@@ -500,10 +500,10 @@ def parse_polys(points):
     points (list): list of strs of latitude,longitude in degrees with
                    unparseable str as a poly separator
     """
-    polys = []
+    outpolys = []
     poly = []
 
-    for point in points:
+    for point in polys:
         lat = lon = None
         typ = type(point)
         if typ == str:
@@ -516,15 +516,15 @@ def parse_polys(points):
         if lat is None or lon is None:
             # use invalid coordinates as a flag for a new poly
             if len(poly) > 0:
-                polys.append(poly)
+                outpolys.append(poly)
                 poly = []
             continue
         poly.append([lat, lon])
 
     if len(poly) > 0:
-        polys.append(poly)
+        outpolys.append(poly)
 
-    return polys
+    return outpolys
 
 
 ################################################################################
@@ -781,11 +781,7 @@ def query_polys(
                          (default: provided by get_projpicker_db_path())
     """
     bboxes = []
-
-    if len(polys) > 0 and (
-        type(polys[0]) not in (list, tuple) or
-        (len(polys[0]) > 0 and type(polys[0][0]) not in (list, tuple))):
-        polys = parse_polys(polys)
+    polys = parse_polys(polys)
 
     for poly in polys:
         s = n = w = e = None
@@ -957,7 +953,7 @@ def query_bboxes_and(
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for inbbox in bboxes:
-            s = n = w = e = inbbox
+            s, n, w, e = inbbox
             if len(bbox) == 0:
                 bbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
             else:
@@ -979,11 +975,12 @@ def query_bboxes_or(
                          (default: provided by get_projpicker_db_path())
     """
     bbox = []
+    bboxes = parse_bboxes(bboxes)
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for inbbox in bboxes:
-            s = n = w = e = inbbox
+            s, n, w, e = inbbox
             outbbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
             bbox.extend(outbbox)
 
@@ -1340,9 +1337,4 @@ def main():
 # go!
 
 if __name__ == "__main__":
-    try:
-        exit_code = main()
-    except Exception as err:
-        message(err)
-        exit_code = 1
-    sys.exit(exit_code)
+    sys.exit(main())
