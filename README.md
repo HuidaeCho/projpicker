@@ -41,18 +41,6 @@ Python package: https://pypi.org/project/projpicker/
 pip3 install projpicker
 ```
 
-## Versioning
-
-Semantic versioning: https://semver.org/
-
-`<major>.<minor>.<patch>((-<pre-release>)?.<build>)?`
-
-The build number is incremented when the module needs to be repackaged without
-code changes. It marches *away* from the release. Check this [interesting
-read](https://github.com/semver/semver/issues/51#issuecomment-9718111). A dot
-is used for build numbers instead of a plus because https://pypi.org/ does not
-support plus symbols in a version number.
-
 ## Command-line usage
 
 ```
@@ -197,6 +185,16 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
    * Desktop
 2. CRS hints
    * Crowdsourcing agency and product information?
+
+## Versioning
+
+`<major>.<minor>.<micro>((a|b|rc|.post)#)?`
+
+* [PEP 440](https://www.python.org/dev/peps/pep-0440/)
+* Not fully compatible with [semantic versioning](https://semver.org/)
+* Not using build numbers (marching away from or towards a release), but check
+  this [interesting
+  read](https://github.com/semver/semver/issues/51#issuecomment-9718111).
 
 ## Sponsor
 
