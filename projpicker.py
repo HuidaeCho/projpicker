@@ -35,9 +35,8 @@ import math
 import pprint
 import json
 
-# version
-with open(os.path.join(os.path.dirname(__file__), "VERSION")) as f:
-    version = f.read().rstrip()
+# module path
+module_path = os.path.dirname(__file__)
 
 # environment variables for default paths
 projpicker_db_env = "PROJPICKER_DB"
@@ -258,12 +257,18 @@ def calc_area(s, n, w, e):
 
 
 ################################################################################
-# default paths
+# version and default paths
 
-def get_projpicker_db_path(projpicker_db=None):
+def get_version():
+    with open(os.path.join(module_path, "VERSION")) as f:
+        version = f.read().rstrip()
+    return version
+
+
+def get_projpicker_db(projpicker_db=None):
     """
     Return the projpicker.db path. If one is given as an argument, return it as
-    is. Otherwise, check the PROJPICKER_DB environment variable. If this
+    is. Otherwise (None), check the PROJPICKER_DB environment variable. If this
     variable is not available, return the default "projpicker.db".
 
     projpicker_db (str): projpicker.db path (default: None)
@@ -272,15 +277,14 @@ def get_projpicker_db_path(projpicker_db=None):
         if projpicker_db_env in os.environ:
             projpicker_db = os.environ[projpicker_db_env]
         else:
-            projpicker_db = os.path.join(os.path.dirname(__file__),
-                                         "projpicker.db")
+            projpicker_db = os.path.join(module_path, "projpicker.db")
     return projpicker_db
 
 
-def get_proj_db_path(proj_db=None):
+def get_proj_db(proj_db=None):
     """
     Return the proj.db path. If one is given as an argument, return it as is.
-    Otherwise, check the PROJ_DB environment variable. If this variable is not
+    Otherwise (None), check the PROJ_DB environment variable. If this variable is not
     available, check the PROJ_LIB environment variable as it is likely to be
     set by PROJ. If none works, return the default "/usr/share/proj/proj.db".
 
@@ -303,16 +307,19 @@ def get_proj_db_path(proj_db=None):
 
 def create_projpicker_db(
         overwrite=False,
-        projpicker_db=get_projpicker_db_path(),
-        proj_db=get_proj_db_path()):
+        projpicker_db=None,
+        proj_db=None):
     """
-    Create a projpicker.db sqlite database.
+    Create a projpicker.db sqlite database. If projpicker_db or proj_db is None
+    (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
     overwrite (bool): whether or not to overwrite projpicker.db
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
-    proj_db (str): proj.db path (default: provided by get_proj_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
+    proj_db (str): proj.db path (default: None)
     """
+    projpicker_db = get_projpicker_db(projpicker_db)
+    proj_db = get_proj_db(proj_db)
+
     if os.path.exists(projpicker_db):
         if overwrite:
             os.remove(projpicker_db)
@@ -702,17 +709,19 @@ def query_point_using_bbox(
 
 def query_point(
         lat, lon,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain an input point geometry
     defined by latitude and longitude in degrees. Each bbox entry is a tuple
-    with all the columns from the bbox table in projpicker.db.
+    with all the columns from the bbox table in projpicker.db. If projpicker_db
+    is None (default), get_projpicker_db() is used.
 
     lat (float): latitude in degrees
     lon (float): longitude in degrees
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
+    projpicker_db = get_projpicker_db(projpicker_db)
+
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         bbox = query_point_using_cursor(lat, lon, projpicker_cur)
@@ -721,18 +730,20 @@ def query_point(
 
 def query_points_and(
         points,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input point geometries.
     Each bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The intersection of bbox results is returned.
+    projpicker.db. The intersection of bbox results is returned. If
+    projpicker_db is None (default), get_projpicker_db() is used.
 
     points (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
-    bbox = []
     points = parse_points(points)
+    projpicker_db = get_projpicker_db(projpicker_db)
+
+    bbox = []
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
@@ -748,18 +759,20 @@ def query_points_and(
 
 def query_points_or(
         points,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input point geometries.
     Each bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The union of bbox results is returned.
+    projpicker.db. The union of bbox results is returned. If projpicker_db is
+    None (default), get_projpicker_db() is used.
 
     points (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
-    bbox = []
     points = parse_points(points)
+    projpicker_db = get_projpicker_db(projpicker_db)
+
+    bbox = []
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
@@ -774,17 +787,17 @@ def query_points_or(
 def query_points(
         points,
         query_mode="and",
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input point geometries.
     Each bbox entry is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
-    results while the "or" mode the union.
+    results while the "or" mode the union. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     points (list): list of parseable point geometries; see parse_points()
     query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
     if query_mode == "and":
         bbox = query_points_and(points, projpicker_db)
@@ -795,15 +808,15 @@ def query_points(
 
 def query_poly(
         poly,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain an input poly geometry.
     Each bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db.
+    projpicker.db. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     poly (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
     bbox = []
     outbbox = query_polys([poly], "and", True, projpicker_db)
@@ -815,20 +828,21 @@ def query_poly(
 def query_polys(
         polys,
         query_mode="and",
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input poly geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
-    results while the "or" mode the union.
+    results while the "or" mode the union. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     polys (list): list of parseable poly geometries; see parse_polys()
     query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
-    bboxes = []
     polys = parse_polys(polys)
+
+    bboxes = []
 
     for poly in polys:
         s = n = w = e = None
@@ -963,19 +977,21 @@ def query_bbox_using_bbox(
 
 def query_bbox(
         s, n, w, e,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain an input bbox geometry
     defined by sout, north, west, and east. Each bbox entry is a tuple with all
-    the columns from the bbox table in projpicker.db.
+    the columns from the bbox table in projpicker.db. If projpicker_db is None
+    (default), get_projpicker_db() is used.
 
     s (float): south latitude in degrees
     n (float): north latitude in degrees
     w (float): west longitude in degrees
     e (float): east longitude in degrees
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
+    projpicker_db = get_projpicker_db()
+
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         bbox = query_bbox_using_cursor(s, n, w, e, projpicker_cur)
@@ -984,18 +1000,20 @@ def query_bbox(
 
 def query_bboxes_and(
         bboxes,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input bbox geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The intersection of bbox results is returned.
+    projpicker.db. The intersection of bbox results is returned. If
+    projpicker_db is None (default), get_projpicker_db() is used.
 
     geom (list): list of parseable bbox geometries; see parse_bboxes()
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
-    bbox = []
     bboxes = parse_bboxes(bboxes)
+    projpicker_db = get_projpicker_db()
+
+    bbox = []
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
@@ -1011,18 +1029,20 @@ def query_bboxes_and(
 
 def query_bboxes_or(
         bboxes,
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input bbox geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The union of bbox results is returned.
+    projpicker.db. The union of bbox results is returned. If projpicker_db is
+    None (default), get_projpicker_db() is used.
 
     geom (list): list of parseable bbox geometries; see parse_bboxes()
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
-    bbox = []
     bboxes = parse_bboxes(bboxes)
+    projpicker_db = get_projpicker_db()
+
+    bbox = []
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
@@ -1037,17 +1057,17 @@ def query_bboxes_or(
 def query_bboxes(
         bboxes,
         query_mode="and",
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input bbox geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
-    results while the "or" mode the union.
+    results while the "or" mode the union. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     geom (list): list of parseable bbox geometries; see parse_bboxes()
     query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
     if query_mode == "and":
         bbox = query_bboxes_and(bboxes, projpicker_db)
@@ -1060,19 +1080,19 @@ def query_geoms(
         geoms,
         geom_type="point",
         query_mode="and",
-        projpicker_db=get_projpicker_db_path()):
+        projpicker_db=None):
     """
     Return a list of bboxes that completely contain input geometries. Each bbox
     entry is a tuple with all the columns from the bbox table in projpicker.db.
     The "and" query mode performs the intersection of bbox results while the
-    "or" mode the union.
+    "or" mode the union. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     geom (list): list of parseable geometries; see parse_points(),
                  parse_polys(), and parse_bboxes()
     geom_type (str): geometry type (point, poly, bbox) (default: point)
     query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
     if geom_type not in ("point", "poly", "bbox"):
         raise Exception(f"{geom_type}: Invalid geometry type")
@@ -1090,14 +1110,16 @@ def query_geoms(
     return bbox
 
 
-def query_all(projpicker_db=get_projpicker_db_path()):
+def query_all(projpicker_db=None):
     """
     Return a list of all bboxes. Each bbox entry is a tuple with all the
-    columns from the bbox table in projpicker.db.
+    columns from the bbox table in projpicker.db. If projpicker_db is None
+    (default), get_projpicker_db() is used.
 
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
     """
+    projpicker_db = get_projpicker_db()
+
     bbox = []
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
@@ -1214,8 +1236,8 @@ def projpicker(
         query_mode="and",
         overwrite=False,
         append=False,
-        projpicker_db=get_projpicker_db_path(),
-        proj_db=get_proj_db_path(),
+        projpicker_db=None,
+        proj_db=None,
         create=False):
     """
     Process options and perform requested tasks. This is the main API function.
@@ -1229,7 +1251,8 @@ def projpicker(
     opertion is performed between intersection (default) and union. The
     overwrite option applies to both projpicker.db and the output file, but the
     append option only appends to the output file. Only one of the overwrite or
-    append options must be given.
+    append options must be given. If projpicker_db or proj_db is None
+    (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
     geoms (list): geometries (default: [])
     infile (str): input geometries file (default: - for stdin)
@@ -1242,12 +1265,14 @@ def projpicker(
                       (default: and)
     overwrite (bool): whether or not to overwrite output file (default: False)
     append (bool): whether or not to append output to file (default: False)
-    projpicker_db (str): projpicker.db path
-                         (default: provided by get_projpicker_db_path())
-    proj_db (str): proj.db path (default: provided by get_proj_db_path())
+    projpicker_db (str): projpicker.db path (default: None)
+    proj_db (str): proj.db path (default: None)
     create (bool): whether or not to create a new projpicker.db
                    (default: False)
     """
+    projpicker_db = get_projpicker_db(projpicker_db)
+    proj_db = get_proj_db(proj_db)
+
     if overwrite and append:
         raise Exception("Both overwrite and append requested")
 
@@ -1320,8 +1345,8 @@ def main():
     """
     Implement the command-line interface to projpicker().
     """
-    projpicker_db = get_projpicker_db_path()
-    proj_db = get_proj_db_path()
+    projpicker_db = get_projpicker_db()
+    proj_db = get_proj_db()
 
     parser = argparse.ArgumentParser(
             description="""ProjPicker finds coordinate reference systems (CRSs)
@@ -1329,7 +1354,7 @@ def main():
                 https://github.com/HuidaeCho/projpicker for more details""")
     parser.add_argument("-v", "--version",
             action="store_true",
-            help=f"version information ({version})")
+            help=f"version information ({get_version()})")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
@@ -1399,7 +1424,7 @@ def main():
 
     if ver:
         print(
-f"""ProjPicker {version} <https://github.com/HuidaeCho/projpicker>
+f"""ProjPicker {get_version()} <https://github.com/HuidaeCho/projpicker>
 
 Copyright (C) 2021 Huidae Cho and Owen Smith, IESA, UNG
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
