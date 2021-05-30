@@ -193,7 +193,7 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
 
 ## Versioning
 
-`<major>.<minor>.<micro>((a|b|rc|.post)#)?`
+`MAJOR[.MINOR[.MICRO]][{a|b|rc}N][.postN][.devN]`
 
 * [PEP 440](https://www.python.org/dev/peps/pep-0440/)
 * Not fully compatible with [semantic versioning](https://semver.org/)
