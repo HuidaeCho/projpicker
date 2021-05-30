@@ -75,8 +75,8 @@ optional arguments:
   -a, --append          append to output file if any; applies only to query
                         output file
   -d PROJPICKER_DB, --projpicker-db PROJPICKER_DB
-			projpicker database path (default: projpicker.db); use
-			PROJPICKER_DB environment variable to skip this option
+                        projpicker database path (default: projpicker.db); use
+                        PROJPICKER_DB environment variable to skip this option
   -p PROJ_DB, --proj-db PROJ_DB
                         proj database path (default: /usr/share/proj/proj.db);
                         use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment
