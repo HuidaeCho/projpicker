@@ -1344,7 +1344,7 @@ def main():
                 file""")
     parser.add_argument("-d", "--projpicker-db",
             default=projpicker_db,
-            help=f"""projPicker database path (default: {projpicker_db}); use
+            help=f"""projpicker database path (default: {projpicker_db}); use
                 PROJPICKER_DB environment variable to skip this option""")
     parser.add_argument("-p", "--proj-db",
             default=proj_db,

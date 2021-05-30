@@ -68,15 +68,15 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         version information
+  -v, --version         version information (0.1.3+1)
   -c, --create          create ProjPicker database
   -O, --overwrite       overwrite output files; applies to both projpicker.db
                         and query output file
   -a, --append          append to output file if any; applies only to query
                         output file
   -d PROJPICKER_DB, --projpicker-db PROJPICKER_DB
-                        projPicker database path (default: projpicker.db); use
-                        PROJPICKER_DB environment variable to skip this option
+			projpicker database path (default: projpicker.db); use
+			PROJPICKER_DB environment variable to skip this option
   -p PROJ_DB, --proj-db PROJ_DB
                         proj database path (default: /usr/share/proj/proj.db);
                         use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment
