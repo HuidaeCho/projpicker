@@ -1407,7 +1407,7 @@ def main():
 
     args = parser.parse_args()
 
-    ver = args.version
+    version = args.version
     create = args.create
     overwrite = args.overwrite
     append = args.append
@@ -1422,7 +1422,7 @@ def main():
     outfile = args.output
     geoms = args.geometry
 
-    if ver:
+    if version:
         print(
 f"""ProjPicker {get_version()} <https://github.com/HuidaeCho/projpicker>
 
