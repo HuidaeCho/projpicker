@@ -57,9 +57,10 @@ more details
 
 positional arguments:
   geometry              query geometry in latitude,longitude (point and poly)
-                        or s,n,w,e (bbox); points, points in a poly, or bboxes
-                        are separated by a space and polys are separated by
-                        any non-coordinate character such as a comma
+                        or south,north,west,east (bbox) in degrees; points,
+                        points in a poly, or bboxes are separated by a space
+                        and polys are separated by any non-coordinate
+                        character such as a comma
 
 optional arguments:
   -h, --help            show this help message and exit
