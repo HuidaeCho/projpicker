@@ -41,19 +41,11 @@ Python package: https://pypi.org/project/projpicker/
 pip3 install projpicker
 ```
 
-If you want to run `projpicker.py` from the shell, add
-`lib/pythonX.Y/site-packages/projpicker` to `PATH` or create a wrapper Python
-script `ppik.py` in `PATH`:
-```python
-#!/usr/bin/env python3
-import projpicker as ppik
-ppik.main()
-```
+## Versioning
 
-Just don't copy `projpicker.py` to `PATH` because it will look for the
-`projpicker.db` file in the same directory and fail to find it. Also, the name
-of the warapper script must be different from `projpicker.py` because you don't
-want to import the warapper itself as the projpicker module.
+Semantic versioning: https://semver.org/
+
+`<major>.<minor>.<patch>((-<pre-release>)?+<build>)?`
 
 ## Command-line usage
 

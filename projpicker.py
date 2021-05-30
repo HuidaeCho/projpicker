@@ -35,6 +35,10 @@ import math
 import pprint
 import json
 
+# version
+with open(os.path.join(os.path.dirname(__file__), "VERSION")) as f:
+    version = f.read().rstrip()
+
 # environment variables for default paths
 projpicker_db_env = "PROJPICKER_DB"
 proj_db_env = "PROJ_DB"
@@ -1323,6 +1327,9 @@ def main():
             description="""ProjPicker finds coordinate reference systems (CRSs)
                 whose bounding box contains given geometries; visit
                 https://github.com/HuidaeCho/projpicker for more details""")
+    parser.add_argument("-v", "--version",
+            action="store_true",
+            help="version information")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
@@ -1375,6 +1382,7 @@ def main():
 
     args = parser.parse_args()
 
+    ver = args.version
     create = args.create
     overwrite = args.overwrite
     append = args.append
@@ -1389,20 +1397,29 @@ def main():
     outfile = args.output
     geoms = args.geometry
 
-    projpicker(
-        geoms,
-        infile,
-        outfile,
-        fmt,
-        no_header,
-        separator,
-        geom_type,
-        query_mode,
-        overwrite,
-        append,
-        projpicker_db,
-        proj_db,
-        create)
+    if ver:
+        print(
+f"""ProjPicker {version} <https://github.com/HuidaeCho/projpicker>
+
+Copyright (C) 2021 Huidae Cho and Owen Smith, IESA, UNG
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.""")
+    else:
+        projpicker(
+            geoms,
+            infile,
+            outfile,
+            fmt,
+            no_header,
+            separator,
+            geom_type,
+            query_mode,
+            overwrite,
+            append,
+            projpicker_db,
+            proj_db,
+            create)
 
 
 ################################################################################
