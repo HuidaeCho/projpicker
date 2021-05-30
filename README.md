@@ -45,10 +45,12 @@ pip3 install projpicker
 
 Semantic versioning: https://semver.org/
 
-`<major>.<minor>.<patch>((-<pre-release>)?+<build>)?`
+`<major>.<minor>.<patch>((-<pre-release>)?.<build>)?`
 
 The build number marches *away* from the release. Check this [interesting
-read](https://github.com/semver/semver/issues/51#issuecomment-9718111).
+read](https://github.com/semver/semver/issues/51#issuecomment-9718111). A dot
+is used for build numbers instead of a plus because https://pypi.org/ does not
+support plus symbols in a version number.
 
 ## Command-line usage
 
