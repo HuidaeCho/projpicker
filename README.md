@@ -95,6 +95,10 @@ optional arguments:
 
 ## Creating the ProjPicker database
 
+This step is optional because `projpicker.db` generated from PROJ 7.2.1 is
+shipped with the module by default. Run this step only when you want to
+recreate this database from your version of PROJ.
+
 From the shell,
 ```bash
 projpicker -c
