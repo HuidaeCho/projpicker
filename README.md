@@ -47,7 +47,8 @@ Semantic versioning: https://semver.org/
 
 `<major>.<minor>.<patch>((-<pre-release>)?.<build>)?`
 
-The build number marches *away* from the release. Check this [interesting
+The build number is incremented when the module needs to be repackaged without
+code changes. It marches *away* from the release. Check this [interesting
 read](https://github.com/semver/semver/issues/51#issuecomment-9718111). A dot
 is used for build numbers instead of a plus because https://pypi.org/ does not
 support plus symbols in a version number.
