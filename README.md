@@ -47,6 +47,9 @@ Semantic versioning: https://semver.org/
 
 `<major>.<minor>.<patch>((-<pre-release>)?+<build>)?`
 
+The build number marches *away* from the release. Check this [interesting
+read](https://github.com/semver/semver/issues/51#issuecomment-9718111).
+
 ## Command-line usage
 
 ```
