@@ -22,7 +22,8 @@ branch supports point intersection.
 
 Tested with PROJ 7.2.1 in Python 3.7.2
 
-Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) and the following
+Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) only for
+recreating the provided `projpicker.db`, if you want, and the following
 standard modules:
 * argparse
 * os
