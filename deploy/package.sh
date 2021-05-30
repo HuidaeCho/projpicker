@@ -55,6 +55,7 @@ set -e
 pip3 install --user --upgrade twine
 twine upload dist/*
 EOT
+chmod a+x deploy.sh
 
 pip3 install --user --upgrade setuptools wheel
 python3 setup.py sdist bdist_wheel
