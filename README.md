@@ -50,11 +50,11 @@ Semantic versioning: https://semver.org/
 ## Command-line usage
 
 ```
-usage: projpicker.py [-h] [-c] [-O | -a] [-d PROJPICKER_DB] [-p PROJ_DB]
-                     [-g {point,poly,bbox}] [-q {and,or,all}]
-                     [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
-                     [-o OUTPUT]
-                     [geometry [geometry ...]]
+usage: projpicker [-h] [-v] [-c] [-O | -a] [-d PROJPICKER_DB] [-p PROJ_DB]
+                  [-g {point,poly,bbox}] [-q {and,or,all}]
+                  [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
+                  [-o OUTPUT]
+                  [geometry [geometry ...]]
 
 ProjPicker finds coordinate reference systems (CRSs) whose bounding box
 contains given geometries; visit https://github.com/HuidaeCho/projpicker for
@@ -68,6 +68,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  -v, --version         version information
   -c, --create          create ProjPicker database
   -O, --overwrite       overwrite output files; applies to both projpicker.db
                         and query output file
@@ -101,7 +102,7 @@ optional arguments:
 
 From the shell,
 ```bash
-projpicker.py -c
+projpicker -c
 ```
 
 From Python,
@@ -115,10 +116,10 @@ ppik.create_projpicker_db()
 From the shell,
 ```bash
 # read latitude,longitude from arguments
-projpicker.py 34.2348,83.8677 33.7490,84.3880
+projpicker 34.2348,83.8677 33.7490,84.3880
 
 # read latitude,longitude from stdin
-projpicker.py <<EOT
+projpicker <<EOT
 34.2348,83.8677
 33.7490,84.3880
 EOT
@@ -128,7 +129,7 @@ From Python,
 ```python
 import projpicker as ppik
 bbox = ppik.listify_bbox(ppik.query_points([[34.2348, 83.8677],
-					    [33.7490, 84.3880]]))
+                                            [33.7490, 84.3880]]))
 ```
 
 ## Querying polylines/polygons
@@ -136,10 +137,10 @@ bbox = ppik.listify_bbox(ppik.query_points([[34.2348, 83.8677],
 From the shell,
 ```bash
 # read latitude,longitude from arguments
-projpicker.py -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
+projpicker -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
 
 # read latitude,longitude from stdin
-projpicker.py -g poly <<EOT
+projpicker -g poly <<EOT
 # poly 1
 -10,0
 10,0
@@ -156,8 +157,8 @@ From Python,
 ```python
 import projpicker as ppik
 bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
-					    [10, 10], [10, 0]],
-					   [[10, 20], [30, 40]]]))
+                                            [10, 10], [10, 0]],
+                                           [[10, 20], [30, 40]]]))
 ```
 
 ## Querying bboxes
@@ -165,10 +166,10 @@ bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
 From the shell,
 ```bash
 # read s,n,w,e from arguments
-projpicker.py -g bbox 0,0,10,10 20,20,50,50
+projpicker -g bbox 0,0,10,10 20,20,50,50
 
 # read s,n,w,e from stdin
-projpicker.py -g bbox <<EOT
+projpicker -g bbox <<EOT
 0,0,10,10
 20,20,50,50
 EOT
@@ -200,7 +201,7 @@ Analysis](https://ung.edu/institute-environmental-spatial-analysis/) (IESA) at
 ## License
 
 Copyright (C) 2021 [Huidae Cho](https://faculty.ung.edu/hcho/) and
-		   [Owen Smith](https://www.gaderian.io/)
+                   [Owen Smith](https://www.gaderian.io/)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

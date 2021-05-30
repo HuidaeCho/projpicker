@@ -1329,7 +1329,7 @@ def main():
                 https://github.com/HuidaeCho/projpicker for more details""")
     parser.add_argument("-v", "--version",
             action="store_true",
-            help="version information")
+            help=f"version information ({version})")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
