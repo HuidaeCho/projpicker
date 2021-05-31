@@ -119,8 +119,13 @@ def message(msg="", end=None):
     """
     Print msg to stderr immediately.
 
-    msg (str): message (default: "")
-    end (str): passed to print() (default: None)
+    Parameters
+    ----------
+
+    msg : str, default=""
+        message
+    end : str, default=None
+        passed to print()
     """
     print(msg, end=end, file=sys.stderr, flush=True)
 
@@ -359,14 +364,26 @@ def create_projpicker_db(
         overwrite=False,
         projpicker_db=None,
         proj_db=None):
+
     """
     Create a projpicker.db sqlite database. If projpicker_db or proj_db is None
     (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
-    overwrite (bool): whether or not to overwrite projpicker.db
-    projpicker_db (str): projpicker.db path (default: None)
-    proj_db (str): proj.db path (default: None)
+
+    Parameters
+    ----------
+
+    overwrite : bool
+        whether or not to overwrite projpicker.db
+
+    projpicker_db : str
+        projpicker.db path
+
+    proj_db : str
+        proj.db path
+
     """
+
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
 
@@ -1475,10 +1492,7 @@ def projpicker(
 ################################################################################
 # command-line interface
 
-def main():
-    """
-    Implement the command-line interface to projpicker().
-    """
+def parse():
     projpicker_db = get_projpicker_db()
     proj_db = get_proj_db()
 
@@ -1542,8 +1556,15 @@ def main():
                 south,north,west,east (bbox); each point or bbox is a separate
                 argument and multiple polys are separated by any non-coordinate
                 argument such as a comma""")
+    return parser
 
-    args = parser.parse_args()
+
+def main():
+    """
+    Implement the command-line interface to projpicker().
+    """
+
+    args = parse().parse_args()
 
     version = args.version
     create = args.create
