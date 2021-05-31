@@ -243,12 +243,12 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
    * ArcGIS Pro Toolbox for ArcGIS users including IESA students? Will be
      easier to implement because ArcGIS Pro provides nice pencil tools and
      mapping functionalities. We'll be able to see almost immediate returns.
-   * Web
+   * Web (client-only)
    * Desktop
-2. CRS hints
-   * Crowdsourcing agency and product information?
-3. Missing projection information? Let's find it using coordinates in latitude
+2. Missing projection information? Let's find it using coordinates in latitude
    and longitude.
+3. CRS hints
+   * Crowdsourcing agency and product information?
 
 ## Versioning
 
