@@ -130,7 +130,7 @@ The following geometry file `points.txt` contains 11 identical points:
 # degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
 # minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
 # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
-#	  '' (U+0027 U+0027, &apos; &apos), s
+#	  '' (U+0027 U+0027, &apos; &apos;), s
 ####################################################
 34.2348°	-83.8677°	# without minutes, seconds, and [SNWE]
 34°14.088'	-83°52.062'	# without seconds and [SNWE]
