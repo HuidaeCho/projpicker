@@ -1521,7 +1521,7 @@ def main():
                 ignore query geometries and list all bboxes""")
     parser.add_argument("-f", "--format",
             choices=("plain", "json", "pretty"), default="plain",
-            help="output format")
+            help="output format (default: plain)")
     parser.add_argument("-n", "--no-header",
             action="store_true",
             help="do not print header for plain output format")

@@ -86,7 +86,7 @@ optional arguments:
                         query mode for multiple points (default: and); use all
                         to ignore query geometries and list all bboxes
   -f {plain,json,pretty}, --format {plain,json,pretty}
-                        output format
+                        output format (default: plain)
   -n, --no-header       do not print header for plain output format
   -s SEPARATOR, --separator SEPARATOR
                         separator for plain output format (default: comma)
