@@ -136,14 +136,11 @@ def read_file(infile="-"):
 
 def tidy_lines(lines):
     """
-    Tidy a list of str lines by removing leading and trailing whitespaces
-    including newlines. Lines starting with a hash at column 1 are completely
-    ignored as if they did not even exist, but strings after a hash at column
-    greater than 1 are simply removed including the hash and the rest of the
-    line is returned. For example, a line starting with some whitespaces
-    followed by a hash and a comment is returned as an empty str while a line
-    starting with a hash is not returned at all. This function directly
-    modifies the input list to save memory and does not return anything.
+    Tidy a list of str lines in place by removing leading and trailing
+    whitespaces including newlines. Comments start with a hash and comment-only
+    lines are completely ignored as if they did not even exist. This function
+    directly modifies the input list to save memory and does not return
+    anything.
 
     lines (list): list of str lines
     """
