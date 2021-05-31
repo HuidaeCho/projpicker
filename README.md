@@ -118,7 +118,7 @@ ppik.create_projpicker_db()
 
 ## Supported coordinate formats
 
-The following geometry file `points.txt` contains eight identical points:
+The following geometry file `points.txt` contains nine identical points:
 ```
 ################################
 # decimal degrees and separators
@@ -135,12 +135,13 @@ The following geometry file `points.txt` contains eight identical points:
 34.2348°N	83.528677°W	# without minutes and seconds
 34°14.088'N	83°31.72062'W	# without seconds
 34°14'5.28"N	83°31'43.2372"W	# full
-
+34°14′5.28″N	83°31′43.2372″W	# minute and second symbols
 ```
 
 Running `projpicker -p < points.txt` will generate:
 ```
 [[34.2348, -83.528677],
+ [34.2348, -83.528677],
  [34.2348, -83.528677],
  [34.2348, -83.528677],
  [34.2348, -83.528677],
