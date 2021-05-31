@@ -138,9 +138,10 @@ def tidy_lines(lines):
     """
     Tidy a list of str lines in place by removing leading and trailing
     whitespaces including newlines. Comments start with a hash and comment-only
-    lines are completely ignored as if they did not even exist. This function
-    directly modifies the input list to save memory and does not return
-    anything.
+    lines are deleted as if they did not even exist. A line starting with
+    whitespaces immediately followed by a comment is considered a comment-only
+    line and deleted. This function directly modifies the input list to save
+    memory and does not return anything.
 
     lines (list): list of str lines
     """
