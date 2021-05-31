@@ -139,7 +139,7 @@ bbox = ppik.listify_bbox(ppik.query_points([[34.2348, 83.8677],
                                             [33.7490, 84.3880]]))
 ```
 
-## Querying polylines/polygons
+## Querying polylines or polygons
 
 From the shell,
 ```bash
@@ -173,7 +173,7 @@ bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
                                            [[10, 20], [30, 40]]]))
 ```
 
-## Querying bboxes
+## Querying bounding boxes
 
 From the shell,
 ```bash
