@@ -197,7 +197,7 @@ def calc_xy_at_lat_scaling(lat):
     the right equatorial point and North Pole, respectively. The x-y space is
     first scaled to [-1, 1]**2, which is then rescaled back to x-y later.
 
-    lat (float): latitude in degrees
+    lat (float): latitude in decimal degrees
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -221,7 +221,7 @@ def calc_xy_at_lat_noscaling(lat):
     latitude is first determined, and x and y are calculated using trigonometry
     functions.
 
-    lat (float): latitude in degrees
+    lat (float): latitude in decimal degrees
     """
     # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
     r = calc_radius_at_lat(lat)
@@ -238,7 +238,7 @@ def calc_horiz_radius_at_lat(lat):
     """
     Calculate the horizontal distance from the y-axis to the latitude line.
 
-    lat (float): latitude in degrees
+    lat (float): latitude in decimal degrees
     """
     return calc_xy_at_lat(lat)[0]
 
@@ -247,7 +247,7 @@ def calc_radius_at_lat(lat):
     """
     Calculate the distance from the center to the latitude line.
 
-    lat (float): latitude in degrees
+    lat (float): latitude in decimal degrees
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -267,10 +267,10 @@ def calc_area(s, n, w, e):
     or equal to south latitude, but east longitude can be less than west
     longitude wieh the segment crosses the antimeridian.
 
-    s (float): south latitude in degrees
-    n (float): north latitude in degrees
-    w (float): west longitude in degrees
-    e (float): east longitude in degrees
+    s (float): south latitude in decimal degrees
+    n (float): north latitude in decimal degrees
+    w (float): west longitude in decimal degrees
+    e (float): east longitude in decimal degrees
     """
     if not -90 <= s <= 90:
         raise Exception(f"{s}: Invalid south latitude")
@@ -495,14 +495,15 @@ def parse_lon(m, ith):
 
 def parse_point(point):
     """
-    Parse a str of latitude and longitude in degrees separated by a comma.
-    Return latitude and longitude floats. Any missing or invalid coordinate is
-    returned as None. If an output from this function is passed, the same
-    output is returned.
+    Parse a str of latitude and longitude. Return latitude and longitude floats
+    in decimal degrees. A list of two floats can be used in place of a str of
+    latitude and longitude. Any missing or invalid coordinate is returned as
+    None. If an output from this function is passed, the same output is
+    returned.
 
     For example, "10,20" returns (10.0, 20.0).
 
-    point (str): latitude,longitude in degrees
+    point (str): parseable str of latitude and longitude
     """
     lat = lon = None
     typ = type(point)
@@ -523,11 +524,11 @@ def parse_point(point):
 
 def parse_points(points):
     """
-    Parse a list of a str of latitude and longitude in degrees separated by a
-    comma and return a list of lists of latitude and longitude floats in
-    degrees. A list of two floats can be used in place of a latitude,longitude
-    str. Any unparseable str is ignored with a warning. If an output from this
-    function is passed, the same output is returned.
+    Parse a list of strs of latitude and longitude, and return a list of lists
+    of latitude and longitude floats in decimal degrees. A list of two floats
+    can be used in place of a str of latitude and longitude. Any unparseable
+    str is ignored with a warning. If an output from this function is passed,
+    the same output is returned.
 
     For example,
     ["1,2", "3,4", ",", "5,6", "7,8"] or
@@ -535,7 +536,7 @@ def parse_points(points):
     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]] with a warning about the
     unparseable comma.
 
-    points (list): list of strs of latitude,longitude in degrees
+    points (list): list of parseable strs of latitude and longitude
     """
     outpoints = []
 
@@ -559,18 +560,18 @@ def parse_points(points):
 
 def parse_polys(polys):
     """
-    Parse a list of a str of latitude and longitude in degrees separated by a
-    comma and return a list of lists of lists of latitude and longitude floats
-    in degrees. A list of two floats can be used in place of a
-    latitude,longitude str. Any unparseable str starts a new poly. If an output
-    from this function is passed, the same output is returned.
+    Parse a list of strs of latitude and longitude, and return a list of lists
+    of lists of latitude and longitude floats in decimal degrees. A list of two
+    floats can be used in place of a str of latitude and longitude. Any
+    unparseable str starts a new poly. If an output from this function is
+    passed, the same output is returned.
 
     For example,
     ["1,2", "3,4", ",", "5,6", "7,8"] or
     [[1,2], "3,4", ",", "5,6", [7,8]] returns the same
     [[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]].
 
-    points (list): list of strs of latitude,longitude in degrees with
+    points (list): list of parseable strs of latitude and longitude with an
                    unparseable str as a poly separator
     """
     outpolys = []
@@ -616,14 +617,15 @@ def parse_polys(polys):
 
 def parse_bbox(bbox):
     """
-    Parse a str of south, north, west, and east in degrees separated by a
-    comma. Return south, north, west, and east floats. Any missing or invalid
+    Parse a str of south, north, west, and east, and return south, north, west,
+    and east floats in decimal degrees. A list of four floats can be used in
+    place of a str of south, north, west, and east. Any Any missing or invalid
     coordinate is returned as None. If an output from this function is passed,
     the same output is returned.
 
     For example, "10,20,30,40" returns (10.0, 20.0, 30.0, 40.0).
 
-    bbox (str): south,north,west,east in degrees
+    bbox (str): parseable str of south, north, west, and east
     """
     s = n = w = e = None
     typ = type(bbox)
@@ -651,16 +653,16 @@ def parse_bbox(bbox):
 
 def parse_bboxes(bboxes):
     """
-    Parse a list of a str of south, north, west, and east in degrees separated
-    by a comma and return a list of lists of south, north, west, and east
-    floats. A list of four floats can be used in place of a
-    south,north,west,east str. Any unparseable str is ignored. If an output
-    from this function is passed, the same output is returned.
+    Parse a list of strs of south, north, west, and east, and return a list of
+    lists of south, north, west, and east floats in decimal degrees. A list of
+    four floats can be used in place of a str of south, north, west, and east.
+    Any unparseable str is ignored. If an output from this function is passed,
+    the same output is returned.
 
     For example, ["10,20,30,40", [50,60,70,80]] returns
     [[10.0, 20.0, 30.0, 40.0], [50.0, 60.0, 70.0, 80.0]]
 
-    bboxes (list): list of strs of south,north,west,east in degrees
+    bboxes (list): list of parseable strs of south, north, west, and east
     """
     outbboxes = []
 
@@ -711,8 +713,8 @@ def check_point(lat, lon):
     Check if given latitude and longitude are valid and return True if so.
     Otherwise, return False with a warning.
 
-    lat (float): latitude in degrees
-    lon (float): longitude in degrees
+    lat (float): latitude in decimal degrees
+    lon (float): longitude in decimal degrees
     """
     if not -90 <= lat <= 90:
         message(f"{lat}: Invalid latitude")
@@ -729,10 +731,10 @@ def check_bbox(s, n, w, e):
     so. Otherwise, return False with a warning. East less than west is allowed
     because it means a bbox crosses the antimeridian.
 
-    s (float): south latitude in degrees
-    n (float): north latitude in degrees
-    w (float): west longitude in degrees
-    e (float): east longitude in degrees
+    s (float): south latitude in decimal degrees
+    n (float): north latitude in decimal degrees
+    w (float): west longitude in decimal degrees
+    e (float): east longitude in decimal degrees
     """
     if not -90 <= s <= 90:
         message(f"{s}: Invalid south latitude")
@@ -760,12 +762,13 @@ def query_point_using_cursor(
         projpicker_cur):
     """
     Return a list of bboxes that completely contain an input point geometry
-    defined by latitude and longitude in degrees. Each bbox entry is a tuple
-    with all the columns from the bbox table in projpicker.db. This function is
-    used to perform a union operation on bbox results consecutively.
+    defined by latitude and longitude in decimal degrees. Each bbox entry is a
+    tuple with all the columns from the bbox table in projpicker.db. This
+    function is used to perform a union operation on bbox results
+    consecutively.
 
-    lat (float): latitude in degrees
-    lon (float): longitude in degrees
+    lat (float): latitude in decimal degrees
+    lon (float): longitude in decimal degrees
     projpicker_cur (sqlite3.Cursor): projpicker.db cursor
     """
     bbox = []
@@ -797,13 +800,13 @@ def query_point_using_bbox(
         bbox):
     """
     Return a subset list of input bboxes that completely contain an input point
-    geometry defined by latitude and longitude in degrees. Each bbox entry is a
-    tuple with all the columns from the bbox table in projpicker.db. This
-    function is used to perform an intersection operation on bbox results
+    geometry defined by latitude and longitude in decimal degrees. Each bbox
+    entry is a tuple with all the columns from the bbox table in projpicker.db.
+    This function is used to perform an intersection operation on bbox results
     consecutively.
 
-    lat (float): latitude in degrees
-    lon (float): longitude in degrees
+    lat (float): latitude in decimal degrees
+    lon (float): longitude in decimal degrees
     bbox (list): list of bbox results from a previous query
     """
     if not check_point(lat, lon):
@@ -835,12 +838,12 @@ def query_point(
         projpicker_db=None):
     """
     Return a list of bboxes that completely contain an input point geometry
-    defined by latitude and longitude in degrees. Each bbox entry is a tuple
-    with all the columns from the bbox table in projpicker.db. If projpicker_db
-    is None (default), get_projpicker_db() is used.
+    defined by latitude and longitude in decimal degrees. Each bbox entry is a
+    tuple with all the columns from the bbox table in projpicker.db. If
+    projpicker_db is None (default), get_projpicker_db() is used.
 
-    lat (float): latitude in degrees
-    lon (float): longitude in degrees
+    lat (float): latitude in decimal degrees
+    lon (float): longitude in decimal degrees
     projpicker_db (str): projpicker.db path (default: None)
     """
     projpicker_db = get_projpicker_db(projpicker_db)
@@ -1015,10 +1018,10 @@ def query_bbox_using_cursor(
     This function is used to perform a union operation on bbox results
     consecutively.
 
-    s (float): south latitude in degrees
-    n (float): north latitude in degrees
-    w (float): west longitude in degrees
-    e (float): east longitude in degrees
+    s (float): south latitude in decimal degrees
+    n (float): north latitude in decimal degrees
+    w (float): west longitude in decimal degrees
+    e (float): east longitude in decimal degrees
     projpicker_cur (sqlite3.Cursor): projpicker.db cursor
     """
     bbox = []
@@ -1063,10 +1066,10 @@ def query_bbox_using_bbox(
     with all the columns from the bbox table in projpicker.db. This function is
     used to perform an intersection operation on bbox results consecutively.
 
-    s (float): south latitude in degrees
-    n (float): north latitude in degrees
-    w (float): west longitude in degrees
-    e (float): east longitude in degrees
+    s (float): south latitude in decimal degrees
+    n (float): north latitude in decimal degrees
+    w (float): west longitude in decimal degrees
+    e (float): east longitude in decimal degrees
     bbox (list): list of bbox results from a previous query
     """
     if not check_bbox(s, n, w, e):
@@ -1107,10 +1110,10 @@ def query_bbox(
     the columns from the bbox table in projpicker.db. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
-    s (float): south latitude in degrees
-    n (float): north latitude in degrees
-    w (float): west longitude in degrees
-    e (float): east longitude in degrees
+    s (float): south latitude in decimal degrees
+    n (float): north latitude in decimal degrees
+    w (float): west longitude in decimal degrees
+    e (float): east longitude in decimal degrees
     projpicker_db (str): projpicker.db path (default: None)
     """
     projpicker_db = get_projpicker_db()
@@ -1535,10 +1538,10 @@ def main():
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
-            help="""query geometry in latitude,longitude (point and poly) or
-                south,north,west,east (bbox) in degrees; points, points in a
-                poly, or bboxes are separated by a space and polys are
-                separated by any non-coordinate character such as a comma""")
+            help="""query geometry in latitude,longitude (point or poly) or
+                south,north,west,east (bbox); each point or bbox is a separate
+                argument and multiple polys are separated by any non-coordinate
+                argument such as a comma""")
 
     args = parser.parse_args()
 
