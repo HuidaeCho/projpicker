@@ -68,15 +68,38 @@ CREATE TABLE bbox (
 )
 """
 
-# coordinate regular expression patterns
-coor_pat = "([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))"
+# regular expression patterns
+# coordinate separator
 coor_sep_pat = "[ \t]*[, \t][ \t]*"
+# positive float
+pos_float_pat = "(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)"
+# decimal degrees
+dd_pat = f"([+-]?{pos_float_pat})°?"
+# degrees, minutes, and seconds (DMS) without [SNWE]
+dms_pat = (f"([0-9]+)(?:°(?:[ \t]*(?:({pos_float_pat})['′]|([0-9]+)['′]"
+           f"""(?:[ \t]*({pos_float_pat})["″])?))?)?""")
+# coordinate without [SNWE]
+coor_pat = f"{dd_pat}|([+-])?{dms_pat}|(?:({pos_float_pat})°?|{dms_pat})[ \t]*"
+# latitude
+lat_pat = f"(?:{coor_pat}([SN])?)"
+# longitude
+lon_pat = f"(?:{coor_pat}([WE])?)"
+# latitude,longitude
+latlon_pat = f"{lat_pat}{coor_sep_pat}{lon_pat}"
+# matching groups for latitude:
+#   1:          (-1.2)°
+#   2,3,4:      (-)(1)°(2.3)'
+#   2,3,5,6:    (-)(1)°(2)'(3.4)"
+#   7,12:       (1.2)°(S)
+#   8,9,12:     (1)°(2.3)'(S)
+#   8,10,11,12: (1)°(2)'(3.4)"(S)
 
-# lat,lon regular expression
-latlon_re = re.compile(f"^{coor_pat}{coor_sep_pat}{coor_pat}$")
-
-# bbox (s,n,w,e) regular expression
-bbox_re = re.compile("^"+f"{coor_pat}{coor_sep_pat}"*3+f"{coor_pat}$")
+# compiled regular expressions
+# latitude,longitude
+latlon_re = re.compile(f"^{latlon_pat}$")
+# bounding box (south,north,west,east)
+bbox_re = re.compile(f"^{lat_pat}{coor_sep_pat}{lat_pat}{coor_sep_pat}"
+                     f"{lon_pat}{coor_sep_pat}{lon_pat}$")
 
 # Earth parameters from https://en.wikipedia.org/wiki/Earth_radius#Global_radii
 # equatorial radius in km
@@ -408,6 +431,63 @@ def create_projpicker_db(
 ################################################################################
 # parsing
 
+def parse_coor(m, ith, lat):
+    """
+    Parse the zero-based ith coordinate from a matched m. If the format is
+    degrees, minutes, and seconds (DMS), lat is used to determine its
+    negativity.
+
+    m (re.Match): re.compile() output
+    ith (int): zero-based index for coordinate to parse from m
+    lat (bool): True if parsing latitude; False otherwise
+    """
+    i = 12*ith
+    if m[i+1] is not None:
+        # 1: (-1.2)°
+        x = float(m[i+1])
+    elif m[i+4] is not None:
+        # 2,3,4: (-)(1)°(2.3)'
+        x = float(m[i+3])+float(m[i+4])/60
+    elif m[i+5] is not None:
+        # 2,3,5,6: (-)(1)°(2)'(3.4)"
+        x = float(m[i+3])+float(m[i+5])/60+float(m[i+6])/3600
+    elif m[i+7] is not None:
+        # 7,12: (1.2)°(S)
+        x = float(m[i+7])
+    elif m[i+9] is not None:
+        # 8,9,12: (1)°(2.3)'(S)
+        x = float(m[i+8])+float(m[i+9])/60
+    elif m[i+10] is not None:
+        # 8,10,11,12: (1)°(2)'(3.4)"(S)
+        x = float(m[i+8])+float(m[i+10])/60+float(m[i+11])/3600
+    else:
+        raise Exception("Bug in parsing coordinates")
+    if (m[i+2] == "-" or
+        (lat and m[i+12] == "S") or (not lat and m[i+12] == "W")):
+        x *= -1
+    return x
+
+
+def parse_lat(m, ith):
+    """
+    Parse the ith coordinate as latitude from a matched m.
+
+    m (re.Match): re.compile() output
+    ith (int): coordinate to parse from m
+    """
+    return parse_coor(m, ith, True)
+
+
+def parse_lon(m, ith):
+    """
+    Parse the ith coordinate as longitude from a matched m.
+
+    m (re.Match): re.compile() output
+    ith (int): coordinate to parse from m
+    """
+    return parse_coor(m, ith, False)
+
+
 def parse_point(point):
     """
     Parse a str of latitude and longitude in degrees separated by a comma.
@@ -424,8 +504,8 @@ def parse_point(point):
     if typ == str:
         m = latlon_re.match(point)
         if m:
-            y = float(m[1])
-            x = float(m[2])
+            y = parse_lat(m, 0)
+            x = parse_lon(m, 1)
             if -90 <= y <= 90:
                 lat = y
             if -180 <= x <= 180:
@@ -545,10 +625,10 @@ def parse_bbox(bbox):
     if typ == str:
         m = bbox_re.match(bbox)
         if m:
-            b = float(m[1])
-            t = float(m[2])
-            l = float(m[3])
-            r = float(m[4])
+            b = parse_lat(m, 0)
+            t = parse_lat(m, 1)
+            l = parse_lon(m, 2)
+            r = parse_lon(m, 3)
             if -90 <= b <= 90 and -90 <= t <= 90 and b <= t:
                 s = b
                 n = t
@@ -1295,7 +1375,7 @@ def projpicker(
     (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
     geoms (list): geometries (default: [])
-    infile (str): input geometries file (default: - for stdin)
+    infile (str): input geometry file (default: - for stdin)
     outfile (str): output file (default: - for stdout)
     fmt (str): output format (plain, pretty, json) (default: plain)
     no_header (bool): whether or not to print header for plain (default: False)
@@ -1444,11 +1524,11 @@ def main():
             help="separator for plain output format (default: comma)")
     parser.add_argument("-i", "--input",
             default="-",
-            help="""input geometries file path (default: stdin); use - for
-                stdin; not used if geometries are given as arguments""")
+            help="""input geometry file path (default: stdin); use - for stdin;
+                not used if geometries are given as arguments""")
     parser.add_argument("-o", "--output",
             default="-",
-            help="output bboxes file path (default: stdout); use - for stdout")
+            help="output bbox file path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
             help="""query geometry in latitude,longitude (point and poly) or
                 south,north,west,east (bbox) in degrees; points, points in a

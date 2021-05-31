@@ -64,7 +64,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         print version (0.1.3.1.post1) and copyright, and exit
+  -v, --version         print version (0.1.4.dev1) and copyright, and exit
   -c, --create          create ProjPicker database
   -O, --overwrite       overwrite output files; applies to both projpicker.db
                         and query output file
@@ -92,10 +92,10 @@ optional arguments:
   -s SEPARATOR, --separator SEPARATOR
                         separator for plain output format (default: comma)
   -i INPUT, --input INPUT
-                        input geometries file path (default: stdin); use - for
+                        input geometry file path (default: stdin); use - for
                         stdin; not used if geometries are given as arguments
   -o OUTPUT, --output OUTPUT
-                        output bboxes file path (default: stdout); use - for
+                        output bbox file path (default: stdout); use - for
                         stdout
 ```
 
@@ -116,6 +116,40 @@ import projpicker as ppik
 ppik.create_projpicker_db()
 ```
 
+## Supported coordinate formats
+
+The following geometry file `points.txt` contains eight identical points:
+```
+################################
+# decimal degrees and separators
+################################
+34.2348,-83.528677		# comma
+34.2348		-83.528677	# whitespaces
+34.2348°	-83.528677°	# degree symbol
+
+###############################
+# degrees, minutes, and seconds
+###############################
+34°14.088'	-83°31.72062'	# without seconds and [SNWE]
+34°14'5.28"	-83°31'43.2372"	# without [SNWE]
+34.2348°N	83.528677°W	# without minutes and seconds
+34°14.088'N	83°31.72062'W	# without seconds
+34°14'5.28"N	83°31'43.2372"W	# full
+
+```
+
+Running `projpicker -p < points.txt` will generate:
+```
+[[34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677]]
+```
+
 ## Querying points
 
 From the shell,
@@ -127,8 +161,8 @@ projpicker 34.2348,-83.8677 "33.7490  -84.3880"
 # read latitude and longitude from stdin
 projpicker <<EOT
 # query points
-34.2348,-83.8677 # UNG Gainesville Campus (delimited by a comma)
-33.7490 -84.3880 # Atlanta (delimited by a whitespace)
+34.2348		83°52'3.72"W	# UNG Gainesville Campus (delimited by a comma)
+33°44'56.4"	-84.3880	# Atlanta (delimited by a whitespace)
 EOT
 ```
 
@@ -150,18 +184,19 @@ projpicker -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
 projpicker -g poly <<EOT
 # poly 1
 # south-west corner
--10,0
-10,0    # north-west corner
+10S,0
+10,0	# north-west corner
         # this comment-only line doesn't start a new poly
 # north-east corner
-10,10
-10,0
+10	10
+# north-west corner
+10	0
 
 poly 2  # "poly 2" is not a comment, but it's not a point either; the line
         # above "poly 2" was neither a comment nor a point, so we start a new
         # poly
-10,20
-30,40
+10	20
+30	40
 EOT
 ```
 
@@ -183,10 +218,10 @@ projpicker -g bbox 0,0,10,10 20,20,50,50
 # read south,north,west,east from stdin
 projpicker -g bbox <<EOT
 # region 1
-0,0,10,10
+0	0	10	10
 
 # region 2
-20,20,50,50
+20	20	50	50
 EOT
 ```
 
