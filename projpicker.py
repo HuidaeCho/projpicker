@@ -70,7 +70,7 @@ CREATE TABLE bbox (
 
 # coordinate regular expression patterns
 coor_pat = "([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))"
-coor_sep_pat = "[, \t][ \t]*"
+coor_sep_pat = "[ \t]*[, \t][ \t]*"
 
 # lat,lon regular expression
 latlon_re = re.compile(f"^{coor_pat}{coor_sep_pat}{coor_pat}$")
