@@ -1303,7 +1303,7 @@ def projpicker(
     geom_type (str): geometry type (point, poly, bbox) (default: point)
     query_mode (str): query mode for multiple geometries (and, or)
                       (default: and)
-    print_geoms (bool): whether or not to print parsed geometries and quit
+    print_geoms (bool): whether or not to print parsed geometries and exit
                         (default: False)
     overwrite (bool): whether or not to overwrite output file (default: False)
     append (bool): whether or not to append output to file (default: False)
@@ -1400,7 +1400,7 @@ def main():
                 https://github.com/HuidaeCho/projpicker for more details""")
     parser.add_argument("-v", "--version",
             action="store_true",
-            help=f"version information ({get_version()})")
+            help=f"print version ({get_version()}) and copyright, and exit")
     parser.add_argument("-c", "--create",
             action="store_true",
             help="create ProjPicker database")
@@ -1428,7 +1428,7 @@ def main():
     parser.add_argument("-p", "--print-geometries",
             action="store_true",
             help="""print parsed geometries in a list form for input validation
-                and quit""")
+                and exit""")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
             help="""query mode for multiple points (default: and); use all to

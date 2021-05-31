@@ -64,7 +64,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         version information (0.1.3.1.post1)
+  -v, --version         print version (0.1.3.1.post1) and copyright, and exit
   -c, --create          create ProjPicker database
   -O, --overwrite       overwrite output files; applies to both projpicker.db
                         and query output file
@@ -82,7 +82,7 @@ optional arguments:
                         geometry type (default: point)
   -p, --print-geometries
                         print parsed geometries in a list form for input
-                        validation and quit
+                        validation and exit
   -q {and,or,all}, --query-mode {and,or,all}
                         query mode for multiple points (default: and); use all
                         to list all bboxes and ignore geometries
