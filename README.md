@@ -122,21 +122,21 @@ From the shell,
 ```bash
 # read latitude and longitude separated by a comma or whitespaces from
 # arguments
-projpicker 34.2348,83.8677 "33.7490  84.3880"
+projpicker 34.2348,-83.8677 "33.7490  -84.3880"
 
 # read latitude and longitude from stdin
 projpicker <<EOT
 # query points
-34.2348,83.8677 # point 1 delimited by a comma
-33.7490 84.3880 # point 2 delimited by a whitespace
+34.2348,-83.8677 # UNG Gainesville Campus (delimited by a comma)
+33.7490 -84.3880 # Atlanta (delimited by a whitespace)
 EOT
 ```
 
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_points([[34.2348, 83.8677],
-                                            [33.7490, 84.3880]]))
+bbox = ppik.listify_bbox(ppik.query_points([[34.2348, -83.8677],
+                                            [33.7490, -84.3880]]))
 ```
 
 ## Querying polylines or polygons
