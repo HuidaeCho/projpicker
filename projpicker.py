@@ -470,7 +470,7 @@ def parse_coor(m, ith, lat):
 
 def parse_lat(m, ith):
     """
-    Parse the ith coordinate as latitude from a matched m.
+    Parse the ith coordinate from a matched m as a latitude.
 
     m (re.Match): re.compile() output
     ith (int): coordinate to parse from m
@@ -480,7 +480,7 @@ def parse_lat(m, ith):
 
 def parse_lon(m, ith):
     """
-    Parse the ith coordinate as longitude from a matched m.
+    Parse the ith coordinate from a matched m as a longitude.
 
     m (re.Match): re.compile() output
     ith (int): coordinate to parse from m

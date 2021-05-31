@@ -138,7 +138,7 @@ The following geometry file `points.txt` contains nine identical points:
 34°14′5.28″N	83°31′43.2372″W	# minute and second symbols
 ```
 
-Running `projpicker -p < points.txt` will generate:
+Running `projpicker -p -i points.txt` will generate:
 ```
 [[34.2348, -83.528677],
  [34.2348, -83.528677],
