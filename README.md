@@ -156,13 +156,13 @@ From the shell,
 ```bash
 # read latitude and longitude separated by a comma or whitespaces from
 # arguments
-projpicker 34.2348,-83.8677 "33.7490  -84.3880"
+projpicker 34.2348,-83.8677 "33.7490  84.3880W"
 
 # read latitude and longitude from stdin
 projpicker <<EOT
 # query points
-34.2348		83°52'3.72"W	# UNG Gainesville Campus (delimited by a comma)
-33°44'56.4"	-84.3880	# Atlanta (delimited by a whitespace)
+34.2348		83°52'3.72"W	# UNG Gainesville Campus
+33°44'56.4"	-84.3880	# Atlanta
 EOT
 ```
 
