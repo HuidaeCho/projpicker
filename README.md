@@ -217,7 +217,7 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
 * Not fully compatible with [semantic versioning](https://semver.org/)
 * Not using build numbers (marching away from or towards a release), but check
   this [interesting
-  read](https://github.com/semver/semver/issues/51#issuecomment-9718111).
+  comment](https://github.com/semver/semver/issues/51#issuecomment-9718111).
 
 ## Sponsor
 
