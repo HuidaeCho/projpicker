@@ -47,7 +47,7 @@ pip3 install projpicker
 ```
 usage: projpicker [-h] [-v] [-c] [-O | -a] [-d PROJPICKER_DB] [-P PROJ_DB]
                   [-g {point,poly,bbox}] [-p] [-q {and,or,all}]
-                  [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
+                  [-f {plain,json,pretty}] [-n] [-s SEPARATOR] [-i INPUT]
                   [-o OUTPUT]
                   [geometry [geometry ...]]
 
@@ -56,11 +56,10 @@ contains given geometries; visit https://github.com/HuidaeCho/projpicker for
 more details
 
 positional arguments:
-  geometry              query geometry in latitude,longitude (point and poly)
-                        or south,north,west,east (bbox) in degrees; points,
-                        points in a poly, or bboxes are separated by a space
-                        and polys are separated by any non-coordinate
-                        character such as a comma
+  geometry              query geometry in latitude,longitude (point or poly)
+                        or south,north,west,east (bbox); each point or bbox is
+                        a separate argument and multiple polys are separated
+                        by any non-coordinate argument such as a comma
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -86,8 +85,8 @@ optional arguments:
   -q {and,or,all}, --query-mode {and,or,all}
                         query mode for multiple points (default: and); use all
                         to ignore query geometries and list all bboxes
-  -f {plain,pretty,json}, --format {plain,pretty,json}
-                        output format
+  -f {plain,json,pretty}, --format {plain,json,pretty}
+                        output format (default: plain)
   -n, --no-header       do not print header for plain output format
   -s SEPARATOR, --separator SEPARATOR
                         separator for plain output format (default: comma)
@@ -131,7 +130,7 @@ The following geometry file `points.txt` contains 11 identical points:
 # degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
 # minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
 # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
-#	  '' (U+0027 U+0027, &apos; &apos), s
+#	  '' (U+0027 U+0027, &apos; &apos;), s
 ####################################################
 34.2348°	-83.8677°	# without minutes, seconds, and [SNWE]
 34°14.088'	-83°52.062'	# without seconds and [SNWE]

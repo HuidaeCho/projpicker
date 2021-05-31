@@ -482,8 +482,6 @@ def parse_coor(m, ith, lat):
     elif m[i+10] is not None:
         # 8,10,11,12: (1)°(2)'(3.4)"(S)
         x = float(m[i+8])+float(m[i+10])/60+float(m[i+11])/3600
-    else:
-        raise Exception("Bug in parsing coordinates")
     if (m[i+2] == "-" or
         (lat and m[i+12] == "S") or (not lat and m[i+12] == "W")):
         x *= -1
@@ -1402,7 +1400,7 @@ def projpicker(
     geoms (list): geometries (default: [])
     infile (str): input geometry file (default: - for stdin)
     outfile (str): output file (default: - for stdout)
-    fmt (str): output format (plain, pretty, json) (default: plain)
+    fmt (str): output format (plain, json, pretty) (default: plain)
     no_header (bool): whether or not to print header for plain (default: False)
     separator (str): separator for plain (default: comma)
     geom_type (str): geometry type (point, poly, bbox) (default: point)
@@ -1453,38 +1451,38 @@ def projpicker(
     mode = "w"
     header = not no_header
     if append and outfile != "-" and os.path.exists(outfile):
-        if fmt == "json":
+        if fmt == "plain":
+            mode = "a"
+            header = False
+        elif fmt == "json":
             with open(outfile) as f:
                 bbox_list = json.load(f)
             bbox_list.extend(listify_bbox(bbox))
             bbox_json = json.dumps(bbox_list)
-        elif fmt == "pretty":
+        else:
             with open(outfile) as f:
                 # https://stackoverflow.com/a/65647108
                 lcls = locals()
                 exec("bbox_list = " + f.read(), globals(), lcls)
                 bbox_list = lcls["bbox_list"]
             bbox_list.extend(listify_bbox(bbox))
-        else:
-            mode = "a"
-            header = False
     elif fmt == "json":
         bbox_json = jsonify_bbox(bbox)
     elif fmt == "pretty":
         bbox_list = listify_bbox(bbox)
 
     f = sys.stdout if outfile == "-" else open(outfile, mode)
-    if fmt == "json":
+    if fmt == "plain":
+        print_bbox(bbox, f, header, separator)
+    elif fmt == "json":
         print(bbox_json, file=f)
-    elif fmt == "pretty":
+    else:
         # sort_dicts was added in Python 3.8, but I'm stuck with 3.7
         # https://docs.python.org/3/library/pprint.html
         if sys.version_info.major == 3 and sys.version_info.minor >= 8:
             pprint.pprint(bbox_list, f, sort_dicts=False)
         else:
             pprint.pprint(bbox_list, f)
-    else:
-        print_bbox(bbox, f, header, separator)
     if outfile != "-":
         f.close()
 
@@ -1536,8 +1534,8 @@ def parse():
             help="""query mode for multiple points (default: and); use all to
                 ignore query geometries and list all bboxes""")
     parser.add_argument("-f", "--format",
-            choices=("plain", "pretty", "json"), default="plain",
-            help="output format")
+            choices=("plain", "json", "pretty"), default="plain",
+            help="output format (default: plain)")
     parser.add_argument("-n", "--no-header",
             action="store_true",
             help="do not print header for plain output format")
