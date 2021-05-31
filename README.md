@@ -157,7 +157,7 @@ projpicker -g poly <<EOT
 10,0
 
 poly 2  # "poly 2" is not a comment, but it's not a point either; the line
-        # above "poly 2" was not either comment nor a point, so we start a new
+        # above "poly 2" was neither comment nor a point, so we start a new
         # poly
 10,20
 30,40
