@@ -123,8 +123,8 @@ The following geometry file `points.txt` contains 11 identical points:
 ################################
 # decimal degrees and separators
 ################################
-34.2348,-83.528677		# comma
-34.2348		-83.528677	# whitespace
+34.2348,-83.8677		# comma
+34.2348		-83.8677	# whitespace
 
 ####################################################
 # degree, minute, and second symbols
@@ -133,30 +133,30 @@ The following geometry file `points.txt` contains 11 identical points:
 # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
 #	  '' (U+0027 U+0027, &apos; &apos), s
 ####################################################
-34.2348°	-83.528677°	 # without minutes, seconds, and [SNWE]
-34°14.088'	-83°31.72062'	 # without seconds and [SNWE]
-34°14'5.28"	-83°31'43.2372"	 # without [SNWE]
-34.2348°N	83.528677°W	 # without minutes and seconds
-34°14.088'N	83°31.72062'W	 # without seconds
-34°14'5.28"N	83°31'43.2372"W	 # full
-34°14′5.28″N	83°31′43.2372″W	 # full using U+2032 and U+2033
-34o14'5.28''N	83o31'43.2372''W # full using o' and ''
-34d14m5.28sN	83d31m43.2372sW	 # full using dms
+34.2348°	-83.8677°	# without minutes, seconds, and [SNWE]
+34°14.088'	-83°52.062'	# without seconds and [SNWE]
+34°14'5.28"	-83°52'3.72"	# without [SNWE]
+34.2348°N	83.8677°W	# without minutes and seconds
+34°14.088'N	83°52.062'W	# without seconds
+34°14'5.28"N	83°52'3.72"W	# full
+34°14′5.28″N	83°52′3.72″W	# full using U+2032 and U+2033
+34o14'5.28''N	83o52'3.72''W	# full using o' and ''
+34d14m5.28sN	83d52m3.72sW	# full using dms
 ```
 
 Running `projpicker -p -i points.txt` will generate:
 ```
-[[34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677],
- [34.2348, -83.528677]]
+[[34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677],
+ [34.2348, -83.8677]]
 ```
 
 ## Querying points
