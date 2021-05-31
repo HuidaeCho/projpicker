@@ -45,8 +45,8 @@ pip3 install projpicker
 ## Command-line usage
 
 ```
-usage: projpicker [-h] [-v] [-c] [-O | -a] [-d PROJPICKER_DB] [-p PROJ_DB]
-                  [-g {point,poly,bbox}] [-q {and,or,all}]
+usage: projpicker [-h] [-v] [-c] [-O | -a] [-d PROJPICKER_DB] [-P PROJ_DB]
+                  [-g {point,poly,bbox}] [-p] [-q {and,or,all}]
                   [-f {plain,pretty,json}] [-n] [-s SEPARATOR] [-i INPUT]
                   [-o OUTPUT]
                   [geometry [geometry ...]]
@@ -71,14 +71,18 @@ optional arguments:
   -a, --append          append to output file if any; applies only to query
                         output file
   -d PROJPICKER_DB, --projpicker-db PROJPICKER_DB
-                        projpicker database path (default: projpicker.db); use
-                        PROJPICKER_DB environment variable to skip this option
-  -p PROJ_DB, --proj-db PROJ_DB
+                        projpicker database path (default: ./projpicker.db);
+                        use PROJPICKER_DB environment variable to skip this
+                        option
+  -P PROJ_DB, --proj-db PROJ_DB
                         proj database path (default: /usr/share/proj/proj.db);
                         use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment
                         variables to skip this option
   -g {point,poly,bbox}, --geometry-type {point,poly,bbox}
                         geometry type (default: point)
+  -p, --print-geometries
+                        print parsed geometries in a list form for input
+                        validation and quit
   -q {and,or,all}, --query-mode {and,or,all}
                         query mode for multiple points (default: and); use all
                         to list all bboxes and ignore geometries
@@ -88,10 +92,11 @@ optional arguments:
   -s SEPARATOR, --separator SEPARATOR
                         separator for plain output format (default: comma)
   -i INPUT, --input INPUT
-                        input geometries path (default: stdin); use - for
+                        input geometries file path (default: stdin); use - for
                         stdin; not used if geometries are given as arguments
   -o OUTPUT, --output OUTPUT
-                        output path (default: stdout); use - for stdout
+                        output bboxes file path (default: stdout); use - for
+                        stdout
 ```
 
 ## Creating the ProjPicker database
