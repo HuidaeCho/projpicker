@@ -124,7 +124,7 @@ The following geometry file `points.txt` contains nine identical points:
 # decimal degrees and separators
 ################################
 34.2348,-83.528677		# comma
-34.2348		-83.528677	# whitespaces
+34.2348		-83.528677	# whitespace
 34.2348°	-83.528677°	# degree symbol
 
 ###############################
@@ -187,12 +187,12 @@ projpicker -g poly <<EOT
 # south-west corner
 10S,0
 10,0	# north-west corner
-        # this comment-only line doesn't start a new poly
+	# this comment-only line doesn't start a new poly
 # north-east corner
 10	10
 # north-west corner
 10	0
-poly 2  # "poly 2" is neither a comment nor a point, so we start a new poly
+poly 2	# "poly 2" is neither a comment nor a point, so we start a new poly
 10	20
 30	40
 EOT
