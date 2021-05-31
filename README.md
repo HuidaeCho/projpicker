@@ -115,13 +115,14 @@ ppik.create_projpicker_db()
 
 From the shell,
 ```bash
-# read latitude,longitude from arguments
-projpicker 34.2348,83.8677 33.7490,84.3880
+# read latitude and longitude separated by a comma or whitespace from arguments
+projpicker 34.2348,83.8677 "33.7490 84.3880"
 
 # read latitude,longitude from stdin
 projpicker <<EOT
-34.2348,83.8677
-33.7490,84.3880
+# query points
+34.2348,83.8677 # point 1
+33.7490 84.3880 # point 2
 EOT
 ```
 
@@ -142,12 +143,17 @@ projpicker -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
 # read latitude,longitude from stdin
 projpicker -g poly <<EOT
 # poly 1
+# south-west corner
 -10,0
-10,0
+10,0    # north-west corner
+        # this comment-only line doesn't start a new poly
+# north-east corner
 10,10
 10,0
 
-# poly 2
+poly 2  # "poly 2" is not a comment, but it's not a point either; the line
+        # above "poly 2" was not either comment nor a point, so we start a new
+        # poly
 10,20
 30,40
 EOT
@@ -165,12 +171,15 @@ bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
 
 From the shell,
 ```bash
-# read s,n,w,e from arguments
+# read south,north,west,east from arguments
 projpicker -g bbox 0,0,10,10 20,20,50,50
 
-# read s,n,w,e from stdin
+# read south,north,west,east from stdin
 projpicker -g bbox <<EOT
+# region 1
 0,0,10,10
+
+# region 2
 20,20,50,50
 EOT
 ```
@@ -191,6 +200,8 @@ bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
    * Desktop
 2. CRS hints
    * Crowdsourcing agency and product information?
+3. Missing projection information? Let's find it using coordinates in latitude
+   and longitude.
 
 ## Versioning
 

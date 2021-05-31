@@ -113,8 +113,7 @@ def get_float(x):
 
 def read_file(infile="-"):
     """
-    Read a file (stdin by default) and return a list of str lines after
-    stripping trailing newlines.
+    Read a file (stdin by default) and return a list of str lines.
 
     infile (str): input filename (default: - for stdin)
     """
@@ -128,12 +127,37 @@ def read_file(infile="-"):
     else:
         f = open(infile)
 
-    lines = []
-    for line in f:
-        lines.append(line.rstrip())
+    lines = f.readlines()
 
     if infile != "-":
         f.close()
+    return lines
+
+
+def tidy_lines(lines):
+    """
+    Tidy a list of str lines by removing leading and trailing whitespaces
+    including newlines. Lines starting with a hash at column 1 are completely
+    ignored as if they did not even exist, but strings after a hash at column
+    greater than 1 are simply removed including the hash and the rest of the
+    line is returned. For example, a line starting with some whitespaces
+    followed by a hash and a comment is returned as an empty str while a line
+    starting with a hash is not returned at all. This function directly
+    modifies the input list to save memory and does not return anything.
+
+    lines (list): list of str lines
+    """
+    for i in reversed(range(len(lines))):
+        if lines[i].startswith("#"):
+            del lines[i]
+        else:
+            commented = False
+            if "#" in lines[i]:
+                lines[i] = lines[i].split("#")[0]
+                commented = True
+            lines[i] = lines[i].strip()
+            if commented and lines[i] == "":
+                del lines[i]
     return lines
 
 
@@ -261,7 +285,7 @@ def calc_area(s, n, w, e):
 
 def get_version():
     with open(os.path.join(module_path, "VERSION")) as f:
-        version = f.read().rstrip()
+        version = f.read().strip()
     return version
 
 
@@ -444,10 +468,8 @@ def parse_points(points):
                 lat, lon = point
                 lat = get_float(lat)
                 lon = get_float(lon)
-        if lat is None or lon is None:
-            message(f"{point}: Invalid coordinates skipped")
-            continue
-        outpoints.append([lat, lon])
+        if lat is not None and lon is not None:
+            outpoints.append([lat, lon])
 
     return outpoints
 
@@ -496,13 +518,12 @@ def parse_polys(polys):
                 p = parse_points(point)
                 if len(p) > 0:
                     outpolys.append(p)
-        if lat is None or lon is None:
+        if lat is not None and lon is not None:
+            poly.append([lat, lon])
+        elif len(poly) > 0:
             # use invalid coordinates as a flag for a new poly
-            if len(poly) > 0:
-                outpolys.append(poly)
-                poly = []
-            continue
-        poly.append([lat, lon])
+            outpolys.append(poly)
+            poly = []
 
     if len(poly) > 0:
         outpolys.append(poly)
@@ -572,12 +593,31 @@ def parse_bboxes(bboxes):
                 n = get_float(n)
                 w = get_float(w)
                 e = get_float(e)
-        if s is None or n is None or w is None or e is None:
-            message(f"{bbox}: Invalid bbox skipped")
-            continue
-        outbboxes.append([s, n, w, e])
+        if s is not None and n is not None and w is not None and e is not None:
+            outbboxes.append([s, n, w, e])
 
     return outbboxes
+
+
+def parse_geoms(geoms, geom_type):
+    """
+    Parse geometries and return them as a list.
+
+    geom (list): list of parseable geometries; see parse_points(),
+                 parse_polys(), and parse_bboxes()
+    geom_type (str): geometry type (point, poly, bbox) (default: point)
+    """
+    if geom_type not in ("point", "poly", "bbox"):
+        raise Exception(f"{geom_type}: Invalid geometry type")
+
+    if geom_type == "point":
+        geoms = parse_points(geoms)
+    elif geom_type == "poly":
+        geoms = parse_polys(geoms)
+    else:
+        geoms = parse_bboxes(geoms)
+
+    return geoms
 
 
 ################################################################################
@@ -1135,13 +1175,14 @@ def query_all(projpicker_db=None):
 
 def stringify_bbox(bbox, header=True, separator=","):
     """
-    Convert bbox results to a str.
+    Convert bbox results to a str. If there are no results, an empty string is
+    returned.
 
     bbox (list): list of bbox results
     header (bool): whether or not to print header (default: True)
     separator (str): separator (default: comma)
     """
-    if header:
+    if header and len(bbox) > 0:
         out = ("proj_table,"
                "crs_auth_name,crs_code,"
                "usage_auth_name,usage_code,"
@@ -1233,6 +1274,7 @@ def projpicker(
         no_header=False,
         separator=",",
         geom_type="point",
+        print_geoms=False,
         query_mode="and",
         overwrite=False,
         append=False,
@@ -1263,6 +1305,8 @@ def projpicker(
     geom_type (str): geometry type (point, poly, bbox) (default: point)
     query_mode (str): query mode for multiple geometries (and, or)
                       (default: and)
+    print_geoms (bool): whether or not to print parsed geometries and quit
+                        (default: False)
     overwrite (bool): whether or not to overwrite output file (default: False)
     append (bool): whether or not to append output to file (default: False)
     projpicker_db (str): projpicker.db path (default: None)
@@ -1295,6 +1339,10 @@ def projpicker(
             (not create and (len(geoms) == 0 or infile != "-" or
                              not sys.stdin.isatty()))):
             geoms.extend(read_file(infile))
+        tidy_lines(geoms)
+        if print_geoms:
+            pprint.pprint(parse_geoms(geoms, geom_type))
+            return
         if len(geoms) == 0:
             return
         bbox = query_geoms(geoms, geom_type, query_mode, projpicker_db)
@@ -1371,7 +1419,7 @@ def main():
             default=projpicker_db,
             help=f"""projpicker database path (default: {projpicker_db}); use
                 PROJPICKER_DB environment variable to skip this option""")
-    parser.add_argument("-p", "--proj-db",
+    parser.add_argument("-P", "--proj-db",
             default=proj_db,
             help=f"""proj database path (default: {proj_db}); use PROJ_DB or
                 PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this
@@ -1379,6 +1427,10 @@ def main():
     parser.add_argument("-g", "--geometry-type",
             choices=("point", "poly", "bbox"), default="point",
             help="geometry type (default: point)")
+    parser.add_argument("-p", "--print-geometries",
+            action="store_true",
+            help="""print parsed geometries in a list form for input validation
+                and quit""")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
             help="""query mode for multiple points (default: and); use all to
@@ -1394,11 +1446,11 @@ def main():
             help="separator for plain output format (default: comma)")
     parser.add_argument("-i", "--input",
             default="-",
-            help="""input geometries path (default: stdin); use - for stdin;
-                not used if geometries are given as arguments""")
+            help="""input geometries file path (default: stdin); use - for
+                stdin; not used if geometries are given as arguments""")
     parser.add_argument("-o", "--output",
             default="-",
-            help="output path (default: stdout); use - for stdout")
+            help="output bboxes file path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
             help="""query geometry in latitude,longitude (point and poly) or
                 south,north,west,east (bbox) in degrees; points, points in a
@@ -1414,6 +1466,7 @@ def main():
     projpicker_db = args.projpicker_db
     proj_db = args.proj_db
     geom_type = args.geometry_type
+    print_geoms = args.print_geometries
     query_mode = args.query_mode
     fmt = args.format
     no_header = args.no_header
@@ -1439,6 +1492,7 @@ There is NO WARRANTY, to the extent permitted by law.""")
             no_header,
             separator,
             geom_type,
+            print_geoms,
             query_mode,
             overwrite,
             append,
