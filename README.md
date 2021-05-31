@@ -125,11 +125,11 @@ The following geometry file `points.txt` contains nine identical points:
 ################################
 34.2348,-83.528677		# comma
 34.2348		-83.528677	# whitespace
-34.2348°	-83.528677°	# degree symbol
 
 ###############################
 # degrees, minutes, and seconds
 ###############################
+34.2348°	-83.528677°	# without minutes, seconds, and [SNWE]
 34°14.088'	-83°31.72062'	# without seconds and [SNWE]
 34°14'5.28"	-83°31'43.2372"	# without [SNWE]
 34.2348°N	83.528677°W	# without minutes and seconds
