@@ -118,7 +118,7 @@ ppik.create_projpicker_db()
 
 ## Supported coordinate formats
 
-The following geometry file `points.txt` contains nine identical points:
+The following geometry file `points.txt` contains 11 identical points:
 ```
 ################################
 # decimal degrees and separators
@@ -126,21 +126,29 @@ The following geometry file `points.txt` contains nine identical points:
 34.2348,-83.528677		# comma
 34.2348		-83.528677	# whitespace
 
-###############################
-# degrees, minutes, and seconds
-###############################
-34.2348°	-83.528677°	# without minutes, seconds, and [SNWE]
-34°14.088'	-83°31.72062'	# without seconds and [SNWE]
-34°14'5.28"	-83°31'43.2372"	# without [SNWE]
-34.2348°N	83.528677°W	# without minutes and seconds
-34°14.088'N	83°31.72062'W	# without seconds
-34°14'5.28"N	83°31'43.2372"W	# full
-34°14′5.28″N	83°31′43.2372″W	# minute and second symbols
+####################################################
+# degree, minute, and second symbols
+# degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
+# minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
+# second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
+#	  '' (U+0027 U+0027, &apos; &apos), s
+####################################################
+34.2348°	-83.528677°	 # without minutes, seconds, and [SNWE]
+34°14.088'	-83°31.72062'	 # without seconds and [SNWE]
+34°14'5.28"	-83°31'43.2372"	 # without [SNWE]
+34.2348°N	83.528677°W	 # without minutes and seconds
+34°14.088'N	83°31.72062'W	 # without seconds
+34°14'5.28"N	83°31'43.2372"W	 # full
+34°14′5.28″N	83°31′43.2372″W	 # full using U+2032 and U+2033
+34o14'5.28''N	83o31'43.2372''W # full using o' and ''
+34d14m5.28sN	83d31m43.2372sW	 # full using dms
 ```
 
 Running `projpicker -p -i points.txt` will generate:
 ```
 [[34.2348, -83.528677],
+ [34.2348, -83.528677],
+ [34.2348, -83.528677],
  [34.2348, -83.528677],
  [34.2348, -83.528677],
  [34.2348, -83.528677],

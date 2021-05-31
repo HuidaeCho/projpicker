@@ -73,13 +73,18 @@ CREATE TABLE bbox (
 coor_sep_pat = "[ \t]*[, \t][ \t]*"
 # positive float
 pos_float_pat = "(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)"
+# symbols for degrees, minutes, and seconds (DMS)
+# degree: [°od] (alt+0 in xterm for °)
+# minute: ['′m]
+# second: ["″s]|''
 # decimal degrees
-dd_pat = f"([+-]?{pos_float_pat})°?"
-# degrees, minutes, and seconds (DMS) without [SNWE]
-dms_pat = (f"([0-9]+)(?:°(?:[ \t]*(?:({pos_float_pat})['′]|([0-9]+)['′]"
-           f"""(?:[ \t]*({pos_float_pat})["″])?))?)?""")
+dd_pat = f"([+-]?{pos_float_pat})[°od]?"
+# DMS without [SNWE]
+dms_pat = (f"([0-9]+)(?:[°od](?:[ \t]*(?:({pos_float_pat})['′m]|([0-9]+)['′m]"
+           f"""(?:[ \t]*({pos_float_pat})(?:["″s]|''))?))?)?""")
 # coordinate without [SNWE]
-coor_pat = f"{dd_pat}|([+-])?{dms_pat}|(?:({pos_float_pat})°?|{dms_pat})[ \t]*"
+coor_pat = (f"{dd_pat}|([+-])?{dms_pat}|"
+            f"(?:({pos_float_pat})[°od]?|{dms_pat})[ \t]*")
 # latitude
 lat_pat = f"(?:{coor_pat}([SN])?)"
 # longitude
