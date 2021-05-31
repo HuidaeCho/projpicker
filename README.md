@@ -120,14 +120,15 @@ ppik.create_projpicker_db()
 
 From the shell,
 ```bash
-# read latitude and longitude separated by a comma or whitespace from arguments
-projpicker 34.2348,83.8677 "33.7490 84.3880"
+# read latitude and longitude separated by a comma or whitespaces from
+# arguments
+projpicker 34.2348,83.8677 "33.7490  84.3880"
 
-# read latitude,longitude from stdin
+# read latitude and longitude from stdin
 projpicker <<EOT
 # query points
-34.2348,83.8677 # point 1
-33.7490 84.3880 # point 2
+34.2348,83.8677 # point 1 delimited by a comma
+33.7490 84.3880 # point 2 delimited by a whitespace
 EOT
 ```
 
