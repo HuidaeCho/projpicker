@@ -1709,32 +1709,32 @@ def parse():
     output_exclusive = parser.add_mutually_exclusive_group()
     output_exclusive.add_argument("-O", "--overwrite",
             action="store_true",
-            help="""overwrite output files; applies to both projpicker.db and
-                query output file""")
+            help="overwrite output files; applies to both projpicker.db and "
+                 "query output file")
     output_exclusive.add_argument("-a", "--append",
             action="store_true",
-            help="""append to output file if any; applies only to query output
-                file""")
+            help="append to output file if any; applies only to query output "
+                 "file")
     parser.add_argument("-d", "--projpicker-db",
             default=projpicker_db,
-            help=f"""projpicker database path (default: {projpicker_db}); use
-                PROJPICKER_DB environment variable to skip this option""")
+            help=f"projpicker database path (default: {projpicker_db}); use "
+                  "PROJPICKER_DB environment variable to skip this option")
     parser.add_argument("-P", "--proj-db",
             default=proj_db,
-            help=f"""proj database path (default: {proj_db}); use PROJ_DB or
-                PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this
-                option""")
+            help=f"proj database path (default: {proj_db}); use PROJ_DB or "
+                  "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip "
+                  "this option")
     parser.add_argument("-g", "--geometry-type",
             choices=("point", "poly", "bbox"), default="point",
             help="geometry type (default: point)")
     parser.add_argument("-p", "--print-geometries",
             action="store_true",
-            help="""print parsed geometries in a list form for input validation
-                and exit""")
+            help="print parsed geometries in a list form for input validation "
+                  "and exit")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
-            help="""query mode for multiple points (default: and); use all to
-                ignore query geometries and list all bboxes""")
+            help="query mode for multiple points (default: and); use all to "
+                 "ignore query geometries and list all bboxes")
     parser.add_argument("-f", "--format",
             choices=("plain", "json", "pretty"), default="plain",
             help="output format (default: plain)")
@@ -1746,8 +1746,8 @@ def parse():
             help="separator for plain output format (default: comma)")
     parser.add_argument("-i", "--input",
             default="-",
-            help="""input geometry file path (default: stdin); use - for stdin;
-                not used if geometries are given as arguments""")
+            help="input geometry file path (default: stdin); use - for stdin; "
+                 "not used if geometries are given as arguments")
     parser.add_argument("-o", "--output",
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
