@@ -722,7 +722,7 @@ def parse_bbox(bbox):
 
     Returns:
         float, float, float, float: South, north, west, and east in decimal
-            degrees.
+        degrees.
     """
     s = n = w = e = None
     typ = type(bbox)
@@ -764,7 +764,7 @@ def parse_bboxes(bboxes):
 
     Returns:
         list: List of lists of parsed south, north, west, and east floats in
-            decimal degrees.
+        decimal degrees.
     """
     outbboxes = []
 
