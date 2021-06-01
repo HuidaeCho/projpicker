@@ -13,6 +13,9 @@ This project was motivated by [a GRASS GIS feature request](
 https://github.com/OSGeo/grass/issues/1253). It is a work in progress; join
 [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 
+See also [the command-line and API documentation](
+https://projpicker.readthedocs.io/en/latest/).
+
 ## Branches
 
 ### main
