@@ -52,6 +52,15 @@ standard modules:
 
 ```bash
 pip3 install projpicker
+
+# or if you're not a root
+pip3 install --user projpicker
+
+# to install development versions
+pip3 install --pre projpicker
+
+# or if you're not a root
+pip3 install --pre --user projpicker
 ```
 
 ## Command-line usage
