@@ -1698,65 +1698,83 @@ def parse():
 
     parser = argparse.ArgumentParser(
             description="ProjPicker finds coordinate reference systems (CRSs) "
-                        "whose bounding box contains given geometries; visit "
-                        "https://github.com/HuidaeCho/projpicker for more "
-                        "details")
-    parser.add_argument("-v", "--version",
+                "whose bounding box contains given geometries; visit "
+                "https://github.com/HuidaeCho/projpicker for more details")
+    parser.add_argument(
+            "-v", "--version",
             action="store_true",
             help=f"print version ({get_version()}) and copyright, and exit")
-    parser.add_argument("-c", "--create",
+    parser.add_argument(
+            "-c", "--create",
             action="store_true",
             help="create ProjPicker database")
     output_exclusive = parser.add_mutually_exclusive_group()
-    output_exclusive.add_argument("-O", "--overwrite",
+    output_exclusive.add_argument(
+            "-O", "--overwrite",
             action="store_true",
             help="overwrite output files; applies to both projpicker.db and "
-                 "query output file")
-    output_exclusive.add_argument("-a", "--append",
+                "query output file")
+    output_exclusive.add_argument(
+            "-a", "--append",
             action="store_true",
             help="append to output file if any; applies only to query output "
-                 "file")
-    parser.add_argument("-d", "--projpicker-db",
+                "file")
+    parser.add_argument(
+            "-d", "--projpicker-db",
             default=projpicker_db,
             help=f"projpicker database path (default: {projpicker_db}); use "
-                 "PROJPICKER_DB environment variable to skip this option")
-    parser.add_argument("-P", "--proj-db",
+                "PROJPICKER_DB environment variable to skip this option")
+    parser.add_argument(
+            "-P", "--proj-db",
             default=proj_db,
             help=f"proj database path (default: {proj_db}); use PROJ_DB or "
-                 "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip "
-                 "this option")
-    parser.add_argument("-g", "--geometry-type",
-            choices=("point", "poly", "bbox"), default="point",
+                "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this "
+                "option")
+    parser.add_argument(
+            "-g", "--geometry-type",
+            choices=("point", "poly", "bbox"),
+            default="point",
             help="geometry type (default: point)")
-    parser.add_argument("-p", "--print-geometries",
+    parser.add_argument(
+            "-p", "--print-geometries",
             action="store_true",
             help="print parsed geometries in a list form for input validation "
-                 "and exit")
-    parser.add_argument("-q", "--query-mode",
-            choices=("and", "or", "all"), default="and",
+                "and exit")
+    parser.add_argument(
+            "-q", "--query-mode",
+            choices=("and", "or", "all"),
+            default="and",
             help="query mode for multiple points (default: and); use all to "
-                 "ignore query geometries and list all bboxes")
-    parser.add_argument("-f", "--format",
-            choices=("plain", "json", "pretty"), default="plain",
+                "ignore query geometries and list all bboxes")
+    parser.add_argument(
+            "-f", "--format",
+            choices=("plain", "json", "pretty"),
+            default="plain",
             help="output format (default: plain)")
-    parser.add_argument("-n", "--no-header",
+    parser.add_argument(
+            "-n", "--no-header",
             action="store_true",
             help="do not print header for plain output format")
-    parser.add_argument("-s", "--separator",
+    parser.add_argument(
+            "-s", "--separator",
             default=",",
             help="separator for plain output format (default: comma)")
-    parser.add_argument("-i", "--input",
+    parser.add_argument(
+            "-i", "--input",
             default="-",
             help="input geometry file path (default: stdin); use - for stdin; "
-                 "not used if geometries are given as arguments")
-    parser.add_argument("-o", "--output",
+                "not used if geometries are given as arguments")
+    parser.add_argument(
+            "-o", "--output",
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
-    parser.add_argument("geometry", nargs="*",
+    parser.add_argument(
+            "geometry",
+            nargs="*",
             help="query geometry in latitude,longitude (point or poly) or "
-                 "south,north,west,east (bbox); each point or bbox is a "
-                 "separate argument and multiple polys are separated by any "
-                 "non-coordinate argument such as a comma")
+                "south,north,west,east (bbox); each point or bbox is a "
+                "separate argument and multiple polys are separated by any "
+                "non-coordinate argument such as a comma")
     return parser
 
 
