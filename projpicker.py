@@ -153,6 +153,9 @@ def read_file(infile="-"):
 
     Returns:
         list: List of str lines read from infile.
+
+    Raises:
+        Exception: If infile does not exist.
     """
     if infile in (None, ""):
         infile = "-"
@@ -215,6 +218,9 @@ def calc_xy_at_lat_scaling(lat):
 
     Returns:
         float, float: x and y.
+
+    Raises:
+        Exception: If lat is outside [-90, 90].
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -277,6 +283,9 @@ def calc_radius_at_lat(lat):
 
     Returns:
         float: Radius.
+
+    Raises:
+        Exception: If lat is outside [-90, 90].
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -304,13 +313,16 @@ def calc_area(s, n, w, e):
 
     Returns:
         float: Area in square kilometers.
+
+    Raises:
+        Exception: If s or n is outside [-90, 90], or s is greater than n.
     """
     if not -90 <= s <= 90:
         raise Exception(f"{s}: Invalid south latitude")
     if not -90 <= n <= 90:
         raise Exception(f"{n}: Invalid south latitude")
     if s > n:
-        raise Exception(f"South latitude ({s}) greater than north latitude ({n})")
+        raise Exception(f"South ({s}) greater than north ({n})")
 
     lats = []
     nlats = math.ceil(n-s)+1
@@ -418,6 +430,9 @@ def create_projpicker_db(
             to False.
         projpicker_db (str): projpicker.db path. Defaults to None.
         proj_db (str): proj.db path. Defaults to None.
+
+    Raises:
+        Exception: If projpicker_db already exists.
     """
 
     projpicker_db = get_projpicker_db(projpicker_db)
@@ -783,6 +798,9 @@ def parse_geoms(geoms, geom_type="point"):
 
     Returns:
         list: List of parsed geometries in decimal degrees.
+
+    Raises:
+        Exception: If geom_type is not one of "point", "poly", or "bbox".
     """
     if geom_type not in ("point", "poly", "bbox"):
         raise Exception(f"{geom_type}: Invalid geometry type")
@@ -1379,6 +1397,10 @@ def query_geoms(
 
     Returns:
         list: List of queried bbox rows.
+
+    Raises:
+        Exception: If geom_type is not one of "point", "poly", or "bbox", or
+            query_mode is not one of "and" or "or".
     """
     if geom_type not in ("point", "poly", "bbox"):
         raise Exception(f"{geom_type}: Invalid geometry type")
@@ -1581,6 +1603,12 @@ def projpicker(
         proj_db (str): proj.db path. Defaults to None.
         create (bool): Whether or not to create a new projpicker.db. Defaults
             to False.
+
+    Raises:
+        Exception: If both overwrite and append are True, either projpicker_db
+            or outfile already exists when overwrite is False, proj_db does not
+            exist when create is True, or projpicker_db does not exist when
+            create is False.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
