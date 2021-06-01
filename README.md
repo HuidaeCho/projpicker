@@ -9,9 +9,10 @@ easy and visual to select a desired projection by location.
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
 
-It is a work in progress. Read [a related feature request for
-GRASS](https://github.com/OSGeo/grass/issues/1253) and join
-[discussions](https://github.com/HuidaeCho/projpicker/wiki).
+This project was motivated by [a GRASS GIS feature request](
+https://github.com/OSGeo/grass/issues/1253). It is a work in progress. Read
+[a related feature request for GRASS](https://github.com/OSGeo/grass/issues/1253)
+and join [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 
 The single Python script `projpicker.py` provides the CLI and API for
 ProjPicker.
@@ -38,7 +39,8 @@ standard modules:
 
 ## Installation
 
-Python package: https://pypi.org/project/projpicker/
+* [GitHub repository](https://github.com/HuidaeCho/projpicker)
+* [Python package](https://pypi.org/project/projpicker/)
 
 ```bash
 pip3 install projpicker
