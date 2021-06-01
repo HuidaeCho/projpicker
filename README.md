@@ -113,7 +113,8 @@ optional arguments:
                         separator for plain output format (default: comma)
   -i INPUT, --input INPUT
                         input geometry file path (default: stdin); use - for
-                        stdin; not used if geometries are given as arguments
+                        stdin; appended to geometries from arguments unless it
+                        is stdin with no incoming data
   -o OUTPUT, --output OUTPUT
                         output bbox file path (default: stdout); use - for
                         stdout
