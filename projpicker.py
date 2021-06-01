@@ -1763,7 +1763,8 @@ def parse():
             "-i", "--input",
             default="-",
             help="input geometry file path (default: stdin); use - for stdin; "
-                "not used if geometries are given as arguments")
+                "appended to geometries from arguments unless it is stdin with "
+                "no incoming data")
     parser.add_argument(
             "-o", "--output",
             default="-",
