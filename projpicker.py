@@ -1719,19 +1719,19 @@ def parse():
     parser.add_argument("-d", "--projpicker-db",
             default=projpicker_db,
             help=f"projpicker database path (default: {projpicker_db}); use "
-                  "PROJPICKER_DB environment variable to skip this option")
+                 "PROJPICKER_DB environment variable to skip this option")
     parser.add_argument("-P", "--proj-db",
             default=proj_db,
             help=f"proj database path (default: {proj_db}); use PROJ_DB or "
-                  "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip "
-                  "this option")
+                 "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip "
+                 "this option")
     parser.add_argument("-g", "--geometry-type",
             choices=("point", "poly", "bbox"), default="point",
             help="geometry type (default: point)")
     parser.add_argument("-p", "--print-geometries",
             action="store_true",
             help="print parsed geometries in a list form for input validation "
-                  "and exit")
+                 "and exit")
     parser.add_argument("-q", "--query-mode",
             choices=("and", "or", "all"), default="and",
             help="query mode for multiple points (default: and); use all to "
