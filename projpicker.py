@@ -623,7 +623,7 @@ def parse_points(points):
 
     Returns:
         list: List of lists of parsed latitude and longitude floats in decimal
-            degrees.
+        degrees.
     """
     outpoints = []
 
@@ -664,7 +664,7 @@ def parse_polys(polys):
 
     Returns:
         list: List of lists of lists of parsed latitude and longitude floats in
-            decimal degrees.
+        decimal degrees.
     """
     outpolys = []
     poly = []
