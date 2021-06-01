@@ -7,6 +7,7 @@ Welcome to ProjPicker's documentation!
    :caption: Program reference:
 
    cli
+   functions
 
 
 
