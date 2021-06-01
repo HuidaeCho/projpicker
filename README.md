@@ -6,16 +6,12 @@
 [ProjPicker](https://github.com/HuidaeCho/projpicker) (projection picker)
 allows the user to select all projections whose extent completely contains
 given points, polylines, polygons, and bounding boxes. The goal is to make it
-easy and visual to select a desired projection by location.
+easy and visual to select a desired projection by location. This project was
+motivated by [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
+It is a work in progress; join [discussions](https://github.com/HuidaeCho/projpicker/wiki).
+See also [the command-line and API documentation](https://projpicker.readthedocs.io/en/latest/).
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
-
-This project was motivated by [a GRASS GIS feature request](
-https://github.com/OSGeo/grass/issues/1253). It is a work in progress; join
-[discussions](https://github.com/HuidaeCho/projpicker/wiki).
-
-See also [the command-line and API documentation](
-https://projpicker.readthedocs.io/en/latest/).
 
 ## Branches
 
