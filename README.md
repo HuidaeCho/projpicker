@@ -23,10 +23,10 @@ ProjPicker.
 ### rtree-oop
 
 The [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
-utilizes the rtree module in an object-oriented programming (OOP) way. This
-branch supports point intersection. The rtree spatial indexing may not be able
-to handle reversed west and east longitudinal boundaries that cross the
-antimeridian.
+utilizes [the rtree module](https://github.com/Toblerity/rtree) in an
+object-oriented programming (OOP) way. This branch supports point intersection.
+The rtree spatial indexing may not be able to handle reversed west and east
+longitudinal boundaries that cross the antimeridian.
 
 ## Requirements
 
