@@ -119,13 +119,9 @@ def message(msg="", end=None):
     """
     Print msg to stderr immediately.
 
-    Parameters
-    ----------
-
-    msg : str, default=""
-        message
-    end : str, default=None
-        passed to print()
+    Args:
+        msg (str): Message to print. Defaults to "".
+        end (str): Passed to print(). Defaults to None.
     """
     print(msg, end=end, file=sys.stderr, flush=True)
 
@@ -134,7 +130,11 @@ def get_float(x):
     """
     Typecast x into float; return None on failure.
 
-    x (str or float): float in str or float
+    Args:
+        x (str or float): Float in str or float.
+
+    Returns:
+        float or None: Typecasted x in float if successful, None otherwise.
     """
     if type(x) != float:
         try:
@@ -148,7 +148,14 @@ def read_file(infile="-"):
     """
     Read a file (stdin by default) and return a list of str lines.
 
-    infile (str): input filename (default: - for stdin)
+    Args:
+        infile (str): Input filename. Defaults to "-" for stdin.
+
+    Returns:
+        list: List of str lines read from infile.
+
+    Raises:
+        Exception: If infile does not exist.
     """
     if infile in (None, ""):
         infile = "-"
@@ -176,7 +183,11 @@ def tidy_lines(lines):
     line and deleted. This function directly modifies the input list to save
     memory and does not return anything.
 
-    lines (list): list of str lines
+    Args:
+        lines (list): List of str lines.
+
+    Returns:
+        list: List of tidied str lines.
     """
     for i in reversed(range(len(lines))):
         if lines[i].startswith("#"):
@@ -202,7 +213,14 @@ def calc_xy_at_lat_scaling(lat):
     the right equatorial point and North Pole, respectively. The x-y space is
     first scaled to [-1, 1]**2, which is then rescaled back to x-y later.
 
-    lat (float): latitude in decimal degrees
+    Args:
+        lat (float): Latitude in decimal degrees.
+
+    Returns:
+        float, float: x and y.
+
+    Raises:
+        Exception: If lat is outside [-90, 90].
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -226,7 +244,11 @@ def calc_xy_at_lat_noscaling(lat):
     latitude is first determined, and x and y are calculated using trigonometry
     functions.
 
-    lat (float): latitude in decimal degrees
+    Args:
+        lat (float): Latitude in decimal degrees.
+
+    Returns:
+        float, float: x and y.
     """
     # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
     r = calc_radius_at_lat(lat)
@@ -243,7 +265,11 @@ def calc_horiz_radius_at_lat(lat):
     """
     Calculate the horizontal distance from the y-axis to the latitude line.
 
-    lat (float): latitude in decimal degrees
+    Args:
+        lat (float): Latitude in decimal degrees.
+
+    Returns:
+        float: Radius.
     """
     return calc_xy_at_lat(lat)[0]
 
@@ -252,7 +278,14 @@ def calc_radius_at_lat(lat):
     """
     Calculate the distance from the center to the latitude line.
 
-    lat (float): latitude in decimal degrees
+    Args:
+        lat (float): Latitude in decimal degrees.
+
+    Returns:
+        float: Radius.
+
+    Raises:
+        Exception: If lat is outside [-90, 90].
     """
     if not -90 <= lat <= 90:
         raise Exception(f"{lat}: Invalid latitude")
@@ -267,22 +300,29 @@ def calc_radius_at_lat(lat):
 
 def calc_area(s, n, w, e):
     """
-    Calculate the surface area of the segment defined by south and north
-    latitudes and west and east longitudes. North latitude must be greater than
-    or equal to south latitude, but east longitude can be less than west
-    longitude wieh the segment crosses the antimeridian.
+    Calculate the surface area of the segment defined by south, north, west,
+    and east floats in decimal degrees. North latitude must be greater than or
+    equal to south latitude, but east longitude can be less than west longitude
+    wieh the segment crosses the antimeridian.
 
-    s (float): south latitude in decimal degrees
-    n (float): north latitude in decimal degrees
-    w (float): west longitude in decimal degrees
-    e (float): east longitude in decimal degrees
+    Args:
+        s (float): South latitude in decimal degrees.
+        n (float): North latitude in decimal degrees.
+        w (float): West longitude in decimal degrees.
+        e (float): East longitude in decimal degrees.
+
+    Returns:
+        float: Area in square kilometers.
+
+    Raises:
+        Exception: If s or n is outside [-90, 90], or s is greater than n.
     """
     if not -90 <= s <= 90:
         raise Exception(f"{s}: Invalid south latitude")
     if not -90 <= n <= 90:
         raise Exception(f"{n}: Invalid south latitude")
     if s > n:
-        raise Exception(f"South latitude ({s}) greater than north latitude ({n})")
+        raise Exception(f"South ({s}) greater than north ({n})")
 
     lats = []
     nlats = math.ceil(n-s)+1
@@ -315,6 +355,12 @@ def calc_area(s, n, w, e):
 # version and default paths
 
 def get_version():
+    """
+    Return the ProjPicker version str from the VERSION file.
+
+    Returns:
+        str: ProjPicker version.
+    """
     with open(os.path.join(module_path, "VERSION")) as f:
         version = f.read().strip()
     return version
@@ -326,7 +372,12 @@ def get_projpicker_db(projpicker_db=None):
     is. Otherwise (None), check the PROJPICKER_DB environment variable. If this
     variable is not available, return the default "projpicker.db".
 
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        projpicker_db (str): User-provided projpicker.db path. Defaults to
+            None.
+
+    Returns:
+        str: projpicker.db path.
     """
     if projpicker_db is None:
         if projpicker_db_env in os.environ:
@@ -339,11 +390,16 @@ def get_projpicker_db(projpicker_db=None):
 def get_proj_db(proj_db=None):
     """
     Return the proj.db path. If one is given as an argument, return it as is.
-    Otherwise (None), check the PROJ_DB environment variable. If this variable is not
-    available, check the PROJ_LIB environment variable as it is likely to be
-    set by PROJ. If none works, return the default "/usr/share/proj/proj.db".
+    Otherwise (None), check the PROJ_DB environment variable. If this variable
+    is not available, check the PROJ_LIB environment variable as it is likely
+    to be set by PROJ. If none works, return the default
+    "/usr/share/proj/proj.db".
 
-    proj_db (str): proj.db path (default: None)
+    Args:
+        proj_db (str): User-provided proj.db path. Defaults to None.
+
+    Returns:
+        str: proj.db path.
     """
     if proj_db is None:
         if proj_db_env in os.environ:
@@ -369,19 +425,14 @@ def create_projpicker_db(
     Create a projpicker.db sqlite database. If projpicker_db or proj_db is None
     (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
+    Args:
+        overwrite (bool): Whether or not to overwrite projpicker.db. Defaults
+            to False.
+        projpicker_db (str): projpicker.db path. Defaults to None.
+        proj_db (str): proj.db path. Defaults to None.
 
-    Parameters
-    ----------
-
-    overwrite : bool
-        whether or not to overwrite projpicker.db
-
-    projpicker_db : str
-        projpicker.db path
-
-    proj_db : str
-        proj.db path
-
+    Raises:
+        Exception: If projpicker_db already exists.
     """
 
     projpicker_db = get_projpicker_db(projpicker_db)
@@ -459,9 +510,13 @@ def parse_coor(m, ith, lat):
     degrees, minutes, and seconds (DMS), lat is used to determine its
     negativity.
 
-    m (re.Match): re.compile() output
-    ith (int): zero-based index for coordinate to parse from m
-    lat (bool): True if parsing latitude; False otherwise
+    Args:
+        m (re.Match): re.compile() output.
+        ith (int): Zero-based index for coordinate to parse from m.
+        lat (bool): True if parsing latitude, False otherwise.
+
+    Returns:
+        float: Parsed coordinate in decimal degrees.
     """
     i = 12*ith
     if m[i+1] is not None:
@@ -492,8 +547,12 @@ def parse_lat(m, ith):
     """
     Parse the ith coordinate from a matched m as a latitude.
 
-    m (re.Match): re.compile() output
-    ith (int): coordinate to parse from m
+    Args:
+        m (re.Match): re.compile() output.
+        ith (int): Coordinate to parse from m as latitude..
+
+    Returns:
+        float: Parsed latitude in decimal degrees.
     """
     return parse_coor(m, ith, True)
 
@@ -502,8 +561,12 @@ def parse_lon(m, ith):
     """
     Parse the ith coordinate from a matched m as a longitude.
 
-    m (re.Match): re.compile() output
-    ith (int): coordinate to parse from m
+    Args:
+        m (re.Match): re.compile() output.
+        ith (int): Coordinate to parse from m as longitude.
+
+    Returns:
+        float: Parsed longitude in decimal degrees.
     """
     return parse_coor(m, ith, False)
 
@@ -518,7 +581,11 @@ def parse_point(point):
 
     For example, "10,20" returns (10.0, 20.0).
 
-    point (str): parseable str of latitude and longitude
+    Args:
+        point (str): Parseable str of latitude and longitude.
+
+    Returns:
+        float, float: Parsed latitude and longitude in decimal degrees.
     """
     lat = lon = None
     typ = type(point)
@@ -551,7 +618,12 @@ def parse_points(points):
     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]] with a warning about the
     unparseable comma.
 
-    points (list): list of parseable strs of latitude and longitude
+    Args:
+        points (list): List of parseable strs of latitude and longitude.
+
+    Returns:
+        list: List of lists of parsed latitude and longitude floats in decimal
+            degrees.
     """
     outpoints = []
 
@@ -586,8 +658,13 @@ def parse_polys(polys):
     [[1,2], "3,4", ",", "5,6", [7,8]] returns the same
     [[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]].
 
-    points (list): list of parseable strs of latitude and longitude with an
-                   unparseable str as a poly separator
+    Args:
+        points (list): List of parseable strs of latitude and longitude with an
+            unparseable str as a poly separator.
+
+    Returns:
+        list: List of lists of lists of parsed latitude and longitude floats in
+            decimal degrees.
     """
     outpolys = []
     poly = []
@@ -640,7 +717,12 @@ def parse_bbox(bbox):
 
     For example, "10,20,30,40" returns (10.0, 20.0, 30.0, 40.0).
 
-    bbox (str): parseable str of south, north, west, and east
+    Args:
+        bbox (str): Parseable str of south, north, west, and east.
+
+    Returns:
+        float, float, float, float: South, north, west, and east in decimal
+            degrees.
     """
     s = n = w = e = None
     typ = type(bbox)
@@ -677,7 +759,12 @@ def parse_bboxes(bboxes):
     For example, ["10,20,30,40", [50,60,70,80]] returns
     [[10.0, 20.0, 30.0, 40.0], [50.0, 60.0, 70.0, 80.0]]
 
-    bboxes (list): list of parseable strs of south, north, west, and east
+    Args:
+        bboxes (list): List of parseable strs of south, north, west, and east.
+
+    Returns:
+        list: List of lists of parsed south, north, west, and east floats in
+            decimal degrees.
     """
     outbboxes = []
 
@@ -699,13 +786,21 @@ def parse_bboxes(bboxes):
     return outbboxes
 
 
-def parse_geoms(geoms, geom_type):
+def parse_geoms(geoms, geom_type="point"):
     """
     Parse geometries and return them as a list.
 
-    geom (list): list of parseable geometries; see parse_points(),
-                 parse_polys(), and parse_bboxes()
-    geom_type (str): geometry type (point, poly, bbox) (default: point)
+    Args:
+        geom (list): List of parseable geometries. See parse_points(),
+            parse_polys(), and parse_bboxes().
+        geom_type (str): Geometry type (point, poly, bbox). Defaults to
+            "point".
+
+    Returns:
+        list: List of parsed geometries in decimal degrees.
+
+    Raises:
+        Exception: If geom_type is not one of "point", "poly", or "bbox".
     """
     if geom_type not in ("point", "poly", "bbox"):
         raise Exception(f"{geom_type}: Invalid geometry type")
@@ -728,8 +823,12 @@ def check_point(lat, lon):
     Check if given latitude and longitude are valid and return True if so.
     Otherwise, return False with a warning.
 
-    lat (float): latitude in decimal degrees
-    lon (float): longitude in decimal degrees
+    Args:
+        lat (float): Latitude in decimal degrees.
+        lon (float): Longitude in decimal degrees.
+
+    Returns:
+        bool: True if input is valid, False otherwise.
     """
     if not -90 <= lat <= 90:
         message(f"{lat}: Invalid latitude")
@@ -746,10 +845,14 @@ def check_bbox(s, n, w, e):
     so. Otherwise, return False with a warning. East less than west is allowed
     because it means a bbox crosses the antimeridian.
 
-    s (float): south latitude in decimal degrees
-    n (float): north latitude in decimal degrees
-    w (float): west longitude in decimal degrees
-    e (float): east longitude in decimal degrees
+    Args:
+        s (float): South latitude in decimal degrees.
+        n (float): North latitude in decimal degrees.
+        w (float): West longitude in decimal degrees.
+        e (float): East longitude in decimal degrees.
+
+    Returns:
+        bool: True if input is valid, False otherwise.
     """
     if not -90 <= s <= 90:
         message(f"{s}: Invalid south latitude")
@@ -779,12 +882,15 @@ def query_point_using_cursor(
     Return a list of bboxes that completely contain an input point geometry
     defined by latitude and longitude in decimal degrees. Each bbox entry is a
     tuple with all the columns from the bbox table in projpicker.db. This
-    function is used to perform a union operation on bbox results
-    consecutively.
+    function is used to perform a union operation on bbox rows consecutively.
 
-    lat (float): latitude in decimal degrees
-    lon (float): longitude in decimal degrees
-    projpicker_cur (sqlite3.Cursor): projpicker.db cursor
+    Args:
+        lat (float): Latitude in decimal degrees.
+        lon (float): Longitude in decimal degrees.
+        projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     bbox = []
 
@@ -817,12 +923,16 @@ def query_point_using_bbox(
     Return a subset list of input bboxes that completely contain an input point
     geometry defined by latitude and longitude in decimal degrees. Each bbox
     entry is a tuple with all the columns from the bbox table in projpicker.db.
-    This function is used to perform an intersection operation on bbox results
+    This function is used to perform an intersection operation on bbox rows
     consecutively.
 
-    lat (float): latitude in decimal degrees
-    lon (float): longitude in decimal degrees
-    bbox (list): list of bbox results from a previous query
+    Args:
+        lat (float): Latitude in decimal degrees.
+        lon (float): Longitude in decimal degrees.
+        bbox (list): List of bbox rows from a previous query.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     if not check_point(lat, lon):
         return bbox
@@ -857,9 +967,13 @@ def query_point(
     tuple with all the columns from the bbox table in projpicker.db. If
     projpicker_db is None (default), get_projpicker_db() is used.
 
-    lat (float): latitude in decimal degrees
-    lon (float): longitude in decimal degrees
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        lat (float): Latitude in decimal degrees.
+        lon (float): Longitude in decimal degrees.
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
 
@@ -875,11 +989,15 @@ def query_points_and(
     """
     Return a list of bboxes that completely contain input point geometries.
     Each bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The intersection of bbox results is returned. If
-    projpicker_db is None (default), get_projpicker_db() is used.
+    projpicker.db. The intersection of bbox rows is returned. If projpicker_db
+    is None (default), get_projpicker_db() is used.
 
-    points (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        points (list): List of parseable point geometries. See parse_points().
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     points = parse_points(points)
     projpicker_db = get_projpicker_db(projpicker_db)
@@ -904,11 +1022,15 @@ def query_points_or(
     """
     Return a list of bboxes that completely contain input point geometries.
     Each bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The union of bbox results is returned. If projpicker_db is
-    None (default), get_projpicker_db() is used.
+    projpicker.db. The union of bbox rows is returned. If projpicker_db is None
+    (default), get_projpicker_db() is used.
 
-    points (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        points (list): List of parseable point geometries. See parse_points().
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     points = parse_points(points)
     projpicker_db = get_projpicker_db(projpicker_db)
@@ -936,9 +1058,13 @@ def query_points(
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
 
-    points (list): list of parseable point geometries; see parse_points()
-    query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        points (list): List of parseable point geometries. See parse_points().
+        query_mode (str): Query mode (and, or). Defaults to "and".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     if query_mode == "and":
         bbox = query_points_and(points, projpicker_db)
@@ -956,8 +1082,12 @@ def query_poly(
     projpicker.db. If projpicker_db is None (default), get_projpicker_db() is
     used.
 
-    poly (list): list of parseable point geometries; see parse_points()
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        poly (list): List of parseable point geometries. See parse_points().
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     bbox = []
     outbbox = query_polys([poly], "and", True, projpicker_db)
@@ -977,9 +1107,13 @@ def query_polys(
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
 
-    polys (list): list of parseable poly geometries; see parse_polys()
-    query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        polys (list): List of parseable poly geometries. See parse_polys().
+        query_mode (str): Query mode (and, or). Defaults to "and".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     polys = parse_polys(polys)
 
@@ -1030,14 +1164,18 @@ def query_bbox_using_cursor(
     Return a list of bboxes that completely contain an input bbox geometry
     defined by sout, north, west, and east using a database cursor. Each bbox
     entry is a tuple with all the columns from the bbox table in projpicker.db.
-    This function is used to perform a union operation on bbox results
+    This function is used to perform a union operation on bbox rows
     consecutively.
 
-    s (float): south latitude in decimal degrees
-    n (float): north latitude in decimal degrees
-    w (float): west longitude in decimal degrees
-    e (float): east longitude in decimal degrees
-    projpicker_cur (sqlite3.Cursor): projpicker.db cursor
+    Args:
+        s (float): South latitude in decimal degrees.
+        n (float): North latitude in decimal degrees.
+        w (float): West longitude in decimal degrees.
+        e (float): East longitude in decimal degrees.
+        projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     bbox = []
 
@@ -1079,13 +1217,17 @@ def query_bbox_using_bbox(
     Return a subset list of input bboxes that completely contain an input bbox
     geometry defined by sout, north, west, and east. Each bbox entry is a tuple
     with all the columns from the bbox table in projpicker.db. This function is
-    used to perform an intersection operation on bbox results consecutively.
+    used to perform an intersection operation on bbox rows consecutively.
 
-    s (float): south latitude in decimal degrees
-    n (float): north latitude in decimal degrees
-    w (float): west longitude in decimal degrees
-    e (float): east longitude in decimal degrees
-    bbox (list): list of bbox results from a previous query
+    Args:
+        s (float): South latitude in decimal degrees.
+        n (float): North latitude in decimal degrees.
+        w (float): West longitude in decimal degrees.
+        e (float): East longitude in decimal degrees.
+        bbox (list): List of bbox rows from a previous query.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     if not check_bbox(s, n, w, e):
         return bbox
@@ -1125,11 +1267,15 @@ def query_bbox(
     the columns from the bbox table in projpicker.db. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
-    s (float): south latitude in decimal degrees
-    n (float): north latitude in decimal degrees
-    w (float): west longitude in decimal degrees
-    e (float): east longitude in decimal degrees
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        s (float): South latitude in decimal degrees.
+        n (float): North latitude in decimal degrees.
+        w (float): West longitude in decimal degrees.
+        e (float): East longitude in decimal degrees.
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     projpicker_db = get_projpicker_db()
 
@@ -1145,11 +1291,15 @@ def query_bboxes_and(
     """
     Return a list of bboxes that completely contain input bbox geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The intersection of bbox results is returned. If
-    projpicker_db is None (default), get_projpicker_db() is used.
+    projpicker.db. The intersection of bbox rows is returned. If projpicker_db
+    is None (default), get_projpicker_db() is used.
 
-    geom (list): list of parseable bbox geometries; see parse_bboxes()
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        geom (list): List of parseable bbox geometries. See parse_bboxes().
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     bboxes = parse_bboxes(bboxes)
     projpicker_db = get_projpicker_db()
@@ -1174,11 +1324,15 @@ def query_bboxes_or(
     """
     Return a list of bboxes that completely contain input bbox geometries. Each
     bbox entry is a tuple with all the columns from the bbox table in
-    projpicker.db. The union of bbox results is returned. If projpicker_db is
-    None (default), get_projpicker_db() is used.
+    projpicker.db. The union of bbox rows is returned. If projpicker_db is None
+    (default), get_projpicker_db() is used.
 
-    geom (list): list of parseable bbox geometries; see parse_bboxes()
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        geom (list): List of parseable bbox geometries. See parse_bboxes().
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     bboxes = parse_bboxes(bboxes)
     projpicker_db = get_projpicker_db()
@@ -1206,9 +1360,13 @@ def query_bboxes(
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
 
-    geom (list): list of parseable bbox geometries; see parse_bboxes()
-    query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        geom (list): List of parseable bbox geometries. See parse_bboxes().
+        query_mode (str): Query mode (and, or). Defaults to "and".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     if query_mode == "and":
         bbox = query_bboxes_and(bboxes, projpicker_db)
@@ -1225,15 +1383,24 @@ def query_geoms(
     """
     Return a list of bboxes that completely contain input geometries. Each bbox
     entry is a tuple with all the columns from the bbox table in projpicker.db.
-    The "and" query mode performs the intersection of bbox results while the
-    "or" mode the union. If projpicker_db is None (default),
-    get_projpicker_db() is used.
+    The "and" query mode performs the intersection of bbox rows while the "or"
+    mode the union. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
-    geom (list): list of parseable geometries; see parse_points(),
-                 parse_polys(), and parse_bboxes()
-    geom_type (str): geometry type (point, poly, bbox) (default: point)
-    query_mode (str): query mode (and, or) (default: and)
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        geom (list): List of parseable geometries. See parse_points(),
+            parse_polys(), and parse_bboxes().
+        geom_type (str): Geometry type (point, poly, bbox). Defaults to
+            "point".
+        query_mode (str): Query mode (and, or). Defaults to "and".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
+
+    Raises:
+        Exception: If geom_type is not one of "point", "poly", or "bbox", or
+            query_mode is not one of "and" or "or".
     """
     if geom_type not in ("point", "poly", "bbox"):
         raise Exception(f"{geom_type}: Invalid geometry type")
@@ -1257,7 +1424,11 @@ def query_all(projpicker_db=None):
     columns from the bbox table in projpicker.db. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
-    projpicker_db (str): projpicker.db path (default: None)
+    Args:
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of queried bbox rows.
     """
     projpicker_db = get_projpicker_db()
 
@@ -1276,12 +1447,16 @@ def query_all(projpicker_db=None):
 
 def stringify_bbox(bbox, header=True, separator=","):
     """
-    Convert bbox results to a str. If there are no results, an empty string is
+    Convert bbox rows to a str. If there are no results, an empty string is
     returned.
 
-    bbox (list): list of bbox results
-    header (bool): whether or not to print header (default: True)
-    separator (str): separator (default: comma)
+    Args:
+        bbox (list): List of bbox rows.
+        header (bool): Whether or not to print header. Defaults to True.
+        separator (str): Column separator. Defaults to ",".
+
+    Returns:
+        str: Stringified bbox rows.
     """
     if header and len(bbox) > 0:
         out = ("proj_table,"
@@ -1312,9 +1487,13 @@ def stringify_bbox(bbox, header=True, separator=","):
 
 def listify_bbox(bbox):
     """
-    Convert bbox results to a list.
+    Convert bbox rows to a list.
 
-    bbox (list): list of bbox results
+    Args:
+        bbox (list): List of bbox rows.
+
+    Returns:
+        list: List of bbox dicts.
     """
     out = []
     for row in bbox:
@@ -1342,9 +1521,13 @@ def listify_bbox(bbox):
 
 def jsonify_bbox(bbox):
     """
-    Convert bbox results to a JSON object.
+    Convert bbox rows to a JSON object.
 
-    bbox (list): list of bbox results
+    Args:
+        bbox (list): List of bbox rows.
+
+    Returns:
+        str: JSONified bbox rows.
     """
     return json.dumps(listify_bbox(bbox))
 
@@ -1354,12 +1537,13 @@ def jsonify_bbox(bbox):
 
 def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
     """
-    Print bbox results in a plain format.
+    Print bbox rows in a plain format.
 
-    bbox (list): list of bbox results
-    outfile (str): output file object (default: stdout)
-    header (bool): whether or not to print header (default: True)
-    separator (str): separator (default: comma)
+    Args:
+        bbox (list): List of bbox rows.
+        outfile (str): Output file object. Defaults to sys.stdout.
+        header (bool): Whether or not to print header. Defaults to True.
+        separator (str): Column separator. Defaults to ",".
     """
     print(stringify_bbox(bbox, header, separator), end="", file=outfile)
 
@@ -1397,23 +1581,34 @@ def projpicker(
     append options must be given. If projpicker_db or proj_db is None
     (default), get_projpicker_db() or get_proj_db() is used, respectively.
 
-    geoms (list): geometries (default: [])
-    infile (str): input geometry file (default: - for stdin)
-    outfile (str): output file (default: - for stdout)
-    fmt (str): output format (plain, json, pretty) (default: plain)
-    no_header (bool): whether or not to print header for plain (default: False)
-    separator (str): separator for plain (default: comma)
-    geom_type (str): geometry type (point, poly, bbox) (default: point)
-    query_mode (str): query mode for multiple geometries (and, or)
-                      (default: and)
-    print_geoms (bool): whether or not to print parsed geometries and exit
-                        (default: False)
-    overwrite (bool): whether or not to overwrite output file (default: False)
-    append (bool): whether or not to append output to file (default: False)
-    projpicker_db (str): projpicker.db path (default: None)
-    proj_db (str): proj.db path (default: None)
-    create (bool): whether or not to create a new projpicker.db
-                   (default: False)
+    Args:
+        geoms (list): Geometries. Defaults to [].
+        infile (str): Input geometry file. Defaults to "-" for sys.stdin.
+        outfile (str): Output file. Defaults to "-" for sys.stdout.
+        fmt (str): Output format (plain, json, pretty). Defaults to "plain".
+        no_header (bool): Whether or not to print header for plain. Defaults to
+            False.
+        separator (str): Column separator for plain. Defaults to ",".
+        geom_type (str): Geometry type (point, poly, bbox). Defaults to
+            "point".
+        query_mode (str): Query mode for multiple geometries (and, or).
+            Defaults to "and".
+        print_geoms (bool): Whether or not to print parsed geometries and exit.
+            Defaults to False.
+        overwrite (bool): Whether or not to overwrite output file. Defaults to
+            False.
+        append (bool): Whether or not to append output to file. Defaults to
+            False.
+        projpicker_db (str): projpicker.db path. Defaults to None.
+        proj_db (str): proj.db path. Defaults to None.
+        create (bool): Whether or not to create a new projpicker.db. Defaults
+            to False.
+
+    Raises:
+        Exception: If both overwrite and append are True, either projpicker_db
+            or outfile already exists when overwrite is False, proj_db does not
+            exist when create is True, or projpicker_db does not exist when
+            create is False.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
@@ -1491,6 +1686,13 @@ def projpicker(
 # command-line interface
 
 def parse():
+    """
+    Provide the main() function and Sphinx with argument parsing information
+    for the command-line interface.
+
+    Returns:
+        argparse.ArgumentParser: Argument parser.
+    """
     projpicker_db = get_projpicker_db()
     proj_db = get_proj_db()
 
