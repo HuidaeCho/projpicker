@@ -13,12 +13,20 @@ This project was motivated by [a GRASS GIS feature request](
 https://github.com/OSGeo/grass/issues/1253). It is a work in progress; join
 [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 
+# Branches
+
+## main
+
 The single Python script `projpicker.py` provides the CLI and API for
 ProjPicker.
 
+## rtree-oop
+
 The [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
 utilizes the rtree module in an object-oriented programming (OOP) way. This
-branch supports point intersection.
+branch supports point intersection. The rtree spatial indexing may not be able
+to handle reversed west and east longitudinal boundaries that cross the
+antimeridian.
 
 ## Requirements
 
