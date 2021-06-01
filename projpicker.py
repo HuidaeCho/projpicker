@@ -1697,9 +1697,10 @@ def parse():
     proj_db = get_proj_db()
 
     parser = argparse.ArgumentParser(
-            description="""ProjPicker finds coordinate reference systems (CRSs)
-                whose bounding box contains given geometries; visit
-                https://github.com/HuidaeCho/projpicker for more details""")
+            description="ProjPicker finds coordinate reference systems (CRSs) "
+                        "whose bounding box contains given geometries; visit "
+                        "https://github.com/HuidaeCho/projpicker for more "
+                        "details")
     parser.add_argument("-v", "--version",
             action="store_true",
             help=f"print version ({get_version()}) and copyright, and exit")
@@ -1752,10 +1753,10 @@ def parse():
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
     parser.add_argument("geometry", nargs="*",
-            help="""query geometry in latitude,longitude (point or poly) or
-                south,north,west,east (bbox); each point or bbox is a separate
-                argument and multiple polys are separated by any non-coordinate
-                argument such as a comma""")
+            help="query geometry in latitude,longitude (point or poly) or "
+                 "south,north,west,east (bbox); each point or bbox is a "
+                 "separate argument and multiple polys are separated by any "
+                 "non-coordinate argument such as a comma")
     return parser
 
 
