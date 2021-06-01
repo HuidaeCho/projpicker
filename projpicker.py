@@ -879,8 +879,8 @@ def query_point_using_cursor(
         lat, lon,
         projpicker_cur):
     """
-    Return a list of bboxes that completely contain an input point geometry
-    defined by latitude and longitude in decimal degrees. Each bbox entry is a
+    Return a list of bbox rows that completely contain an input point geometry
+    defined by latitude and longitude in decimal degrees. Each bbox row is a
     tuple with all the columns from the bbox table in projpicker.db. This
     function is used to perform a union operation on bbox rows consecutively.
 
@@ -920,11 +920,11 @@ def query_point_using_bbox(
         lat, lon,
         bbox):
     """
-    Return a subset list of input bboxes that completely contain an input point
-    geometry defined by latitude and longitude in decimal degrees. Each bbox
-    entry is a tuple with all the columns from the bbox table in projpicker.db.
-    This function is used to perform an intersection operation on bbox rows
-    consecutively.
+    Return a subset list of input bbox rows that completely contain an input
+    point geometry defined by latitude and longitude in decimal degrees. Each
+    bbox row is a tuple with all the columns from the bbox table in
+    projpicker.db. This function is used to perform an intersection operation
+    on bbox rows consecutively.
 
     Args:
         lat (float): Latitude in decimal degrees.
@@ -962,8 +962,8 @@ def query_point(
         lat, lon,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain an input point geometry
-    defined by latitude and longitude in decimal degrees. Each bbox entry is a
+    Return a list of bbox rows that completely contain an input point geometry
+    defined by latitude and longitude in decimal degrees. Each bbox row is a
     tuple with all the columns from the bbox table in projpicker.db. If
     projpicker_db is None (default), get_projpicker_db() is used.
 
@@ -987,8 +987,8 @@ def query_points_and(
         points,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input point geometries.
-    Each bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input point geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The intersection of bbox rows is returned. If projpicker_db
     is None (default), get_projpicker_db() is used.
 
@@ -1020,8 +1020,8 @@ def query_points_or(
         points,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input point geometries.
-    Each bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input point geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The union of bbox rows is returned. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
@@ -1052,8 +1052,8 @@ def query_points(
         query_mode="and",
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input point geometries.
-    Each bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input point geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
@@ -1077,8 +1077,8 @@ def query_poly(
         poly,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain an input poly geometry.
-    Each bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain an input poly geometry.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. If projpicker_db is None (default), get_projpicker_db() is
     used.
 
@@ -1101,8 +1101,8 @@ def query_polys(
         query_mode="and",
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input poly geometries. Each
-    bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input poly geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
@@ -1161,9 +1161,9 @@ def query_bbox_using_cursor(
         s, n, w, e,
         projpicker_cur):
     """
-    Return a list of bboxes that completely contain an input bbox geometry
+    Return a list of bbox rows that completely contain an input bbox geometry
     defined by sout, north, west, and east using a database cursor. Each bbox
-    entry is a tuple with all the columns from the bbox table in projpicker.db.
+    row is a tuple with all the columns from the bbox table in projpicker.db.
     This function is used to perform a union operation on bbox rows
     consecutively.
 
@@ -1214,10 +1214,11 @@ def query_bbox_using_bbox(
         s, n, w, e,
         bbox):
     """
-    Return a subset list of input bboxes that completely contain an input bbox
-    geometry defined by sout, north, west, and east. Each bbox entry is a tuple
-    with all the columns from the bbox table in projpicker.db. This function is
-    used to perform an intersection operation on bbox rows consecutively.
+    Return a subset list of input bbox rows that completely contain an input
+    bbox geometry defined by sout, north, west, and east. Each bbox row is a
+    tuple with all the columns from the bbox table in projpicker.db. This
+    function is used to perform an intersection operation on bbox rows
+    consecutively.
 
     Args:
         s (float): South latitude in decimal degrees.
@@ -1262,8 +1263,8 @@ def query_bbox(
         s, n, w, e,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain an input bbox geometry
-    defined by sout, north, west, and east. Each bbox entry is a tuple with all
+    Return a list of bbox rows that completely contain an input bbox geometry
+    defined by sout, north, west, and east. Each bbox row is a tuple with all
     the columns from the bbox table in projpicker.db. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
@@ -1289,8 +1290,8 @@ def query_bboxes_and(
         bboxes,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input bbox geometries. Each
-    bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input bbox geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The intersection of bbox rows is returned. If projpicker_db
     is None (default), get_projpicker_db() is used.
 
@@ -1322,8 +1323,8 @@ def query_bboxes_or(
         bboxes,
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input bbox geometries. Each
-    bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input bbox geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The union of bbox rows is returned. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
@@ -1354,8 +1355,8 @@ def query_bboxes(
         query_mode="and",
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input bbox geometries. Each
-    bbox entry is a tuple with all the columns from the bbox table in
+    Return a list of bbox rows that completely contain input bbox geometries.
+    Each bbox row is a tuple with all the columns from the bbox table in
     projpicker.db. The "and" query mode performs the intersection of bbox
     results while the "or" mode the union. If projpicker_db is None (default),
     get_projpicker_db() is used.
@@ -1381,11 +1382,11 @@ def query_geoms(
         query_mode="and",
         projpicker_db=None):
     """
-    Return a list of bboxes that completely contain input geometries. Each bbox
-    entry is a tuple with all the columns from the bbox table in projpicker.db.
-    The "and" query mode performs the intersection of bbox rows while the "or"
-    mode the union. If projpicker_db is None (default), get_projpicker_db() is
-    used.
+    Return a list of bbox rows that completely contain input geometries. Each
+    bbox row is a tuple with all the columns from the bbox table in
+    projpicker.db. The "and" query mode performs the intersection of bbox rows
+    while the "or" mode the union. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         geom (list): List of parseable geometries. See parse_points(),
@@ -1420,7 +1421,7 @@ def query_geoms(
 
 def query_all(projpicker_db=None):
     """
-    Return a list of all bboxes. Each bbox entry is a tuple with all the
+    Return a list of all bbox rows. Each bbox row is a tuple with all the
     columns from the bbox table in projpicker.db. If projpicker_db is None
     (default), get_projpicker_db() is used.
 
