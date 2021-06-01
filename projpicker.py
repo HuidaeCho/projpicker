@@ -549,7 +549,7 @@ def parse_lat(m, ith):
 
     Args:
         m (re.Match): re.compile() output.
-        ith (int): Coordinate to parse from m as latitude..
+        ith (int): Coordinate to parse from m as latitude.
 
     Returns:
         float: Parsed latitude in decimal degrees.
