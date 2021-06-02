@@ -53,6 +53,7 @@ def popup(crs):
     # Main window
     window = tk.Tk()
     window.geometry("900x400")
+    window.title("ProjPicker Geometry Creation (ArcGIS Pro)")
 
     # Text for CRS Info
     T = tk.Text(window, height = 5, width = 40)
@@ -149,14 +150,14 @@ class CreateGeometry(object):
                 direction='Input')
 
         new_feat = arcpy.Parameter(
-                displayName='Out feature',
+                displayName='Out Feature',
                 name='Feature',
                 datatype='DEFeatureClass',
                 parameterType='Required',
                 direction='Output')
 
         geom_type = arcpy.Parameter(
-                displayName='Geometry type',
+                displayName='Geometry Type',
                 name='geom_type',
                 datatype='GPString',
                 parameterType='Required',
