@@ -500,7 +500,8 @@ def find_unit(proj_table, crs_auth, crs_code, proj_cur):
         "metre", "meter").replace(
         "Foot_US", "US foot").replace(
         "US survey foot", "US foot").replace(
-        "_Kilo", " kilo")
+        "_Kilo", " kilo").replace(
+        " (supplier to define representation)", "")
 
     return unit
 
