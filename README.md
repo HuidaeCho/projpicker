@@ -30,8 +30,8 @@ longitudinal boundaries that cross the antimeridian.
 
 ## Requirements
 
-Tested with [PROJ](https://proj.org/) 7.2.1 in
-[Python](https://www.python.org/) 3.7.2
+Tested with proj.db from [pyproj 3.1.0](https://pypi.org/project/pyproj/3.1.0/)
+in [Python](https://www.python.org/) 3.7.2
 
 Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) only for
 recreating the provided `projpicker.db`, if you want, and the following
