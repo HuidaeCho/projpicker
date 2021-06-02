@@ -901,8 +901,7 @@ def query_point_using_cursor(
     sql = f"""SELECT *
               FROM bbox
               WHERE {lat} BETWEEN south_lat AND north_lat AND
-                    (west_lon = east_lon OR
-                     (west_lon = -180 AND east_lon = 180) OR
+                    ((west_lon = -180 AND east_lon = 180) OR
                      (west_lon < east_lon AND
                       {lon} BETWEEN west_lon AND east_lon) OR
                      (west_lon > east_lon AND
@@ -1187,14 +1186,13 @@ def query_bbox_using_cursor(
               FROM bbox
               WHERE {s} BETWEEN south_lat AND north_lat AND
                     {n} BETWEEN south_lat AND north_lat AND
-                    (west_lon = east_lon OR
-                     (west_lon = -180 AND east_lon = 180) OR
+                    ((west_lon = -180 AND east_lon = 180) OR
                      (west_lon < east_lon AND
-                      {w} < {e} AND
+                      {w} <= {e} AND
                       {w} BETWEEN west_lon AND east_lon AND
                       {e} BETWEEN west_lon AND east_lon) OR
                      (west_lon > east_lon AND
-                      (({w} < {e} AND
+                      (({w} <= {e} AND
                         (({w} BETWEEN -180 AND east_lon AND
                           {e} BETWEEN -180 AND east_lon) OR
                          ({w} BETWEEN west_lon AND 180 AND
