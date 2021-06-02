@@ -27,6 +27,7 @@ with open("projpicker/VERSION") as f:
 setuptools.setup(
     name="projpicker",
     version=version,
+    license="GPLv3+",
     author="Huidae Cho and Owen Smith",
     author_email="grass4u@gmail.com",
     description="ProjPicker (projection picker) allows the user to select all projections whose extent completely contains given points, polylines, polygons, and bounding boxes. The goal is to make it easy and visual to select a desired projection by location.",
