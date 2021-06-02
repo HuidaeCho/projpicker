@@ -54,7 +54,7 @@ CREATE TABLE bbox (
     usage_code TEXT NOT NULL CHECK (length(usage_code) >= 1),
     extent_auth_name TEXT NOT NULL CHECK (length(extent_auth_name) >= 1),
     extent_code TEXT NOT NULL CHECK (length(extent_code) >= 1),
-    uom_name TEXT NOT NULL CHECK (length(uom_name) >= 2),
+    unit TEXT NOT NULL CHECK (length(unit) >= 2),
     south_lat FLOAT CHECK (south_lat BETWEEN -90 AND 90),
     north_lat FLOAT CHECK (north_lat BETWEEN -90 AND 90),
     west_lon FLOAT CHECK (west_lon BETWEEN -180 AND 180),
@@ -416,11 +416,99 @@ def get_proj_db(proj_db=None):
 ################################################################################
 # projpicker.db creation
 
+def find_unit(proj_table, crs_auth, crs_code, proj_cur):
+    """
+    Find and return the unit of a given CRS using the cursor.
+
+    Args:
+        proj_table (str): Name of a CRS table in proj.db.
+        crs_auth: CRS authority name
+        crs_code: CRS code
+        proj_cur (sqlite3.Cursor): proj.db cursor.
+
+    Returns:
+        str: Unit name.
+
+    Raises:
+        Exception: If no or multiple units of measure are found.
+    """
+    if proj_table == "compound_crs":
+        sql = f"""SELECT table_name,
+                         horiz_crs_auth_name, horiz_crs_code
+                  FROM compound_crs cc
+                  JOIN crs_view c
+                    ON horiz_crs_auth_name=c.auth_name AND
+                       horiz_crs_code=c.code
+                  WHERE cc.auth_name='{crs_auth}' AND
+                        cc.code='{crs_code}'
+                  ORDER BY horiz_crs_auth_name, horiz_crs_code"""
+        proj_cur.execute(sql)
+        (table, auth, code) = proj_cur.fetchone()
+    else:
+        table = proj_table
+        auth = crs_auth
+        code = crs_code
+    sql = f"""SELECT orientation,
+                     uom.auth_name, uom.code,
+                     uom.name
+              FROM {table} c
+              JOIN axis a
+                ON c.coordinate_system_auth_name=
+                    a.coordinate_system_auth_name
+                   AND
+                   c.coordinate_system_code=
+                    a.coordinate_system_code
+              JOIN unit_of_measure uom
+                ON a.uom_auth_name=uom.auth_name AND
+                   a.uom_code=uom.code
+              WHERE c.auth_name='{auth}' AND
+                    c.code='{code}'
+              ORDER BY uom.auth_name, uom.code"""
+    proj_cur.execute(sql)
+    nuoms = 0
+    uom_auth = uom_code = unit = None
+    for uom_row in proj_cur.fetchall():
+        (orien,
+         um_auth, um_code,
+         um_name) = uom_row
+        if table != "vertical_crs" and orien in ("up", "down"):
+            continue
+        if um_auth != uom_auth or um_code != uom_code:
+            uom_auth = um_auth
+            uom_code = um_code
+            unit = um_name
+            nuoms += 1
+    if nuoms == 0:
+        sql = f"""SELECT text_definition
+                  FROM {table}
+                  WHERE auth_name='{auth}' AND
+                        code='{code}'"""
+        proj_cur.execute(sql)
+        unit = re.sub("^.*\"([^\"]+)\".*$", r"\1",
+               re.sub("[A-Z]*\[.*\[.*\],?", "",
+               re.sub("UNIT\[([^]]+)\]", r"\1",
+               re.sub("^PROJCS\[[^,]*,|\]$", "",
+                      proj_cur.fetchone()[0]))))
+        if unit == "":
+            raise Exception(f"{crs_auth}:{crs_code}: No units?")
+    elif nuoms > 1:
+        raise Exception(f"{crs_auth}:{crs_code}: Multiple units?")
+
+    # use GRASS unit names
+    unit = unit.replace(
+        "Meter", "meter").replace(
+        "metre", "meter").replace(
+        "Foot_US", "US foot").replace(
+        "US survey foot", "US foot").replace(
+        "_Kilo", " kilo")
+
+    return unit
+
+
 def create_projpicker_db(
         overwrite=False,
         projpicker_db=None,
         proj_db=None):
-
     """
     Create a projpicker.db sqlite database. If projpicker_db or proj_db is None
     (default), get_projpicker_db() or get_proj_db() is used, respectively.
@@ -432,8 +520,7 @@ def create_projpicker_db(
         proj_db (str): proj.db path. Defaults to None.
 
     Raises:
-        Exception: If projpicker_db already exists, or no or multiple units of
-            measure are found.
+        Exception: If projpicker_db already exists.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
@@ -487,67 +574,7 @@ def create_projpicker_db(
                  ext_auth, ext_code,
                  s, n, w, e) = row
                 area = calc_area(s, n, w, e)
-                if proj_table == "compound_crs":
-                    sql = f"""SELECT table_name,
-                                     horiz_crs_auth_name, horiz_crs_code
-                              FROM compound_crs cc
-                              JOIN crs_view c
-                                ON horiz_crs_auth_name=c.auth_name AND
-                                   horiz_crs_code=c.code
-                              WHERE cc.auth_name='{crs_auth}' AND
-                                    cc.code='{crs_code}'
-                              ORDER BY horiz_crs_auth_name, horiz_crs_code"""
-                    proj_cur.execute(sql)
-                    (table, auth, code) = proj_cur.fetchone()
-                else:
-                    table = proj_table
-                    auth = crs_auth
-                    code = crs_code
-                sql = f"""SELECT orientation,
-                                 uom.auth_name, uom.code,
-                                 uom.name
-                          FROM {table} c
-                          JOIN axis a
-                            ON c.coordinate_system_auth_name=
-                                a.coordinate_system_auth_name
-                               AND
-                               c.coordinate_system_code=
-                                a.coordinate_system_code
-                          JOIN unit_of_measure uom
-                            ON a.uom_auth_name=uom.auth_name AND
-                               a.uom_code=uom.code
-                          WHERE c.auth_name='{auth}' AND
-                                c.code='{code}'
-                          ORDER BY uom.auth_name, uom.code"""
-                proj_cur.execute(sql)
-                nuoms = 0
-                uom_auth = uom_code = uom_name = None
-                for uom_row in proj_cur.fetchall():
-                    (orien,
-                     um_auth, um_code,
-                     um_name) = uom_row
-                    if table != "vertical_crs" and orien in ("up", "down"):
-                        continue
-                    if um_auth != uom_auth or um_code != uom_code:
-                        uom_auth = um_auth
-                        uom_code = um_code
-                        uom_name = um_name
-                        nuoms += 1
-                if nuoms == 0:
-                    sql = f"""SELECT text_definition
-                              FROM {table}
-                              WHERE auth_name='{auth}' AND
-                                    code='{code}'"""
-                    proj_cur.execute(sql)
-                    uom_name = re.sub("^.*\"([^\"]+)\".*$", r"\1",
-                               re.sub("[A-Z]*\[.*\[.*\],?", "",
-                               re.sub("UNIT\[([^]]+)\]", r"\1",
-                               re.sub("^PROJCS\[[^,]*,|\]$", "",
-                                      proj_cur.fetchone()[0]))))
-                    if uom_name == "":
-                        raise Exception(f"{crs_auth}:{crs_code}: No units?")
-                elif nuoms > 1:
-                    raise Exception(f"{crs_auth}:{crs_code}: Multiple units?")
+                unit = find_unit(proj_table, crs_auth, crs_code, proj_cur)
 
                 sql = """INSERT INTO bbox
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
@@ -555,7 +582,7 @@ def create_projpicker_db(
                                              crs_auth, crs_code,
                                              usg_auth, usg_code,
                                              ext_auth, ext_code,
-                                             uom_name,
+                                             unit,
                                              s, n, w, e,
                                              area))
                 projpicker_con.commit()
@@ -1006,7 +1033,7 @@ def query_point_using_bbox(
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         uom_name,
+         unit,
          s, n, w, e,
          area) = bbox[i]
         if s <= lat <= n and (
@@ -1303,7 +1330,7 @@ def query_bbox_using_bbox(
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         uom_name,
+         unit,
          b, t, l, r,
          area) = bbox[i]
         if b <= s <= t and b <= n <= t and (
@@ -1528,7 +1555,7 @@ def stringify_bbox(bbox, header=True, separator=","):
                "crs_auth_name,crs_code,"
                "usage_auth_name,usage_code,"
                "extent_auth_name,extent_code,"
-               "uom_name,"
+               "unit,"
                "south_lat,north_lat,west_lon,east_lon,"
                "area_sqkm\n"
                .replace(",", separator))
@@ -1539,14 +1566,14 @@ def stringify_bbox(bbox, header=True, separator=","):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         uom_name,
+         unit,
          s, n, w, e,
          area) = row
         out += (f"{proj_table},"
                 f"{crs_auth},{crs_code},"
                 f"{usg_auth},{usg_code},"
                 f"{ext_auth},{ext_code},"
-                f"{uom_name},"
+                f"{unit},"
                 f"{s},{n},{w},{e},"
                 f"{area}\n"
                 .replace(",", separator))
@@ -1569,7 +1596,7 @@ def listify_bbox(bbox):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
-         uom_name,
+         unit,
          s, n, w, e,
          area) = row
         out.append({
@@ -1580,7 +1607,7 @@ def listify_bbox(bbox):
             "usage_code": usg_code,
             "extent_auth_name": ext_auth,
             "extent_code": ext_code,
-            "uom_name": uom_name,
+            "unit": unit,
             "south_lat": s,
             "north_lat": n,
             "west_lon": w,
