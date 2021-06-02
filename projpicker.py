@@ -503,10 +503,7 @@ def create_projpicker_db(
                     table = proj_table
                     auth = crs_auth
                     code = crs_code
-                sql = f"""SELECT c.coordinate_system_auth_name,
-                                 c.coordinate_system_code,
-                                 a.auth_name, a.code,
-                                 orientation,
+                sql = f"""SELECT orientation,
                                  uom.auth_name, uom.code,
                                  uom.name
                           FROM {table} c
@@ -526,9 +523,7 @@ def create_projpicker_db(
                 nuoms = 0
                 uom_auth = uom_code = uom_name = None
                 for uom_row in proj_cur.fetchall():
-                    (cs_auth, cs_code,
-                     axis_auth, axis_code,
-                     orien,
+                    (orien,
                      um_auth, um_code,
                      um_name) = uom_row
                     if table != "vertical_crs" and orien in ("up", "down"):
