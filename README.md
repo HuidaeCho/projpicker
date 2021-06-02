@@ -84,7 +84,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         print version (0.1.4.dev1) and copyright, and exit
+  -v, --version         print version (0.1.4.dev2) and copyright, and exit
   -c, --create          create ProjPicker database
   -O, --overwrite       overwrite output files; applies to both projpicker.db
                         and query output file
