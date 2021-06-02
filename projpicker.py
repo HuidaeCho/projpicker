@@ -433,14 +433,12 @@ def find_unit(proj_table, crs_auth, crs_code, proj_cur):
         Exception: If no or multiple units of measure are found.
     """
     if proj_table == "compound_crs":
-        sql = f"""SELECT table_name,
-                         horiz_crs_auth_name, horiz_crs_code
+        sql = f"""SELECT table_name, horiz_crs_auth_name, horiz_crs_code
                   FROM compound_crs cc
                   JOIN crs_view c
                     ON horiz_crs_auth_name=c.auth_name AND
                        horiz_crs_code=c.code
-                  WHERE cc.auth_name='{crs_auth}' AND
-                        cc.code='{crs_code}'
+                  WHERE cc.auth_name='{crs_auth}' AND cc.code='{crs_code}'
                   ORDER BY horiz_crs_auth_name, horiz_crs_code"""
         proj_cur.execute(sql)
         (table, auth, code) = proj_cur.fetchone()
@@ -453,16 +451,13 @@ def find_unit(proj_table, crs_auth, crs_code, proj_cur):
                      uom.name
               FROM {table} c
               JOIN axis a
-                ON c.coordinate_system_auth_name=
-                    a.coordinate_system_auth_name
+                ON c.coordinate_system_auth_name=a.coordinate_system_auth_name
                    AND
-                   c.coordinate_system_code=
-                    a.coordinate_system_code
+                   c.coordinate_system_code=a.coordinate_system_code
               JOIN unit_of_measure uom
                 ON a.uom_auth_name=uom.auth_name AND
                    a.uom_code=uom.code
-              WHERE c.auth_name='{auth}' AND
-                    c.code='{code}'
+              WHERE c.auth_name='{auth}' AND c.code='{code}'
               ORDER BY uom.auth_name, uom.code"""
     proj_cur.execute(sql)
     nuoms = 0
@@ -481,8 +476,7 @@ def find_unit(proj_table, crs_auth, crs_code, proj_cur):
     if nuoms == 0:
         sql = f"""SELECT text_definition
                   FROM {table}
-                  WHERE auth_name='{auth}' AND
-                        code='{code}'"""
+                  WHERE auth_name='{auth}' AND code='{code}'"""
         proj_cur.execute(sql)
         unit = re.sub("^.*\"([^\"]+)\".*$", r"\1",
                re.sub("[A-Z]*\[.*\[.*\],?", "",
