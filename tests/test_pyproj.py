@@ -39,8 +39,8 @@ for x in b:
         print("not in pyproj", x)
         for xx in filter(lambda y: y["crs_auth_name"]==auth and
                                    y["crs_code"]==code, bbox_list):
-            print(f"\tusage: {xx['usage_auth_name']}:{xx['usage_code']}\n"
-                  f"\textent: {xx['extent_auth_name']}:{xx['extent_code']}\n"
+            print(f"\tusage {xx['usage_auth_name']}:{xx['usage_code']}\n"
+                  f"\texten {xx['extent_auth_name']}:{xx['extent_code']}\n"
                   f"\t{xx['south_lat']}, {xx['north_lat']}, "
                   f"{xx['west_lon']}, {xx['east_lon']}")
 
