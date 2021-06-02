@@ -32,16 +32,14 @@ crs_codes = sorted(crs_list, key=lambda x: x.auth_name+x.code)
 b = []
 for x in bbox_codes:
     y = x["crs_auth_name"] + ':' + x["crs_code"]
-    if y not in b:
-        b.append(y)
-        print('projpi', y)
+    b.append(y)
+    print('projpi', y)
 
 c = []
 for x in crs_codes:
     y = x.auth_name + ':' + x.code
-    if y not in c:
-        c.append(y)
-        print('pyproj', y)
+    c.append(y)
+    print('pyproj', y)
 
 for x in b:
     if x not in c:
