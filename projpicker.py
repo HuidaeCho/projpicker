@@ -596,7 +596,7 @@ def parse_coor(m, ith, lat):
 
     Args:
         m (re.Match): re.compile() output.
-        ith (int): Zero-based index for coordinate to parse from m.
+        ith (int): Zero-based index for a coordinate group to parse from m.
         lat (bool): True if parsing latitude, False otherwise.
 
     Returns:
@@ -633,7 +633,8 @@ def parse_lat(m, ith):
 
     Args:
         m (re.Match): re.compile() output.
-        ith (int): Coordinate to parse from m as latitude.
+        ith (int): Zero-based index for a coordinate group to parse from m as
+            latitude.
 
     Returns:
         float: Parsed latitude in decimal degrees.
@@ -647,7 +648,8 @@ def parse_lon(m, ith):
 
     Args:
         m (re.Match): re.compile() output.
-        ith (int): Coordinate to parse from m as longitude.
+        ith (int): Zero-based index for a coordinate group to parse from m as
+            longitude.
 
     Returns:
         float: Parsed longitude in decimal degrees.
