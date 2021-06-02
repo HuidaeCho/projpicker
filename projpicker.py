@@ -457,7 +457,8 @@ def create_projpicker_db(
                          JOIN extent e
                             ON u.extent_auth_name=e.auth_name AND
                                u.extent_code=e.code
-                         WHERE south_lat IS NOT NULL AND
+                         WHERE c.table_name=u.object_table_name AND
+                               south_lat IS NOT NULL AND
                                north_lat IS NOT NULL AND
                                west_lon IS NOT NULL AND
                                east_lon IS NOT NULL
