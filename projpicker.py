@@ -54,6 +54,7 @@ CREATE TABLE bbox (
     usage_code TEXT NOT NULL CHECK (length(usage_code) >= 1),
     extent_auth_name TEXT NOT NULL CHECK (length(extent_auth_name) >= 1),
     extent_code TEXT NOT NULL CHECK (length(extent_code) >= 1),
+    uom_name TEXT NOT NULL CHECK (length(uom_name) >= 2),
     south_lat FLOAT CHECK (south_lat BETWEEN -90 AND 90),
     north_lat FLOAT CHECK (north_lat BETWEEN -90 AND 90),
     west_lon FLOAT CHECK (west_lon BETWEEN -180 AND 180),
@@ -61,8 +62,7 @@ CREATE TABLE bbox (
     area_sqkm FLOAT CHECK (area_sqkm > 0),
     CONSTRAINT pk_bbox PRIMARY KEY (
         crs_auth_name, crs_code,
-        usage_auth_name, usage_code,
-        extent_auth_name, extent_code
+        usage_auth_name, usage_code
     ),
     CONSTRAINT check_bbox_lat CHECK (south_lat <= north_lat)
 )
@@ -432,9 +432,9 @@ def create_projpicker_db(
         proj_db (str): proj.db path. Defaults to None.
 
     Raises:
-        Exception: If projpicker_db already exists.
+        Exception: If projpicker_db already exists, or no or multiple units of
+            measure are found.
     """
-
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
 
@@ -487,16 +487,82 @@ def create_projpicker_db(
                  ext_auth, ext_code,
                  s, n, w, e) = row
                 area = calc_area(s, n, w, e)
-                sql = f"""INSERT INTO bbox
-                          VALUES (
-                            '{proj_table}',
-                            '{crs_auth}', '{crs_code}',
-                            '{usg_auth}', '{usg_code}',
-                            '{ext_auth}', '{ext_code}',
-                            {s}, {n}, {w}, {e},
-                            {area}
-                          )"""
-                projpicker_con.execute(sql)
+                if proj_table == "compound_crs":
+                    sql = f"""SELECT table_name,
+                                     horiz_crs_auth_name, horiz_crs_code
+                              FROM compound_crs cc
+                              JOIN crs_view c
+                                ON horiz_crs_auth_name=c.auth_name AND
+                                   horiz_crs_code=c.code
+                              WHERE cc.auth_name='{crs_auth}' AND
+                                    cc.code='{crs_code}'
+                              ORDER BY horiz_crs_auth_name, horiz_crs_code"""
+                    proj_cur.execute(sql)
+                    (table, auth, code) = proj_cur.fetchone()
+                else:
+                    table = proj_table
+                    auth = crs_auth
+                    code = crs_code
+                sql = f"""SELECT c.coordinate_system_auth_name,
+                                 c.coordinate_system_code,
+                                 a.auth_name, a.code,
+                                 orientation,
+                                 uom.auth_name, uom.code,
+                                 uom.name
+                          FROM {table} c
+                          JOIN axis a
+                            ON c.coordinate_system_auth_name=
+                                a.coordinate_system_auth_name
+                               AND
+                               c.coordinate_system_code=
+                                a.coordinate_system_code
+                          JOIN unit_of_measure uom
+                            ON a.uom_auth_name=uom.auth_name AND
+                               a.uom_code=uom.code
+                          WHERE c.auth_name='{auth}' AND
+                                c.code='{code}'
+                          ORDER BY uom.auth_name, uom.code"""
+                proj_cur.execute(sql)
+                nuoms = 0
+                uom_auth = uom_code = uom_name = None
+                for uom_row in proj_cur.fetchall():
+                    (cs_auth, cs_code,
+                     axis_auth, axis_code,
+                     orien,
+                     um_auth, um_code,
+                     um_name) = uom_row
+                    if table != "vertical_crs" and orien in ("up", "down"):
+                        continue
+                    if um_auth != uom_auth or um_code != uom_code:
+                        uom_auth = um_auth
+                        uom_code = um_code
+                        uom_name = um_name
+                        nuoms += 1
+                if nuoms == 0:
+                    sql = f"""SELECT text_definition
+                              FROM {table}
+                              WHERE auth_name='{auth}' AND
+                                    code='{code}'"""
+                    proj_cur.execute(sql)
+                    uom_name = re.sub("^.*\"([^\"]+)\".*$", r"\1",
+                               re.sub("[A-Z]*\[.*\[.*\],?", "",
+                               re.sub("UNIT\[([^]]+)\]", r"\1",
+                               re.sub("^PROJCS\[[^,]*,|\]$", "",
+                                      proj_cur.fetchone()[0]))))
+                    if uom_name == "":
+                        raise Exception(f"{crs_auth}:{crs_code}: No units?")
+                elif nuoms > 1:
+                    raise Exception(f"{crs_auth}:{crs_code}: Multiple units?")
+
+                sql = """INSERT INTO bbox
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                projpicker_con.execute(sql, (proj_table,
+                                             crs_auth, crs_code,
+                                             usg_auth, usg_code,
+                                             ext_auth, ext_code,
+                                             uom_name,
+                                             s, n, w, e,
+                                             area))
                 projpicker_con.commit()
                 nrow += 1
             message()
@@ -945,6 +1011,7 @@ def query_point_using_bbox(
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
+         uom_name,
          s, n, w, e,
          area) = bbox[i]
         if s <= lat <= n and (
@@ -1241,6 +1308,7 @@ def query_bbox_using_bbox(
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
+         uom_name,
          b, t, l, r,
          area) = bbox[i]
         if b <= s <= t and b <= n <= t and (
@@ -1432,7 +1500,7 @@ def query_all(projpicker_db=None):
     Returns:
         list: List of queried bbox rows.
     """
-    projpicker_db = get_projpicker_db()
+    projpicker_db = get_projpicker_db(projpicker_db)
 
     bbox = []
     with sqlite3.connect(projpicker_db) as projpicker_con:
@@ -1465,6 +1533,7 @@ def stringify_bbox(bbox, header=True, separator=","):
                "crs_auth_name,crs_code,"
                "usage_auth_name,usage_code,"
                "extent_auth_name,extent_code,"
+               "uom_name,"
                "south_lat,north_lat,west_lon,east_lon,"
                "area_sqkm\n"
                .replace(",", separator))
@@ -1475,12 +1544,14 @@ def stringify_bbox(bbox, header=True, separator=","):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
+         uom_name,
          s, n, w, e,
          area) = row
         out += (f"{proj_table},"
                 f"{crs_auth},{crs_code},"
                 f"{usg_auth},{usg_code},"
                 f"{ext_auth},{ext_code},"
+                f"{uom_name},"
                 f"{s},{n},{w},{e},"
                 f"{area}\n"
                 .replace(",", separator))
@@ -1503,6 +1574,7 @@ def listify_bbox(bbox):
          crs_auth, crs_code,
          usg_auth, usg_code,
          ext_auth, ext_code,
+         uom_name,
          s, n, w, e,
          area) = row
         out.append({
@@ -1513,6 +1585,7 @@ def listify_bbox(bbox):
             "usage_code": usg_code,
             "extent_auth_name": ext_auth,
             "extent_code": ext_code,
+            "uom_name": uom_name,
             "south_lat": s,
             "north_lat": n,
             "west_lon": w,
@@ -1730,8 +1803,8 @@ def parse():
             "-P", "--proj-db",
             default=proj_db,
             help=f"proj database path (default: {proj_db}); use PROJ_DB or "
-                "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip this "
-                "option")
+                "PROJ_LIB (PROJ_LIB/proj.db) environment variables to skip "
+                "this option")
     parser.add_argument(
             "-g", "--geometry-type",
             choices=("point", "poly", "bbox"),
