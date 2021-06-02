@@ -1141,611 +1141,764 @@ not in pyproj EPSG:2163
 	usage EPSG:1187
 	exten EPSG:1245
 	15.56, 74.71, 167.65, -65.69
+	PASSED
 not in pyproj EPSG:32662
 	usage EPSG:7573
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:32663
 	usage EPSG:7574
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3349
 	usage EPSG:2368
 	exten EPSG:3172
 	-60.0, 66.67, 98.69, -68.0
+	PASSED
 not in pyproj EPSG:3408
 	usage EPSG:2427
 	exten EPSG:3475
 	0.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3410
 	usage EPSG:2429
 	exten EPSG:3463
 	-86.0, 86.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3785
 	usage EPSG:2804
 	exten EPSG:3544
 	-85.06, 85.06, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3786
 	usage EPSG:2805
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3832
 	usage EPSG:2835
 	exten EPSG:3172
 	-60.0, 66.67, 98.69, -68.0
+	PASSED
 not in pyproj EPSG:3973
 	usage EPSG:2904
 	exten EPSG:3475
 	0.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:3975
 	usage EPSG:2906
 	exten EPSG:3463
 	-86.0, 86.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4001
 	usage EPSG:2923
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4002
 	usage EPSG:2924
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4003
 	usage EPSG:2925
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4004
 	usage EPSG:2926
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4005
 	usage EPSG:2927
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4006
 	usage EPSG:2928
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4007
 	usage EPSG:2929
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4008
 	usage EPSG:2930
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4009
 	usage EPSG:2931
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4010
 	usage EPSG:2932
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4011
 	usage EPSG:2933
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4012
 	usage EPSG:2934
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4013
 	usage EPSG:2935
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4014
 	usage EPSG:2936
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4015
 	usage EPSG:2937
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4016
 	usage EPSG:2938
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4018
 	usage EPSG:2940
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4019
 	usage EPSG:2941
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4020
 	usage EPSG:2942
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4021
 	usage EPSG:2943
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4022
 	usage EPSG:2944
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4024
 	usage EPSG:2946
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4025
 	usage EPSG:2947
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4027
 	usage EPSG:2949
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4028
 	usage EPSG:2950
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4029
 	usage EPSG:2951
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4030
 	usage EPSG:2952
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4031
 	usage EPSG:2953
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4032
 	usage EPSG:2954
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4033
 	usage EPSG:2955
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4034
 	usage EPSG:2956
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4035
 	usage EPSG:2957
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4036
 	usage EPSG:2958
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4041
 	usage EPSG:2963
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4042
 	usage EPSG:2964
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4043
 	usage EPSG:2965
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4044
 	usage EPSG:2966
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4045
 	usage EPSG:2967
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4047
 	usage EPSG:2969
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4052
 	usage EPSG:2974
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4053
 	usage EPSG:2975
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4054
 	usage EPSG:2976
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4055
 	usage EPSG:2977
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4088
 	usage EPSG:2996
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4152
 	usage EPSG:3037
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:4267
 	usage EPSG:3149
 	exten EPSG:1349
 	7.15, 83.17, 167.65, -47.74
+	PASSED
 not in pyproj EPSG:4269
 	usage EPSG:3151
 	exten EPSG:1350
 	14.928194130078, 86.453745196084, 167.65071105957, -47.743430543984
+	PASSED
 not in pyproj EPSG:4327
 	usage EPSG:3203
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4328
 	usage EPSG:3204
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4329
 	usage EPSG:3205
 	exten EPSG:2830
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4330
 	usage EPSG:3206
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4331
 	usage EPSG:3207
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4332
 	usage EPSG:3208
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4333
 	usage EPSG:3209
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4334
 	usage EPSG:3210
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4335
 	usage EPSG:3211
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4336
 	usage EPSG:3212
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4337
 	usage EPSG:3213
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4338
 	usage EPSG:3214
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4359
 	usage EPSG:3235
 	exten EPSG:2784
 	41.68, 60.0, -139.05, -52.62
+	PASSED
 not in pyproj EPSG:4360
 	usage EPSG:3236
 	exten EPSG:2784
 	41.68, 60.0, -139.05, -52.62
+	PASSED
 not in pyproj EPSG:4361
 	usage EPSG:3237
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:4362
 	usage EPSG:3238
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:4385
 	usage EPSG:3261
 	exten EPSG:2830
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:4759
 	usage EPSG:3589
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:4892
 	usage EPSG:3693
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:4893
 	usage EPSG:3694
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:4956
 	usage EPSG:3756
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:4957
 	usage EPSG:3757
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:5703
 	usage EPSG:4146
 	exten EPSG:4161
 	14.515261702227, 71.396817302681, 172.42871284485, -66.917007446289
+	PASSED
 not in pyproj EPSG:6317
 	usage EPSG:4553
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6318
 	usage EPSG:4554
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6319
 	usage EPSG:4555
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6357
 	usage EPSG:4591
 	exten EPSG:4161
 	14.515261702227, 71.396817302681, 172.42871284485, -66.917007446289
+	PASSED
 not in pyproj EPSG:6781
 	usage EPSG:4937
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6782
 	usage EPSG:4938
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6783
 	usage EPSG:4939
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj EPSG:6871
 	usage EPSG:5023
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:8052
 	usage EPSG:5602
 	exten EPSG:1245
 	15.56, 74.71, 167.65, -65.69
+	PASSED
 not in pyproj EPSG:8053
 	usage EPSG:5603
 	exten EPSG:1245
 	15.56, 74.71, 167.65, -65.69
+	PASSED
 not in pyproj EPSG:8449
 	usage EPSG:5833
 	exten EPSG:4515
 	-14.59, 49.38, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:8541
 	usage EPSG:5856
 	exten EPSG:4515
 	-14.59, 49.38, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:8542
 	usage EPSG:5857
 	exten EPSG:4515
 	-14.59, 49.38, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:8858
 	usage EPSG:6008
 	exten EPSG:4520
 	-90.0, 90.0, 90.01, 89.99
+	PASSED
 not in pyproj EPSG:8859
 	usage EPSG:6009
 	exten EPSG:4523
 	-90.0, 90.0, -29.99, -30.01
+	PASSED
 not in pyproj EPSG:8860
 	usage EPSG:6010
 	exten EPSG:4515
 	-14.59, 49.38, 144.58, -64.51
+	PASSED
 not in pyproj EPSG:900913
 	usage PROJ:900913_USAGE
 	exten EPSG:3544
 	-85.06, 85.06, -180.0, 180.0
+	PASSED
 not in pyproj EPSG:9311
 	usage EPSG:13969
 	exten EPSG:1245
 	15.56, 74.71, 167.65, -65.69
+	PASSED
 not in pyproj ESRI:102100
 	usage ESRI:PCRS_102100_USAGE
 	exten EPSG:3544
 	-85.06, 85.06, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:102113
 	usage ESRI:PCRS_102113_USAGE
 	exten EPSG:3544
 	-85.06, 85.06, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:102275
 	usage ESRI:PCRS_102275_USAGE
 	exten EPSG:2198
 	41.85, 43.51, -96.65, -90.15
+	PASSED
 not in pyproj ESRI:102276
 	usage ESRI:PCRS_102276_USAGE
 	exten EPSG:2199
 	40.37, 42.04, -96.14, -90.14
+	PASSED
 not in pyproj ESRI:102384
 	usage ESRI:PCRS_102384_USAGE
 	exten EPSG:3502
 	25.61, 49.38, -96.01, -90.0
+	PASSED
 not in pyproj ESRI:102497
 	usage ESRI:PCRS_102497_USAGE
 	exten ESRI:49
 	-81.3282, 81.3282, -156.2995, 6.2995
+	PASSED
 not in pyproj ESRI:102675
 	usage ESRI:PCRS_102675_USAGE
 	exten EPSG:2198
 	41.85, 43.51, -96.65, -90.15
+	PASSED
 not in pyproj ESRI:102676
 	usage ESRI:PCRS_102676_USAGE
 	exten EPSG:2199
 	40.37, 42.04, -96.14, -90.14
+	PASSED
 not in pyproj ESRI:102965
 	usage ESRI:PCRS_102965_USAGE
 	exten EPSG:1323
 	24.41, 49.38, -124.79, -66.91
+	PASSED
 not in pyproj ESRI:103043
 	usage ESRI:PCRS_103043_USAGE
 	exten EPSG:2198
 	41.85, 43.51, -96.65, -90.15
+	PASSED
 not in pyproj ESRI:103044
 	usage ESRI:PCRS_103044_USAGE
 	exten EPSG:2199
 	40.37, 42.04, -96.14, -90.14
+	PASSED
 not in pyproj ESRI:103045
 	usage ESRI:PCRS_103045_USAGE
 	exten EPSG:2198
 	41.85, 43.51, -96.65, -90.15
+	PASSED
 not in pyproj ESRI:103046
 	usage ESRI:PCRS_103046_USAGE
 	exten EPSG:2199
 	40.37, 42.04, -96.14, -90.14
+	PASSED
 not in pyproj ESRI:104000
 	usage ESRI:104000_USAGE
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104010
 	usage ESRI:104010_USAGE
 	exten EPSG:2830
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104011
 	usage ESRI:104011_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104012
 	usage ESRI:104012_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104013
 	usage ESRI:104013_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104014
 	usage ESRI:104014_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104015
 	usage ESRI:104015_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104016
 	usage ESRI:104016_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104019
 	usage ESRI:104019_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104021
 	usage ESRI:104021_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104023
 	usage ESRI:104023_USAGE
 	exten EPSG:1263
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104115
 	usage ESRI:104115_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104116
 	usage ESRI:104116_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104117
 	usage ESRI:104117_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104118
 	usage ESRI:104118_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104119
 	usage ESRI:104119_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104120
 	usage ESRI:104120_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104121
 	usage ESRI:104121_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104122
 	usage ESRI:104122_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104123
 	usage ESRI:104123_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104124
 	usage ESRI:104124_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104145
 	usage ESRI:104145_USAGE
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj ESRI:104199
 	usage ESRI:104199_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104223
 	usage ESRI:104223_USAGE
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj ESRI:104257
 	usage ESRI:104257_USAGE
 	exten EPSG:2830
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:104602
 	usage ESRI:104602_USAGE
 	exten EPSG:1350
 	14.928194130078, 86.453745196084, 167.65071105957, -47.743430543984
+	PASSED
 not in pyproj ESRI:104896
 	usage ESRI:104896_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:105703
 	usage ESRI:105703_USAGE
 	exten EPSG:3664
 	24.410230723243, 71.396817302681, -168.25266039145, -66.917007446289
+	PASSED
 not in pyproj ESRI:105790
 	usage ESRI:105790_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:115702
 	usage ESRI:115702_USAGE
 	exten EPSG:1350
 	14.928194130078, 86.453745196084, 167.65071105957, -47.743430543984
+	PASSED
 not in pyproj ESRI:115755
 	usage ESRI:115755_USAGE
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj ESRI:115756
 	usage ESRI:115756_USAGE
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj ESRI:115758
 	usage ESRI:115758_USAGE
 	exten EPSG:1337
 	-14.59, 71.4, 144.58, -64.51
+	PASSED
 not in pyproj ESRI:115761
 	usage ESRI:115761_USAGE
 	exten EPSG:1511
 	14.92, 74.71, 167.65, -63.88
+	PASSED
 not in pyproj ESRI:115840
 	usage ESRI:115840_USAGE
 	exten EPSG:4515
 	-14.59, 49.38, 144.58, -64.51
+	PASSED
 not in pyproj ESRI:37001
 	usage ESRI:37001_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:54035
 	usage ESRI:PCRS_54035_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:54036
 	usage ESRI:PCRS_54036_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj ESRI:54037
 	usage ESRI:PCRS_54037_USAGE
 	exten EPSG:1262
 	-90.0, 90.0, -180.0, 180.0
+	PASSED
 not in pyproj OGC:CRS27
 	usage PROJ:OGC_CRS27_USAGE
 	exten EPSG:1349
 	7.15, 83.17, 167.65, -47.74
+	PASSED
 not in pyproj OGC:CRS83
 	usage PROJ:OGC_CRS83_USAGE
 	exten EPSG:1350
 	14.928194130078, 86.453745196084, 167.65071105957, -47.743430543984
+	PASSED
