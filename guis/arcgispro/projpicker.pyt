@@ -261,14 +261,7 @@ class CreateGeometry(object):
                 parameterType='Required',
                 direction='Output')
 
-        geom_type = arcpy.Parameter(
-                displayName='Geometry Type',
-                name='geom_type',
-                datatype='GPString',
-                parameterType='Required',
-                direction='Output')
-
-        params = [feature, new_feat, geom_type]
+        params = [feature, new_feat]
         return params
 
     def isLicensed(self):
@@ -293,7 +286,6 @@ class CreateGeometry(object):
         # Read parameters
         feature = parameters[0]
         new_feat = parameters[1]
-        geom_type = parameters[2]
 
         # Get path of spatial query feature
         desc = arcpy.Describe(feature)
@@ -311,7 +303,7 @@ class CreateGeometry(object):
 
         # If querying shape is a point then query by point
         # else use bounding box
-        crs = ppik.query_bboxes([[b, t, l, r]])
+        crs = ppik.query_bbox([b, t, l, r])
 
         # Run GUI and return the selected CRS
         sel_crs = popup(crs)
