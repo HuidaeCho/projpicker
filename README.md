@@ -4,10 +4,10 @@
 [![Documentation Status](https://readthedocs.org/projects/projpicker/badge/?version=latest)](https://projpicker.readthedocs.io/en/latest/?badge=latest)
 
 [ProjPicker](https://github.com/HuidaeCho/projpicker) (projection picker)
-allows the user to select all projections whose extent completely contains
-given points, polylines, polygons, and bounding boxes. The goal is to make it
-easy and visual to select a desired projection by location. This project was
-motivated by [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
+allows the user to select all coordinate reference systems (CRSs) whose extent
+completely contains given points, polylines, polygons, and bounding boxes. The
+goal is to make it easy and visual to select a desired projection by location.
+This project was motivated by [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
 It is a work in progress; join [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 See also [the command-line and API documentation](https://projpicker.readthedocs.io/en/latest/).
 
@@ -125,7 +125,7 @@ Running `projpicker -p -i points.txt` will generate:
 
 ## Querying points
 
-Results are sorted by area to highlight local projections.
+Results are sorted by area to highlight local CRSs.
 
 From the shell,
 ```bash
@@ -206,6 +206,16 @@ ppik.print_bbox(bbox)
 
 ## Filtering
 
+From the shell,
+```bash
+# projected CRSs only
+projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
+
+# CRSs in meter only
+projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
+```
+
+From Python,
 ```python
 import projpicker as ppik
 import pprint
@@ -218,7 +228,6 @@ bbox_proj = list(filter(lambda x: x.proj_table=="projected_crs", bbox))
 
 # CRSs in meter only
 bbox_meter = list(filter(lambda x: x.unit=="meter", bbox))
-ppik.print_bbox(bbox_meter)
 ```
 
 ## TODO
