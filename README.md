@@ -125,6 +125,8 @@ Running `projpicker -p -i points.txt` will generate:
 
 ## Querying points
 
+Results are sorted by area to highlight local projections.
+
 From the shell,
 ```bash
 # read latitude and longitude separated by a comma or whitespaces from
@@ -200,6 +202,23 @@ From Python,
 import projpicker as ppik
 bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
 ppik.print_bbox(bbox)
+```
+
+## Filtering
+
+```python
+import projpicker as ppik
+import pprint
+
+# sorted by area to find the most local CRS first
+bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
+
+# projected CRSs only
+bbox_proj = list(filter(lambda x: x.proj_table=="projected_crs", bbox))
+
+# CRSs in meter only
+bbox_meter = list(filter(lambda x: x.unit=="meter", bbox))
+ppik.print_bbox(bbox_meter)
 ```
 
 ## TODO
