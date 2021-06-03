@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 import tkinter as tk
+from tkinter import ttk
 from collections import OrderedDict
 import json
 import requests
@@ -78,12 +79,14 @@ def popup(crs):
 
     # Main window
     window = tk.Tk()
-    window.geometry("1000x1100")
+    window.geometry("1000x500")
     window.title("ProjPicker Geometry Creation (ArcGIS Pro)")
 
+    style = ttk.Style(window)
+    style.theme_use('winnative')
+
     # Text for CRS Info
-    T = tk.Text(window, height = 5, width = 40)
-    T.pack(side=tk.RIGHT, fill=tk.BOTH, anchor=tk.NE)
+    T = tk.Text(window, height = 5, width = 30)
     T.insert(tk.END, "Use 'CRS Info' to show projection info")
 
     # Add scrollbar for list
@@ -92,37 +95,35 @@ def popup(crs):
 
     # List of crs
     crs_listbox = tk.Listbox(window)
-    crs_listbox.pack(fill='x', ipady=150, anchor=tk.NW)
     for values in options_s.values():
         crs_listbox.insert(tk.END, values)
 
     # List box for projection type
-    type_listbox = tk.Listbox(window)
-    for t in projection_types:
-        type_listbox.insert(tk.END, t)
+    type_combobox = ttk.Combobox(window)
+    projection_types.insert(0, 'All')
+    type_combobox['values'] = projection_types
+    type_combobox.set('CRS Type')
 
     # List of units
-    unit_listbox = tk.Listbox(window)
-    for unit in units:
-        unit_listbox.insert(tk.END, unit)
-    unit_scrollbar = tk.Scrollbar(window)
+    unit_combobox = ttk.Combobox(window)
+    units.insert(0, 'All')
+    unit_combobox['values'] = units
+    unit_combobox.set('Unit')
+
 
     # Add widgets
     crs_listbox.config(yscrollcommand = scrollbar.set)
     scrollbar.config(command = crs_listbox.yview)
 
-    unit_listbox.config(xscrollcommand=unit_scrollbar.set)
-    unit_scrollbar.config(command=unit_listbox.xview)
-
-
     def make_display_text(sel, code):
         new_text = (f"CRS Type: {sel.get('crs_type')}\n"
+                    f"CRS Code: {code}"
                     f"Unit:     {sel.get('unit')}\n"
                     f"South:    {sel.get('bbox')[0]}°\n"
                     f"North:    {sel.get('bbox')[1]}°\n"
                     f"West:     {sel.get('bbox')[2]}°\n"
                     f"East:     {sel.get('bbox')[3]}°\n"
-                    f"CRS Code: {code}")
+                    )
         return new_text
 
     # Retrieve selected CRS from List
@@ -155,20 +156,22 @@ def popup(crs):
             T.insert(tk.END, text)
 
     def query_unit():
-        for i in unit_listbox.curselection():
-            sel_unit = unit_listbox.get(i)
+        sel_unit = units[unit_combobox.current()]
+        if sel_unit == 'All':
+            clear_filter()
 
+        else:
             crs_listbox.delete(0,tk.END)
-
             for values in options_s.values():
                 code = options.get(values.split(":")[1])
                 if code.get("unit") == sel_unit:
                     crs_listbox.insert(tk.END, values)
 
     def query_crs_type():
-        for i in type_listbox.curselection():
-            sel_type = type_listbox.get(i)
-
+        sel_type = projection_types[type_combobox.current()]
+        if sel_type == 'All':
+            clear_filter()
+        else:
             crs_listbox.delete(0, tk.END)
             for values in options_s.values():
                 code = options.get(values.split(":")[1])
@@ -180,26 +183,37 @@ def popup(crs):
         crs_listbox.delete(0, tk.END)
         for values in options_s.values():
             crs_listbox.insert(tk.END, values)
+        unit_combobox.set('Unit')
+        type_combobox.set('CRS Type')
 
     # Selection wrapper for updating CRS info
-    def onselect(event):
+    def onselect_info(event):
         get_info()
 
+    def onselect_unit(event):
+        query_unit()
+
+    def onselect_type(event):
+        query_crs_type()
+
+    def cancel():
+        window.destroy()
+        sys.exit(1)
+
     # Bind selection event to run onselect
-    crs_listbox.bind("<<ListboxSelect>>", onselect)
+    crs_listbox.bind("<<ListboxSelect>>", onselect_info)
+    unit_combobox.bind("<<ComboboxSelected>>", onselect_unit)
+    type_combobox.bind("<<ComboboxSelected>>", onselect_type)
 
     # Buttons
-    btn = tk.Button(window, text='Create shapefile', command=selected_item)
-    btn.pack(side="bottom", fill='x', anchor=tk.SW)
-    btn1 = tk.Button(window, text="Filter unit", command=query_unit)
-    btn1.pack(side="bottom", fill='x')
-    btn2 = tk.Button(window, text="Filter type", command=query_crs_type)
-    btn2.pack(side="bottom", fill='x')
-    btn3 = tk.Button(window, text="Clear filter", command=clear_filter)
-    btn3.pack(side="bottom", fill='x')
-    type_listbox.pack(fill='both', side='left', expand=True)
-    unit_listbox.pack(fill='both', side='left', expand=True)
-    unit_scrollbar.pack(side='left', fill='y')
+    btn = tk.Button(window, text='Create Feature Class', command=selected_item)
+    btn.pack(side="right", fill='x', expand=True, anchor=tk.SE)
+    btn1 = tk.Button(window, text="Cancel", command=cancel)
+    btn1.pack(side="right", fill='x', expand=True, anchor=tk.SW)
+    T.pack(fill='y', side='right', expand=True)
+    crs_listbox.pack(fill='x', ipady=50, anchor=tk.NW)
+    type_combobox.pack(fill='both', side='left', expand=True)
+    unit_combobox.pack(fill='both', side='left', expand=True)
 
     # insert list into window
     crs_listbox.pack()
