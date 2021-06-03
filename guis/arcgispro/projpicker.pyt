@@ -63,7 +63,6 @@ def popup(crs):
                 "area": crs_area
                 }
 
-        arcpy.AddMessage(crs_dict)
 
         # Create main info dict queryable by code
         options[crs_code] = crs_dict
@@ -79,7 +78,7 @@ def popup(crs):
 
     # Main window
     window = tk.Tk()
-    window.geometry("1000x900")
+    window.geometry("1000x1100")
     window.title("ProjPicker Geometry Creation (ArcGIS Pro)")
 
     # Text for CRS Info
@@ -115,6 +114,17 @@ def popup(crs):
     unit_listbox.config(xscrollcommand=unit_scrollbar.set)
     unit_scrollbar.config(command=unit_listbox.xview)
 
+
+    def make_display_text(sel, code):
+        new_text = (f"CRS Type: {sel.get('crs_type')}\n"
+                    f"Unit:     {sel.get('unit')}\n"
+                    f"South:    {sel.get('bbox')[0]}°\n"
+                    f"North:    {sel.get('bbox')[1]}°\n"
+                    f"West:     {sel.get('bbox')[2]}°\n"
+                    f"East:     {sel.get('bbox')[3]}°\n"
+                    f"CRS Code: {code}")
+        return new_text
+
     # Retrieve selected CRS from List
     def selected_item():
         global sel_crs
@@ -138,10 +148,11 @@ def popup(crs):
             sel_auth = options.get(sel_code.split(":")[1])
             # format json
             pp = json.dumps(sel_auth, indent=2, sort_keys=True)
+            text = make_display_text(sel_auth, sel_code)
             # delete previous text
             T.delete('1.0', tk.END)
             # insert new text
-            T.insert(tk.END, pp)
+            T.insert(tk.END, text)
 
     def query_unit():
         for i in unit_listbox.curselection():
@@ -170,18 +181,22 @@ def popup(crs):
         for values in options_s.values():
             crs_listbox.insert(tk.END, values)
 
+    # Selection wrapper for updating CRS info
+    def onselect(event):
+        get_info()
+
+    # Bind selection event to run onselect
+    crs_listbox.bind("<<ListboxSelect>>", onselect)
 
     # Buttons
-    btn = tk.Button(window, text='OK', command=selected_item)
+    btn = tk.Button(window, text='Create shapefile', command=selected_item)
     btn.pack(side="bottom", fill='x', anchor=tk.SW)
-    btn1 = tk.Button(window, text="CRS Info", command=get_info)
+    btn1 = tk.Button(window, text="Filter unit", command=query_unit)
     btn1.pack(side="bottom", fill='x')
-    btn2 = tk.Button(window, text="Filter unit", command=query_unit)
+    btn2 = tk.Button(window, text="Filter type", command=query_crs_type)
     btn2.pack(side="bottom", fill='x')
-    btn3 = tk.Button(window, text="Filter type", command=query_crs_type)
+    btn3 = tk.Button(window, text="Clear filter", command=clear_filter)
     btn3.pack(side="bottom", fill='x')
-    btn4 = tk.Button(window, text="Clear filter", command=clear_filter)
-    btn4.pack(side="bottom", fill='x')
     type_listbox.pack(fill='both', side='left', expand=True)
     unit_listbox.pack(fill='both', side='left', expand=True)
     unit_scrollbar.pack(side='left', fill='y')
@@ -294,11 +309,13 @@ class CreateGeometry(object):
 
         # Create spatial reference object
         # MUST be integer so IGNF authority codes will not work
-        spat_ref = arcpy.SpatialReference(int(sel_crs.split(':')[1]))
-
-        # Create output geometry
-        arcpy.management.CreateFeatureclass(out_dir, out_file,
-                spatial_reference=spat_ref)
+        try:
+            spat_ref = arcpy.SpatialReference(int(sel_crs.split(':')[1]))
+            # Create output geometry
+            arcpy.management.CreateFeatureclass(out_dir, out_file,
+                    spatial_reference=spat_ref)
+        except RuntimeError:
+            arcpy.AddError(f"Selected projection {sel_crs} is not avaible in ArcGIS Pro")
 
         return
 
