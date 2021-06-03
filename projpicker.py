@@ -580,7 +580,7 @@ def create_projpicker_db(
                  usg_auth, usg_code,
                  ext_auth, ext_code,
                  s, n, w, e) = row
-                area = calc_area(s, n, w, e)
+                area = calc_area((s, n, w, e))
                 unit = find_unit(proj_table, crs_auth, crs_code, proj_cur)
 
                 sql = """INSERT INTO bbox
