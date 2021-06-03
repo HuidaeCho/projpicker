@@ -6,10 +6,12 @@ cleanup() {
 }
 trap cleanup EXIT
 
+cleanup
+
 for script in *.py; do
 	outfile=$(echo $script | sed 's/py$/out/')
 
-	echo -n "$script..." | tee run.tmp
+	echo -n "$script..." | tee -a run.tmp
 	python3 $script > test.tmp
 	if diff test.tmp $outfile > /dev/null; then
 		echo "PASSED" | tee -a run.tmp
