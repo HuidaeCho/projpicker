@@ -117,7 +117,7 @@ def popup(crs):
 
     def make_display_text(sel, code):
         new_text = (f"CRS Type: {sel.get('crs_type')}\n"
-                    f"CRS Code: {code}"
+                    f"CRS Code: {code}\n"
                     f"Unit:     {sel.get('unit')}\n"
                     f"South:    {sel.get('bbox')[0]}°\n"
                     f"North:    {sel.get('bbox')[1]}°\n"
