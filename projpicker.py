@@ -26,13 +26,13 @@
 ################################################################################
 
 # no third-party modules!
+import collections
 import argparse
 import os
 import sys
 import sqlite3
 import re
 import math
-import collections
 import json
 import pprint
 

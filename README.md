@@ -36,14 +36,15 @@ in [Python](https://www.python.org/) 3.7.2
 Requires the PROJ database (e.g., `/usr/share/proj/proj.db`) only for
 recreating the provided `projpicker.db`, if you want, and the following
 standard modules:
+* [collections](https://docs.python.org/3/library/collections.html)
 * [argparse](https://docs.python.org/3/library/argparse.html)
 * [os](https://docs.python.org/3/library/os.html)
 * [sys](https://docs.python.org/3/library/sys.html)
 * [sqlite3](https://docs.python.org/3/library/sqlite3.html)
 * [re](https://docs.python.org/3/library/re.html)
+* [math](https://docs.python.org/3/library/math.html)
 * [json](https://docs.python.org/3/library/json.html)
 * [pprint](https://docs.python.org/3/library/pprint.html)
-* [math](https://docs.python.org/3/library/math.html)
 
 ## Installation
 
