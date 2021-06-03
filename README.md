@@ -63,63 +63,6 @@ pip3 install --pre projpicker
 pip3 install --pre --user projpicker
 ```
 
-## Command-line usage
-
-```
-usage: projpicker [-h] [-v] [-c] [-O | -a] [-d PROJPICKER_DB] [-P PROJ_DB]
-                  [-g {point,poly,bbox}] [-p] [-q {and,or,all}]
-                  [-f {plain,json,pretty}] [-n] [-s SEPARATOR] [-i INPUT]
-                  [-o OUTPUT]
-                  [geometry [geometry ...]]
-
-ProjPicker finds coordinate reference systems (CRSs) whose bounding box
-contains given geometries; visit https://github.com/HuidaeCho/projpicker for
-more details
-
-positional arguments:
-  geometry              query geometry in latitude,longitude (point or poly)
-                        or south,north,west,east (bbox); each point or bbox is
-                        a separate argument and multiple polys are separated
-                        by any non-coordinate argument such as a comma
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         print version (0.1.4.dev3) and copyright, and exit
-  -c, --create          create ProjPicker database
-  -O, --overwrite       overwrite output files; applies to both projpicker.db
-                        and query output file
-  -a, --append          append to output file if any; applies only to query
-                        output file
-  -d PROJPICKER_DB, --projpicker-db PROJPICKER_DB
-                        projpicker database path (default: ./projpicker.db);
-                        use PROJPICKER_DB environment variable to skip this
-                        option
-  -P PROJ_DB, --proj-db PROJ_DB
-                        proj database path (default: /usr/share/proj/proj.db);
-                        use PROJ_DB or PROJ_LIB (PROJ_LIB/proj.db) environment
-                        variables to skip this option
-  -g {point,poly,bbox}, --geometry-type {point,poly,bbox}
-                        geometry type (default: point)
-  -p, --print-geometries
-                        print parsed geometries in a list form for input
-                        validation and exit
-  -q {and,or,all}, --query-mode {and,or,all}
-                        query mode for multiple points (default: and); use all
-                        to ignore query geometries and list all bboxes
-  -f {plain,json,pretty}, --format {plain,json,pretty}
-                        output format (default: plain)
-  -n, --no-header       do not print header for plain output format
-  -s SEPARATOR, --separator SEPARATOR
-                        separator for plain output format (default: comma)
-  -i INPUT, --input INPUT
-                        input geometry file path (default: stdin); use - for
-                        stdin; appended to geometries from arguments unless it
-                        is stdin with no incoming data
-  -o OUTPUT, --output OUTPUT
-                        output bbox file path (default: stdout); use - for
-                        stdout
-```
-
 ## Creating the ProjPicker database
 
 This step is optional because `projpicker.db` generated from PROJ 7.2.1 is
