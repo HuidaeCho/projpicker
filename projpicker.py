@@ -1096,14 +1096,13 @@ def query_points_and(
     projpicker_db = get_projpicker_db(projpicker_db)
 
     outbbox = []
+    first = True
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for point in points:
-            if len(outbbox) == 0:
-                obbox = query_point_using_cursor(point, projpicker_cur)
-                if len(obbox) == 0:
-                    break
-                outbbox.extend(obbox)
+            if first:
+                outbbox.extend(query_point_using_cursor(point, projpicker_cur))
+                first = False
             else:
                 outbbox = query_point_using_bbox(point, outbbox)
     return outbbox
@@ -1384,14 +1383,13 @@ def query_bboxes_and(
     projpicker_db = get_projpicker_db()
 
     outbbox = []
+    first = True
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for bbox in bboxes:
-            if len(outbbox) == 0:
-                obbox = query_bbox_using_cursor(bbox, projpicker_cur)
-                if len(obbox) == 0:
-                    break
-                outbbox.extend(obbox)
+            if first:
+                outbbox.extend(query_bbox_using_cursor(bbox, projpicker_cur))
+                first = False
             else:
                 outbbox = query_bbox_using_bbox(bbox, outbbox)
     return outbbox
