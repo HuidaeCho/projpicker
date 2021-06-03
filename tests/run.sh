@@ -30,10 +30,10 @@ for infile in *.txt; do
 		echo "FAILED" | tee -a run.tmp
 	fi
 
-	args=$(sed '/^#args: /!d; s/^#args: //' $infile)
-	if [ "$args" != "" ]; then
-		echo -n "$args..." | tee -a run.tmp
-		eval "../projpicker.py $args" > test.tmp
+	geoms=$(sed '/^#geoms: /!d; s/^#geoms: //' $infile)
+	if [ "$geoms" != "" ]; then
+		echo -n "$opts $geoms..." | tee -a run.tmp
+		eval "../projpicker.py $opts -- $geoms" > test.tmp
 		if diff test.tmp $outfile > /dev/null; then
 			echo "PASSED" | tee -a run.tmp
 		else

@@ -1,11 +1,11 @@
-#args: -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
+#opts: -g poly
+#geoms: -10,0 10,0 10,10 10,0 , 10,20 30,40
 #python
 # import projpicker as ppik
 # bbox = ppik.query_polys([[[-10, 0], [10, 0], [10, 10], [10, 0]],
 #                          [[10, 20], [30, 40]]])
 # ppik.print_bbox(bbox)
 #end
-#opts: -g poly
 
 # poly 1
 # south-west corner

@@ -1,4 +1,4 @@
-#args: 34.2348,-83.8677 "33.7490  84.3880W"
+#geoms: 34.2348,-83.8677 "33.7490  84.3880W"
 #python
 # import projpicker as ppik
 # bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
