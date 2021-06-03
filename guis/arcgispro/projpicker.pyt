@@ -15,7 +15,7 @@ import projpicker as ppik
 
 WGS84 = 4326
 
-# Assign for global variable
+# Assign default CRS so tool wont fail if selection is closed.
 sel_crs = "EPSG:4326"
 
 
@@ -37,52 +37,91 @@ def popup(crs):
     # Create CRS info and area dicts
     options = {}
     area = {}
+    projection_types = []
+    units = []
     for entry in crs:
+        # Generate hashed list dict for easier query
+
+        crs_code = entry[2]
+
+        crs_type = entry[0]
+        if crs_type not in projection_types:
+            projection_types.append(crs_type)
+
+        authority = entry[1]
+        crs_unit = entry[7]
+        if crs_unit not in units:
+            units.append(crs_unit)
+
+        b, t, l, r, crs_area = entry[-5:]
+
+        crs_dict = {
+                "crs_type": crs_type,
+                "authority": authority,
+                "unit": crs_unit,
+                "bbox": [b, t, l, r],
+                "area": crs_area
+                }
+
+        arcpy.AddMessage(crs_dict)
+
         # Create main info dict queryable by code
-        options[entry.get('crs_code')] = entry
+        options[crs_code] = crs_dict
         # Create area dict for easy sorting
-        area[entry.get('crs_code')] = entry.get('area_sqkm')
+        area[crs_code] = crs_area
 
     # Sort by area to get most localized proj
     area_s = sorted(area.keys(), key=lambda k: area[k])
     # Sort options dict by area
     options_s = {}
     for entry in area_s:
-        options_s[entry] = f"{options.get(entry).get('crs_auth_name')}:{entry}"
+        options_s[entry] = f"{options.get(entry).get('authority')}:{entry}"
 
     # Main window
     window = tk.Tk()
-    window.geometry("900x400")
+    window.geometry("1000x900")
     window.title("ProjPicker Geometry Creation (ArcGIS Pro)")
 
     # Text for CRS Info
     T = tk.Text(window, height = 5, width = 40)
-    T.pack(side=tk.RIGHT, fill=tk.BOTH)
+    T.pack(side=tk.RIGHT, fill=tk.BOTH, anchor=tk.NE)
     T.insert(tk.END, "Use 'CRS Info' to show projection info")
-
-    # List of crs
-    listbox = tk.Listbox(window)
-    listbox.pack(side = tk.LEFT, fill = tk.BOTH, expand=False)
 
     # Add scrollbar for list
     scrollbar = tk.Scrollbar(window)
     scrollbar.pack(side = tk.LEFT, fill = tk.BOTH)
 
-    # Populate list
+    # List of crs
+    crs_listbox = tk.Listbox(window)
+    crs_listbox.pack(fill='x', ipady=150, anchor=tk.NW)
     for values in options_s.values():
-        listbox.insert(tk.END, values)
+        crs_listbox.insert(tk.END, values)
+
+    # List box for projection type
+    type_listbox = tk.Listbox(window)
+    for t in projection_types:
+        type_listbox.insert(tk.END, t)
+
+    # List of units
+    unit_listbox = tk.Listbox(window)
+    for unit in units:
+        unit_listbox.insert(tk.END, unit)
+    unit_scrollbar = tk.Scrollbar(window)
 
     # Add widgets
-    listbox.config(yscrollcommand = scrollbar.set)
-    scrollbar.config(command = listbox.yview)
+    crs_listbox.config(yscrollcommand = scrollbar.set)
+    scrollbar.config(command = crs_listbox.yview)
+
+    unit_listbox.config(xscrollcommand=unit_scrollbar.set)
+    unit_scrollbar.config(command=unit_listbox.xview)
 
     # Retrieve selected CRS from List
     def selected_item():
         global sel_crs
-        for i in listbox.curselection():
+        for i in crs_listbox.curselection():
 
             # get auth:code string
-            sel_code = listbox.get(i)
+            sel_code = crs_listbox.get(i)
             # get just code
             sel_auth = options.get(sel_code.split(":")[1])
             # update sel_crs
@@ -92,9 +131,9 @@ def popup(crs):
 
     # Show CRS info in right panel
     def get_info():
-        for i in listbox.curselection():
+        for i in crs_listbox.curselection():
             # get auth:code string
-            sel_code = listbox.get(i)
+            sel_code = crs_listbox.get(i)
             # get full ppik return json
             sel_auth = options.get(sel_code.split(":")[1])
             # format json
@@ -104,14 +143,51 @@ def popup(crs):
             # insert new text
             T.insert(tk.END, pp)
 
+    def query_unit():
+        for i in unit_listbox.curselection():
+            sel_unit = unit_listbox.get(i)
+
+            crs_listbox.delete(0,tk.END)
+
+            for values in options_s.values():
+                code = options.get(values.split(":")[1])
+                if code.get("unit") == sel_unit:
+                    crs_listbox.insert(tk.END, values)
+
+    def query_crs_type():
+        for i in type_listbox.curselection():
+            sel_type = type_listbox.get(i)
+
+            crs_listbox.delete(0, tk.END)
+            for values in options_s.values():
+                code = options.get(values.split(":")[1])
+                if code.get("crs_type") == sel_type:
+                    crs_listbox.insert(tk.END, values)
+
+
+    def clear_filter():
+        crs_listbox.delete(0, tk.END)
+        for values in options_s.values():
+            crs_listbox.insert(tk.END, values)
+
+
     # Buttons
     btn = tk.Button(window, text='OK', command=selected_item)
-    btn.pack(side=tk.LEFT)
+    btn.pack(side="bottom", fill='x', anchor=tk.SW)
     btn1 = tk.Button(window, text="CRS Info", command=get_info)
-    btn1.pack(side=tk.RIGHT)
+    btn1.pack(side="bottom", fill='x')
+    btn2 = tk.Button(window, text="Filter unit", command=query_unit)
+    btn2.pack(side="bottom", fill='x')
+    btn3 = tk.Button(window, text="Filter type", command=query_crs_type)
+    btn3.pack(side="bottom", fill='x')
+    btn4 = tk.Button(window, text="Clear filter", command=clear_filter)
+    btn4.pack(side="bottom", fill='x')
+    type_listbox.pack(fill='both', side='left', expand=True)
+    unit_listbox.pack(fill='both', side='left', expand=True)
+    unit_scrollbar.pack(side='left', fill='y')
 
     # insert list into window
-    listbox.pack()
+    crs_listbox.pack()
 
     # run gui
     window.mainloop()
@@ -206,10 +282,7 @@ class CreateGeometry(object):
 
         # If querying shape is a point then query by point
         # else use bounding box
-        if desc.shapeType == "Point":
-            crs = ppik.listify_bbox(ppik.query_points([[b, l]]))
-        else:
-            crs = ppik.listify_bbox(ppik.query_bboxes([[b, t, l, r]]))
+        crs = ppik.query_bboxes([[b, t, l, r]])
 
         # Run GUI and return the selected CRS
         sel_crs = popup(crs)
