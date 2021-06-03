@@ -1,4 +1,11 @@
-# TODO
+# ProjPicker Toolbox for ArcGIS Pro
+
+## TODO
+
+* Failproof user manual including how to copy `projpicker.py` and `projpicker.db`
+* Add more tools later?
+
+## ProjPicker Create Geometry
 
 Proof-of-concept toolbox to create new shapefiles with recomended CRS.
 
