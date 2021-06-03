@@ -218,7 +218,6 @@ projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
 From Python,
 ```python
 import projpicker as ppik
-import pprint
 
 # sorted by area to find the most local CRS first
 bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
