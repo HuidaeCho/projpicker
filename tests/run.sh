@@ -6,13 +6,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo -n "test_pyproj.py..." | tee run.tmp
-python3 test_pyproj.py > test.tmp
-if diff test.tmp test_pyproj.out > /dev/null; then
-	echo "PASSED" | tee -a run.tmp
-else
-	echo "FAILED" | tee -a run.tmp
-fi
+for script in *.py; do
+	outfile=$(echo $script | sed 's/py$/out/')
+
+	echo -n "$script..." | tee run.tmp
+	python3 $script > test.tmp
+	if diff test.tmp $outfile > /dev/null; then
+		echo "PASSED" | tee -a run.tmp
+	else
+		echo "FAILED" | tee -a run.tmp
+	fi
+done
 
 for infile in *.txt; do
 	outfile=$(echo $infile | sed 's/txt$/out/')
