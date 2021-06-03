@@ -1,6 +1,8 @@
 #opts: -g poly
 #geoms: -10,0 10,0 10,10 10,0 , 10,20 30,40
 #python
+# import sys
+# sys.path.insert(0, "..")
 # import projpicker as ppik
 # bbox = ppik.query_polys([[[-10, 0], [10, 0], [10, 10], [10, 0]],
 #                          [[10, 20], [30, 40]]])

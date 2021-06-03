@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+sys.path.insert(0, "..")
 import projpicker as ppik
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_crs_info
