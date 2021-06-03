@@ -199,8 +199,8 @@ EOT
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_points([[34.2348, -83.8677],
-                                            [33.7490, -84.3880]]))
+bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
+ppik.print_bbox(bbox)
 ```
 
 ## Querying polylines or polygons
@@ -230,9 +230,9 @@ EOT
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_polys([[[-10, 0], [10, 0],
-                                            [10, 10], [10, 0]],
-                                           [[10, 20], [30, 40]]]))
+bbox = ppik.query_polys([[[-10, 0], [10, 0], [10, 10], [10, 0]],
+                         [[10, 20], [30, 40]]])
+ppik.print_bbox(bbox)
 ```
 
 ## Querying bounding boxes
@@ -255,7 +255,8 @@ EOT
 From Python,
 ```python
 import projpicker as ppik
-bbox = ppik.listify_bbox(ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]]))
+bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
+ppik.print_bbox(bbox)
 ```
 
 ## TODO

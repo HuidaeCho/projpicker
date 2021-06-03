@@ -1,0 +1,13 @@
+#args: -g bbox 0,0,10,10 20,20,50,50
+#opts: -g bbox
+#python
+# import projpicker as ppik
+# bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
+# ppik.print_bbox(bbox)
+#end
+
+# region 1
+0	0	10	10
+
+# region 2
+20	20	50	50
