@@ -123,6 +123,7 @@ def popup(crs):
                     f"North:    {sel.get('bbox')[1]}°\n"
                     f"West:     {sel.get('bbox')[2]}°\n"
                     f"East:     {sel.get('bbox')[3]}°\n"
+                    f"Area:     {sel.get('area'):n} sqkm\n"
                     )
         return new_text
 
