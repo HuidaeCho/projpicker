@@ -23,8 +23,7 @@ sel_crs = "EPSG:4326"
 # Tkinter GUI
 
 # Add path for add current path for tkinter to run
-if not str(Path(__file__)) in sys.argv:
-    sys.argv += [str(Path(__file__))]
+sys.argv = [str(Path(__file__))]
 
 
 def popup(crs):
