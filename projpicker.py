@@ -69,16 +69,17 @@ CREATE TABLE bbox (
 )
 """
 
+# all column names in the bbox table
+bbox_columns = re.sub("^ +| +$", "",
+               re.sub("\n", " ",
+               re.sub("(?:^[A-Z]| ).*", "",
+               re.sub("\([^(]*\)", "",
+               re.sub("^(?:CREATE TABLE.*|\))$|^ *", "",
+                      bbox_schema, flags=re.MULTILINE),
+                      flags=re.DOTALL), flags=re.MULTILINE))).split()
+
 # BBox namedtuple class
-BBox = collections.namedtuple("BBox", """
-    proj_table
-    crs_auth_name crs_code
-    usage_auth_name usage_code
-    extent_auth_name extent_code
-    unit
-    south_lat north_lat west_lon east_lon
-    area_sqkm
-""")
+BBox = collections.namedtuple("BBox", bbox_columns)
 
 # regular expression patterns
 # coordinate separator
@@ -1532,32 +1533,11 @@ def stringify_bbox(bbox, header=True, separator=","):
         str: Stringified bbox rows.
     """
     if header and len(bbox) > 0:
-        outstr = ("proj_table,"
-                  "crs_auth_name,crs_code,"
-                  "usage_auth_name,usage_code,"
-                  "extent_auth_name,extent_code,"
-                  "unit,"
-                  "south_lat,north_lat,west_lon,east_lon,"
-                  "area_sqkm\n"
-                  .replace(",", separator))
+        outstr = separator.join(bbox_columns) + "\n"
     else:
         outstr = ""
     for row in bbox:
-        (proj_table,
-         crs_auth, crs_code,
-         usg_auth, usg_code,
-         ext_auth, ext_code,
-         unit,
-         s, n, w, e,
-         area) = row
-        outstr += (f"{proj_table},"
-                   f"{crs_auth},{crs_code},"
-                   f"{usg_auth},{usg_code},"
-                   f"{ext_auth},{ext_code},"
-                   f"{unit},"
-                   f"{s},{n},{w},{e},"
-                   f"{area}\n"
-                   .replace(",", separator))
+        outstr += separator.join(map(str, row)) + "\n"
     return outstr
 
 
@@ -1573,27 +1553,7 @@ def dictify_bbox(bbox):
     """
     outdicts = []
     for row in bbox:
-        (proj_table,
-         crs_auth, crs_code,
-         usg_auth, usg_code,
-         ext_auth, ext_code,
-         unit,
-         s, n, w, e,
-         area) = row
-        outdicts.append({
-            "proj_table": proj_table,
-            "crs_auth_name": crs_auth,
-            "crs_code": crs_code,
-            "usage_auth_name": usg_auth,
-            "usage_code": usg_code,
-            "extent_auth_name": ext_auth,
-            "extent_code": ext_code,
-            "unit": unit,
-            "south_lat": s,
-            "north_lat": n,
-            "west_lon": w,
-            "east_lon": e,
-            "area_sqkm": area})
+        outdicts.append(dict(row._asdict()))
     return outdicts
 
 
