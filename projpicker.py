@@ -777,7 +777,7 @@ def parse_geom(geom, geom_type="point"):
     Parse a geometry and return it as a list.
 
     Args:
-        geom (list): List or str of a parseable geometry. See parse_point(),
+        geom (list): List or a str of a parseable geometry. See parse_point(),
             parse_poly(), and parse_bbox().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -843,13 +843,17 @@ def parse_mixed_geoms(geoms):
     starts in the latitude-longitude coordinate system by default.
 
     Args:
-        geoms (list): List of "point", "poly", "bbox", "latlon", "xy", and
-            parseable geometries. The first word can be either "all", "and", or
-            "or". See parse_points(), parse_polys(), and parse_bboxes().
+        geoms (list or str): List of "point", "poly", "bbox", "latlon", "xy",
+            and parseable geometries. The first word can be either "all",
+            "and", or "or". See parse_points(), parse_polys(), and
+            parse_bboxes().
 
     Returns:
         list: List of parsed geometries.
     """
+    if type(geoms) == str:
+        geoms = geoms.split()
+
     outgeoms = []
 
     if len(geoms) == 0:
@@ -907,7 +911,7 @@ def query_point(
     get_projpicker_db() is used.
 
     Args:
-        point (list or str): List of two floats or parseable point geometry.
+        point (list or str): List of two floats or a parseable point geometry.
             See parse_point().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
@@ -933,7 +937,7 @@ def query_point_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        point (list or str): List of two floats or parseable str of a point.
+        point (list or str): List of two floats or a parseable str of a point.
             See parse_point().
 
     Returns:
@@ -1130,7 +1134,7 @@ def query_bbox(
     get_projpicker_db() is used.
 
     Args:
-        bbox (list or str): List of four floats or parseable str of a bbox
+        bbox (list or str): List of four floats or a parseable str of a bbox
             geometry. See parse_bbox().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
@@ -1158,7 +1162,7 @@ def query_bbox_using_bbox(
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         bbox (list or str): List of south, north, west, and east floats in
-            decimal degrees or parseable str of south, north, west, and east.
+            decimal degrees or a parseable str of south, north, west, and east.
             See parse_bbox().
 
     Returns:
@@ -1430,14 +1434,17 @@ def query_mixed_geoms(
     None (default), get_projpicker_db() is used.
 
     Args:
-        geoms (list): List of "point", "poly", "bbox", "latlon", "xy", and
-            parseable geometries. The first word can be either "all", "and", or
-            "or". See parse_points(), parse_polys(), and parse_bboxes().
+        geoms (list or str): List of "point", "poly", "bbox", "latlon", "xy",
+            and parseable geometries. The first word can be either "all",
+            "and", or "or". See parse_points(), parse_polys(), and
+            parse_bboxes().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
         list: List of queried BBox instances.
     """
+    geoms = parse_mixed_geoms(geoms)
+
     outbbox = []
 
     if len(geoms) == 0:
@@ -1456,7 +1463,7 @@ def query_mixed_geoms(
     set_latlon()
 
     first = True
-    for geom in parse_mixed_geoms(geoms):
+    for geom in geoms:
         if geom in ("point", "poly", "bbox"):
             geom_type = geom
         elif geom == "latlon":
@@ -1505,13 +1512,16 @@ def stringify_bbox(bbox, header=True, separator=","):
     an empty string is returned.
 
     Args:
-        bbox (list): List of BBox instances.
+        bbox (list or BBox): List of BBox instances or a BBox instance.
         header (bool): Whether or not to print header. Defaults to True.
         separator (str): Column separator. Defaults to ",".
 
     Returns:
         str: Stringified bbox rows.
     """
+    if type(bbox) == BBox:
+        bbox = [bbox]
+
     if header and len(bbox) > 0:
         outstr = separator.join(bbox_columns) + "\n"
     else:
@@ -1526,11 +1536,14 @@ def dictify_bbox(bbox):
     Convert a list of BBox instances to a list of bbox dicts.
 
     Args:
-        bbox (list): List of BBox instances.
+        bbox (list or BBox): List of BBox instances or a BBox instance.
 
     Returns:
         list: List of bbox dicts.
     """
+    if type(bbox) == BBox:
+        bbox = [bbox]
+
     outdicts = []
     for row in bbox:
         outdicts.append(dict(row._asdict()))
@@ -1542,7 +1555,7 @@ def jsonify_bbox(bbox):
     Convert a list of BBox instances to a JSON object.
 
     Args:
-        bbox (list): List of BBox instances.
+        bbox (list or BBox): List of BBox instances or a BBox instance.
 
     Returns:
         str: JSONified bbox rows.
