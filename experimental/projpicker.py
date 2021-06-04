@@ -36,7 +36,7 @@ import math
 import json
 import pprint
 
-from .common import bbox_schema, bbox_columns, get_float
+from .common import bbox_schema, bbox_columns, get_float, BBox
 from . import latlon
 from . import xy
 
