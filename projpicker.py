@@ -980,12 +980,14 @@ def query_point_using_cursor(
     instances consecutively.
 
     Args:
-        point (list): List of latitude and longitude floats in decimal degrees.
+        point (list or str): List of latitude and longitude floats in decimal
+            degrees or parseable str of latitude and longitude. See parse_point().
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
 
     Returns:
         list: List of queried BBox instances.
     """
+    point = parse_point(point)
     outbbox = []
 
     if not check_point(point):
@@ -1022,12 +1024,15 @@ def query_point_using_bbox(
     operation on BBox instances consecutively.
 
     Args:
-        point (list): List of latitude and longitude floats in decimal degrees.
+        point (list or str): List of latitude and longitude floats in decimal
+            degrees or parseable str of latitude and longitude. See parse_point().
         prevbbox (list): List of BBox instances from a previous query.
 
     Returns:
         list: List of queried BBox instances.
     """
+    point = parse_point(point)
+
     if not check_point(point):
         return prevbbox
 
@@ -1060,7 +1065,8 @@ def query_point(
     used.
 
     Args:
-        point (list): List of latitude and longitude floats in decimal degrees.
+        point (list or str): List of latitude and longitude floats in decimal
+            degrees or a parseable point geometry. See parse_point().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1249,13 +1255,15 @@ def query_bbox_using_cursor(
     on bbox rows consecutively.
 
     Args:
-        bbox (list): List of south, north, west, and east floats in decimal
-            degrees.
+        bbox (list or str): List of south, north, west, and east floats in
+            decimal degrees or parseable str of south, north, west, and east.
+            See parse_bbox().
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
 
     Returns:
         list: List of queried BBox instances.
     """
+    bbox = parse_bbox(bbox)
     outbbox = []
 
     if not check_bbox(bbox):
@@ -1301,13 +1309,16 @@ def query_bbox_using_bbox(
     on bbox rows consecutively.
 
     Args:
-        bbox (list): List of south, north, west, and east floats in decimal
-            degrees.
+        bbox (list or str): List of south, north, west, and east floats in
+            decimal degrees or parseable str of south, north, west, and east.
+            See parse_bbox().
         prevbbox (list): List of BBox instances from a previous query.
 
     Returns:
         list: List of queried BBox instances.
     """
+    bbox = parse_bbox(bbox)
+
     if not check_bbox(bbox):
         return prevbbox
 
@@ -1343,8 +1354,9 @@ def query_bbox(
     projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
-        bbox (list): List of south, north, west, and east floats in decimal
-            degrees.
+        bbox (list or str): List of south, north, west, and east floats in
+            decimal degrees or parseable str of south, north, west, and east.
+            See parse_bbox().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
