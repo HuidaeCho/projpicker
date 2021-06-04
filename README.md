@@ -280,7 +280,7 @@ bbox = ppik.query_mixed_geoms("xy bbox 1323252,1374239,396255,434290 latlon poin
 ppik.print_bbox(bbox[0])
 ```
 
-EPSG:26767 is actuallly the correct CRS:
+EPSG:26767 is actually the correct CRS:
 
 ![image](https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png)
 
