@@ -232,6 +232,21 @@ bbox_meter = list(filter(lambda x: x.unit=="meter", bbox))
 ppik.print_bbox(bbox_meter)
 ```
 
+## Finding missing projection information
+
+The ProjPicker can be used to guess the projection of data whose spatial reference information is missing for some reason (e.g., a Shapefile with no PRJ file). For example, I created a Shapefile (`Atlanta_GA.shp`) for Atlanta, Georgia, and deleted its PRJ file to simulate missing metadata. Only the filename gives the user a hint about its geographic location, but without the PRJ file, novice GIS users can have difficulty finding the right projection and repair the Shapefile. When the file is opened in a GIS, it will be located far away from the true data location because projected coordinates are treated as latitudes and longitudes.
+
+![image](https://user-images.githubusercontent.com/7456117/120870997-7da26f00-c568-11eb-9630-785b0bfaf535.png)
+
+Nigeria is definitely not the right location, so the user can search for the latitude and longitude of Atlanta, GA (33.7490°N,84.3880°W) and check the extent of the Shapefile from the layer properties (1323252,1374239,396255,434290 in SNWE):
+![image](https://user-images.githubusercontent.com/7456117/120871218-06210f80-c569-11eb-92c3-787e1e761d65.png)
+
+As can be seen in the screenshot, the spatial reference is unknown. Let's use the ProjPicker to guess its projection:
+```bash
+projpicker -n xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W | head -1
+```
+This command line does not print the header line (`-n`) with column names to print only the first selection that is the most localized CRS to the query information. It then switches to the `xy` coordinate system and specifies the extent as `bbox 1323252,1374239,396255,434290` followed by a point in latitude and longitude for Atlanta `latlon point 33.7490°N,84.3880°W`. The `head -1` pipe prints the first CRS only. Remember, ProjPicker outputs are sorted by area from the smallest (most local) to largest (most global).
+
 ## TODO
 
 1. GUI
@@ -240,9 +255,7 @@ ppik.print_bbox(bbox_meter)
      mapping functionalities. We'll be able to see almost immediate returns.
    * Web (client-only)
    * Desktop
-2. Missing projection information? Let's find it using coordinates in latitude
-   and longitude.
-3. CRS hints
+2. CRS hints
    * Crowdsourcing agency and product information?
 
 ## Versioning
