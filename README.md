@@ -250,6 +250,7 @@ Nigeria is definitely not the right location, so the user can search for the
 latitude and longitude of Atlanta, GA (33.7490°N,84.3880°W) and check the
 extent of the Shapefile from the layer properties
 (1323252,1374239,396255,434290 in SNWE):
+
 ![image](https://user-images.githubusercontent.com/7456117/120871218-06210f80-c569-11eb-92c3-787e1e761d65.png)
 
 As can be seen in the screenshot, the spatial reference is unknown. Let's use
