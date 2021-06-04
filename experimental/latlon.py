@@ -28,7 +28,7 @@
 import re
 import sqlite3
 
-from common import pos_float_pat, coor_sep_pat, get_float, BBox
+from .common import pos_float_pat, coor_sep_pat, get_float, BBox
 
 # symbols for degrees, minutes, and seconds (DMS)
 # degree: [°od] (alt+0 in xterm for °)

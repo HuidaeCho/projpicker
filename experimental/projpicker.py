@@ -36,9 +36,9 @@ import math
 import json
 import pprint
 
-from common import bbox_schema, bbox_columns, get_float
-import latlon
-import xy
+from .common import bbox_schema, bbox_columns, get_float
+from . import latlon
+from . import xy
 
 # module path
 module_path = os.path.dirname(__file__)

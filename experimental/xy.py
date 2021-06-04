@@ -28,7 +28,7 @@
 import re
 import sqlite3
 
-from common import pos_float_pat, coor_sep_pat, get_float, BBox
+from .common import pos_float_pat, coor_sep_pat, get_float, BBox
 
 # x,y
 xy_pat = f"([+-]?{pos_float_pat}){coor_sep_pat}([+-]?{pos_float_pat})"
