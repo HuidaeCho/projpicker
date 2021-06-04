@@ -157,10 +157,10 @@ ppik.print_bbox(bbox)
 From the shell,
 ```bash
 # read latitude,longitude from arguments
-projpicker -g poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
+projpicker poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
 
 # read latitude,longitude from stdin
-projpicker -g poly <<EOT
+projpicker poly <<EOT
 # poly 1
 # south-west corner
 10S,0
@@ -189,10 +189,10 @@ ppik.print_bbox(bbox)
 From the shell,
 ```bash
 # read south,north,west,east from arguments
-projpicker -g bbox 0,0,10,10 20,20,50,50
+projpicker bbox 0,0,10,10 20,20,50,50
 
 # read south,north,west,east from stdin
-projpicker -g bbox <<EOT
+projpicker bbox <<EOT
 # region 1
 0	0	10	10
 
