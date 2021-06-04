@@ -1631,8 +1631,7 @@ def projpicker(
             "point".
         print_geoms (bool): Whether or not to print parsed geometries and exit.
             Defaults to False.
-        query_mode (str): Query mode for multiple geometries (and, or).
-            Defaults to "and".
+        query_mode (str): Query mode (and, or, all). Defaults to "and".
         overwrite (bool): Whether or not to overwrite output file. Defaults to
             False.
         append (bool): Whether or not to append output to file. Defaults to
@@ -1782,8 +1781,8 @@ def parse():
             "-q", "--query-mode",
             choices=("and", "or", "all"),
             default="and",
-            help="query mode for multiple points (default: and); use all to "
-                "ignore query geometries and list all bboxes")
+            help="query mode (default: and); use all to ignore query "
+                "geometries and list all bboxes")
     parser.add_argument(
             "-f", "--format",
             choices=("plain", "json", "pretty"),
