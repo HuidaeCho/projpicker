@@ -779,8 +779,8 @@ def parse_polys(polys):
             else:
                 typ0 = typ1 = None
             if ((typ0 in (int, float) and typ1 in (int, float)) or
-                  (typ0 == str and not latlon_re.match(point[0]) and
-                   typ1 == str and not latlon_re.match(point[1]))):
+                (typ0 == str and not latlon_re.match(point[0]) and
+                 typ1 == str and not latlon_re.match(point[1]))):
                 # [ lat, lon ]
                 lat, lon = point
                 lat = get_float(lat)
