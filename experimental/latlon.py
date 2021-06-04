@@ -27,7 +27,8 @@
 
 import re
 import sqlite3
-from common import *
+
+from common import pos_float_pat, coor_sep_pat, get_float, BBox
 
 # symbols for degrees, minutes, and seconds (DMS)
 # degree: [°od] (alt+0 in xterm for °)
@@ -246,7 +247,7 @@ def calc_poly_bbox(poly):
             elif plon is not None and plon*lon < 0:
                 # if crossing the antimeridian, w > e
                 # XXX: tricky to handle geometries crossing the
-                # antimeridian need more testing
+                # antimeridian; need more testing
                 if lon < 0 and (e > 0 or lon > e):
                     # +lon to -lon
                     e = lon

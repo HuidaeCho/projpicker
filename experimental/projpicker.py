@@ -36,7 +36,7 @@ import math
 import json
 import pprint
 
-from common import *
+from common import bbox_schema, bbox_columns, get_float
 import latlon
 import xy
 
@@ -456,12 +456,22 @@ def transform_bbox(bbox, to_crs):
     try:
         trans = pyproj.Transformer.from_crs("EPSG:4326", to_crs,
                                             always_xy=True)
-        corners = trans.transform((w, w, e, e), (s, n, s, n))
-        x, y = corners
+        x = [w, w, e, e]
+        y = [s, n, s, n]
+        if s*n < 0:
+            x.extend([w, e])
+            y.extend([0, 0])
+            inc_zero = True
+        else:
+            inc_zero = False
+        x, y = trans.transform(x, y)
         b = min(y[0], y[2])
         t = max(y[1], y[3])
         l = min(x[0], x[1])
         r = max(x[2], x[3])
+        if inc_zero:
+            l = min(l, x[4])
+            r = max(r, x[5])
         if math.isinf(b) or math.isinf(t) or math.isinf(l) or math.isinf(r):
             b = t = l = r = None
     except:
@@ -616,18 +626,6 @@ def set_xy():
     Set the coordinate system to x-y by calling set_coordinate_system().
     """
     set_coordinate_system("xy")
-
-
-def is_latlon():
-    """
-    Return True if in the latitude-longitude coordinate system. Otherwise,
-    return False.
-
-    Returns:
-        bool: True if in the latitude-longitude coordinate system. Otherwise,
-        return False.
-    """
-    return coor_mod == latlon
 
 
 ################################################################################
