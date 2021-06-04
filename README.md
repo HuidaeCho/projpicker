@@ -46,6 +46,9 @@ standard modules:
 * [json](https://docs.python.org/3/library/json.html)
 * [pprint](https://docs.python.org/3/library/pprint.html)
 
+To recreate `projpicker.db`, the [pyproj](https://github.com/pyproj4/pyproj)
+module is required.
+
 ## Installation
 
 * [GitHub repository](https://github.com/HuidaeCho/projpicker)
