@@ -1035,13 +1035,10 @@ def query_point_using_bbox(
     idx = []
 
     for i in range(len(prevbbox)):
-        (proj_table,
-         crs_auth, crs_code,
-         usg_auth, usg_code,
-         ext_auth, ext_code,
-         unit,
-         s, n, w, e,
-         area) = prevbbox[i]
+        s = prevbbox[i].south_lat
+        n = prevbbox[i].north_lat
+        w = prevbbox[i].west_lon
+        e = prevbbox[i].east_lon
         if s <= lat <= n and (
             w == e or
             (w == -180 and e == 180) or
@@ -1318,13 +1315,10 @@ def query_bbox_using_bbox(
     idx = []
 
     for i in range(len(prevbbox)):
-        (proj_table,
-         crs_auth, crs_code,
-         usg_auth, usg_code,
-         ext_auth, ext_code,
-         unit,
-         b, t, l, r,
-         area) = prevbbox[i]
+        b = prevbbox[i].south_lat
+        t = prevbbox[i].north_lat
+        l = prevbbox[i].west_lon
+        r = prevbbox[i].east_lon
         if b <= s <= t and b <= n <= t and (
             l == r or
             (l == -180 and r == 180) or
