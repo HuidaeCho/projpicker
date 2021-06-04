@@ -1,0 +1,22 @@
+#geoms: poly -10,0 10,0 10,10 10,0 , 10,20 30,40
+#python
+# import sys
+# sys.path.insert(0, "..")
+# import projpicker as ppik
+# bbox = ppik.query_polys([[[-10, 0], [10, 0], [10, 10], [10, 0]],
+#                          [[10, 20], [30, 40]]])
+# ppik.print_bbox(bbox)
+#end
+
+# poly 1
+# south-west corner
+10S,0
+10,0	# north-west corner
+	# this comment-only line doesn't start a new poly
+# north-east corner
+10	10
+# north-west corner
+10	0
+poly 2	# "poly 2" is neither a comment nor a point, so we start a new poly
+10	20
+30	40
