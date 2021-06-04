@@ -1629,10 +1629,10 @@ def projpicker(
         separator (str): Column separator for plain. Defaults to ",".
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
-        query_mode (str): Query mode for multiple geometries (and, or).
-            Defaults to "and".
         print_geoms (bool): Whether or not to print parsed geometries and exit.
             Defaults to False.
+        query_mode (str): Query mode for multiple geometries (and, or).
+            Defaults to "and".
         overwrite (bool): Whether or not to overwrite output file. Defaults to
             False.
         append (bool): Whether or not to append output to file. Defaults to
