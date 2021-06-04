@@ -28,7 +28,11 @@
 import re
 import sqlite3
 
-from .common import pos_float_pat, coor_sep_pat, get_float, BBox
+# https://stackoverflow.com/a/49480246/16079666
+if __package__ is None or __package__ == "":
+    from common import pos_float_pat, coor_sep_pat, get_float, BBox
+else:
+    from .common import pos_float_pat, coor_sep_pat, get_float, BBox
 
 # x,y
 xy_pat = f"([+-]?{pos_float_pat}){coor_sep_pat}([+-]?{pos_float_pat})"

@@ -36,9 +36,15 @@ import math
 import json
 import pprint
 
-from .common import bbox_schema, bbox_columns, get_float, BBox
-from . import latlon
-from . import xy
+# https://stackoverflow.com/a/49480246/16079666
+if __package__ is None or __package__ == "":
+    from common import bbox_schema, bbox_columns, get_float, BBox
+    import latlon
+    import xy
+else:
+    from .common import bbox_schema, bbox_columns, get_float, BBox
+    from . import latlon
+    from . import xy
 
 # module path
 module_path = os.path.dirname(__file__)
