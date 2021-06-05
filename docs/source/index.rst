@@ -13,7 +13,7 @@ This project is kindly funded by `the Institute for Environmental and Spatial An
 
 .. toctree::
    :maxdepth: 2
-   :caption: Program reference:
+   :caption: Program reference
 
    cli
    modules
@@ -22,7 +22,7 @@ This project is kindly funded by `the Institute for Environmental and Spatial An
 
 .. toctree::
    :maxdepth: 2
-   :caption: Example usage:
+   :caption: Example usage
 
    usage
    filtering
