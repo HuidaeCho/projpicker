@@ -41,8 +41,9 @@ else:
 # decimal degrees
 dd_pat = f"([+-]?{pos_float_pat})[°od]?"
 # DMS without [SNWE]
-dms_pat = (f"([0-9]+)(?:[°od:](?:[ \t]*(?:({pos_float_pat})['′m]?|"
-           f"""([0-9]+)['′m:](?:[ \t]*({pos_float_pat})(?:["″s]|'')?)?))?)?""")
+dms_pat = (f"([0-9]+)(?:[°od](?:[ \t]*(?:({pos_float_pat})['′m]?|"
+           f"""([0-9]+)['′m](?:[ \t]*({pos_float_pat})(?:["″s]|'')?)?))?|"""
+           f":(?:({pos_float_pat})|([0-9]+):({pos_float_pat})))")
 # coordinate without [SNWE]
 coor_pat = (f"{dd_pat}|([+-])?{dms_pat}|"
             f"(?:({pos_float_pat})[°od]?|{dms_pat})[ \t]*")
@@ -53,12 +54,16 @@ lon_pat = f"(?:{coor_pat}([WE])?)"
 # latitude,longitude
 latlon_pat = f"{lat_pat}{coor_sep_pat}{lon_pat}"
 # matching groups for latitude:
-#   1:          (-1.2)°
-#   2,3,4:      (-)(1)°(2.3)'
-#   2,3,5,6:    (-)(1)°(2)'(3.4)"
-#   7,12:       (1.2)°(S)
-#   8,9,12:     (1)°(2.3)'(S)
-#   8,10,11,12: (1)°(2)'(3.4)"(S)
+#   1:              (-1.2)°
+#   2,3,4:          (-)(1)°(2.3)'
+#   2,3,5,6:        (-)(1)°(2)'(3.4)"
+#   10,18:          (1.2)°(S)
+#   11,12,18:       (1)°(2.3)'(S)
+#   11,13,14,18:    (1)°(2)'(3.4)"(S)
+#   2,3,7:          (-)(1):(2.3)
+#   2,3,8,9:        (-)(1):(2):(3.4)
+#   11,15,18:       (1):(2.3)(S)
+#   11,16,17,18:    (1):(2):(3.4)(S)
 
 # compiled regular expressions
 # latitude,longitude
@@ -74,7 +79,7 @@ def parse_coor(m, ith, lat):
     """
     Parse the zero-based ith coordinate from a matched m. If the format is
     degrees, minutes, and seconds (DMS), lat is used to determine its
-    negativity. If parsing is unsuccessful, it returns None.
+    negativity.
 
     Args:
         m (re.Match): re.compile() output.
@@ -82,10 +87,9 @@ def parse_coor(m, ith, lat):
         lat (bool): True if parsing latitude, False otherwise.
 
     Returns:
-        float: Parsed coordinate in decimal degrees. None if parsing is
-        unsuccessful.
+        float: Parsed coordinate in decimal degrees.
     """
-    i = 12*ith
+    i = 18*ith
     if m[i+1] is not None:
         # 1: (-1.2)°
         x = float(m[i+1])
@@ -95,21 +99,29 @@ def parse_coor(m, ith, lat):
     elif m[i+5] is not None:
         # 2,3,5,6: (-)(1)°(2)'(3.4)"
         x = float(m[i+3])+float(m[i+5])/60+float(m[i+6])/3600
-    elif m[i+3] is not None:
-        # 2,3: (-)(1):
-        # invalid
-        x = None
-    elif m[i+7] is not None:
-        # 7,12: (1.2)°(S)
-        x = float(m[i+7])
-    elif m[i+9] is not None:
-        # 8,9,12: (1)°(2.3)'(S)
-        x = float(m[i+8])+float(m[i+9])/60
     elif m[i+10] is not None:
-        # 8,10,11,12: (1)°(2)'(3.4)"(S)
-        x = float(m[i+8])+float(m[i+10])/60+float(m[i+11])/3600
+        # 10,18: (1.2)°(S)
+        x = float(m[i+10])
+    elif m[i+12] is not None:
+        # 11,12,18: (1)°(2.3)'(S)
+        x = float(m[i+11])+float(m[i+12])/60
+    elif m[i+13] is not None:
+        # 11,13,14,18: (1)°(2)'(3.4)"(S)
+        x = float(m[i+11])+float(m[i+13])/60+float(m[i+14])/3600
+    elif m[i+7] is not None:
+        # 2,3,7: (-)(1):(2.3)
+        x = float(m[i+3])+float(m[i+7])/60
+    elif m[i+8] is not None:
+        # 2,3,8,9: (-)(1):(2):(3.4)
+        x = float(m[i+3])+float(m[i+8])/60+float(m[i+9])/3600
+    elif m[i+15] is not None:
+        # 11,15,18: (1):(2.3)(S)
+        x = float(m[i+11])+float(m[i+15])/60
+    elif m[i+16] is not None:
+        # 11,16,17,18: (1):(2):(3.4)(S)
+        x = float(m[i+11])+float(m[i+16])/60+float(m[i+17])/3600
     if x is not None and (m[i+2] == "-" or
-        (lat and m[i+12] == "S") or (not lat and m[i+12] == "W")):
+        (lat and m[i+18] == "S") or (not lat and m[i+18] == "W")):
         x *= -1
     return x
 
@@ -124,8 +136,7 @@ def parse_lat(m, ith):
             latitude.
 
     Returns:
-        float: Parsed coordinate in decimal degrees. None if parsing is
-        unsuccessful.
+        float: Parsed coordinate in decimal degrees.
     """
     return parse_coor(m, ith, True)
 
@@ -140,8 +151,7 @@ def parse_lon(m, ith):
             longitude.
 
     Returns:
-        float: Parsed coordinate in decimal degrees. None if parsing is
-        unsuccessful.
+        float: Parsed coordinate in decimal degrees.
     """
     return parse_coor(m, ith, False)
 
