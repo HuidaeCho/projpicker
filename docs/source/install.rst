@@ -44,7 +44,7 @@ and the python module.
     pip3 install --pre --user projpicker
 
 
-From Source
+From source
 -----------
 
 The current development version of ProjPicker can be downloaded and installed from source `here <https://github.com/HuidaeCho/projpicker>`_.

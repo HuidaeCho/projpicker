@@ -1,4 +1,4 @@
-ProjPicker Query String
+ProjPicker query syntax
 =======================
 
 ProjPicker uses a custom parser to enable a simple but flexible query interface
@@ -15,7 +15,7 @@ Complex queries can be quickly created to accomplish goals such as :doc:`finding
 missing projection information <./missingproj>`.
 
 
-Logical Operators
+Logical operators
 -----------------
 
 The logical operators ``and``/``or`` can be used with projpicker for more
@@ -45,8 +45,8 @@ e.g.
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
 
-Geometry Type
--------------
+Geometry types
+--------------
 
 Propjpicker supports ``point``, ``poly``, and ``bbox`` geometry.
 

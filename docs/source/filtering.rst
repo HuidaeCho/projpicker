@@ -1,8 +1,8 @@
 Filtering results
 =================
 
-From Shell
-----------
+Shell
+-----
 .. code-block:: shell
 
     # projected CRSs only
@@ -11,8 +11,8 @@ From Shell
     # CRSs in meter only
     projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
 
-From Python
------------
+Python
+------
 .. code-block:: python
 
     import projpicker as ppik

@@ -31,8 +31,8 @@ Python
     ppik.print_bbox(bbox)
 
 
-Polygons
---------
+Poylines and polygons
+---------------------
 
 Shell
 ^^^^^
@@ -70,8 +70,8 @@ Python
                              [[10, 20], [30, 40]]])
     ppik.print_bbox(bbox)
 
-Bounding Box
-------------
+Bounding boxes
+--------------
 
 Shell
 ^^^^^

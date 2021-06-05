@@ -1,13 +1,13 @@
 Modules
 =======
 
-Common Functions & Structures
+Common functions & structures
 -----------------------------
 
 .. automodule:: common
    :members:
 
-Query & Parsing
+Query & parsing
 -----------------
 
 latlon

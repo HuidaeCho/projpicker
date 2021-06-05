@@ -1,4 +1,4 @@
-Command Line Options
+Command line options
 ====================
 
 .. argparse::
