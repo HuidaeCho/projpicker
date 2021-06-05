@@ -1,0 +1,14 @@
+#geoms xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_mixed_geoms(['xy', 'bbox', [1323252.0, 1374239.0, 396255.0, 434290.0], 'latlon', 'point', [33.749, -84.388]])
+# ppik.print_bbox(bbox)
+#end
+xy
+bbox
+1323252,1374239,396255,434290
+latlon
+point
+33.7490°N,84.3880°W
