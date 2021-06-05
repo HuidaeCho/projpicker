@@ -9,7 +9,7 @@ Shell
     projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
 
     # CRSs in meter only
-    projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
+    projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep "|meter|"
 
 Python
 ------

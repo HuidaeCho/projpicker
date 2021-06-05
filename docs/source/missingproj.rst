@@ -22,7 +22,7 @@ This command line does not print the header line (``-n``) with column names to p
 
 ::
 
-  projected_crs,NAD27 / Georgia West,EPSG,26767,EPSG,6602,EPSG,2190,30.62,35.01,-85.61,-82.99,227321.736222316,1825636.8909584181,45969.582735703174,870089.0814069586,US foot,119521.02819197961
+  projected_crs|NAD27 / Georgia West|EPSG|26767|EPSG|6602|EPSG|2190|30.62|35.01|-85.61|-82.99|227321.736222316|1825636.8909584181|45969.582735703174|870089.0814069586|US foot|119521.02819197961
 
 The first EPSG code (EPSG:26767) is a CRS code, and the second and third ones are usage and extent codes, respectively. The name of the CRS is "NAD27 / Georgia West".
 
