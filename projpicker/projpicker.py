@@ -39,12 +39,12 @@ import pprint
 # https://stackoverflow.com/a/49480246/16079666
 if __package__ is None or __package__ == "":
     from common import bbox_schema, bbox_columns, get_float, BBox
-    import latlon
-    import xy
+    import coor_latlon
+    import coor_xy
 else:
     from .common import bbox_schema, bbox_columns, get_float, BBox
-    from . import latlon
-    from . import xy
+    from . import coor_latlon
+    from . import coor_xy
 
 # module path
 module_path = os.path.dirname(__file__)
@@ -599,10 +599,10 @@ def set_coordinate_system(coor_sys="latlon"):
         raise Exception(f"{coor_sys}: Invalid coordinate system")
 
     if coor_sys == "latlon":
-        coor_mod = latlon
+        coor_mod = coor_latlon
         point_re = coor_mod.latlon_re
     else:
-        coor_mod = xy
+        coor_mod = coor_xy
         point_re = coor_mod.xy_re
 
     parse_point = coor_mod.parse_point
@@ -639,7 +639,7 @@ def is_latlon():
     Return True if the coordinate system is latitude-longitude. Otherwise,
     return False.
     """
-    return coor_mod == latlon
+    return coor_mod == coor_latlon
 
 
 ################################################################################
