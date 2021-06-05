@@ -7,6 +7,12 @@ This project is kindly funded by the Institute for Environmental and Spatial Ana
 
 .. toctree::
    :maxdepth: 2
+   :caption: Installation
+
+   install
+
+.. toctree::
+   :maxdepth: 2
    :caption: Program reference:
 
    cli
