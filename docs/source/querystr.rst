@@ -11,8 +11,8 @@ The projpicker query string allows the user to
 
 all within simple string representation.
 
-Complex queries can be quickly created to accomplish goals such as finding
-missing projection information.
+Complex queries can be quickly created to accomplish goals such as :doc:`finding
+missing projection information <./missingproj>`.
 
 
 Logical Operators
