@@ -634,6 +634,14 @@ def set_xy():
     set_coordinate_system("xy")
 
 
+def is_latlon():
+    """
+    Return True if the coordinate system is latitude-longitude. Otherwise,
+    return False.
+    """
+    return coor_mod == latlon
+
+
 ################################################################################
 # parsing
 
@@ -869,31 +877,38 @@ def parse_mixed_geoms(geoms):
 
     geom_type = "point"
 
-    set_latlon()
+    was_latlon = is_latlon()
+    try:
+        set_latlon()
 
-    n = len(geoms)
-    i = 0
-    while i < n:
-        geom = geoms[i]
-        if geom in geom_types:
-            geom_type = geom
-        elif geom in coor_sys:
-            if geom == "latlon":
-                set_latlon()
+        n = len(geoms)
+        i = 0
+        while i < n:
+            geom = geoms[i]
+            if geom in geom_types:
+                geom_type = geom
+            elif geom in coor_sys:
+                if geom == "latlon":
+                    set_latlon()
+                else:
+                    set_xy()
             else:
-                set_xy()
-        else:
-            j = i
-            while j < n and geoms[j] not in geom_types + coor_sys:
-                j += 1
-            ogeoms = parse_geoms(geoms[i:j], geom_type)
-            i = j
-            if len(ogeoms) > 0 and None not in ogeoms:
-                    outgeoms.extend(ogeoms)
-            continue
-        if type(geom) == str:
-            outgeoms.append(geom)
-        i += 1
+                j = i
+                while j < n and geoms[j] not in geom_types + coor_sys:
+                    j += 1
+                ogeoms = parse_geoms(geoms[i:j], geom_type)
+                i = j
+                if len(ogeoms) > 0 and None not in ogeoms:
+                        outgeoms.extend(ogeoms)
+                continue
+            if type(geom) == str:
+                outgeoms.append(geom)
+            i += 1
+    finally:
+        if was_latlon and not is_latlon():
+            set_latlon()
+        elif not was_latlon and is_latlon():
+            set_xy()
 
     return outgeoms
 
@@ -1460,21 +1475,28 @@ def query_mixed_geoms(
         query_mode = "and"
     geom_type = "point"
 
-    set_latlon()
+    was_latlon = is_latlon()
+    try:
+        set_latlon()
 
-    first = True
-    for geom in geoms:
-        if geom in ("point", "poly", "bbox"):
-            geom_type = geom
-        elif geom == "latlon":
+        first = True
+        for geom in geoms:
+            if geom in ("point", "poly", "bbox"):
+                geom_type = geom
+            elif geom == "latlon":
+                set_latlon()
+            elif geom == "xy":
+                set_xy()
+            elif query_mode == "or" or first:
+                outbbox.extend(query_geom(geom, geom_type, projpicker_db))
+                first = False
+            else:
+                outbbox = query_geom_using_bbox(outbbox, geom, geom_type)
+    finally:
+        if was_latlon and not is_latlon():
             set_latlon()
-        elif geom == "xy":
+        elif not was_latlon and is_latlon():
             set_xy()
-        elif query_mode == "or" or first:
-            outbbox.extend(query_geom(geom, geom_type, projpicker_db))
-            first = False
-        else:
-            outbbox = query_geom_using_bbox(outbbox, geom, geom_type)
 
     return outbbox
 
