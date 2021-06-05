@@ -223,7 +223,7 @@ From the shell,
 projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
 
 # CRSs in meter only
-projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
+projpicker 34.2348,-83.8677 33.7490,-84.3880 | grep "|meter|"
 ```
 
 From Python,
@@ -276,7 +276,7 @@ and longitude for Atlanta `latlon point 33.7490°N,84.3880°W`. The `head -1`
 pipe prints the first CRS only. Remember, ProjPicker outputs are sorted by area
 from the smallest (most local) to largest (most global). The final output looks like:
 ```bash
-projected_crs,NAD27 / Georgia West,EPSG,26767,EPSG,6602,EPSG,2190,30.62,35.01,-85.61,-82.99,227321.736222316,1825636.8909584181,45969.582735703174,870089.0814069586,US foot,119521.02819197961
+projected_crs|NAD27 / Georgia West|EPSG|26767|EPSG|6602|EPSG|2190|30.62|35.01|-85.61|-82.99|227321.736222316|1825636.8909584181|45969.582735703174|870089.0814069586|US foot|119521.02819197961
 ```
 The first EPSG code (EPSG:26767) is a CRS code, and the second and third ones
 are usage and extent codes, respectively. The name of the CRS is "NAD27 /

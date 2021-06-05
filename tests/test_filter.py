@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #shell
 # ../projpicker/projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
-# ../projpicker/projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
+# ../projpicker/projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep "|meter|"
 #end
 
 import sys

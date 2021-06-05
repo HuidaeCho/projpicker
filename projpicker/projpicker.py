@@ -1587,7 +1587,7 @@ def jsonify_bbox(bbox):
 ################################################################################
 # plain printing
 
-def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
+def print_bbox(bbox, outfile=sys.stdout, header=True, separator="|"):
     """
     Print a list of BBox instances in a plain format.
 
@@ -1595,7 +1595,7 @@ def print_bbox(bbox, outfile=sys.stdout, header=True, separator=","):
         bbox (list): List of BBox instances.
         outfile (str): Output file object. Defaults to sys.stdout.
         header (bool): Whether or not to print header. Defaults to True.
-        separator (str): Column separator. Defaults to ",".
+        separator (str): Column separator. Defaults to "|".
     """
     print(stringify_bbox(bbox, header, separator), end="", file=outfile)
 
@@ -1609,7 +1609,7 @@ def projpicker(
         outfile="-",
         fmt="plain",
         no_header=False,
-        separator=",",
+        separator="|",
         print_geoms=False,
         overwrite=False,
         append=False,
@@ -1644,7 +1644,7 @@ def projpicker(
         fmt (str): Output format (plain, json, pretty). Defaults to "plain".
         no_header (bool): Whether or not to print header for plain. Defaults to
             False.
-        separator (str): Column separator for plain. Defaults to ",".
+        separator (str): Column separator for plain. Defaults to "|".
         print_geoms (bool): Whether or not to print parsed geometries and exit.
             Defaults to False.
         overwrite (bool): Whether or not to overwrite output file. Defaults to
