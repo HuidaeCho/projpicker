@@ -12,11 +12,11 @@ Query & Parsing
 
 latlon
 ^^^^^^
-.. automodule:: latlon
+.. automodule:: coor_latlon
    :members:
 
 xy
 ^^
-.. automodule:: xy
+.. automodule:: coor_xy
    :members:
 
