@@ -23,3 +23,5 @@
 34o14'5.28''N	83o52'3.72''W	# full using o' and ''
 34d14m5.28sN	83d52m3.72sW	# full using dms
 34:14:5.28N	83:52:3.72W	# full using :
+34:14:5.28	-83:52:3.72	# without [SNWE]
+34:14.088	-83:52.062	# without seconds and [SNWE]
