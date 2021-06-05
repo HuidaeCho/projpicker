@@ -41,8 +41,8 @@ else:
 # decimal degrees
 dd_pat = f"([+-]?{pos_float_pat})[°od]?"
 # DMS without [SNWE]
-dms_pat = (f"([0-9]+)(?:[°od](?:[ \t]*(?:({pos_float_pat})['′m]|([0-9]+)['′m]"
-           f"""(?:[ \t]*({pos_float_pat})(?:["″s]|''))?))?)?""")
+dms_pat = (f"([0-9]+)(?:[°od:](?:[ \t]*(?:({pos_float_pat})['′m]?|"
+           f"""([0-9]+)['′m:](?:[ \t]*({pos_float_pat})(?:["″s]|'')?)?))?)?""")
 # coordinate without [SNWE]
 coor_pat = (f"{dd_pat}|([+-])?{dms_pat}|"
             f"(?:({pos_float_pat})[°od]?|{dms_pat})[ \t]*")
@@ -74,7 +74,7 @@ def parse_coor(m, ith, lat):
     """
     Parse the zero-based ith coordinate from a matched m. If the format is
     degrees, minutes, and seconds (DMS), lat is used to determine its
-    negativity.
+    negativity. If parsing is unsuccessful, it returns None.
 
     Args:
         m (re.Match): re.compile() output.
@@ -82,7 +82,8 @@ def parse_coor(m, ith, lat):
         lat (bool): True if parsing latitude, False otherwise.
 
     Returns:
-        float: Parsed coordinate in decimal degrees.
+        float: Parsed coordinate in decimal degrees. None if parsing is
+        unsuccessful.
     """
     i = 12*ith
     if m[i+1] is not None:
@@ -94,6 +95,10 @@ def parse_coor(m, ith, lat):
     elif m[i+5] is not None:
         # 2,3,5,6: (-)(1)°(2)'(3.4)"
         x = float(m[i+3])+float(m[i+5])/60+float(m[i+6])/3600
+    elif m[i+3] is not None:
+        # 2,3: (-)(1):
+        # invalid
+        x = None
     elif m[i+7] is not None:
         # 7,12: (1.2)°(S)
         x = float(m[i+7])
@@ -103,7 +108,7 @@ def parse_coor(m, ith, lat):
     elif m[i+10] is not None:
         # 8,10,11,12: (1)°(2)'(3.4)"(S)
         x = float(m[i+8])+float(m[i+10])/60+float(m[i+11])/3600
-    if (m[i+2] == "-" or
+    if x is not None and (m[i+2] == "-" or
         (lat and m[i+12] == "S") or (not lat and m[i+12] == "W")):
         x *= -1
     return x
@@ -119,7 +124,8 @@ def parse_lat(m, ith):
             latitude.
 
     Returns:
-        float: Parsed latitude in decimal degrees.
+        float: Parsed coordinate in decimal degrees. None if parsing is
+        unsuccessful.
     """
     return parse_coor(m, ith, True)
 
@@ -134,7 +140,8 @@ def parse_lon(m, ith):
             longitude.
 
     Returns:
-        float: Parsed longitude in decimal degrees.
+        float: Parsed coordinate in decimal degrees. None if parsing is
+        unsuccessful.
     """
     return parse_coor(m, ith, False)
 
@@ -162,9 +169,9 @@ def parse_point(point):
         if m:
             y = parse_lat(m, 0)
             x = parse_lon(m, 1)
-            if -90 <= y <= 90:
+            if y is not None and -90 <= y <= 90:
                 lat = y
-            if -180 <= x <= 180:
+            if x is not None and -180 <= x <= 180:
                 lon = x
     elif typ in (list, tuple) and len(point) == 2:
         lat = get_float(point[0])
