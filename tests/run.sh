@@ -22,7 +22,7 @@ for script in *.py; do
 	shell=$(sed '/^#shell$/,/^#end$/!d; /^#\(shell\|end\)$/d; s/^# //' $script)
 	if [ "$shell" != "" ]; then
 		echo -n "shell $script..." | tee -a run.tmp
-		eval "$shell" > test.tmp
+		eval "$shell || true" > test.tmp
 		if diff test.tmp $outfile > /dev/null; then
 			echo "PASSED" | tee -a run.tmp
 		else
