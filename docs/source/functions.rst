@@ -1,5 +1,0 @@
-Functions
-=========
-
-.. automodule:: projpicker
-   :members:
