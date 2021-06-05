@@ -1526,7 +1526,7 @@ def query_all(projpicker_db=None):
 ################################################################################
 # conversions
 
-def stringify_bbox(bbox, header=True, separator=","):
+def stringify_bbox(bbox, header=True, separator="|"):
     """
     Convert a list of BBox instances to a str. If the input bbox list is empty,
     an empty string is returned.
@@ -1534,7 +1534,8 @@ def stringify_bbox(bbox, header=True, separator=","):
     Args:
         bbox (list or BBox): List of BBox instances or a BBox instance.
         header (bool): Whether or not to print header. Defaults to True.
-        separator (str): Column separator. Defaults to ",".
+        separator (str): Column separator. Some CRS names contain commas.
+            Defaults to "|".
 
     Returns:
         str: Stringified bbox rows.
@@ -1797,8 +1798,8 @@ def parse():
             help="do not print header for plain output format")
     parser.add_argument(
             "-s", "--separator",
-            default=",",
-            help="separator for plain output format (default: comma)")
+            default="|",
+            help="separator for plain output format (default: pipe)")
     parser.add_argument(
             "-i", "--input",
             default="-",
