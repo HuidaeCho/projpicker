@@ -36,7 +36,7 @@ for infile in *.txt; do
 
 	opts=$(sed '/^#opts: /!d; s/^#opts: //' $infile)
 	echo -n $opts "-i $infile..." | tee -a run.tmp
-	../projpicker.py $opts -i $infile > test.tmp
+	../projpicker/projpicker.py $opts -i $infile > test.tmp
 	if diff test.tmp $outfile > /dev/null; then
 		echo "PASSED" | tee -a run.tmp
 	else
@@ -46,7 +46,7 @@ for infile in *.txt; do
 	geoms=$(sed '/^#geoms: /!d; s/^#geoms: //' $infile)
 	if [ "$geoms" != "" ]; then
 		echo -n $opts "$geoms..." | tee -a run.tmp
-		eval "../projpicker.py $opts -- $geoms" > test.tmp
+		eval "../projpicker/projpicker.py $opts -- $geoms" > test.tmp
 		if diff test.tmp $outfile > /dev/null; then
 			echo "PASSED" | tee -a run.tmp
 		else

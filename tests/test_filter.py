@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 #shell
-# ../projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
-# ../projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
+# ../projpicker/projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep "^projected_crs"
+# ../projpicker/projpicker.py 34.2348,-83.8677 33.7490,-84.3880 | grep ",meter,"
 #end
 
 import sys
-sys.path.insert(0, "..")
+sys.path.insert(0, "../projpicker")
 import projpicker as ppik
 
 # sorted by area to find the most local CRS first
