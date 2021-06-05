@@ -48,7 +48,7 @@ e.g.
 Geometry Type
 -------------
 
-Propjpicker supports ``point``, ``polygon``, and ``bbox`` geometry.
+Propjpicker supports ``point``, ``poly``, and ``bbox`` geometry.
 
 
 Coordinate formats

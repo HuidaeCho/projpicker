@@ -53,7 +53,7 @@ Pip can be used to install from the source directory with
 
 ::
 
-    pip install -e .
+    pip3 install -e .
 
 
 
