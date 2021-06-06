@@ -2,8 +2,10 @@ import setuptools
 
 with open("README.md") as f:
     long_description = f.read().rstrip()
+
 with open("projpicker/VERSION") as f:
     version = f.read().rstrip()
+
 setuptools.setup(
     name="projpicker",
     version=version,
@@ -22,7 +24,5 @@ setuptools.setup(
     ],
     python_requires=">=3",
     package_data={"projpicker": ["VERSION", "projpicker.db"]},
-    entry_points={
-        "console_scripts": ["projpicker=projpicker.projpicker:main"],
-    },
+    entry_points={"console_scripts": ["projpicker=projpicker.projpicker:main"]},
 )

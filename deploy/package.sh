@@ -10,8 +10,8 @@ for i in \
 	projpicker.db \
 	projpicker.py \
 	common.py \
-	latlon.py \
-	xy.py \
+	coor_latlon.py \
+	coor_xy.py \
 	VERSION \
 ; do
 	cp -a $src_dir/$i projpicker
@@ -46,12 +46,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3",
-    package_data={
-        "projpicker": ["VERSION", "projpicker.db"]
-    },
-    entry_points={
-        "console_scripts": ["projpicker=projpicker.projpicker:main"],
-    }
+    package_data={"projpicker": ["VERSION", "projpicker.db"]},
+    entry_points={"console_scripts": ["projpicker=projpicker.projpicker:main"]},
 )
 EOT
 
