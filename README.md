@@ -17,8 +17,8 @@ See also [the command-line and API documentation](https://projpicker.readthedocs
 
 ### main
 
-The single Python script `projpicker.py` provides the CLI and API for
-ProjPicker.
+This branch is the main development and release branch for both the API and CLI
+of ProjPicker.
 
 ### rtree-oop
 
