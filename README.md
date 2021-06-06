@@ -3,11 +3,12 @@
 [![PyPI version](https://badge.fury.io/py/projpicker.svg)](https://badge.fury.io/py/projpicker)
 [![Documentation Status](https://readthedocs.org/projects/projpicker/badge/?version=latest)](https://projpicker.readthedocs.io/en/latest/?badge=latest)
 
-[ProjPicker](https://github.com/HuidaeCho/projpicker) (projection picker)
-allows the user to select all coordinate reference systems (CRSs) whose extent
-completely contains given points, polylines, polygons, and bounding boxes. The
-goal is to make it easy and visual to select a desired projection by location.
-This project was motivated by [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
+[ProjPicker](https://github.com/HuidaeCho/projpicker) (projection picker) is a
+Python module that allows the user to select all coordinate reference systems
+(CRSs) whose extent completely contains given points, polylines, polygons, and
+bounding boxes. The goal is to make it easy and visual to select a desired
+projection by location. This project was motivated by
+[a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
 It is a work in progress; join [discussions](https://github.com/HuidaeCho/projpicker/wiki).
 See also [the command-line and API documentation](https://projpicker.readthedocs.io/en/latest/).
 
