@@ -2,21 +2,9 @@
 set -e
 rm -rf projpicker* build dist README.md LICENSE setup.py deploy.sh
 
-src_dir=../projpicker
-
 mkdir projpicker
+cp -a ../projpicker/* projpicker
 echo "from .projpicker import *" > projpicker/__init__.py
-for i in \
-	projpicker.db \
-	projpicker.py \
-	common.py \
-	coor_latlon.py \
-	coor_xy.py \
-	VERSION \
-; do
-	cp -a $src_dir/$i projpicker
-done
-
 cp -a ../README.md .
 cp -a ../COPYING LICENSE
 
