@@ -7,6 +7,7 @@ import arcpy
 import os
 import sys
 from pathlib import Path
+import textwrap
 import projpicker as ppik
 
 ################################################################################
@@ -101,7 +102,16 @@ class CreateGeometry(object):
         crs = ppik.query_bbox([b, t, l, r])
 
         # Run GUI and return the selected CRS
-        sel_crs = ppik.gui.select_bbox(crs)
+        sel_crs = ppik.gui.select_bbox(crs, lambda b: textwrap.dedent(f"""\
+            CRS Type: {b.proj_table}
+            CRS Code: {b.crs_auth_name}:{b.crs_code}
+            Unit:     {b.unit}
+            South:    {b.south_lat}°
+            North:    {b.north_lat}°
+            West:     {b.west_lon}°
+            East:     {b.east_lon}°
+            Area:     {b.area_sqkm:n} sqkm"""))
+
         if len(sel_crs) > 0:
             sel_crs = sel_crs[0]
         else:
