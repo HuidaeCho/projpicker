@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
 ################################################################################
 # Project:  ProjPicker (Projection Picker)
 #           <https://github.com/HuidaeCho/projpicker>
-# Purpose:  This Python script provides the CLI and API for ProjPicker.
+# Purpose:  This Python script provides common variables and functions for
+#           ProjPicker.
 # Authors:  Huidae Cho, Owen Smith
 #           Institute for Environmental and Spatial Analysis
 #           University of North Georgia
