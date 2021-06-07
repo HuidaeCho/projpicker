@@ -1,10 +1,9 @@
 #!/bin/sh
 set -e
 rm -rf projpicker* build dist README.md LICENSE setup.py deploy.sh
+test "$1" = "clean" && exit
 
-mkdir projpicker
-cp -a ../projpicker/* projpicker
-cp -a ../README.md .
+cp -a ../projpicker ../README.md .
 cp -a ../COPYING LICENSE
 
 cat<<EOT > setup.py
