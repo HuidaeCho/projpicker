@@ -1519,7 +1519,8 @@ def query_all(projpicker_db=None):
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of all BBox instances.
+        list: List of all BBox instances in an unsorted manner straight from
+        the projpicker.db bbox table.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
 
