@@ -192,7 +192,8 @@ def query_point_using_cursor(
     Return a list of BBox instances that completely contain an input point
     geometry defined by x and y. Each BBox instance is a named tuple with all
     the columns from the bbox table in projpicker.db. This function is used to
-    perform a union operation on BBox instances consecutively.
+    perform a union operation on BBox instances consecutively. Results are
+    sorted by area from the smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
@@ -200,7 +201,7 @@ def query_point_using_cursor(
             y. See parse_point().
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     point = parse_point(point)
     outbbox = []
@@ -227,7 +228,8 @@ def query_bbox_using_cursor(
     geometry defined by bottom, top, left, and right floats using a database
     cursor. Each BBox instance is a named tuple with all the columns from the
     bbox table in projpicker.db. This function is used to perform a union
-    operation on bbox rows consecutively.
+    operation on bbox rows consecutively. Results are sorted by area from the
+    smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
@@ -235,7 +237,7 @@ def query_bbox_using_cursor(
             parseable str of bottom, top, left, and right. See parse_bbox().
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     bbox = parse_bbox(bbox)
     outbbox = []

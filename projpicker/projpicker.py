@@ -920,8 +920,9 @@ def query_point(
     """
     Return a list of BBox instances that completely contain an input point
     geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. If projpicker_db is None (default),
-    get_projpicker_db() is used.
+    bbox table in projpicker.db. Results are sorted by area from the smallest
+    to largest. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     Args:
         point (list or str): List of two floats or a parseable point geometry.
@@ -929,7 +930,7 @@ def query_point(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
 
@@ -954,7 +955,7 @@ def query_point_using_bbox(
             See parse_point().
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     point = parse_point(point)
 
@@ -974,8 +975,9 @@ def query_points(
     Return a list of BBox instances that completely contain input point
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query mode performs the
-    intersection of bbox rows while the "or" mode the union. If projpicker_db
-    is None (default), get_projpicker_db() is used.
+    intersection of bbox rows while the "or" mode the union. Results are sorted
+    by area from the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         points (list): List of parseable point geometries. See parse_points().
@@ -983,7 +985,7 @@ def query_points(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If query_mode is not one of "and" or "or".
@@ -1025,7 +1027,7 @@ def query_points_using_bbox(
         query_mode (str): Query mode (and, or). Defaults to "and".
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If query_mode is not one of "and" or "or".
@@ -1056,15 +1058,16 @@ def query_poly(
     """
     Return a list of BBox instances that completely contain an input poly
     geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. If projpicker_db is None (default),
-    get_projpicker_db() is used.
+    bbox table in projpicker.db. Results are sorted by area from the smallest
+    to largest. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     Args:
         poly (list): List of parseable point geometries. See parse_poly().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     return query_polys([poly], "and", projpicker_db)
 
@@ -1083,7 +1086,7 @@ def query_poly_using_bbox(
         poly (list): List of parseable point geometries. See parse_poly().
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     return query_polys_using_bbox(prevbbox, [poly])
 
@@ -1096,8 +1099,9 @@ def query_polys(
     Return a list of BBox instances that completely contain input poly
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query mode performs the
-    intersection of bbox rows while the "or" mode the union. If projpicker_db
-    is None (default), get_projpicker_db() is used.
+    intersection of bbox rows while the "or" mode the union. Results are sorted
+    by area from the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         polys (list): List of parseable poly geometries. See parse_polys().
@@ -1105,7 +1109,7 @@ def query_polys(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     polys = parse_polys(polys)
 
@@ -1129,7 +1133,7 @@ def query_polys_using_bbox(
         query_mode (str): Query mode (and, or). Defaults to "and".
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     polys = parse_polys(polys)
 
@@ -1143,8 +1147,9 @@ def query_bbox(
     """
     Return a list of BBox instances that completely contain an input bbox
     geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. If projpicker_db is None (default),
-    get_projpicker_db() is used.
+    bbox table in projpicker.db. Results are sorted by area from the smallest
+    to largest. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     Args:
         bbox (list or str): List of four floats or a parseable str of a bbox
@@ -1152,7 +1157,7 @@ def query_bbox(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     projpicker_db = get_projpicker_db()
 
@@ -1179,7 +1184,7 @@ def query_bbox_using_bbox(
             See parse_bbox().
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     bbox = parse_bbox(bbox)
 
@@ -1199,8 +1204,9 @@ def query_bboxes(
     Return a list of BBox instances that completely contain input bbox
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query mode performs the
-    intersection of bbox rows while the "or" mode the union. If projpicker_db
-    is None (default), get_projpicker_db() is used.
+    intersection of bbox rows while the "or" mode the union. Results are sorted
+    by area from the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         bboxes (list): List of parseable bbox geometries. See parse_bboxes().
@@ -1208,7 +1214,7 @@ def query_bboxes(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If query_mode is not one of "and" or "or".
@@ -1249,7 +1255,7 @@ def query_bboxes_using_bbox(
         query_mode (str): Query mode (and, or). Defaults to "and".
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If query_mode is not one of "and" or "or".
@@ -1282,8 +1288,9 @@ def query_geom(
     Return a list of BBox instances that completely contain an input geometry.
     Each BBox instance is a named tuple with all the columns from the bbox
     table in projpicker.db. The "and" query mode performs the intersection of
-    bbox rows while the "or" mode the union. If projpicker_db is None
-    (default), get_projpicker_db() is used.
+    bbox rows while the "or" mode the union. Results are sorted by area from
+    the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         geom (list or str): List or str of a parseable geometry. See
@@ -1293,7 +1300,7 @@ def query_geom(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If geom_type is not one of "point", "poly", or "bbox", or
@@ -1329,7 +1336,7 @@ def query_geom_using_bbox(
             "point".
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If geom_type is not one of "point", "poly", or "bbox", or
@@ -1357,8 +1364,9 @@ def query_geoms(
     Return a list of BBox instances that completely contain input geometries.
     Each BBox instance is a named tuple with all the columns from the bbox
     table in projpicker.db. The "and" query mode performs the intersection of
-    bbox rows while the "or" mode the union. If projpicker_db is None
-    (default), get_projpicker_db() is used.
+    bbox rows while the "or" mode the union. Results are sorted by area from
+    the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         geoms (list): List of parseable geometries. See parse_points(),
@@ -1369,7 +1377,7 @@ def query_geoms(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If geom_type is not one of "point", "poly", or "bbox", or
@@ -1410,7 +1418,7 @@ def query_geoms_using_bbox(
         query_mode (str): Query mode (and, or). Defaults to "and".
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
 
     Raises:
         Exception: If geom_type is not one of "point", "poly", or "bbox", or
@@ -1443,8 +1451,9 @@ def query_mixed_geoms(
     and "xy" start the latitude-longitude and x-y coordinate systems,
     respectively. This function ignores the current coordinate system set by
     set_coordinate_system(), set_latlon(), or set_xy(), and always starts in
-    the latitude-longitude coordinate system by default. If projpicker_db is
-    None (default), get_projpicker_db() is used.
+    the latitude-longitude coordinate system by default. Results are sorted by
+    area from the smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         geoms (list or str): List of "point", "poly", "bbox", "latlon", "xy",
@@ -1454,7 +1463,7 @@ def query_mixed_geoms(
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of queried BBox instances sorted by area.
     """
     geoms = parse_mixed_geoms(geoms)
 
@@ -1502,14 +1511,15 @@ def query_mixed_geoms(
 def query_all(projpicker_db=None):
     """
     Return a list of all BBox instances. Each BBox instance is a named tuple
-    with all the columns from the bbox table in projpicker.db. If projpicker_db
+    with all the columns from the bbox table in projpicker.db. Results are not
+    sorted by area because no specific geometries are queried. If projpicker_db
     is None (default), get_projpicker_db() is used.
 
     Args:
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of queried BBox instances.
+        list: List of all BBox instances.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
 
@@ -1634,8 +1644,9 @@ def projpicker(
     and separator options only apply to the plain output format. The overwrite
     option applies to both projpicker.db and the output file, but the append
     option only appends to the output file. Only one of the overwrite or append
-    options must be given. If projpicker_db or proj_db is None (default),
-    get_projpicker_db() or get_proj_db() is used, respectively.
+    options must be given. Results are sorted by area from the smallest to
+    largest. If projpicker_db or proj_db is None (default), get_projpicker_db()
+    or get_proj_db() is used, respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
