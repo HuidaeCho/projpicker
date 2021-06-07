@@ -218,7 +218,7 @@ bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
 ppik.print_bbox(bbox)
 ```
 
-## Filtering
+## Filtering results
 
 From the shell,
 ```bash
@@ -244,6 +244,12 @@ ppik.print_bbox(bbox_proj)
 bbox_meter = list(filter(lambda x: x.unit=="meter", bbox))
 ppik.print_bbox(bbox_meter)
 ```
+
+## GUI for selecting queried results
+
+The `-g` (`--gui`) option launches a tkinter-based GUI for selecting a subset of queried results. Geometries and other options still need to be passed from the command line.
+
+![image](https://user-images.githubusercontent.com/7456117/121037195-422cbe00-c77d-11eb-9744-9a54f2d08964.png)
 
 ## Finding missing projection information
 
