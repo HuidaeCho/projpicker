@@ -46,6 +46,8 @@ standard modules:
 * [math](https://docs.python.org/3/library/math.html)
 * [json](https://docs.python.org/3/library/json.html)
 * [pprint](https://docs.python.org/3/library/pprint.html)
+* [tkinter](https://docs.python.org/3/library/tkinter.html)
+* [textwrap](https://docs.python.org/3/library/textwrap.html)
 
 To recreate `projpicker.db`, the [pyproj](https://github.com/pyproj4/pyproj)
 module is required.

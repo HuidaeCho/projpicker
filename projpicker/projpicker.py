@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
-################################################################################
-# Project:  ProjPicker (Projection Picker)
-#           <https://github.com/HuidaeCho/projpicker>
-# Purpose:  This Python script provides the CLI and API for ProjPicker.
-# Authors:  Huidae Cho, Owen Smith
-#           Institute for Environmental and Spatial Analysis
-#           University of North Georgia
-# Since:    May 27, 2021
-#
-# Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/> and
-#                    Owen Smith <https://www.gaderian.io/>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-################################################################################
+"""
+Project:  ProjPicker (Projection Picker)
+          <https://github.com/HuidaeCho/projpicker>
+Authors:  Huidae Cho, Owen Smith
+          Institute for Environmental and Spatial Analysis
+          University of North Georgia
+Since:    May 27, 2021
+
+Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/> and
+                   Owen Smith <https://www.gaderian.io/>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+This module implements the CLI and API of ProjPicker.
+"""
 
 import argparse
 import os
@@ -39,10 +40,12 @@ if __package__ is None or __package__ == "":
     from common import bbox_schema, bbox_columns, get_float, BBox
     import coor_latlon
     import coor_xy
+    import gui
 else:
     from .common import bbox_schema, bbox_columns, get_float, BBox
     from . import coor_latlon
     from . import coor_xy
+    from . import gui
 
 # module path
 module_path = os.path.dirname(__file__)
@@ -1624,6 +1627,7 @@ def projpicker(
         print_geoms=False,
         overwrite=False,
         append=False,
+        start_gui=False,
         projpicker_db=None,
         proj_db=None,
         create=False):
@@ -1645,9 +1649,10 @@ def projpicker(
     and separator options only apply to the plain output format. The overwrite
     option applies to both projpicker.db and the output file, but the append
     option only appends to the output file. Only one of the overwrite or append
-    options must be given. Results are sorted by area from the smallest to
-    largest. If projpicker_db or proj_db is None (default), get_projpicker_db()
-    or get_proj_db() is used, respectively.
+    options must be given. For selecting a subset of queried BBox instances, a
+    GUI can be launched by setting gui to True. Results are sorted by area from
+    the smallest to largest. If projpicker_db or proj_db is None (default),
+    get_projpicker_db() or get_proj_db() is used, respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
@@ -1663,6 +1668,8 @@ def projpicker(
             False.
         append (bool): Whether or not to append output to file. Defaults to
             False.
+        gui (bool): Whether or not to start a GUI for selecting part of queries
+            BBox instances. Defaults to False.
         projpicker_db (str): projpicker.db path. Defaults to None.
         proj_db (str): proj.db path. Defaults to None.
         create (bool): Whether or not to create a new projpicker.db. Defaults
@@ -1706,6 +1713,9 @@ def projpicker(
         return
 
     bbox = query_mixed_geoms(geoms, projpicker_db)
+
+    if start_gui:
+        bbox = gui.select_bbox(bbox)
 
     mode = "w"
     header = not no_header
@@ -1823,6 +1833,10 @@ def parse():
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
     parser.add_argument(
+            "-g", "--gui",
+            action="store_true",
+            help="start GUI for selecting CRSs")
+    parser.add_argument(
             "geometry",
             nargs="*",
             help="query geometry in latitude and longitude (point or poly) or "
@@ -1851,6 +1865,7 @@ def main():
     separator = args.separator
     infile = args.input
     outfile = args.output
+    start_gui = args.gui
     geoms = args.geometry
 
     if version:
@@ -1872,6 +1887,7 @@ There is NO WARRANTY, to the extent permitted by law.""")
             print_geoms,
             overwrite,
             append,
+            start_gui,
             projpicker_db,
             proj_db,
             create)
