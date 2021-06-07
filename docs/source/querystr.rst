@@ -60,25 +60,28 @@ The parser supports a wide range of point formats as seen below.
     ################################
     # decimal degrees and separators
     ################################
-    34.2348,-83.8677		# comma
-    34.2348		-83.8677	# whitespace
+    34.2348,-83.8677   # comma
+    34.2348 -83.8677   # whitespace
 
     ####################################################
     # degree, minute, and second symbols
     # degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
     # minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
     # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
-    #	  '' (U+0027 U+0027, &apos; &apos;), s
+    #         '' (U+0027 U+0027, &apos; &apos;), s
     ####################################################
-    34.2348°	-83.8677°	# without minutes, seconds, and [SNWE]
-    34°14.088'	-83°52.062'	# without seconds and [SNWE]
-    34°14'5.28"	-83°52'3.72"	# without [SNWE]
-    34.2348°N	83.8677°W	# without minutes and seconds
-    34°14.088'N	83°52.062'W	# without seconds
-    34°14'5.28"N	83°52'3.72"W	# full
-    34°14′5.28″N	83°52′3.72″W	# full using U+2032 and U+2033
-    34o14'5.28''N	83o52'3.72''W	# full using o' and ''
-    34d14m5.28sN	83d52m3.72sW	# full using dms
+    34.2348°      -83.8677°       # without minutes, seconds, and [SNWE]
+    34°14.088'    -83°52.062'     # without seconds and [SNWE]
+    34°14'5.28"   -83°52'3.72"    # without [SNWE]
+    34.2348°N     83.8677°W       # without minutes and seconds
+    34°14.088'N   83°52.062'W     # without seconds
+    34°14'5.28"N  83°52'3.72"W    # full
+    34°14′5.28″N  83°52′3.72″W    # full using U+2032 and U+2033
+    34o14'5.28''N 83o52'3.72''W   # full using o' and ''
+    34d14m5.28sN  83d52m3.72sW    # full using dms
+    34:14:5.28N   83:52:3.72W     # full using :
+    34:14:5.28    -83:52:3.72     # without [SNWE]
+    34:14.088     -83:52.062      # without seconds and [SNWE]
 
 using ``projpicker -p -i points.txt`` we get all specified points in decimal
 degrees
@@ -86,6 +89,9 @@ degrees
 ::
 
     [[34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
      [34.2348, -83.8677],
      [34.2348, -83.8677],
      [34.2348, -83.8677],
