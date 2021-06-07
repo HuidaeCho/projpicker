@@ -85,12 +85,15 @@ def select_bbox(bbox, crs_info_func=None):
         proj_table = projection_types[proj_table_combobox.current()]
         unit = units[unit_combobox.current()]
 
-        if proj_table == "All" and unit == "All":
+        if proj_table == "all" and unit == "all":
             filt_bbox = bbox
-        elif proj_table == "All":
+        elif proj_table == "all":
             filt_bbox = filter(lambda b: b.unit==unit, bbox)
-        else:
+        elif unit == "all":
             filt_bbox = filter(lambda b: b.proj_table==proj_table, bbox)
+        else:
+            filt_bbox = filter(lambda b: b.proj_table==proj_table and
+                                         b.unit==unit, bbox)
 
         crs_listbox.delete(0, tk.END)
         for b in filt_bbox:
@@ -142,7 +145,7 @@ def select_bbox(bbox, crs_info_func=None):
     bottomleft_frame.pack(fill=tk.X, ipady=6, pady=2, padx=2)
 
     # list box for projection types
-    projection_types = ["All"]
+    projection_types = ["all"]
     projection_types.extend(sorted(set([b.proj_table for b in bbox])))
 
     proj_table_combobox = ttk.Combobox(bottomleft_frame, width=10)
@@ -153,7 +156,7 @@ def select_bbox(bbox, crs_info_func=None):
     proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     # list of units
-    units = ["All"]
+    units = ["all"]
     units.extend(sorted(set([b.unit for b in bbox])))
 
     unit_combobox = ttk.Combobox(bottomleft_frame, width=10)
