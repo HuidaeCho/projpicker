@@ -4,7 +4,6 @@ rm -rf projpicker* build dist README.md LICENSE setup.py deploy.sh
 
 mkdir projpicker
 cp -a ../projpicker/* projpicker
-echo "from .projpicker import *" > projpicker/__init__.py
 cp -a ../README.md .
 cp -a ../COPYING LICENSE
 
