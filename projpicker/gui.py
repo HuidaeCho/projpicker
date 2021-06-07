@@ -95,8 +95,6 @@ def select_bbox(bbox, crs_info_func=None):
         crs_listbox.delete(0, tk.END)
         for b in filt_bbox:
             crs_listbox.insert(tk.END, f"{b.crs_auth_name}:{b.crs_code}")
-        unit_combobox.set("Unit")
-        proj_table_combobox.set("CRS Type")
 
 
     def select():
