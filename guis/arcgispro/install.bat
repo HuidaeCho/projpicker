@@ -33,7 +33,7 @@ move !folder!/projpicker-main/projpicker !folder!/projpicker
 
 :: clean up
 Rmdir /Q /S "!folder!/projpicker-main"
-echo !folder!\main.zip
-del /f /q "!folder!\main.zip"
+echo !folder!/main.zip
+del /f /q "!folder!/main.zip"
 
 endlocal
