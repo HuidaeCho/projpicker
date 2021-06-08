@@ -917,6 +917,23 @@ def parse_mixed_geoms(geoms):
 ################################################################################
 # queries
 
+def sort_bbox(bbox):
+    """
+    Sort a list of BBox instances by area_sqkm in place after deduplicating
+    data by crs_auth_name and crs_code.
+
+    Args:
+        bbox (list): List of BBox instances.
+    """
+    bbox.sort(key=lambda x: x.crs_auth_name+":"+x.crs_code)
+    for i in reversed(range(len(bbox))):
+        if (i > 0 and
+            bbox[i].crs_auth_name == bbox[i-1].crs_auth_name and
+            bbox[i].crs_code == bbox[i-1].crs_code):
+            del bbox[i]
+    bbox.sort(key=lambda x: x.area_sqkm)
+
+
 def query_point(
         point,
         projpicker_db=None):
@@ -1002,14 +1019,23 @@ def query_points(
     outbbox = []
 
     first = True
+    sort = False
+
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for point in points:
             if query_mode == "or" or first:
-                outbbox.extend(query_point_using_cursor(projpicker_cur, point))
+                obbox = query_point_using_cursor(projpicker_cur, point)
+                if len(obbox) > 0:
+                    if query_mode == "or" and not sort and len(outbbox) > 0:
+                        sort = True
+                    outbbox.extend(obbox)
                 first = False
             else:
                 outbbox = query_point_using_bbox(outbbox, point)
+
+    if sort:
+        sort_bbox(outbbox)
 
     return outbbox
 
@@ -1235,10 +1261,18 @@ def query_bboxes(
         projpicker_cur = projpicker_con.cursor()
         for bbox in bboxes:
             if query_mode == "or" or first:
-                outbbox.extend(query_bbox_using_cursor(projpicker_cur, bbox))
+                obbox = query_bbox_using_cursor(projpicker_cur, bbox)
+                if len(obbox) > 0:
+                    if query_mode == "or" and not sort and len(outbbox) > 0:
+                        sort = True
+                    outbbox.extend(obbox)
                 first = False
             else:
                 outbbox = query_bbox_using_bbox(outbbox, bbox)
+
+    if sort:
+        sort_bbox(outbbox)
+
     return outbbox
 
 
@@ -1490,6 +1524,8 @@ def query_mixed_geoms(
         set_latlon()
 
         first = True
+        sort = False
+
         for geom in geoms:
             if geom in ("point", "poly", "bbox"):
                 geom_type = geom
@@ -1498,7 +1534,11 @@ def query_mixed_geoms(
             elif geom == "xy":
                 set_xy()
             elif query_mode == "or" or first:
-                outbbox.extend(query_geom(geom, geom_type, projpicker_db))
+                obbox = query_geom(geom, geom_type, projpicker_db)
+                if len(obbox) > 0:
+                    if query_mode == "or" and not sort and len(outbbox) > 0:
+                        sort = True
+                    outbbox.extend(obbox)
                 first = False
             else:
                 outbbox = query_geom_using_bbox(outbbox, geom, geom_type)
@@ -1507,6 +1547,9 @@ def query_mixed_geoms(
             set_latlon()
         elif not was_latlon and is_latlon():
             set_xy()
+
+    if sort:
+        sort_bbox(outbbox)
 
     return outbbox
 
