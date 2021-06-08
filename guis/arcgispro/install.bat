@@ -1,7 +1,7 @@
-:: fchooser.bat
-:: launches a folder chooser and outputs choice to the console
-:: https://stackoverflow.com/a/15885133/1683264
+:: projpicker ArcGIS Pro tool box installation
 
+:: Launch folder selection
+:: https://stackoverflow.com/a/15885133/1683264
 @echo off
 setlocal
 
@@ -11,18 +11,22 @@ set "psCommand="(new-object -COM 'Shell.Application')^
 for /f "usebackq delims=" %%I in (`powershell %psCommand%`) do set "folder=%%I"
 
 setlocal enabledelayedexpansion
+
 :: Exit if cancel
 IF [!folder!] == [] exit 0
-echo You chose !folder!
+echo Installing projpicker.pyt at !folder!
 
-:: Install
-
+:: Get files with curl (available on existing windows installs) and install
+:: pyt file
 curl.exe --output !folder!\projpicker.pyt --url https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/projpicker.pyt
 
+:: Latest git
 curl.exe -OL --output !folder! --url https://github.com/HuidaeCho/projpicker/archive/main.zip
 
+:: Extract root
 tar -xf !folder!/main.zip
 
+:: Move module to main folder
 move !folder!/projpicker-main/projpicker !folder!/projpicker
 
 :: clean up
