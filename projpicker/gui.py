@@ -10,7 +10,7 @@ from tkinter import ttk
 import textwrap
 
 
-def select_bbox(bbox, crs_info_func=None):
+def select_bbox(bbox, single=False, crs_info_func=None):
     """
     Return selected BBox instances.
 
@@ -60,14 +60,18 @@ def select_bbox(bbox, crs_info_func=None):
         nonlocal prev_sel_crs_ls
 
         w = event.widget
-        sel_crs_ls = w.curselection()
-        if len(sel_crs_ls) > len(prev_sel_crs_ls):
+        last_crs_ls = w.curselection()
+
+        if single:
+            prev_sel_crs_ls.clear()
+
+        if len(last_crs_ls) > len(prev_sel_crs_ls):
             # selected a new crs
-            last_crs_ls = list(set(sel_crs_ls) - set(prev_sel_crs_ls))[0]
+            last_crs_ls = list(set(last_crs_ls) - set(prev_sel_crs_ls))[0]
             prev_sel_crs_ls.append(last_crs_ls)
         else:
             # deselected an existing crs
-            last_crs_ls = list(set(prev_sel_crs_ls) - set(sel_crs_ls))[0]
+            last_crs_ls = list(set(prev_sel_crs_ls) - set(last_crs_ls))[0]
             del prev_sel_crs_ls[prev_sel_crs_ls.index(last_crs_ls)]
             l = len(prev_sel_crs_ls)
             if l > 0:
@@ -126,7 +130,8 @@ def select_bbox(bbox, crs_info_func=None):
     topleft_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
-    crs_listbox = tk.Listbox(topleft_frame, selectmode=tk.MULTIPLE)
+    crs_listbox = tk.Listbox(topleft_frame,
+                             selectmode=tk.SINGLE if single else tk.MULTIPLE)
     for b in bbox:
         crs_listbox.insert(tk.END,
                            f"{b.crs_name} ({b.crs_auth_name}:{b.crs_code})")
@@ -152,7 +157,8 @@ def select_bbox(bbox, crs_info_func=None):
     proj_table_combobox["values"] = projection_types
     proj_table_combobox.set("proj_table filter")
     # bind selection event to run on select
-    proj_table_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
+    proj_table_combobox.bind("<<ComboboxSelected>>",
+                             on_select_proj_table_or_unit)
     proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     # list of units
@@ -190,7 +196,8 @@ def select_bbox(bbox, crs_info_func=None):
     # buttons
     select_button = tk.Button(bottomright_frame, text="Select", command=select)
     select_button.pack(side=tk.LEFT, expand=True)
-    cancel_button = tk.Button(bottomright_frame, text="Cancel", command=root.destroy)
+    cancel_button = tk.Button(bottomright_frame, text="Cancel",
+                              command=root.destroy)
     cancel_button.pack(side=tk.LEFT, expand=True)
 
     #########

@@ -102,7 +102,8 @@ class CreateGeometry(object):
         crs = ppik.query_bbox([b, t, l, r])
 
         # Run GUI and return the selected CRS
-        sel_crs = ppik.gui.select_bbox(crs, lambda b: textwrap.dedent(f"""\
+        sel_crs = ppik.gui.select_bbox(crs, True,
+                                       lambda b: textwrap.dedent(f"""\
             CRS Type: {b.proj_table}
             CRS Code: {b.crs_auth_name}:{b.crs_code}
             Unit:     {b.unit}
