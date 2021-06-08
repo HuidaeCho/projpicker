@@ -12,10 +12,13 @@ import textwrap
 
 def select_bbox(bbox, single=False, crs_info_func=None):
     """
-    Return selected BBox instances.
+    Return selected BBox instances. If single is True, it returns a single BBox
+    instance in a list.
 
     Args:
         bbox (list): Queried BBox instances.
+        single (bool): Whether or not a single BBox instance is returned.
+            Defaults to False.
         crs_info_func (function): User function used for formatting CRS info.
             Defaults to None in which case the default function is provided.
 
