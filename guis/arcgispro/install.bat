@@ -1,4 +1,6 @@
-:: projpicker ArcGIS Pro tool box installation
+:: install.bat
+:: Author: Owen Smith
+:: Purpose: projpicker ArcGIS Pro tool box installation
 
 :: Launch folder selection
 :: https://stackoverflow.com/a/15885133/1683264
