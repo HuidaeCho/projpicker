@@ -2,11 +2,17 @@
 :: Author: Owen Smith
 :: Purpose: projpicker ArcGIS Pro tool box installation
 
-:: Launch folder selection
-:: https://stackoverflow.com/a/15885133/1683264
 @echo off
 setlocal
 
+:: Constants
+set PYTURL=https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/projpicker.pyt
+
+set GITURL=https://github.com/HuidaeCho/projpicker/archive/main.zip
+
+
+:: Launch folder selection
+:: https://stackoverflow.com/a/15885133/1683264
 set "psCommand="(new-object -COM 'Shell.Application')^
 .BrowseForFolder(0,'Please choose a folder.',0,0).self.path""
 
@@ -16,24 +22,33 @@ setlocal enabledelayedexpansion
 
 :: Exit if cancel
 IF [!folder!] == [] exit 0
+
+:: CD to choosen folder
+:: Use /D flag in case of different drive
+CD /D %folder%
+
 echo Installing projpicker.pyt at !folder!
 
 :: Get files with curl (available on existing windows installs) and install
 :: pyt file
-curl.exe --output !folder!\projpicker.pyt --url https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/projpicker.pyt
+echo Retrieving toolbox from:
+echo - !PYTURL!
+curl.exe -s --output projpicker.pyt --url !PYTURL!
 
 :: Latest git
-curl.exe -OL --output !folder! --url https://github.com/HuidaeCho/projpicker/archive/main.zip
+echo Retrieving module from:
+echo - !GITURL!
+curl.exe -s -OL !GITURL!
 
 :: Extract root
-tar -xf !folder!/main.zip
+tar -xf main.zip
 
 :: Move module to main folder
-move !folder!/projpicker-main/projpicker !folder!/projpicker
+move projpicker-main\projpicker projpicker >nul
 
 :: clean up
-Rmdir /Q /S "!folder!/projpicker-main"
-echo !folder!/main.zip
-del /f /q "!folder!/main.zip"
+Rmdir /Q /S "projpicker-main"
+del /f /q "main.zip"
 
+echo Finished.
 endlocal
