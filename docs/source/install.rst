@@ -57,3 +57,10 @@ Pip can be used to install from the source directory with
 
 
 
+ArcGIS Pro Toolbox
+------------------
+
+The ArcGIS Pro toolbox can be isntall with the batch script
+
+- :download:`install.bat <../../guis/arcgispro/install.bat>`
+
