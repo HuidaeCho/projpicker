@@ -31,7 +31,7 @@ class Toolbox(object):
         self.alias = 'ProjPicker'
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateFeatureClass]
+        self.tools = [CreateFeatureClass, GuessProjection]
 
 
 class CreateFeatureClass(object):
@@ -135,3 +135,112 @@ class CreateFeatureClass(object):
 
         return
 
+class GuessProjection(object):
+    def __init__(self):
+        '''Define the tool (tool name is the name of the class).'''
+        self.label = 'ProjPicker Guess Projection'
+        self.description = 'ProjPicker wrapper to guess missing projection'
+        self.canRunInBackground = False
+
+    def getParameterInfo(self):
+        '''Define parameter definitions'''
+        feature = arcpy.Parameter(
+                displayName='Missing Projection Data',
+                name='Missing Projection Data',
+                datatype='DEFeatureClass',
+                parameterType='required',
+                direction='Input')
+
+        location = arcpy.Parameter(
+                displayName='Location of data',
+                name='Location',
+                datatype='GPFeatureRecordSetLayer',
+                parameterType='Required',
+                direction='Input')
+
+
+        params = [feature, location]
+        return params
+
+    def isLicensed(self):
+        '''Set whether tool is licensed to execute.'''
+        return True
+
+    def updateParameters(self, parameters):
+        '''Modify the values and properties of parameters before internal
+        validation is performed.
+        This method is called whenever a parameter
+        has been changed.'''
+        return
+
+    def updateMessages(self, parameters):
+        '''Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation.'''
+        return
+
+    def execute(self, parameters, messages):
+        '''The source code of the tool.'''
+
+        # Read parameters
+        feature = parameters[0]
+
+        location = parameters[1]
+
+        # Get path of spatial query feature
+        desc = arcpy.Describe(location)
+
+        # get extent in lat lon of the data location
+        bbox = desc.extent.projectAs(arcpy.SpatialReference(WGS84))
+
+        b = bbox.YMin
+        t = bbox.YMax
+        l = bbox.XMin
+        r = bbox.XMax
+
+        # get extent in xy of the missing projection data
+        desc = arcpy.Describe(feature)
+        unproj_bbox = desc.extent
+
+        ub = unproj_bbox.YMin
+        ut = unproj_bbox.YMax
+        ul = unproj_bbox.XMin
+        ur = unproj_bbox.XMax
+
+
+        # get full path of feature class
+        feature_dir = desc.path
+        feature_name = desc.name
+
+        arcpy.AddMessage(f"Querying CRS's within {[b, t, l, r]}")
+
+        # Query with guessed location and missing projection feature class
+        crs = ppik.query_mixed_geoms(['xy', 'bbox', [ub,ut, ul, ur],
+                                      'latlon', 'bbox', [b, t, l, r]])
+
+        # Run GUI and return the selected CRS
+        sel_crs = ppik.gui.select_bbox(crs, True,
+                                       lambda b: textwrap.dedent(f"""\
+            CRS Type: {b.proj_table}
+            CRS Code: {b.crs_auth_name}:{b.crs_code}
+            Unit:     {b.unit}
+            South:    {b.south_lat}°
+            North:    {b.north_lat}°
+            West:     {b.west_lon}°
+            East:     {b.east_lon}°
+            Area:     {b.area_sqkm:n} sqkm"""))
+
+        if len(sel_crs) > 0:
+            sel_crs = sel_crs[0]
+        else:
+            sel_crs = None
+
+        # Create spatial reference object
+        # MUST be integer so IGNF authority codes will not work
+        try:
+            spat_ref = arcpy.SpatialReference(int(sel_crs.crs_code))
+            # Create output geometry
+            arcpy.DefineProjection_management(os.path.join(feature_dir, feature_name), spat_ref)
+        except RuntimeError:
+            arcpy.AddError(f"Selected projection {sel_crs} is not avaible in ArcGIS Pro")
+
+        return
