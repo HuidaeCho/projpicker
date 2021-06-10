@@ -113,10 +113,7 @@ class CreateFeatureClass(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        if len(sel_crs) > 0:
-            sel_crs = sel_crs[0]
-        else:
-            sel_crs = None
+        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
 
         # Get file path of output geometry
         desc = arcpy.Describe(new_feat)
@@ -229,10 +226,7 @@ class GuessProjection(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        if len(sel_crs) > 0:
-            sel_crs = sel_crs[0]
-        else:
-            sel_crs = None
+        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
 
         # Create spatial reference object
         # MUST be integer so IGNF authority codes will not work
