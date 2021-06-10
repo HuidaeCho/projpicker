@@ -31,14 +31,14 @@ class Toolbox(object):
         self.alias = 'ProjPicker'
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateGeometry]
+        self.tools = [CreateFeatureClass]
 
 
-class CreateGeometry(object):
+class CreateFeatureClass(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Create Geometry'
-        self.description = 'ProjPicker wrapper to create geometry shapefile'
+        self.label = 'ProjPicker Create Feature Class'
+        self.description = 'ProjPicker wrapper to create feature class'
         self.canRunInBackground = False
 
     def getParameterInfo(self):
