@@ -15,11 +15,46 @@ import projpicker as ppik
 
 WGS84 = 4326
 
+PROJPICKER_UNITS = [
+        'meter'
+        'degree',
+        'grad',
+        'US foot',
+        'foot',
+        'degree minute second hemisphere',
+        'Clarkes link',
+        'Gold Coast foot',
+        'kilometer',
+        'Clarkes foot',
+        'Indian yard',
+        'British chain (Benoit 1895 B)',
+        'British yard (Sears 1922)',
+        'German legal meter',
+        'British chain (Sears 1922)',
+        'British foot (Sears 1922)',
+        'link'
+        'British chain (Sears 1922 truncated)',
+        'Clarkes yard',
+        'Indian yard (1937)',
+        '50 kilometers',
+        '150 kilometers',
+        'British foot (1936)',
+        ]
+
 ################################################################################
 # Tkinter GUI
 
 # Add path for add current path for tkinter to run
 sys.argv = [str(Path(__file__))]
+
+
+################################################################################
+# Misc Functions
+
+def check_unit(unit):
+    if not unit in PROJPICKER_UNITS:
+        arcpy.AddError(f"Incorrect unit specified. Choose one of {PROJPICKER_UNITS}")
+
 
 ################################################################################
 # ArcGIS Pro Toolbox
@@ -57,7 +92,15 @@ class CreateFeatureClass(object):
                 parameterType='Required',
                 direction='Output')
 
-        params = [feature, new_feat]
+        unit = arcpy.Parameter(
+                displayName='Unit',
+                name='Unit',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        unit.value = 'any'
+
+        params = [feature, new_feat, unit]
         return params
 
     def isLicensed(self):
@@ -82,6 +125,10 @@ class CreateFeatureClass(object):
         # Read parameters
         feature = parameters[0]
         new_feat = parameters[1]
+        unit = parameters[2].valueAsText
+        arcpy.AddMessage(unit)
+        if not unit == 'any':
+            check_unit(unit)
 
         # Get path of spatial query feature
         desc = arcpy.Describe(feature)
@@ -99,7 +146,7 @@ class CreateFeatureClass(object):
 
         # If querying shape is a point then query by point
         # else use bounding box
-        crs = ppik.query_bbox([b, t, l, r])
+        crs = ppik.query_bbox([b, t, l, r], unit=unit)
 
         # Run GUI and return the selected CRS
         sel_crs = ppik.gui.select_bbox(crs, True,
@@ -113,7 +160,10 @@ class CreateFeatureClass(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
+        if len(sel_crs) > 0:
+            sel_crs = sel_crs[0]
+        else:
+            sel_crs = None
 
         # Get file path of output geometry
         desc = arcpy.Describe(new_feat)
@@ -226,7 +276,10 @@ class GuessProjection(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
+        if len(sel_crs) > 0:
+            sel_crs = sel_crs[0]
+        else:
+            sel_crs = None
 
         # Create spatial reference object
         # MUST be integer so IGNF authority codes will not work
