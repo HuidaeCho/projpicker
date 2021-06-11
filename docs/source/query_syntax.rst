@@ -34,7 +34,7 @@ Postfix logical operations
 If the first word is ``postfix``, ProjPicker supports postfix logical
 operations using ``and``, ``or``, ``xor``, and ``not``. For example, the
 following command queries CRSs that completely contain 34.2348,-83.8677, but
-not 0,0:
+not 0,0.
 
 .. code-block:: shell
 
@@ -54,6 +54,28 @@ or B, but not C (``(A or B) and not C`` in infix).
 .. code-block:: shell
 
     projpicker postfix A B or C not and
+
+Special queries
+---------------
+
+A ``none`` geometry returns no CRSs. This special query is useful to clear
+results in the middle. This command returns CRSs that only contain X.
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and none and X or
+
+An ``all`` geometry returns all CRSs in a specified unit. The following command
+performs an all-but operation and returns CRSs not in degree that contain A:
+
+.. code-block:: shell
+
+    projpicker postfix A unit=degree all unit=any not and
+
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
+from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
+would yield ``none`` because in the same degree universe, the NOT off all is
+none.
 
 Coordinate systems
 ------------------
