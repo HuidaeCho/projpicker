@@ -42,8 +42,8 @@ For example,
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
 
-Point formats for the latlon coordinate system
-----------------------------------------------
+Latlon coordinate formats
+-------------------------
 
 The parser supports a wide range of point formats as seen below:
 
