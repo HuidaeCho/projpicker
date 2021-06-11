@@ -80,7 +80,7 @@ performs an all-but operation and returns CRSs not in degree that contain A:
 
 Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
 from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
-would yield ``none`` because in the same degree universe, the NOT off all is
+would yield ``none`` because in the same degree universe, the NOT of all is
 none.
 
 Coordinate systems
