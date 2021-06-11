@@ -6,7 +6,7 @@
 #           Institute for Environmental and Spatial Analysis
 #           University of North Georgia
 # Since:    May 27, 2021
-# 
+#
 # Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/> and
 #                    Owen Smith <https://www.gaderian.io/>
 #
@@ -1808,6 +1808,7 @@ def query_all(
 
 def query_mixed_geoms(
         geoms,
+        unit,
         projpicker_db=None):
     """
     Return a list of BBox instances that completely contain mixed input
@@ -1865,7 +1866,6 @@ def query_mixed_geoms(
 
         first = True
         sort = False
-        unit = "any"
         bbox_all = {}
 
         for geom in geoms:
