@@ -2,7 +2,7 @@ Query syntax
 =============
 
 ProjPicker uses a custom parser to enable a simple but flexible query interface
-which works with Python, Shell, and stdin. The projpicker query string allows
+which works with Python, Shell, and stdin. The ProjPicker query string allows
 the user to
 
 1. use logical operations,
@@ -215,7 +215,7 @@ Logical operators
 
 The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
 for more extensible querying operations. The operators are not CLI options or
-flags, but are instead parsed directly by projpicker. The first word can be
+flags, but are instead parsed directly by ProjPicker. The first word can be
 optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
 be used again in the middle unless the first word is ``postfix``.
 
