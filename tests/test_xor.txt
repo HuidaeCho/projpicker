@@ -1,0 +1,13 @@
+#geoms: xor 34.2348,-83.8677 0,0
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_points([[34.2348, -83.8677], [0, 0]], "xor")
+# ppik.print_bbox(bbox)
+#end
+
+xor
+# query points
+34.2348         83°52'3.72"W    # UNG Gainesville Campus
+0		0

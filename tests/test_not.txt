@@ -1,0 +1,13 @@
+#geoms: postfix 34.2348,-83.8677 not
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_mixed_geoms(["postfix", [34.2348, -83.8677], "not"])
+# ppik.print_bbox(bbox)
+#end
+
+postfix
+# query points
+34.2348         83°52'3.72"W    # UNG Gainesville Campus
+not

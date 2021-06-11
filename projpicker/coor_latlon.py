@@ -317,20 +317,22 @@ def is_bbox_within_bbox(bbox1, bbox2):
 
 def query_point_using_cursor(
         projpicker_cur,
-        point):
+        point,
+        negate=False):
     """
     Return a list of BBox instances that completely contain an input point
-    geometry defined by latitude and longitude in decimal degrees. Each BBox
-    instance is a named tuple with all the columns from the bbox table in
-    projpicker.db. This function is used to perform a union operation on BBox
-    instances consecutively. Results are sorted by area from the smallest to
-    largest.
+    geometry defined by latitude and longitude in decimal degrees. Use the
+    negate argument to return non-containing BBox instances. Each BBox instance
+    is a named tuple with all the columns from the bbox table in projpicker.db.
+    This function is used to perform a union operation on BBox instances
+    consecutively. Results are sorted by area from the smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         point (list or str): List of latitude and longitude floats in decimal
             degrees or parseable str of latitude and longitude. See
             parse_point().
+        negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -343,14 +345,15 @@ def query_point_using_cursor(
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
-              WHERE {lat} BETWEEN south_lat AND north_lat AND
-                    (west_lon = east_lon OR
-                     (west_lon = -180 AND east_lon = 180) OR
-                     (west_lon < east_lon AND
-                      {lon} BETWEEN west_lon AND east_lon) OR
-                     (west_lon > east_lon AND
-                      ({lon} BETWEEN -180 AND east_lon OR
-                       {lon} BETWEEN west_lon AND 180)))
+              WHERE {"NOT" if negate else ""}
+                    ({lat} BETWEEN south_lat AND north_lat AND
+                     (west_lon = east_lon OR
+                      (west_lon = -180 AND east_lon = 180) OR
+                      (west_lon < east_lon AND
+                       {lon} BETWEEN west_lon AND east_lon) OR
+                      (west_lon > east_lon AND
+                       ({lon} BETWEEN -180 AND east_lon OR
+                        {lon} BETWEEN west_lon AND 180))))
               ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in map(BBox._make, projpicker_cur.fetchall()):
@@ -360,13 +363,15 @@ def query_point_using_cursor(
 
 def query_bbox_using_cursor(
         projpicker_cur,
-        bbox):
+        bbox,
+        negate=False):
     """
     Return a list of BBox instances that completely contain an input bbox
     geometry defined by sout, north, west, and east using a database cursor.
-    Each BBox instance is a named tuple with all the columns from the bbox
-    table in projpicker.db. This function is used to perform a union operation
-    on bbox rows consecutively. Results are sorted by area from the smallest to
+    Use the negate argument to return non-containing BBox instances. Each BBox
+    instance is a named tuple with all the columns from the bbox table in
+    projpicker.db. This function is used to perform a union operation on bbox
+    rows consecutively. Results are sorted by area from the smallest to
     largest.
 
     Args:
@@ -374,6 +379,7 @@ def query_bbox_using_cursor(
         bbox (list or str): List of south, north, west, and east floats in
             decimal degrees or parseable str of south, north, west, and east.
             See parse_bbox().
+        negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -386,23 +392,24 @@ def query_bbox_using_cursor(
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
-              WHERE {s} BETWEEN south_lat AND north_lat AND
-                    {n} BETWEEN south_lat AND north_lat AND
-                    (west_lon = east_lon OR
-                     (west_lon = -180 AND east_lon = 180) OR
-                     (west_lon < east_lon AND
-                      {w} <= {e} AND
-                      {w} BETWEEN west_lon AND east_lon AND
-                      {e} BETWEEN west_lon AND east_lon) OR
-                     (west_lon > east_lon AND
-                      (({w} <= {e} AND
-                        (({w} BETWEEN -180 AND east_lon AND
-                          {e} BETWEEN -180 AND east_lon) OR
-                         ({w} BETWEEN west_lon AND 180 AND
-                          {e} BETWEEN west_lon AND 180))) OR
-                       ({w} > {e} AND
-                        {e} BETWEEN -180 AND east_lon AND
-                        {w} BETWEEN west_lon AND 180))))
+              WHERE {"NOT" if negate else ""}
+                    ({s} BETWEEN south_lat AND north_lat AND
+                     {n} BETWEEN south_lat AND north_lat AND
+                     (west_lon = east_lon OR
+                      (west_lon = -180 AND east_lon = 180) OR
+                      (west_lon < east_lon AND
+                       {w} <= {e} AND
+                       {w} BETWEEN west_lon AND east_lon AND
+                       {e} BETWEEN west_lon AND east_lon) OR
+                      (west_lon > east_lon AND
+                       (({w} <= {e} AND
+                         (({w} BETWEEN -180 AND east_lon AND
+                           {e} BETWEEN -180 AND east_lon) OR
+                          ({w} BETWEEN west_lon AND 180 AND
+                           {e} BETWEEN west_lon AND 180))) OR
+                        ({w} > {e} AND
+                         {e} BETWEEN -180 AND east_lon AND
+                         {w} BETWEEN west_lon AND 180)))))
               ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in map(BBox._make, projpicker_cur.fetchall()):

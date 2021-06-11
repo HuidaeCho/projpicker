@@ -165,10 +165,12 @@ def is_bbox_within_bbox(bbox1, bbox2):
 
 def query_point_using_cursor(
         projpicker_cur,
-        point):
+        point,
+        negate=False):
     """
     Return a list of BBox instances that completely contain an input point
-    geometry defined by x and y. Each BBox instance is a named tuple with all
+    geometry defined by x and y. Use the negate argument to return
+    non-containing BBox instances. Each BBox instance is a named tuple with all
     the columns from the bbox table in projpicker.db. This function is used to
     perform a union operation on BBox instances consecutively. Results are
     sorted by area from the smallest to largest.
@@ -177,6 +179,7 @@ def query_point_using_cursor(
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         point (list or str): List of x and y floats or parseable str of x and
             y. See parse_point().
+        negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -189,8 +192,9 @@ def query_point_using_cursor(
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
-              WHERE {x} BETWEEN left AND right AND
-                    {y} BETWEEN bottom AND top
+              WHERE {"NOT" if negate else ""}
+                    ({x} BETWEEN left AND right AND
+                     {y} BETWEEN bottom AND top)
               ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in map(BBox._make, projpicker_cur.fetchall()):
@@ -200,19 +204,22 @@ def query_point_using_cursor(
 
 def query_bbox_using_cursor(
         projpicker_cur,
-        bbox):
+        bbox,
+        negate=False):
     """
     Return a list of BBox instances that completely contain an input bbox
     geometry defined by bottom, top, left, and right floats using a database
-    cursor. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. This function is used to perform a union
-    operation on bbox rows consecutively. Results are sorted by area from the
-    smallest to largest.
+    cursor. Use the negate argument to return non-containing BBox instances.
+    Each BBox instance is a named tuple with all the columns from the bbox
+    table in projpicker.db. This function is used to perform a union operation
+    on bbox rows consecutively. Results are sorted by area from the smallest to
+    largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         bbox (list or str): List of bottom, top, left, and right floats or
             parseable str of bottom, top, left, and right. See parse_bbox().
+        negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -224,10 +231,11 @@ def query_bbox_using_cursor(
 
     sql = f"""SELECT *
               FROM bbox
-              WHERE {l} BETWEEN left AND right AND
-                    {r} BETWEEN left AND right AND
-                    {b} BETWEEN bottom AND top AND
-                    {t} BETWEEN bottom AND top
+              WHERE {"NOT" if negate else ""}
+                    ({l} BETWEEN left AND right AND
+                     {r} BETWEEN left AND right AND
+                     {b} BETWEEN bottom AND top AND
+                     {t} BETWEEN bottom AND top)
               ORDER BY area_sqkm"""
     projpicker_cur.execute(sql)
     for row in map(BBox._make, projpicker_cur.fetchall()):
