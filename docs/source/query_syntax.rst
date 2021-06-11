@@ -32,20 +32,20 @@ Postfix logical operations
 --------------------------
 
 If the first word is ``postfix``, ProjPicker supports postfix logical
-operations using ``and``, ``or``, ``xor``, and ``not``. For example, the
-following command queries CRSs that completely contain 34.2348,-83.8677, but
-not 0,0.
+operations using ``and``, ``or``, ``xor``, and ``not``. Postfix notations may
+not be straightforward to understand and write, but they are simpler to
+implement and do not require parentheses. In a vertically long input, writing
+logical operations without parentheses seems to be a better choice.
+
+For example, the following command queries CRSs that completely contain
+34.2348,-83.8677, but not 0,0:
 
 .. code-block:: shell
 
     projpicker postfix 34.2348,-83.8677 0,0 not and
 
 This command is useful to filter out global CRSs spatially. In an infix
-notation, it is equivalent to ``34.2348,-83.8677 and not 00``. Postfix
-notations may not be straightforward to understand and write, but they are
-simpler to implement and do not require parentheses. In a vertically long
-input, writing logical operations without parentheses seems to be a better
-choice.
+notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
 
 Let's take another example. Let ``A``, ``B``, and ``C`` be the coordinates of
 cities A, B, and C, respectively. This command finds CRSs that contain cities A
