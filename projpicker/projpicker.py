@@ -583,6 +583,79 @@ def create_projpicker_db(
             message()
 
 
+def write_bbox_db(
+        bbox,
+        bbox_db,
+        overwrite=False):
+    """
+    Write a list of BBox instances to a bbox database.
+
+    Args:
+        bbox (list): List of BBox instances.
+        bbox_db (str): Path for output bbox_db.
+        overwrite (bool): Whether or not to overwrite output file. Defaults to
+            False.
+
+    Raises:
+        Exception: If bbox_db file already exists when overwriting is not
+        requested.
+    """
+    if os.path.exists(bbox_db):
+        if overwrite:
+            os.remove(bbox_db)
+        else:
+            raise Exception(f"{bbox_db}: File already exists")
+
+    with sqlite3.connect(bbox_db) as bbox_con:
+        bbox_con.execute(bbox_schema)
+        bbox_con.commit()
+
+        nrows = len(bbox)
+        nrow = 1
+        for row in bbox:
+            message("\b"*80+f"{nrow}/{nrows}", end="")
+            sql = """INSERT INTO bbox
+                     VALUES (?, ?,
+                             ?, ?, ?, ?, ?, ?,
+                             ?, ?, ?, ?,
+                             ?, ?, ?, ?,
+                             ?, ?)"""
+            bbox_con.execute(sql, (row.proj_table, row.crs_name,
+                                   row.crs_auth_name, row.crs_code,
+                                   row.usage_auth_name, row.usage_code,
+                                   row.extent_auth_name, row.extent_code,
+                                   row.south_lat, row.north_lat,
+                                   row.west_lon, row.east_lon,
+                                   row.bottom, row.top,
+                                   row.left, row.right,
+                                   row.unit, row.area_sqkm))
+            bbox_con.commit()
+            nrow += 1
+        message()
+
+
+def read_bbox_db(bbox_db):
+    """
+    Return a list of all BBox instances in a bbox database. Each BBox instance
+    is a named tuple with all the columns from the bbox table in projpicker.db.
+    Results are sorted by area.
+
+    Args:
+        bbox_db (str): Path for the input bbox database.
+
+    Returns:
+        list: List of all BBox instances sorted by area.
+    """
+    outbbox = []
+    with sqlite3.connect(bbox_db) as bbox_con:
+        bbox_cur = bbox_con.cursor()
+        sql = "SELECT * FROM bbox ORDER BY area_sqkm"
+        bbox_cur.execute(sql)
+        for row in map(BBox._make, bbox_cur.fetchall()):
+            outbbox.append(row)
+    return outbbox
+
+
 ################################################################################
 # coordinate systems
 
@@ -1759,27 +1832,18 @@ def query_mixed_geoms(
 def query_all(projpicker_db=None):
     """
     Return a list of all BBox instances. Each BBox instance is a named tuple
-    with all the columns from the bbox table in projpicker.db. Results are not
-    sorted by area because no specific geometries are queried. If projpicker_db
-    is None (default), get_projpicker_db() is used.
+    with all the columns from the bbox table in projpicker.db. Results are
+    sorted by area. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     Args:
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of all BBox instances in an unsorted manner straight from
-        the projpicker.db bbox table.
+        list: List of all BBox instances sorted by area.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
-
-    outbbox = []
-    with sqlite3.connect(projpicker_db) as projpicker_con:
-        projpicker_cur = projpicker_con.cursor()
-        sql = "SELECT * FROM bbox"
-        projpicker_cur.execute(sql)
-        for row in map(BBox._make, projpicker_cur.fetchall()):
-            outbbox.append(row)
-    return outbbox
+    return read_bbox_db(projpicker_db)
 
 
 ################################################################################
@@ -1890,21 +1954,22 @@ def projpicker(
     latitude-longitude and x-y coordinate systems, respectively. This function
     ignores the current coordinate system set by set_coordinate_system(),
     set_latlon(), or set_xy(), and always starts in the latitude-longitude
-    coordinate system by default. The "plain", "json", and "pretty" formats are
-    supported. No header and separator options only apply to the plain output
-    format. The overwrite option applies to both projpicker.db and the output
-    file, but the append option only appends to the output file. Only one of
-    the overwrite or append options must be given. For selecting a subset of
-    queried BBox instances, a GUI can be launched by setting gui to True.
-    Results are sorted by area from the smallest to largest. If projpicker_db
-    or proj_db is None (default), get_projpicker_db() or get_proj_db() is used,
-    respectively.
+    coordinate system by default. The "plain", "json", "pretty", "sqlite"
+    formats are supported. No header and separator options only apply to the
+    plain output format. The overwrite option applies to both projpicker.db and
+    the output file, but the append option only appends to the output file.
+    Only one of the overwrite or append options must be given. For selecting a
+    subset of queried BBox instances, a GUI can be launched by setting gui to
+    True. Results are sorted by area from the smallest to largest. If
+    projpicker_db or proj_db is None (default), get_projpicker_db() or
+    get_proj_db() is used, respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
         outfile (str): Output file. Defaults to "-" for sys.stdout.
-        fmt (str): Output format (plain, json, pretty). Defaults to "plain".
+        fmt (str): Output format (plain, json, pretty, sqlite). Defaults to
+            "plain".
         no_header (bool): Whether or not to print header for plain. Defaults to
             False.
         separator (str): Column separator for plain. Defaults to "|".
@@ -1924,8 +1989,8 @@ def projpicker(
     Raises:
         Exception: If both overwrite and append are True, either projpicker_db
             or outfile already exists when overwrite is False, proj_db does not
-            exist when create is True, or projpicker_db does not exist when
-            create is False.
+            exist when create is True, projpicker_db does not exist when
+            create is False, or sqlite format is written to stdout.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
@@ -1974,17 +2039,30 @@ def projpicker(
                 bbox_dict = json.load(f)
             bbox_dict.extend(dictify_bbox(bbox))
             bbox_json = json.dumps(bbox_dict)
-        else:
+        elif fmt == "pretty":
             with open(outfile) as f:
                 # https://stackoverflow.com/a/65647108
                 lcls = locals()
                 exec("bbox_dict = " + f.read(), globals(), lcls)
                 bbox_dict = lcls["bbox_dict"]
             bbox_dict.extend(dictify_bbox(bbox))
+        else:
+            bbox_merged = read_bbox_db(outfile)
+            for b in bbox:
+                if b not in bbox_merged:
+                    bbox_merged.append(b)
+            sort_bbox(bbox_merged)
+            write_bbox_db(bbox_merged, outfile, True)
+            return
     elif fmt == "json":
         bbox_json = jsonify_bbox(bbox)
     elif fmt == "pretty":
         bbox_dict = dictify_bbox(bbox)
+    elif fmt == "sqlite":
+        if outfile == "-":
+            raise Exception("Cannot write sqlite output to stdout")
+        write_bbox_db(bbox, outfile, True)
+        return
 
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "plain":
@@ -2057,7 +2135,7 @@ def parse():
                 "and exit")
     parser.add_argument(
             "-f", "--format",
-            choices=("plain", "json", "pretty"),
+            choices=("plain", "json", "pretty", "sqlite"),
             default="plain",
             help="output format (default: plain)")
     parser.add_argument(
