@@ -6,17 +6,17 @@ Requirements
 
 If installed with pip, ProjPicker uses the following standard modules:
 
-- collections
-- argparse
-- os
-- sys
-- sqlite3
-- re
-- math
-- json
-- pprint
-- ttkinter
-- textwrap
+- `collections <https://docs.python.org/3/library/collections.html>`_
+- `argparse <https://docs.python.org/3/library/argparse.html>`_
+- `os <https://docs.python.org/3/library/os.html>`_
+- `sys <https://docs.python.org/3/library/sys.html>`_
+- `sqlite3 <https://docs.python.org/3/library/sqlite3.html>`_
+- `re <https://docs.python.org/3/library/re.html>`_
+- `math <https://docs.python.org/3/library/math.html>`_
+- `json <https://docs.python.org/3/library/json.html>`_
+- `pprint <https://docs.python.org/3/library/pprint.html>`_
+- `tkinter <https://docs.python.org/3/library/tkinter.html>`_
+- `textwrap <https://docs.python.org/3/library/textwrap.html>`_
 
 The projpicker sqlite databse (``projpicker.db``) will come packaged when
 installed with pip. However, if any problems should arise and the

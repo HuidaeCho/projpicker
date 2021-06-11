@@ -1,21 +1,24 @@
 Querying CRSs
 =============
 
+Results are sorted by area to highlight local CRSs.
+
 Points
 ------
 
 Shell
 ^^^^^
 
+Read latitude and longitude separated by a comma or whitespaces from arguments:
+
 .. code-block:: shell
 
-    # read latitude and longitude separated by a comma or whitespaces from
-    # arguments
     projpicker 34.2348,-83.8677 "33.7490  84.3880W"
 
+Read latitude and longitude from stdin:
+
 .. code-block:: shell
 
-    # read latitude and longitude from stdin
     projpicker <<EOT
     # query points
     34.2348 83°52'3.72"W # UNG Gainesville Campus
@@ -38,14 +41,16 @@ Poylines and polygons
 Shell
 ^^^^^
 
+Read latitude,longitude from arguments:
+
 .. code-block:: shell
 
-    # read latitude,longitude from arguments
     projpicker poly -- -10,0 10,0 10,10 10,0 , 10,20 30,40
 
+Read latitude,longitude from stdin:
+
 .. code-block:: shell
 
-    # read latitude,longitude from stdin
     projpicker poly <<EOT
     # poly 1
     # south-west corner
@@ -77,14 +82,16 @@ Bounding boxes
 Shell
 ^^^^^
 
+Read south,north,west,east from arguments:
+
 .. code-block:: shell
 
-    # read south,north,west,east from arguments
     projpicker bbox 0,0,10,10 20,20,50,50
 
+Read south,north,west,east from stdin:
+
 .. code-block:: shell
 
-    # read south,north,west,east from stdin
     projpicker bbox <<EOT
     # region 1
     0	0	10	10

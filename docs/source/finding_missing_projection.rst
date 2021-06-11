@@ -15,12 +15,20 @@ as latitudes and longitudes.
    :align: center
    :alt: Shapefile location with missing projection metadata
 
-   The Shapefiles location with its projection data removed
+   The Shapefile location with its projection data removed
 
 Nigeria is definitely not the right location, so the user can search for the
 latitude and longitude of Atlanta, GA (33.7490°N,84.3880°W) and check the
 extent of the Shapefile from the layer properties
-(1323252,1374239,396255,434290 in SNWE). Let's use ProjPicker to guess it.
+(1323252,1374239,396255,434290 in SNWE):
+
+.. figure:: https://user-images.githubusercontent.com/7456117/120871218-06210f80-c569-11eb-92c3-787e1e761d65.png
+   :align: center
+   :alt: Extent in layer properties
+
+   Extent of the geometry
+
+As can be seen in the screenshot, the spatial reference is unknown. Let's use ProjPicker to guess it.
 
 We can construct the ProjPicker query string ``xy bbox
 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W`` and use it as
@@ -70,3 +78,5 @@ Georgia West". EPSG:26767 is actually the correct CRS:
 .. image:: https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png
    :align: center
    :alt: Correct CRS
+
+   Correct spatial reference

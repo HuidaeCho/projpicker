@@ -42,10 +42,11 @@ For example,
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
 
-Latlon coordinate formats
--------------------------
+Supported coordinate formats
+----------------------------
 
-The parser supports a wide range of point formats as seen below:
+The parser supports a wide range of ``latlon`` coordinate formats as seen
+below in ``points.txt``:
 
 ::
 
@@ -94,6 +95,19 @@ degrees:
      [34.2348, -83.8677],
      [34.2348, -83.8677],
      [34.2348, -83.8677]]
+
+For the ``xy`` coordinate system, x and y in floats separated by a comma or
+whitespaces are supported.
+
+::
+
+   396255,1374239
+   396255 1374239
+
+.. code-block:: python
+
+   [[1374239.0, 396255.0],
+    [1374239.0, 396255.0]]
 
 Geometry types
 --------------
