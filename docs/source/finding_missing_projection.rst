@@ -75,7 +75,7 @@ The first EPSG code (EPSG:26767) is a CRS code, and the second and third ones
 are usage and extent codes, respectively. The name of the CRS is "NAD27 /
 Georgia West". EPSG:26767 is actually the correct CRS:
 
-.. image:: https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png
+.. figure:: https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png
    :align: center
    :alt: Correct CRS
 
