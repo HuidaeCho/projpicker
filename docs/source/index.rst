@@ -31,7 +31,7 @@ at `the University of North Georgia <https://ung.edu/>`_ (UNG).
    database
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
