@@ -204,8 +204,15 @@ class GuessProjection(object):
                 parameterType='Required',
                 direction='Input')
 
+        unit = arcpy.Parameter(
+                displayName='Unit',
+                name='Unit',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        unit.value = 'any'
 
-        params = [feature, location]
+        params = [feature, location, unit]
         return params
 
     def isLicensed(self):
@@ -229,8 +236,10 @@ class GuessProjection(object):
 
         # Read parameters
         feature = parameters[0]
-
         location = parameters[1]
+        unit = parameters[2].valueAsText
+        if unit != 'any':
+            check_unit(unit)
 
         # Get path of spatial query feature
         desc = arcpy.Describe(location)
@@ -261,7 +270,7 @@ class GuessProjection(object):
 
         # Query with guessed location and missing projection feature class
         crs = ppik.query_mixed_geoms(['xy', 'bbox', [ub,ut, ul, ur],
-                                      'latlon', 'bbox', [b, t, l, r]])
+                                      'latlon', 'bbox', [b, t, l, r]], unit=unit)
 
         # Run GUI and return the selected CRS
         sel_crs = ppik.gui.select_bbox(crs, True,
