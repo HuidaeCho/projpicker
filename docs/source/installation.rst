@@ -27,7 +27,7 @@ more information about ``projpicker.db`` see :doc:`here <./database>`.
 Using pip
 ---------
 
-- `Python package <https://pypi.org/project/projpicker/>`_
+`Python package <https://pypi.org/project/projpicker/>`_
 
 Installation with pip is the recommended way to install both the CLI appliction
 and the python module.
