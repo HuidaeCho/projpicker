@@ -583,6 +583,95 @@ def create_projpicker_db(
             message()
 
 
+def write_bbox_db(
+        bbox,
+        bbox_db,
+        overwrite=False):
+    """
+    Write a list of BBox instances to a bbox database.
+
+    Args:
+        bbox (list): List of BBox instances.
+        bbox_db (str): Path for output bbox_db.
+        overwrite (bool): Whether or not to overwrite output file. Defaults to
+            False.
+
+    Raises:
+        Exception: If bbox_db file already exists when overwriting is not
+        requested.
+    """
+    if os.path.exists(bbox_db):
+        if overwrite:
+            os.remove(bbox_db)
+        else:
+            raise Exception(f"{bbox_db}: File already exists")
+
+    with sqlite3.connect(bbox_db) as bbox_con:
+        bbox_con.execute(bbox_schema)
+        bbox_con.commit()
+
+        nrows = len(bbox)
+        nrow = 1
+        for row in bbox:
+            message("\b"*80+f"{nrow}/{nrows}", end="")
+            sql = """INSERT INTO bbox
+                     VALUES (?, ?,
+                             ?, ?, ?, ?, ?, ?,
+                             ?, ?, ?, ?,
+                             ?, ?, ?, ?,
+                             ?, ?)"""
+            bbox_con.execute(sql, (row.proj_table, row.crs_name,
+                                   row.crs_auth_name, row.crs_code,
+                                   row.usage_auth_name, row.usage_code,
+                                   row.extent_auth_name, row.extent_code,
+                                   row.south_lat, row.north_lat,
+                                   row.west_lon, row.east_lon,
+                                   row.bottom, row.top,
+                                   row.left, row.right,
+                                   row.unit, row.area_sqkm))
+            bbox_con.commit()
+            nrow += 1
+        message()
+
+
+def read_bbox_db(
+        bbox_db,
+        unit="any"):
+    """
+    Return a list of all BBox instances in unit in a bbox database. Each BBox
+    instance is a named tuple with all the columns from the bbox table in
+    projpicker.db. Results are sorted by area.
+
+    Args:
+        bbox_db (str): Path for the input bbox database.
+        unit (str): "any", unit values from the input bbox database. Defaults
+            to "any".
+
+    Returns:
+        list: List of all BBox instances sorted by area.
+    """
+    outbbox = []
+    with sqlite3.connect(bbox_db) as bbox_con:
+        bbox_cur = bbox_con.cursor()
+        sql = f"""SELECT *
+                  FROM bbox
+                  WHERE_UNIT
+                  ORDER BY area_sqkm,
+                           proj_table,
+                           crs_auth_name, crs_code,
+                           usage_auth_name, usage_code,
+                           extent_auth_name, extent_code"""
+        if unit == "any":
+            sql = sql.replace("WHERE_UNIT", "")
+            bbox_cur.execute(sql)
+        else:
+            sql = sql.replace("WHERE_UNIT", "WHERE unit = ?")
+            bbox_cur.execute(sql, (unit,))
+        for row in map(BBox._make, bbox_cur.fetchall()):
+            outbbox.append(row)
+    return outbbox
+
+
 ################################################################################
 # coordinate systems
 
@@ -874,19 +963,18 @@ def parse_mixed_geoms(geoms):
     if len(geoms) == 0:
         return outgeoms
 
-    if geoms[0] in ("all", "and", "or", "xor", "postfix"):
-        outgeoms.append(geoms[0])
-        if geoms[0] == "all":
-            return outgeoms
+    if geoms[0] in ("and", "or", "xor", "postfix"):
         query_op = geoms[0]
         del geoms[0]
+        outgeoms.append(query_op)
     else:
         query_op = "and"
 
     query_ops = ("and", "or", "xor", "not")
+    spec_geoms = ("none", "all")
     geom_types = ("point", "poly", "bbox")
     coor_sys = ("latlon", "xy")
-    keywords = query_ops + geom_types + coor_sys
+    keywords = query_ops + spec_geoms + geom_types + coor_sys
 
     geom_type = "point"
 
@@ -899,6 +987,7 @@ def parse_mixed_geoms(geoms):
         i = 0
         while i < n:
             geom = geoms[i]
+            typ = type(geom)
             if geom in query_ops:
                 if query_op == "postfix":
                     if geom == "not" and stack_size >= 1:
@@ -916,9 +1005,14 @@ def parse_mixed_geoms(geoms):
                     set_latlon()
                 else:
                     set_xy()
+            elif typ == str and geom.startswith("unit="):
+                pass
+            elif geom in ("none", "all"):
+                stack_size += 1
             else:
                 j = i
-                while j < n and geoms[j] not in keywords:
+                while (j < n and geoms[j] not in keywords and
+                       not (typ == str and geoms[j].startswith("unit="))):
                     j += 1
                 ogeoms = parse_geoms(geoms[i:j], geom_type)
                 i = j
@@ -926,7 +1020,7 @@ def parse_mixed_geoms(geoms):
                     stack_size += len(ogeoms)
                     outgeoms.extend(ogeoms)
                 continue
-            if type(geom) == str:
+            if typ == str:
                 outgeoms.append(geom)
             i += 1
 
@@ -1059,7 +1153,11 @@ def sort_bbox(bbox):
             bbox[i].usage_auth_name == bbox[i-1].usage_code and
             bbox[i].extent_auth_name == bbox[i-1].extent_code):
             del bbox[i]
-    bbox.sort(key=lambda x: x.area_sqkm)
+    bbox.sort(key=lambda x: (x.area_sqkm,
+                             x.proj_table,
+                             x.crs_auth_name, x.crs_code,
+                             x.usage_auth_name, x.usage_code,
+                             x.extent_auth_name, x.extent_code))
 
 
 ################################################################################
@@ -1067,17 +1165,19 @@ def sort_bbox(bbox):
 
 def query_point(
         point,
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain an input point
-    geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. Results are sorted by area from the smallest
-    to largest. If projpicker_db is None (default), get_projpicker_db() is
-    used.
+    Return a list of BBox instances in unit that completely contain an input
+    point geometry. Each BBox instance is a named tuple with all the columns
+    from the bbox table in projpicker.db. Results are sorted by area from the
+    smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         point (list or str): List of two floats or a parseable point geometry.
             See parse_point().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1087,23 +1187,25 @@ def query_point(
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
-        outbbox = query_point_using_cursor(projpicker_cur, point)
+        outbbox = query_point_using_cursor(projpicker_cur, point, unit)
     return outbbox
 
 
 def query_point_using_bbox(
         prevbbox,
-        point):
+        point,
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain an
-    input point geometry. Each BBox instance is a named tuple with all the
-    columns from the bbox table in projpicker.db. This function is used to
-    perform an intersection operation on BBox instances consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain an input point geometry. Each BBox instance is a named tuple with
+    all the columns from the bbox table in projpicker.db. This function is used
+    to perform an intersection operation on BBox instances consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         point (list or str): List of two floats or a parseable str of a point.
             See parse_point().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1112,7 +1214,8 @@ def query_point_using_bbox(
 
     idx = []
     for i in range(len(prevbbox)):
-        if is_point_within_bbox(point, prevbbox[i]):
+        if is_point_within_bbox(point, prevbbox[i]) and (
+            unit == "any" or prevbbox[i].unit == unit):
             idx.append(i)
     outbbox = [prevbbox[i] for i in idx]
     return outbbox
@@ -1121,9 +1224,10 @@ def query_point_using_bbox(
 def query_points(
         points,
         query_op="and",
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain input point
+    Return a list of BBox instances in unit that completely contain input point
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query operator performs the
     intersection of bbox rows while the "or" operator the union and the "xor"
@@ -1133,6 +1237,7 @@ def query_points(
     Args:
         points (list): List of parseable point geometries. See parse_points().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1156,7 +1261,7 @@ def query_points(
         projpicker_cur = projpicker_con.cursor()
         for point in points:
             if query_op in ("or", "xor") or first:
-                obbox = query_point_using_cursor(projpicker_cur, point)
+                obbox = query_point_using_cursor(projpicker_cur, point, unit)
                 if len(obbox) > 0:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
@@ -1175,7 +1280,7 @@ def query_points(
                         outbbox.extend(obbox)
                 first = False
             else:
-                outbbox = query_point_using_bbox(outbbox, point)
+                outbbox = query_point_using_bbox(outbbox, point, unit)
 
     if sort:
         sort_bbox(outbbox)
@@ -1186,17 +1291,19 @@ def query_points(
 def query_points_using_bbox(
         prevbbox,
         points,
-        query_op="and"):
+        query_op="and",
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain input
-    point geometres. Each BBox instance is a named tuple with all the columns
-    from the bbox table in projpicker.db. This function is used to perform an
-    intersection operation on BBox instances consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain input point geometres. Each BBox instance is a named tuple with all
+    the columns from the bbox table in projpicker.db. This function is used to
+    perform an intersection operation on BBox instances consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         points (list): List of parseable point geometries. See parse_points().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1213,7 +1320,8 @@ def query_points_using_bbox(
 
     for point in points:
         for i in range(len(prevbbox)):
-            if is_point_within_bbox(point, prevbbox[i]):
+            if is_point_within_bbox(point, prevbbox[i]) and (
+                unit == "any" or prevbbox[i].unit == unit):
                 if query_op != "xor" or i not in idx:
                     idx.append(i)
         if query_op == "and":
@@ -1227,49 +1335,54 @@ def query_points_using_bbox(
 
 def query_poly(
         poly,
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain an input poly
-    geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. Results are sorted by area from the smallest
-    to largest. If projpicker_db is None (default), get_projpicker_db() is
-    used.
+    Return a list of BBox instances in unit that completely contain an input
+    poly geometry. Each BBox instance is a named tuple with all the columns
+    from the bbox table in projpicker.db. Results are sorted by area from the
+    smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         poly (list): List of parseable point geometries. See parse_poly().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    return query_polys([poly], "and", projpicker_db)
+    return query_polys([poly], "and", unit, projpicker_db)
 
 
 def query_poly_using_bbox(
         prevbbox,
-        poly):
+        poly,
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain an
-    input poly geometres. Each BBox instance is a named tuple with all the
-    columns from the bbox table in projpicker.db. This function is used to
-    perform an intersection operation on BBox instances consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain an input poly geometres. Each BBox instance is a named tuple with
+    all the columns from the bbox table in projpicker.db. This function is used
+    to perform an intersection operation on BBox instances consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         poly (list): List of parseable point geometries. See parse_poly().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    return query_polys_using_bbox(prevbbox, [poly])
+    return query_polys_using_bbox(prevbbox, [poly], "and", unit)
 
 
 def query_polys(
         polys,
         query_op="and",
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain input poly
+    Return a list of BBox instances in unit that completely contain input poly
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query operator performs the
     intersection of bbox rows while the "or" operator the union and the "xor"
@@ -1279,6 +1392,7 @@ def query_polys(
     Args:
         polys (list): List of parseable poly geometries. See parse_polys().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1287,23 +1401,25 @@ def query_polys(
     polys = parse_polys(polys)
 
     bboxes = [calc_poly_bbox(poly) for poly in polys]
-    return query_bboxes(bboxes, query_op, projpicker_db)
+    return query_bboxes(bboxes, query_op, unit, projpicker_db)
 
 
 def query_polys_using_bbox(
         prevbbox,
         polys,
-        query_op="and"):
+        query_op="and",
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain input
-    poly geometres. Each BBox instance is a named tuple with all the columns
-    from the bbox table in projpicker.db. This function is used to perform an
-    intersection operation on BBox instances consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain input poly geometres. Each BBox instance is a named tuple with all
+    the columns from the bbox table in projpicker.db. This function is used to
+    perform an intersection operation on BBox instances consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         polys (list): List of parseable poly geometries. See parse_polys().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1311,22 +1427,24 @@ def query_polys_using_bbox(
     polys = parse_polys(polys)
 
     bboxes = [calc_poly_bbox(poly) for poly in polys]
-    return query_bboxes_using_bbox(prevbbox, bboxes, query_op)
+    return query_bboxes_using_bbox(prevbbox, bboxes, query_op, unit)
 
 
 def query_bbox(
         bbox,
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain an input bbox
-    geometry. Each BBox instance is a named tuple with all the columns from the
-    bbox table in projpicker.db. Results are sorted by area from the smallest
-    to largest. If projpicker_db is None (default), get_projpicker_db() is
-    used.
+    Return a list of BBox instances in unit that completely contain an input
+    bbox geometry. Each BBox instance is a named tuple with all the columns
+    from the bbox table in projpicker.db. Results are sorted by area from the
+    smallest to largest. If projpicker_db is None (default),
+    get_projpicker_db() is used.
 
     Args:
         bbox (list or str): List of four floats or a parseable str of a bbox
             geometry. See parse_bbox().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1336,17 +1454,18 @@ def query_bbox(
 
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
-        outbbox = query_bbox_using_cursor(projpicker_cur, bbox)
+        outbbox = query_bbox_using_cursor(projpicker_cur, bbox, unit)
     return outbbox
 
 
 def query_bbox_using_bbox(
         prevbbox,
-        bbox):
+        bbox,
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain an
-    input bbox geometry defined by sout, north, west, and east. Each BBox
-    instance is a named tuple with all the columns from the bbox table in
+    Return a subset list of input BBox instances in unit that completely
+    contain an input bbox geometry defined by sout, north, west, and east. Each
+    BBox instance is a named tuple with all the columns from the bbox table in
     projpicker.db. This function is used to perform an intersection operation
     on bbox rows consecutively.
 
@@ -1355,6 +1474,7 @@ def query_bbox_using_bbox(
         bbox (list or str): List of south, north, west, and east floats in
             decimal degrees or a parseable str of south, north, west, and east.
             See parse_bbox().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1364,7 +1484,8 @@ def query_bbox_using_bbox(
     idx = []
 
     for i in range(len(prevbbox)):
-        if is_bbox_within_bbox(bbox, prevbbox[i]):
+        if is_bbox_within_bbox(bbox, prevbbox[i]) and (
+            unit == "any" or prevbbox[i].unit == unit):
             idx.append(i)
     return [prevbbox[i] for i in idx]
 
@@ -1372,9 +1493,10 @@ def query_bbox_using_bbox(
 def query_bboxes(
         bboxes,
         query_op="and",
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain input bbox
+    Return a list of BBox instances in unit that completely contain input bbox
     geometries. Each BBox instance is a named tuple with all the columns from
     the bbox table in projpicker.db. The "and" query operator performs the
     intersection of bbox rows while the "or" operator the union and the "xor"
@@ -1384,6 +1506,7 @@ def query_bboxes(
     Args:
         bboxes (list): List of parseable bbox geometries. See parse_bboxes().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1407,7 +1530,7 @@ def query_bboxes(
         projpicker_cur = projpicker_con.cursor()
         for bbox in bboxes:
             if query_op in ("or", "xor") or first:
-                obbox = query_bbox_using_cursor(projpicker_cur, bbox)
+                obbox = query_bbox_using_cursor(projpicker_cur, bbox, unit)
                 if len(obbox) > 0:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
@@ -1426,7 +1549,7 @@ def query_bboxes(
                         outbbox.extend(obbox)
                 first = False
             else:
-                outbbox = query_bbox_using_bbox(outbbox, bbox)
+                outbbox = query_bbox_using_bbox(outbbox, bbox, unit)
 
     if sort:
         sort_bbox(outbbox)
@@ -1437,17 +1560,19 @@ def query_bboxes(
 def query_bboxes_using_bbox(
         prevbbox,
         bboxes,
-        query_op="and"):
+        query_op="and",
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain input
-    bbox geometres. Each BBox instance is a named tuple with all the columns
-    from the bbox table in projpicker.db. This function is used to perform an
-    intersection operation on bbox rows consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain input bbox geometres. Each BBox instance is a named tuple with all
+    the columns from the bbox table in projpicker.db. This function is used to
+    perform an intersection operation on bbox rows consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         bboxes (list): List of parseable bbox geometries. See parse_bboxes().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1464,7 +1589,8 @@ def query_bboxes_using_bbox(
 
     for bbox in bboxes:
         for i in range(len(prevbbox)):
-            if is_bbox_within_bbox(bbox, prevbbox[i]):
+            if is_bbox_within_bbox(bbox, prevbbox[i]) and (
+                unit == "any" or prevbbox[i].unit == unit):
                 if query_op != "xor" or i not in idx:
                     idx.append(i)
         if query_op == "and":
@@ -1479,18 +1605,21 @@ def query_bboxes_using_bbox(
 def query_geom(
         geom,
         geom_type="point",
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain an input geometry.
-    Each BBox instance is a named tuple with all the columns from the bbox
-    table in projpicker.db. Results are sorted by area from the smallest to
-    largest. If projpicker_db is None (default), get_projpicker_db() is used.
+    Return a list of BBox instances in unit that completely contain an input
+    geometry. Each BBox instance is a named tuple with all the columns from the
+    bbox table in projpicker.db. Results are sorted by area from the smallest
+    to largest. If projpicker_db is None (default), get_projpicker_db() is
+    used.
 
     Args:
         geom (list or str): List or str of a parseable geometry. See
             parse_points(), parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1503,23 +1632,24 @@ def query_geom(
         raise Exception(f"{geom_type}: Invalid geometry type")
 
     if geom_type == "point":
-        outbbox = query_point(geom, projpicker_db)
+        outbbox = query_point(geom, unit, projpicker_db)
     elif geom_type == "poly":
-        outbbox = query_poly(geom, projpicker_db)
+        outbbox = query_poly(geom, unit, projpicker_db)
     else:
-        outbbox = query_bbox(geom, projpicker_db)
+        outbbox = query_bbox(geom, unit, projpicker_db)
     return outbbox
 
 
 def query_geom_using_bbox(
         prevbbox,
         geom,
-        geom_type="point"):
+        geom_type="point",
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain an
-    input geometry. Each BBox instance is a named tuple with all the columns
-    from the bbox table in projpicker.db. This function is used to perform an
-    intersection operation on bbox rows consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain an input geometry. Each BBox instance is a named tuple with all the
+    columns from the bbox table in projpicker.db. This function is used to
+    perform an intersection operation on bbox rows consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
@@ -1527,6 +1657,7 @@ def query_geom_using_bbox(
             parse_points(), parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1538,11 +1669,11 @@ def query_geom_using_bbox(
         raise Exception(f"{geom_type}: Invalid geometry type")
 
     if geom_type == "point":
-        outbbox = query_point_using_bbox(prevbbox, geom)
+        outbbox = query_point_using_bbox(prevbbox, geom, unit)
     elif geom_type == "poly":
-        outbbox = query_poly_using_bbox(prevbbox, geom)
+        outbbox = query_poly_using_bbox(prevbbox, geom, unit)
     else:
-        outbbox = query_bbox_using_bbox(prevbbox, geom)
+        outbbox = query_bbox_using_bbox(prevbbox, geom, unit)
 
     return outbbox
 
@@ -1551,14 +1682,15 @@ def query_geoms(
         geoms,
         geom_type="point",
         query_op="and",
+        unit="any",
         projpicker_db=None):
     """
-    Return a list of BBox instances that completely contain input geometries.
-    Each BBox instance is a named tuple with all the columns from the bbox
-    table in projpicker.db. The "and" query operator performs the intersection
-    of bbox rows while the "or" operator the union and the "xor" operator the
-    exclusive OR. Results are sorted by area from the smallest to largest. If
-    projpicker_db is None (default), get_projpicker_db() is used.
+    Return a list of BBox instances in unit that completely contain input
+    geometries. Each BBox instance is a named tuple with all the columns from
+    the bbox table in projpicker.db. The "and" query operator performs the
+    intersection of bbox rows while the "or" operator the union and the "xor"
+    operator the exclusive OR. Results are sorted by area from the smallest to
+    largest. If projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
         geoms (list): List of parseable geometries. See parse_points(),
@@ -1566,6 +1698,7 @@ def query_geoms(
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1582,11 +1715,11 @@ def query_geoms(
         raise Exception(f"{query_op}: Invalid query operator")
 
     if geom_type == "point":
-        outbbox = query_points(geoms, query_op, projpicker_db)
+        outbbox = query_points(geoms, query_op, unit, projpicker_db)
     elif geom_type == "poly":
-        outbbox = query_polys(geoms, query_op, projpicker_db)
+        outbbox = query_polys(geoms, query_op, unit, projpicker_db)
     else:
-        outbbox = query_bboxes(geoms, query_op, projpicker_db)
+        outbbox = query_bboxes(geoms, query_op, unit, projpicker_db)
     return outbbox
 
 
@@ -1594,12 +1727,13 @@ def query_geoms_using_bbox(
         prevbbox,
         geoms,
         geom_type="point",
-        query_op="and"):
+        query_op="and",
+        unit="any"):
     """
-    Return a subset list of input BBox instances that completely contain input
-    geometries. Each BBox instance is a named tuple with all the columns from
-    the bbox table in projpicker.db. This function is used to perform an
-    intersection operation on bbox rows consecutively.
+    Return a subset list of input BBox instances in unit that completely
+    contain input geometries. Each BBox instance is a named tuple with all the
+    columns from the bbox table in projpicker.db. This function is used to
+    perform an intersection operation on bbox rows consecutively.
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
@@ -1608,6 +1742,7 @@ def query_geoms_using_bbox(
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
         query_op (str): Query operator (and, or, xor). Defaults to "and".
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
         list: List of queried BBox instances sorted by area.
@@ -1619,12 +1754,56 @@ def query_geoms_using_bbox(
         raise Exception(f"{geom_type}: Invalid geometry type")
 
     if geom_type == "point":
-        outbbox = query_points_using_bbox(prevbbox, geom, query_op)
+        outbbox = query_points_using_bbox(prevbbox, geom, query_op, unit)
     elif geom_type == "poly":
-        outbbox = query_polys_using_bbox(prevbbox, geom, query_op)
+        outbbox = query_polys_using_bbox(prevbbox, geom, query_op, unit)
     else:
-        outbbox = query_bboxes_using_bbox(prevbbox, geom, query_op)
+        outbbox = query_bboxes_using_bbox(prevbbox, geom, query_op, unit)
     return outbbox
+
+
+def query_all_using_bbox(
+        prevbbox,
+        unit="any"):
+    """
+    Return a subset list of input BBox instances in unit. Each BBox instance is
+    a named tuple with all the columns from the bbox table in projpicker.db.
+    This function is used to perform an intersection operation on BBox
+    instances consecutively.
+
+    Args:
+        prevbbox (list): List of BBox instances from a previous query.
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
+
+    Returns:
+        list: List of queried BBox instances sorted by area.
+    """
+    idx = []
+    for i in range(len(prevbbox)):
+        if unit == "any" or prevbbox[i].unit == unit:
+            idx.append(i)
+    outbbox = [prevbbox[i] for i in idx]
+    return outbbox
+
+
+def query_all(
+        unit="any",
+        projpicker_db=None):
+    """
+    Return a list of all BBox instances in unit. Each BBox instance is a named
+    tuple with all the columns from the bbox table in projpicker.db. Results
+    are sorted by area. If projpicker_db is None (default), get_projpicker_db()
+    is used.
+
+    Args:
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of all BBox instances sorted by area.
+    """
+    projpicker_db = get_projpicker_db(projpicker_db)
+    return read_bbox_db(projpicker_db, unit)
 
 
 def query_mixed_geoms(
@@ -1669,9 +1848,6 @@ def query_mixed_geoms(
     if len(geoms) == 0:
         return outbbox
 
-    if geoms[0] == "all":
-        return query_all(projpicker_db)
-
     if geoms[0] in ("and", "or", "xor", "postfix"):
         query_op = geoms[0]
         del geoms[0]
@@ -1689,10 +1865,13 @@ def query_mixed_geoms(
 
         first = True
         sort = False
-        bbox_all = None
+        unit = "any"
+        bbox_all = {}
 
         for geom in geoms:
-            if geom in ("point", "poly", "bbox"):
+            if type(geom) == str and geom.startswith("unit="):
+                unit = geom[5:]
+            elif geom in ("point", "poly", "bbox"):
                 geom_type = geom
             elif geom == "latlon":
                 set_latlon()
@@ -1701,10 +1880,10 @@ def query_mixed_geoms(
             elif query_op == "postfix":
                 n = len(bbox_stack)
                 if geom == "not" and n >= 1:
-                    if bbox_all is None:
-                        bbox_all = query_all(projpicker_db)
+                    if unit not in bbox_all:
+                        bbox_all[unit] = query_all(unit, projpicker_db)
                     bbox = bbox_stack.pop()
-                    bbox_stack.append(bbox_not(bbox, bbox_all))
+                    bbox_stack.append(bbox_not(bbox, bbox_all[unit]))
                 elif geom in ("and", "or", "xor") and n >= 2:
                     bbox2 = bbox_stack.pop()
                     bbox1 = bbox_stack.pop()
@@ -1712,14 +1891,28 @@ def query_mixed_geoms(
                 elif geom in ("and", "or", "xor", "not"):
                     raise Exception(f"Not enough operands for {geom}")
                 else:
-                    obbox = query_geom(geom, geom_type, projpicker_db)
+                    if geom == "none":
+                        obbox = []
+                    elif geom == "all":
+                        if unit not in bbox_all:
+                            bbox_all[unit] = query_all(unit, projpicker_db)
+                        obbox = bbox_all[unit]
+                    else:
+                        obbox = query_geom(geom, geom_type, unit, projpicker_db)
                     bbox_stack.append(obbox)
                 if geom in ("or", "xor", "not") and not sort:
                     sort = True
             elif geom in ("and", "or", "xor", "not"):
                 raise Exception(f"{geom}: Not in postfix query")
             elif query_op in ("or", "xor") or first:
-                obbox = query_geom(geom, geom_type, projpicker_db)
+                if geom == "none":
+                    obbox = []
+                elif geom == "all":
+                    if unit not in bbox_all:
+                        bbox_all[unit] = query_all(unit, projpicker_db)
+                    obbox = bbox_all[unit]
+                else:
+                    obbox = query_geom(geom, geom_type, unit, projpicker_db)
                 if len(obbox) > 0:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
@@ -1737,8 +1930,14 @@ def query_mixed_geoms(
                     else:
                         outbbox.extend(obbox)
                 first = False
+            elif geom == "none":
+                outbbox.clear()
+            elif geom == "all":
+                if unit not in bbox_all:
+                    bbox_all[unit] = query_all(unit, projpicker_db)
+                outbbox = bbox_all[unit]
             else:
-                outbbox = query_geom_using_bbox(outbbox, geom, geom_type)
+                outbbox = query_geom_using_bbox(outbbox, geom, geom_type, unit)
     finally:
         if was_latlon and not is_latlon():
             set_latlon()
@@ -1753,32 +1952,6 @@ def query_mixed_geoms(
     if sort:
         sort_bbox(outbbox)
 
-    return outbbox
-
-
-def query_all(projpicker_db=None):
-    """
-    Return a list of all BBox instances. Each BBox instance is a named tuple
-    with all the columns from the bbox table in projpicker.db. Results are not
-    sorted by area because no specific geometries are queried. If projpicker_db
-    is None (default), get_projpicker_db() is used.
-
-    Args:
-        projpicker_db (str): projpicker.db path. Defaults to None.
-
-    Returns:
-        list: List of all BBox instances in an unsorted manner straight from
-        the projpicker.db bbox table.
-    """
-    projpicker_db = get_projpicker_db(projpicker_db)
-
-    outbbox = []
-    with sqlite3.connect(projpicker_db) as projpicker_con:
-        projpicker_cur = projpicker_con.cursor()
-        sql = "SELECT * FROM bbox"
-        projpicker_cur.execute(sql)
-        for row in map(BBox._make, projpicker_cur.fetchall()):
-            outbbox.append(row)
     return outbbox
 
 
@@ -1890,21 +2063,22 @@ def projpicker(
     latitude-longitude and x-y coordinate systems, respectively. This function
     ignores the current coordinate system set by set_coordinate_system(),
     set_latlon(), or set_xy(), and always starts in the latitude-longitude
-    coordinate system by default. The "plain", "json", and "pretty" formats are
-    supported. No header and separator options only apply to the plain output
-    format. The overwrite option applies to both projpicker.db and the output
-    file, but the append option only appends to the output file. Only one of
-    the overwrite or append options must be given. For selecting a subset of
-    queried BBox instances, a GUI can be launched by setting gui to True.
-    Results are sorted by area from the smallest to largest. If projpicker_db
-    or proj_db is None (default), get_projpicker_db() or get_proj_db() is used,
-    respectively.
+    coordinate system by default. The "plain", "json", "pretty", "sqlite"
+    formats are supported. No header and separator options only apply to the
+    plain output format. The overwrite option applies to both projpicker.db and
+    the output file, but the append option only appends to the output file.
+    Only one of the overwrite or append options must be given. For selecting a
+    subset of queried BBox instances, a GUI can be launched by setting gui to
+    True. Results are sorted by area from the smallest to largest. If
+    projpicker_db or proj_db is None (default), get_projpicker_db() or
+    get_proj_db() is used, respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
         outfile (str): Output file. Defaults to "-" for sys.stdout.
-        fmt (str): Output format (plain, json, pretty). Defaults to "plain".
+        fmt (str): Output format (plain, json, pretty, sqlite). Defaults to
+            "plain".
         no_header (bool): Whether or not to print header for plain. Defaults to
             False.
         separator (str): Column separator for plain. Defaults to "|".
@@ -1924,8 +2098,8 @@ def projpicker(
     Raises:
         Exception: If both overwrite and append are True, either projpicker_db
             or outfile already exists when overwrite is False, proj_db does not
-            exist when create is True, or projpicker_db does not exist when
-            create is False.
+            exist when create is True, projpicker_db does not exist when
+            create is False, or sqlite format is written to stdout.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
@@ -1974,17 +2148,30 @@ def projpicker(
                 bbox_dict = json.load(f)
             bbox_dict.extend(dictify_bbox(bbox))
             bbox_json = json.dumps(bbox_dict)
-        else:
+        elif fmt == "pretty":
             with open(outfile) as f:
                 # https://stackoverflow.com/a/65647108
                 lcls = locals()
                 exec("bbox_dict = " + f.read(), globals(), lcls)
                 bbox_dict = lcls["bbox_dict"]
             bbox_dict.extend(dictify_bbox(bbox))
+        else:
+            bbox_merged = read_bbox_db(outfile)
+            for b in bbox:
+                if b not in bbox_merged:
+                    bbox_merged.append(b)
+            sort_bbox(bbox_merged)
+            write_bbox_db(bbox_merged, outfile, True)
+            return
     elif fmt == "json":
         bbox_json = jsonify_bbox(bbox)
     elif fmt == "pretty":
         bbox_dict = dictify_bbox(bbox)
+    elif fmt == "sqlite":
+        if outfile == "-":
+            raise Exception("Cannot write sqlite output to stdout")
+        write_bbox_db(bbox, outfile, True)
+        return
 
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "plain":
@@ -2057,7 +2244,7 @@ def parse():
                 "and exit")
     parser.add_argument(
             "-f", "--format",
-            choices=("plain", "json", "pretty"),
+            choices=("plain", "json", "pretty", "sqlite"),
             default="plain",
             help="output format (default: plain)")
     parser.add_argument(
