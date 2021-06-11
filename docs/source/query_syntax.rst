@@ -35,28 +35,49 @@ ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
 ``point``
 ^^^^^^^^^
 
-``point`` geometries are a two-dimensional list consisting of multiple
-one-dimensional lists of two floats in the ``xy`` or ``latlon`` coordinate
-systems. Since they do not have directionality, crossing the antimedian is not
-checked. For example, if there is one point just to the west of and another
-just to the east of the antimeridian, these two points do not retrict queries
-to the smaller CRSs that can be defined by the shorter distance between the two
-points and pass through the antimerdian.
+``point`` geometries are a two-dimensional list consisting of a ``point`` word,
+optionally, followed by multiple one-dimensional lists of two floats in the
+``xy`` or ``latlon`` coordinate systems. Since they do not have directionality,
+crossing the antimedian is not checked. For example, if there is one point just
+to the west of and another just to the east of the antimeridian, these two
+points do not retrict queries to the smaller CRSs that can be defined by the
+shorter distance between the two points and pass through the antimerdian. This
+is the default geometry type when no geometry types are explicitly specified.
+
+Two examples are:
+.. code-block:: python
+
+    ['point', [1.0, 2.0], 'xy', [3.0, 4.0]]
+    [[1.0, 2.0], 'xy', [3.0, 4.0]] # same as above
 
 ``poly``
 ^^^^^^^^
 
 ``poly`` geometries include polylines and polygons. We do not differentiate
-between these two poly-geometries because their extents are the same as long as
+between these two poly geometries because their extents are the same as long as
 they share the same sequence of points. Unlike ``point`` geometries, they have
 directionality and any line segments cutting the antimeridian can restrict
-queries to the smaller CRSs that bound part of the antimeridian.
+queries to the smaller CRSs that bound part of the antimeridian. They are a
+three-dimensional list starting with a ``poly`` word followed by a number of
+two-dimensional lists that individually define a poly geometry.
+
+This example shows two ``poly`` geometries:
+.. code-block:: python
+
+    ['poly', [[1.0, 2.0], [3.0, 4.0]], 'xy', [[5.0, 6.0], [7.0, 8.0], [9.0, 10.0]]]
 
 ``bbox``
 ^^^^^^^^
 
 ``bbox`` geometries specify bounding box polygons defined by the south, north,
 west, and east coordinates in both ``xy`` and ``latlon`` coordinate systems.
+They are a two-dimensional list starting with a ``bbox`` word followed by a
+number of one-dimensional lists with south, north, west, and east coordinates.
+
+This example shows two ``bbox`` geometries:
+.. code-block:: python
+
+    ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
 
 Supported coordinate formats
 ----------------------------
