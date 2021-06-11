@@ -45,6 +45,7 @@ shorter distance between the two points and pass through the antimerdian. This
 is the default geometry type when no geometry types are explicitly specified.
 
 Two examples are:
+
 .. code-block:: python
 
     ['point', [1.0, 2.0], 'xy', [3.0, 4.0]]
@@ -62,6 +63,7 @@ three-dimensional list starting with a ``poly`` word followed by a number of
 two-dimensional lists that individually define a poly geometry.
 
 This example shows two ``poly`` geometries:
+
 .. code-block:: python
 
     ['poly', [[1.0, 2.0], [3.0, 4.0]], 'xy', [[5.0, 6.0], [7.0, 8.0], [9.0, 10.0]]]
@@ -75,6 +77,7 @@ They are a two-dimensional list starting with a ``bbox`` word followed by a
 number of one-dimensional lists with south, north, west, and east coordinates.
 
 This example shows two ``bbox`` geometries:
+
 .. code-block:: python
 
     ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
