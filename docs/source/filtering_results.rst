@@ -3,6 +3,7 @@ Filtering results
 
 Shell
 -----
+
 .. code-block:: shell
 
     # projected CRSs only
@@ -13,6 +14,7 @@ Shell
 
 Python
 ------
+
 .. code-block:: python
 
     import projpicker as ppik
@@ -27,3 +29,30 @@ Python
     # CRSs in meter only
     bbox_meter = list(filter(lambda x: x.unit=="meter", bbox))
     ppik.print_bbox(bbox_meter)
+
+GUI
+---
+
+.. image:: https://user-images.githubusercontent.com/7456117/121037195-422cbe00-c77d-11eb-9744-9a54f2d08964.png
+   :align: center
+   :alt: GUI for selecting a subset of queried results
+
+Shell
+^^^^^
+
+.. code-block:: shell
+
+    # projected CRSs only
+    projpicker -g 34.2348,-83.8677 33.7490,-84.3880
+
+Python
+^^^^^^
+
+.. code-block:: python
+
+    import projpicker as ppik
+
+    bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
+
+    # start GUI
+    bbox = ppik.gui.select_bbox(bbox)

@@ -13,7 +13,7 @@ as latitudes and longitudes.
 
 .. figure:: https://user-images.githubusercontent.com/7456117/120870997-7da26f00-c568-11eb-9630-785b0bfaf535.png
    :align: center
-   :alt: shapefile location with missing projection metadata
+   :alt: Shapefile location with missing projection metadata
 
    The Shapefiles location with its projection data removed
 
@@ -69,4 +69,4 @@ Georgia West". EPSG:26767 is actually the correct CRS:
 
 .. image:: https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png
    :align: center
-   :alt: correct crs
+   :alt: Correct CRS
