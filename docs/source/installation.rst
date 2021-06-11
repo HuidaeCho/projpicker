@@ -58,10 +58,3 @@ pip can be used to install from the source directory with
     git clone https://github.com/HuidaeCho/projpicker.git
     cd projpicker
     pip3 install -e .
-
-ArcGIS Pro Toolbox
-------------------
-
-The ArcGIS Pro toolbox can be isntalled with the batch script.
-
-- :download:`install.bat <../../guis/arcgispro/install.bat>`

@@ -16,6 +16,7 @@ at `the University of North Georgia <https://ung.edu/>`_ (UNG).
    installation
    command_line_options
    query_syntax
+   arcgis_pro_toolbox
 
 .. toctree::
    :caption: Usage examples
