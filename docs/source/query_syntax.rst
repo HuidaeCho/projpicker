@@ -14,75 +14,6 @@ all within simple string representation.
 Complex queries can be quickly created to accomplish goals such as
 :doc:`finding missing projection information <./finding_missing_projection>`.
 
-
-Logical operators
------------------
-
-The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
-for more extensible querying operations. The operators are not CLI options or
-flags, but are instead parsed directly by projpicker. The first word can be
-optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
-be used again in the middle unless the first word is ``postfix``.
-
-.. code-block:: shell
-
-    projpicker and 34.2348,-83.8677 "33.7490  84.3880W"
-
-Postfix logical operations
---------------------------
-
-If the first word is ``postfix``, ProjPicker supports postfix logical
-operations using ``and``, ``or``, ``xor``, and ``not``. Postfix notations may
-not be straightforward to understand and write, but they are simpler to
-implement and do not require parentheses. In a vertically long input, writing
-logical operations without parentheses seems to be a better choice.
-
-For example, the following command queries CRSs that completely contain
-34.2348,-83.8677, but not 0,0:
-
-.. code-block:: shell
-
-    projpicker postfix 34.2348,-83.8677 0,0 not and
-
-This command is useful to filter out global CRSs spatially. In an infix
-notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
-
-Let's take another example. Let ``A``, ``B``, and ``C`` be the coordinates of
-cities A, B, and C, respectively. This command finds CRSs that contain cities A
-or B, but not C (``(A or B) and not C`` in infix).
-
-.. code-block:: shell
-
-    projpicker postfix A B or C not and
-
-Unit specifier
---------------
-
-A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
-queries and further logical operations in that unit.
-
-Special queries
----------------
-
-A ``none`` geometry returns no CRSs. This special query is useful to clear
-results in the middle. This command returns CRSs that only contain X.
-
-.. code-block:: shell
-
-    projpicker postfix A B or C not and none and X or
-
-An ``all`` geometry returns all CRSs in a specified unit. The following command
-performs an all-but operation and returns CRSs not in degree that contain A:
-
-.. code-block:: shell
-
-    projpicker postfix A unit=degree all unit=any not and
-
-Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
-from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
-would yield ``none`` because in the same degree universe, the NOT of all is
-none.
-
 Coordinate systems
 ------------------
 
@@ -95,6 +26,37 @@ For example,
 - Only xy: ``xy bbox 1323252,1374239,396255,434290``
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
+
+Geometry types
+--------------
+
+ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
+
+``point``
+^^^^^^^^^
+
+``point`` geometries are a two-dimensional list consisting of multiple
+one-dimensional lists of two floats in the ``xy`` or ``latlon`` coordinate
+systems. Since they do not have directionality, crossing the antimedian is not
+checked. For example, if there is one point just to the west of and another
+just to the east of the antimeridian, these two points do not retrict queries
+to the smaller CRSs that can be defined by the shorter distance between the two
+points and pass through the antimerdian.
+
+``poly``
+^^^^^^^^
+
+``poly`` geometries include polylines and polygons. We do not differentiate
+between these two poly-geometries because their extents are the same as long as
+they share the same sequence of points. Unlike ``point`` geometries, they have
+directionality and any line segments cutting the antimeridian can restrict
+queries to the smaller CRSs that bound part of the antimeridian.
+
+``bbox``
+^^^^^^^^
+
+``bbox`` geometries specify bounding box polygons defined by the south, north,
+west, and east coordinates in both ``xy`` and ``latlon`` coordinate systems.
 
 Supported coordinate formats
 ----------------------------
@@ -167,7 +129,71 @@ will generate
 
     ['xy', [396255.0, 1374239.0], [396255.0, 1374239.0]]
 
-Geometry types
+Logical operators
+-----------------
+
+The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
+for more extensible querying operations. The operators are not CLI options or
+flags, but are instead parsed directly by projpicker. The first word can be
+optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
+be used again in the middle unless the first word is ``postfix``.
+
+.. code-block:: shell
+
+    projpicker and 34.2348,-83.8677 33.7490,-84.3880
+
+Postfix logical operations
+--------------------------
+
+If the first word is ``postfix``, ProjPicker supports postfix logical
+operations using ``and``, ``or``, ``xor``, and ``not``. Postfix notations may
+not be straightforward to understand and write, but they are simpler to
+implement and do not require parentheses. In a vertically long input, writing
+logical operations without parentheses seems to be a better choice.
+
+For example, the following command queries CRSs that completely contain
+34.2348,-83.8677, but not 0,0:
+
+.. code-block:: shell
+
+    projpicker postfix 34.2348,-83.8677 0,0 not and
+
+This command is useful to filter out global CRSs spatially. In an infix
+notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
+
+Let's take another example. Let ``A``, ``B``, and ``C`` be the coordinates of
+cities A, B, and C, respectively. This command finds CRSs that contain cities A
+or B, but not C. It's equivalent to ``(A or B) and not C`` in an infix
+notation.
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and
+
+Unit specifier
 --------------
 
-ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
+A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
+queries and further logical operations in that unit.
+
+Special queries
+---------------
+
+A ``none`` geometry returns no CRSs. This special query is useful to clear
+results in the middle. This command returns CRSs that only contain X.
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and none and X or
+
+An ``all`` geometry returns all CRSs in a specified unit. The following command
+performs an all-but operation and returns CRSs not in degree that contain A:
+
+.. code-block:: shell
+
+    projpicker postfix A unit=degree all unit=any not and
+
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
+from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
+would yield ``none`` because in the same degree universe, the NOT of all is
+none.
