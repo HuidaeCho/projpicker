@@ -52,7 +52,7 @@ sys.argv = [str(Path(__file__))]
 # Misc Functions
 
 def check_unit(unit):
-    if not unit in PROJPICKER_UNITS:
+    if unit != "any" and not unit in PROJPICKER_UNITS:
         arcpy.AddError(f"Incorrect unit specified. Choose one of {PROJPICKER_UNITS}")
 
 
@@ -126,8 +126,7 @@ class CreateFeatureClass(object):
         feature = parameters[0]
         new_feat = parameters[1]
         unit = parameters[2].valueAsText
-        if unit != 'any':
-            check_unit(unit)
+        check_unit(unit)
 
         # Get path of spatial query feature
         desc = arcpy.Describe(feature)
@@ -235,8 +234,7 @@ class GuessProjection(object):
         feature = parameters[0]
         location = parameters[1]
         unit = parameters[2].valueAsText
-        if unit != 'any':
-            check_unit(unit)
+        check_unit(unit)
 
         # Get path of spatial query feature
         desc = arcpy.Describe(location)
