@@ -230,7 +230,7 @@ Special queries
 ---------------
 
 A ``none`` geometry returns no CRSs. This special query is useful to clear
-results in the middle. This command returns CRSs that only contain X.
+results in the middle. This command returns CRSs that only contain X:
 
 .. code-block:: shell
 
