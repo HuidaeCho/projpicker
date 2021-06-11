@@ -264,9 +264,9 @@ class GuessProjection(object):
         arcpy.AddMessage(f"Querying CRS's within {[b, t, l, r]}")
 
         # Query with guessed location and missing projection feature class
-        crs = ppik.query_mixed_geoms([f'unit={unit}',
-                                      'xy', 'bbox', [ub,ut, ul, ur],
-                                      'latlon', 'bbox', [b, t, l, r]])
+        crs = ppik.query_mixed_geoms([f'unit={unit}', 'bbox',
+                                      'xy', [ub,ut, ul, ur],
+                                      'latlon', [b, t, l, r]])
 
         # Run GUI and return the selected CRS
         sel_crs = ppik.gui.select_bbox(crs, True,
