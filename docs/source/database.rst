@@ -27,7 +27,6 @@ Python
     import projpicker as ppik
     ppik.create_projpicker_db()
 
-
 Schema
 ------
 
