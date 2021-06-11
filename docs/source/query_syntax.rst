@@ -198,7 +198,31 @@ Unit specifier
 --------------
 
 A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
-queries and further logical operations in that unit.
+queries and further logical operations in that unit. Currently, the following units are supported:
+
+- ``meter``
+- ``degree``
+- ``grad``
+- ``US foot``
+- ``foot``
+- ``degree minute second hemisphere``
+- ``Clarke's link``
+- ``Gold Coast foot``
+- ``kilometer``
+- ``Clarke's foot``
+- ``Indian yard``
+- ``British chain (Benoit 1895 B)``
+- ``British yard (Sears 1922)``
+- ``German legal meter``
+- ``British chain (Sears 1922)``
+- ``British foot (Sears 1922)``
+- ``link``
+- ``British chain (Sears 1922 truncated)``
+- ``Clarke's yard``
+- ``Indian yard (1937)``
+- ``50 kilometers``
+- ``150 kilometers``
+- ``British foot (1936)``
 
 Special queries
 ---------------
