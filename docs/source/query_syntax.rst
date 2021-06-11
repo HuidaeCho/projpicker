@@ -55,6 +55,12 @@ or B, but not C (``(A or B) and not C`` in infix).
 
     projpicker postfix A B or C not and
 
+Unit specifier
+--------------
+
+A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
+queries and further logical operations in that unit.
+
 Special queries
 ---------------
 
