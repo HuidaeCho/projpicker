@@ -1,22 +1,27 @@
 Modules
 =======
 
-Common functions & structures
------------------------------
+projpicker
+----------
+.. automodule:: projpicker
+   :members:
 
+common
+------
 .. automodule:: common
    :members:
 
-Query & parsing
------------------
-
-latlon
-^^^^^^
+coor_latlon
+-----------
 .. automodule:: coor_latlon
    :members:
 
-xy
-^^
+coor_xy
+-------
 .. automodule:: coor_xy
    :members:
 
+gui
+---
+.. automodule:: gui
+   :members:

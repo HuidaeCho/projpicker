@@ -1,5 +1,5 @@
-Querying
-========
+Querying CRSs
+=============
 
 Points
 ------
@@ -24,6 +24,7 @@ Shell
 
 Python
 ^^^^^^
+
 .. code-block:: python
 
     import projpicker as ppik
@@ -60,9 +61,9 @@ Shell
     30 40
     EOT
 
-
 Python
 ^^^^^^
+
 .. code-block:: python
 
     import projpicker as ppik
@@ -94,9 +95,9 @@ Shell
 
 Python
 ^^^^^^
+
 .. code-block:: python
 
     import projpicker as ppik
     bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
     ppik.print_bbox(bbox)
-

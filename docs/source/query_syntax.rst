@@ -1,31 +1,28 @@
-ProjPicker query syntax
-=======================
+Query syntax
+=============
 
 ProjPicker uses a custom parser to enable a simple but flexible query interface
-which works with Python, Shell, and stdin.
-The projpicker query string allows the user to
+which works with Python, Shell, and stdin. The projpicker query string allows
+the user to
 
-1. Use logical operations
-2. Use latlon and xy coordinates in conjunction
-3. Switch between various geometry formats
+1. use logical operations,
+2. use latlon and xy coordinates in conjunction, and
+3. switch between various geometry formats
 
 all within simple string representation.
 
-Complex queries can be quickly created to accomplish goals such as :doc:`finding
-missing projection information <./missingproj>`.
+Complex queries can be quickly created to accomplish goals such as
+:doc:`finding missing projection information <./finding_missing_projection>`.
 
 
 Logical operators
 -----------------
 
 The logical operators ``and``/``or`` can be used with projpicker for more
-extensible querying operations.
-The operators are not CLI options or flags, but are instead parsed directly by
-projpicker.
-The first word can be optionally ``and`` or ``or`` to define the query mode.
-It cannot be used again in the middle.
-
-Shell usage
+extensible querying operations. The operators are not CLI options or flags, but
+are instead parsed directly by projpicker. The first word can be optionally
+``and`` or ``or`` to define the query mode. It cannot be used again in the
+middle.
 
 .. code-block:: shell
 
@@ -35,11 +32,11 @@ Shell usage
 LatLon & XY
 -----------
 
-Coordinate types are denoted with ``latlon`` and ``xy`` respectively.
-If no coordinate type is given, it is assumed to be ``latlon``.
-Each type can be use seperatly or in conjunction.
+Coordinate types are denoted with ``latlon`` and ``xy`` respectively. If no
+coordinate type is given, it is assumed to be ``latlon``. Each type can be use
+seperatly or in conjunction.
 
-e.g.
+For example,
 
 - Only xy: ``xy bbox 1323252,1374239,396255,434290``
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
@@ -48,12 +45,13 @@ e.g.
 Geometry types
 --------------
 
-Propjpicker supports ``point``, ``poly``, and ``bbox`` geometry.
+ProjPicker supports ``point``, ``poly``, and ``bbox`` geometry.
 
 
 Coordinate formats
 ------------------
-The parser supports a wide range of point formats as seen below.
+
+The parser supports a wide range of point formats as seen below:
 
 ::
 
@@ -83,10 +81,10 @@ The parser supports a wide range of point formats as seen below.
     34:14:5.28    -83:52:3.72     # without [SNWE]
     34:14.088     -83:52.062      # without seconds and [SNWE]
 
-using ``projpicker -p -i points.txt`` we get all specified points in decimal
-degrees
+Using ``projpicker -p -i points.txt``, we get all specified points in decimal
+degrees:
 
-::
+.. code-block:: python
 
     [[34.2348, -83.8677],
      [34.2348, -83.8677],
@@ -102,4 +100,3 @@ degrees
      [34.2348, -83.8677],
      [34.2348, -83.8677],
      [34.2348, -83.8677]]
-

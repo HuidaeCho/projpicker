@@ -5,4 +5,3 @@ Command line options
    :module: .projpicker
    :func: parse
    :prog: projpicker
-

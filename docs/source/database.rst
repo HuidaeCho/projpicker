@@ -1,32 +1,26 @@
-projpicker.db
-=============
+Database
+========
 
-Requires the PROJ database (e.g., /usr/share/proj/proj.db) only for recreating the provided projpicker.db, if you want, and the following standard modules:
+Requires the PROJ database (e.g., /usr/share/proj/proj.db) only for recreating
+the provided projpicker.db, if you want. To recreate projpicker.db, the pyproj
+module is required.
 
-- collections
-- argparse
-- os
-- sys
-- sqlite3
-- re
-- math
-- json
-- pprint
+Creating projpicker.db
+----------------------
 
-To recreate projpicker.db, the pyproj module is required.
+This step is optional because projpicker.db generated from pyproj 3.1.0 is
+shipped with the module by default. Run this step only when you want to
+recreate this database from your version of PROJ.
 
-Creating the database
----------------------
-
-This step is optional because projpicker.db generated from pyproj 3.1.0 is shipped with the module by default. Run this step only when you want to recreate this database from your version of PROJ.
-
-From the shell,
+Shell
+^^^^^
 
 .. code-block:: shell
 
     projpicker -c
 
-From Python,
+Python
+^^^^^^
 
 .. code-block:: python
 
