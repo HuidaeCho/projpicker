@@ -901,7 +901,7 @@ def parse_mixed_geoms(geoms):
                 ogeoms = parse_geoms(geoms[i:j], geom_type)
                 i = j
                 if len(ogeoms) > 0 and None not in ogeoms:
-                        outgeoms.extend(ogeoms)
+                    outgeoms.extend(ogeoms)
                 continue
             if type(geom) == str:
                 outgeoms.append(geom)
