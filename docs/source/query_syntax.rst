@@ -98,4 +98,4 @@ degrees:
 Geometry types
 --------------
 
-ProjPicker supports ``point``, ``poly``, and ``bbox`` geometry.
+ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
