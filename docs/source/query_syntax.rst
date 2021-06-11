@@ -29,10 +29,10 @@ middle.
     projpicker and 34.2348,-83.8677 "33.7490  84.3880W"
 
 
-Latlon and xy coordinate systems
---------------------------------
+Coordinate systems
+------------------
 
-Coordinate types are denoted with ``latlon`` and ``xy`` respectively. If no
+Coordinate systems are denoted with ``latlon`` and ``xy`` respectively. If no
 coordinate type is given, it is assumed to be ``latlon``. Each type can be use
 seperatly or in conjunction.
 
