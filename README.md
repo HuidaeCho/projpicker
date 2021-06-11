@@ -33,13 +33,11 @@ and not under active development.
 ## TODO
 
 1. GUI
-   * ArcGIS Pro Toolbox for ArcGIS users including IESA students? Will be
-     easier to implement because ArcGIS Pro provides nice pencil tools and
-     mapping functionalities. We'll be able to see almost immediate returns.
+   * ArcGIS Pro Toolbox for ArcGIS users including IESA students
    * Web (client-only)
    * Desktop
 2. CRS hints
-   * Crowdsourcing agency and product information?
+   * Crowdsourcing agency and product information? Is usage from PROJ enough?
 
 ## Versioning
 
