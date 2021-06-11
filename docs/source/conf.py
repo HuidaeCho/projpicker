@@ -12,23 +12,24 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../projpicker'))
+sys.path.insert(0, os.path.abspath("../../projpicker"))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'ProjPicker'
-copyright = '2021, Huidae Cho, Owen Smith'
-author = 'Huidae Cho, Owen Smith'
+project = "ProjPicker"
+copyright = "2021 Huidae Cho and Owen Smith"
+author = "Huidae Cho, Owen Smith"
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.4.dev1'
+with open("../../projpicker/VERSION") as f:
+    release = f.read().strip()
 
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
         "sphinx.ext.napoleon",
@@ -37,7 +38,7 @@ extensions = [
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -61,5 +62,5 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+#html_static_path = ["_static"]
 html_static_path = []
