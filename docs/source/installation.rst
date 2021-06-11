@@ -18,19 +18,16 @@ If installed with pip, ProjPicker uses the following standard modules:
 - `tkinter <https://docs.python.org/3/library/tkinter.html>`_
 - `textwrap <https://docs.python.org/3/library/textwrap.html>`_
 
-The projpicker sqlite databse (``projpicker.db``) will come packaged when
-installed with pip. However, if any problems should arise and the
-``projpicker.db`` should need to be recreated the additional dependency of
-`pyproj 3.1.0 <https://pypi.org/project/pyproj/3.1.0/>`_ will be needed. For
-more information about ``projpicker.db`` see :doc:`here <./database>`.
+The projpicker sqlite databse (``projpicker.db``) will come packaged when installed with pip.
+However, if any problems should arise and the ``projpicker.db`` should need to be recreated the additional dependency of `pyproj 3.1.0 <https://pypi.org/project/pyproj/3.1.0/>`_ will be needed.
+For more information about ``projpicker.db`` see :doc:`here <./database>`.
 
 Using pip
 ---------
 
 `Python package <https://pypi.org/project/projpicker/>`_
 
-Installation with pip is the recommended way to install both the CLI appliction
-and the python module.
+Installation with pip is the recommended way to install both the CLI appliction and the python module.
 
 .. code-block:: shell
 
@@ -48,10 +45,9 @@ and the python module.
 From source
 -----------
 
-The current development version of ProjPicker can be downloaded and installed
-from source `here <https://github.com/HuidaeCho/projpicker>`_.
+The current development version of ProjPicker can be downloaded and installed from source `here <https://github.com/HuidaeCho/projpicker>`_.
 
-pip can be used to install from the source directory with
+pip can be used to install from the source directory with:
 
 .. code-block:: shell
 

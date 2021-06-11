@@ -40,9 +40,8 @@ GUI
 Shell
 ^^^^^
 
-The ``-g`` (``--gui``) option launches a tkinter-based GUI for selecting a
-subset of queried results. Geometries and other options still need to be passed
-from the command line:
+The ``-g`` (``--gui``) option launches a tkinter-based GUI for selecting a subset of queried results.
+Geometries and other options still need to be passed from the command line:
 
 .. code-block:: shell
 

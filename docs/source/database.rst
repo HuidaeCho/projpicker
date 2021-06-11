@@ -1,17 +1,14 @@
 Database
 ========
 
-Requires the PROJ database (e.g., /usr/share/proj/proj.db) only for recreating
-the provided projpicker.db, if you want. To recreate projpicker.db, the pyproj
-module is required.
+Requires the PROJ database (e.g., /usr/share/proj/proj.db) only for recreating the provided projpicker.db, if you want.
+To recreate projpicker.db, the pyproj module is required.
 
 Creating projpicker.db
 ----------------------
 
-This step is optional because projpicker.db generated from `pyproj 3.1.0
-<https://pypi.org/project/pyproj/3.1.0/>`_ is shipped with the module by
-default. Run this step only when you want to recreate this database from your
-version of PROJ.
+This step is optional because projpicker.db generated from `pyproj 3.1.0 <https://pypi.org/project/pyproj/3.1.0/>`_ is shipped with the module by default.
+Run this step only when you want to recreate this database from your version of PROJ.
 
 Shell
 ^^^^^

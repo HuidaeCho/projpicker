@@ -1,9 +1,8 @@
 Query syntax
 =============
 
-ProjPicker uses a custom parser to enable a simple but flexible query interface
-which works with Python, Shell, and stdin. The ProjPicker query string allows
-the user to
+ProjPicker uses a custom parser to enable a simple but flexible query interface which works with Python, Shell, and stdin.
+The ProjPicker query string allows the user to
 
 1. use logical operations,
 2. use latlon and xy coordinates in conjunction, and
@@ -11,15 +10,14 @@ the user to
 
 all within simple string representation.
 
-Complex queries can be quickly created to accomplish goals such as
-:doc:`finding missing projection information <./finding_missing_projection>`.
+Complex queries can be quickly created to accomplish goals such as :doc:`finding missing projection information <./finding_missing_projection>`.
 
 Coordinate systems
 ------------------
 
-Coordinate systems are denoted with ``latlon`` and ``xy`` respectively. If no
-coordinate type is given, it is assumed to be ``latlon``. Each type can be use
-seperatly or in conjunction.
+Coordinate systems are denoted with ``latlon`` and ``xy`` respectively.
+If no coordinate type is given, it is assumed to be ``latlon``.
+Each type can be use seperatly or in conjunction.
 
 For example,
 
@@ -30,8 +28,8 @@ For example,
 Unit specifier
 --------------
 
-A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
-queries and further logical operations in that unit. Currently, the following units are supported:
+A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts queries and further logical operations in that unit.
+Currently, the following units are supported:
 
 - ``degree``
 - ``degree minute second hemisphere``
@@ -67,14 +65,10 @@ ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
 ``point``
 ^^^^^^^^^
 
-``point`` geometries are a two-dimensional list consisting of a ``point`` word,
-optionally, followed by multiple one-dimensional lists of two floats in the
-``xy`` or ``latlon`` coordinate systems. Since they do not have directionality,
-crossing the antimedian is not checked. For example, if there is one point just
-to the west of and another just to the east of the antimeridian, these two
-points do not retrict queries to the smaller CRSs that can be defined by the
-shorter distance between the two points and pass through the antimerdian. This
-is the default geometry type when no geometry types are explicitly specified.
+``point`` geometries are a two-dimensional list consisting of a ``point`` word, optionally, followed by multiple one-dimensional lists of two floats in the ``xy`` or ``latlon`` coordinate systems.
+Since they do not have directionality, crossing the antimedian is not checked.
+For example, if there is one point just to the west of and another just to the east of the antimeridian, these two points do not retrict queries to the smaller CRSs that can be defined by the shorter distance between the two points and pass through the antimerdian.
+This is the default geometry type when no geometry types are explicitly specified.
 
 Two examples are:
 
@@ -86,13 +80,10 @@ Two examples are:
 ``poly``
 ^^^^^^^^
 
-``poly`` geometries include polylines and polygons. We do not differentiate
-between these two poly geometries because their extents are the same as long as
-they share the same sequence of points. Unlike ``point`` geometries, they have
-directionality and any line segments cutting the antimeridian can restrict
-queries to the smaller CRSs that bound part of the antimeridian. They are a
-three-dimensional list starting with a ``poly`` word followed by a number of
-two-dimensional lists that individually define a poly geometry.
+``poly`` geometries include polylines and polygons.
+We do not differentiate between these two poly geometries because their extents are the same as long as they share the same sequence of points.
+Unlike ``point`` geometries, they have directionality and any line segments cutting the antimeridian can restrict queries to the smaller CRSs that bound part of the antimeridian.
+They are a three-dimensional list starting with a ``poly`` word followed by a number of two-dimensional lists that individually define a poly geometry.
 
 This example shows two ``poly`` geometries:
 
@@ -103,10 +94,8 @@ This example shows two ``poly`` geometries:
 ``bbox``
 ^^^^^^^^
 
-``bbox`` geometries specify bounding box polygons defined by the south, north,
-west, and east coordinates in both ``xy`` and ``latlon`` coordinate systems.
-They are a two-dimensional list starting with a ``bbox`` word followed by a
-number of one-dimensional lists with south, north, west, and east coordinates.
+``bbox`` geometries specify bounding box polygons defined by the south, north, west, and east coordinates in both ``xy`` and ``latlon`` coordinate systems.
+They are a two-dimensional list starting with a ``bbox`` word followed by a number of one-dimensional lists with south, north, west, and east coordinates.
 
 This example shows two ``bbox`` geometries:
 
@@ -117,8 +106,9 @@ This example shows two ``bbox`` geometries:
 ``none``
 ^^^^^^^^
 
-A ``none`` geometry returns no CRSs. This special query is useful to clear
-results in the middle. This command returns CRSs that only contain X:
+A ``none`` geometry returns no CRSs.
+This special query is useful to clear results in the middle.
+This command returns CRSs that only contain X:
 
 .. code-block:: shell
 
@@ -127,23 +117,20 @@ results in the middle. This command returns CRSs that only contain X:
 ``all``
 ^^^^^^^
 
-An ``all`` geometry returns all CRSs in a specified unit. The following command
-performs an all-but operation and returns CRSs not in degree that contain A:
+An ``all`` geometry returns all CRSs in a specified unit.
+The following command performs an all-but operation and returns CRSs not in degree that contain A:
 
 .. code-block:: shell
 
     projpicker postfix A unit=degree all unit=any not and
 
-Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
-from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
-would yield ``none`` because in the same degree universe, the NOT of all is
-none.
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs from any-unit CRSs, not from the same degree CRSs.
+``unit=degree all not`` would yield ``none`` because in the same degree universe, the NOT of all is none.
 
 Supported coordinate formats
 ----------------------------
 
-The parser supports a wide range of ``latlon`` coordinate formats as seen
-below in ``points.txt``:
+The parser supports a wide range of ``latlon`` coordinate formats as seen below in ``points.txt``:
 
 ::
 
@@ -173,8 +160,7 @@ below in ``points.txt``:
     34:14:5.28    -83:52:3.72     # without [SNWE]
     34:14.088     -83:52.062      # without seconds and [SNWE]
 
-Using ``projpicker -p -i points.txt``, we get all specified points in decimal
-degrees:
+Using ``projpicker -p -i points.txt``, we get all specified points in decimal degrees:
 
 .. code-block:: python
 
@@ -193,8 +179,7 @@ degrees:
      [34.2348, -83.8677],
      [34.2348, -83.8677]]
 
-For the ``xy`` coordinate system, x and y in floats separated by a comma or
-whitespaces are supported.
+For the ``xy`` coordinate system, x and y in floats separated by a comma or whitespaces are supported.
 
 For example, this input
 
@@ -213,11 +198,10 @@ will generate
 Logical operators
 -----------------
 
-The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
-for more extensible querying operations. The operators are not CLI options or
-flags, but are instead parsed directly by ProjPicker. The first word can be
-optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
-be used again in the middle unless the first word is ``postfix``.
+The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker for more extensible querying operations.
+The operators are not CLI options or flags, but are instead parsed directly by ProjPicker.
+The first word can be optionally ``and``, ``or``, or ``xor`` to define the query operator.
+It cannot be used again in the middle unless the first word is ``postfix``.
 
 .. code-block:: shell
 
@@ -226,26 +210,23 @@ be used again in the middle unless the first word is ``postfix``.
 Postfix logical operations
 --------------------------
 
-If the first word is ``postfix``, ProjPicker supports postfix logical
-operations using ``and``, ``or``, ``xor``, and ``not``. Postfix notations may
-not be straightforward to understand and write, but they are simpler to
-implement and do not require parentheses. In a vertically long input, writing
-logical operations without parentheses seems to be a better choice.
+If the first word is ``postfix``, ProjPicker supports postfix logical operations using ``and``, ``or``, ``xor``, and ``not``.
+Postfix notations may not be straightforward to understand and write, but they are simpler to implement and do not require parentheses.
+In a vertically long input, writing logical operations without parentheses seems to be a better choice.
 
-For example, the following command queries CRSs that completely contain
-34.2348,-83.8677, but not 0,0:
+For example, the following command queries CRSs that completely contain 34.2348,-83.8677, but not 0,0:
 
 .. code-block:: shell
 
     projpicker postfix 34.2348,-83.8677 0,0 not and
 
-This command is useful to filter out global CRSs spatially. In an infix
-notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
+This command is useful to filter out global CRSs spatially.
+In an infix notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
 
-Let's take another example. Let ``A``, ``B``, and ``C`` be the coordinates of
-cities A, B, and C, respectively. This command finds CRSs that contain cities A
-or B, but not C. It's equivalent to ``(A or B) and not C`` in an infix
-notation.
+Let's take another example.
+Let ``A``, ``B``, and ``C`` be the coordinates of cities A, B, and C, respectively.
+This command finds CRSs that contain cities A or B, but not C.
+It's equivalent to ``(A or B) and not C`` in an infix notation.
 
 .. code-block:: shell
 
