@@ -18,16 +18,39 @@ Complex queries can be quickly created to accomplish goals such as
 Logical operators
 -----------------
 
-The logical operators ``and``/``or`` can be used with projpicker for more
-extensible querying operations. The operators are not CLI options or flags, but
-are instead parsed directly by projpicker. The first word can be optionally
-``and`` or ``or`` to define the query mode. It cannot be used again in the
-middle.
+The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
+for more extensible querying operations. The operators are not CLI options or
+flags, but are instead parsed directly by projpicker. The first word can be
+optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
+be used again in the middle unless the first word is ``postfix``.
 
 .. code-block:: shell
 
     projpicker and 34.2348,-83.8677 "33.7490  84.3880W"
 
+Postfix logical operations
+--------------------------
+
+If the first word is ``postfix``, ProjPicker supports postfix logical
+operations using ``and``, ``or``, ``xor``, and ``not``. For example, the
+following command queries CRSs that completely contain 34.2348,-83.8677, but do
+not intersect with 0,0, which is useful to find local CRSs only.
+
+.. code-block:: shell
+
+    projpicker postfix 34.2348,-83.8677 0,0 not and
+
+In an infix notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
+Postfix notations may not be straightforward to understand and write, but they
+are simpler to implement and do not require parentheses. In a vertically long
+input, writing logical operations without parentheses seems to be a better
+choice. Let's say ``A``, ``B``, and ``C`` are the coordinates of cities A, B,
+and C, respectively. This command finds CRSs that contain cities A or B, but
+not C (``(A or B) and not C`` in infix).
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and
 
 Coordinate systems
 ------------------
