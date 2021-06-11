@@ -18,16 +18,70 @@ Complex queries can be quickly created to accomplish goals such as
 Logical operators
 -----------------
 
-The logical operators ``and``/``or`` can be used with projpicker for more
-extensible querying operations. The operators are not CLI options or flags, but
-are instead parsed directly by projpicker. The first word can be optionally
-``and`` or ``or`` to define the query mode. It cannot be used again in the
-middle.
+The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker
+for more extensible querying operations. The operators are not CLI options or
+flags, but are instead parsed directly by projpicker. The first word can be
+optionally ``and``, ``or``, or ``xor`` to define the query operator. It cannot
+be used again in the middle unless the first word is ``postfix``.
 
 .. code-block:: shell
 
     projpicker and 34.2348,-83.8677 "33.7490  84.3880W"
 
+Postfix logical operations
+--------------------------
+
+If the first word is ``postfix``, ProjPicker supports postfix logical
+operations using ``and``, ``or``, ``xor``, and ``not``. Postfix notations may
+not be straightforward to understand and write, but they are simpler to
+implement and do not require parentheses. In a vertically long input, writing
+logical operations without parentheses seems to be a better choice.
+
+For example, the following command queries CRSs that completely contain
+34.2348,-83.8677, but not 0,0:
+
+.. code-block:: shell
+
+    projpicker postfix 34.2348,-83.8677 0,0 not and
+
+This command is useful to filter out global CRSs spatially. In an infix
+notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
+
+Let's take another example. Let ``A``, ``B``, and ``C`` be the coordinates of
+cities A, B, and C, respectively. This command finds CRSs that contain cities A
+or B, but not C (``(A or B) and not C`` in infix).
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and
+
+Unit specifier
+--------------
+
+A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
+queries and further logical operations in that unit.
+
+Special queries
+---------------
+
+A ``none`` geometry returns no CRSs. This special query is useful to clear
+results in the middle. This command returns CRSs that only contain X.
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and none and X or
+
+An ``all`` geometry returns all CRSs in a specified unit. The following command
+performs an all-but operation and returns CRSs not in degree that contain A:
+
+.. code-block:: shell
+
+    projpicker postfix A unit=degree all unit=any not and
+
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
+from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
+would yield ``none`` because in the same degree universe, the NOT of all is
+none.
 
 Coordinate systems
 ------------------
