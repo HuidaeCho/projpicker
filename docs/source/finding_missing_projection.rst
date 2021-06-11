@@ -30,9 +30,9 @@ extent of the Shapefile from the layer properties
 
 As can be seen in the screenshot, the spatial reference is unknown. Let's use ProjPicker to guess it.
 
-We can construct the ProjPicker query string ``xy bbox
-1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W`` and use it as
-so.
+We can construct the ProjPicker query string
+``xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
+and use it as so.
 
 Shell
 -----
