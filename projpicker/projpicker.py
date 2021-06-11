@@ -873,6 +873,7 @@ def parse_mixed_geoms(geoms):
         outgeoms.append(geoms[0])
         if geoms[0] == "all":
             return outgeoms
+        del geoms[0]
 
     geom_types = ("point", "poly", "bbox")
     coor_sys = ("latlon", "xy")
