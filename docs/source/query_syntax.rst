@@ -27,6 +27,38 @@ For example,
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
 
+Unit specifier
+--------------
+
+A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
+queries and further logical operations in that unit. Currently, the following units are supported:
+
+- ``degree``
+- ``degree minute second hemisphere``
+- ``grad``
+- ``meter``
+- ``kilometer``
+- ``50 kilometers``
+- ``150 kilometers``
+- ``link``
+- ``foot``
+- ``US foot``
+- ``British foot (1936)``
+- ``British foot (Sears 1922)``
+- ``British yard (Sears 1922)``
+- ``British chain (Benoit 1895 B)``
+- ``British chain (Sears 1922 truncated)``
+- ``British chain (Sears 1922)``
+- ``Clarke's link``
+- ``Clarke's foot``
+- ``Clarke's yard``
+- ``German legal meter``
+- ``Gold Coast foot``
+- ``Indian yard (1937)``
+- ``Indian yard``
+
+Commonly used units are ``degree``, ``meter``, and ``US foot``.
+
 Geometry types
 --------------
 
@@ -81,6 +113,31 @@ This example shows two ``bbox`` geometries:
 .. code-block:: python
 
     ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
+
+``none``
+^^^^^^^^
+
+A ``none`` geometry returns no CRSs. This special query is useful to clear
+results in the middle. This command returns CRSs that only contain X:
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and none and X or
+
+``all``
+^^^^^^^
+
+An ``all`` geometry returns all CRSs in a specified unit. The following command
+performs an all-but operation and returns CRSs not in degree that contain A:
+
+.. code-block:: shell
+
+    projpicker postfix A unit=degree all unit=any not and
+
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
+from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
+would yield ``none`` because in the same degree universe, the NOT of all is
+none.
 
 Supported coordinate formats
 ----------------------------
@@ -193,57 +250,3 @@ notation.
 .. code-block:: shell
 
     projpicker postfix A B or C not and
-
-Unit specifier
---------------
-
-A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts
-queries and further logical operations in that unit. Currently, the following units are supported:
-
-- ``degree``
-- ``degree minute second hemisphere``
-- ``grad``
-- ``meter``
-- ``kilometer``
-- ``50 kilometers``
-- ``150 kilometers``
-- ``link``
-- ``foot``
-- ``US foot``
-- ``British foot (1936)``
-- ``British foot (Sears 1922)``
-- ``British yard (Sears 1922)``
-- ``British chain (Benoit 1895 B)``
-- ``British chain (Sears 1922 truncated)``
-- ``British chain (Sears 1922)``
-- ``Clarke's link``
-- ``Clarke's foot``
-- ``Clarke's yard``
-- ``German legal meter``
-- ``Gold Coast foot``
-- ``Indian yard (1937)``
-- ``Indian yard``
-
-Commonly used units are ``degree``, ``meter``, and ``US foot``.
-
-Special queries
----------------
-
-A ``none`` geometry returns no CRSs. This special query is useful to clear
-results in the middle. This command returns CRSs that only contain X:
-
-.. code-block:: shell
-
-    projpicker postfix A B or C not and none and X or
-
-An ``all`` geometry returns all CRSs in a specified unit. The following command
-performs an all-but operation and returns CRSs not in degree that contain A:
-
-.. code-block:: shell
-
-    projpicker postfix A unit=degree all unit=any not and
-
-Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs
-from any-unit CRSs, not from the same degree CRSs. ``unit=degree all not``
-would yield ``none`` because in the same degree universe, the NOT of all is
-none.
