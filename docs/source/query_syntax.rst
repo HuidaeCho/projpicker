@@ -99,15 +99,19 @@ degrees:
 For the ``xy`` coordinate system, x and y in floats separated by a comma or
 whitespaces are supported.
 
+For example, this input
+
 ::
 
-   396255,1374239
-   396255 1374239
+    xy
+    396255,1374239
+    396255 1374239
+
+will generate
 
 .. code-block:: python
 
-   [[1374239.0, 396255.0],
-    [1374239.0, 396255.0]]
+    ['xy', [396255.0, 1374239.0], [396255.0, 1374239.0]]
 
 Geometry types
 --------------

@@ -25,3 +25,8 @@
 34:14:5.28N	83:52:3.72W	# full using :
 34:14:5.28	-83:52:3.72	# without [SNWE]
 34:14.088	-83:52.062	# without seconds and [SNWE]
+
+# xy coordinate systems
+xy
+396255,1374239
+396255 1374239

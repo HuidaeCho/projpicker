@@ -1258,6 +1258,8 @@ def query_bboxes(
     outbbox = []
 
     first = True
+    sort = False
+
     with sqlite3.connect(projpicker_db) as projpicker_con:
         projpicker_cur = projpicker_con.cursor()
         for bbox in bboxes:
