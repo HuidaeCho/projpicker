@@ -4,7 +4,7 @@ ArcGIS Pro Toolbox
 Installation
 -------------
 
-The ArcGIS Pro toolbox can be isntalled with the batch script.
+The ArcGIS Pro toolbox can be installed with the batch script.
 
 - :download:`install.bat <../../guis/arcgispro/install.bat>`
 
