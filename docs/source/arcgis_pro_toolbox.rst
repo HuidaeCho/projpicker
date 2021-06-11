@@ -10,7 +10,7 @@ Installation
 Installation script: `install.bat <https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/install.bat>`_
 
 The ArcGIS Pro toolbox can be installed with the batch script.
-The installation script provides a GUI interface which allows the user to install the toolbox and the required python module in a given folder.
+The installation script provides a GUI interface which allows the user to install the toolbox and the required Python module in a given folder.
 The link to the install script will direct you to the raw file.
 Right click on the page when there and click save as to save a local copy of the script.
 
