@@ -126,8 +126,7 @@ class CreateFeatureClass(object):
         feature = parameters[0]
         new_feat = parameters[1]
         unit = parameters[2].valueAsText
-        arcpy.AddMessage(unit)
-        if not unit == 'any':
+        if unit != 'any':
             check_unit(unit)
 
         # Get path of spatial query feature
