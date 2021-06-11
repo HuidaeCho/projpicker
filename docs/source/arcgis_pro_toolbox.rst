@@ -1,4 +1,4 @@
-ArcGIS Pro Toolbox
+ArcGIS Pro toolbox
 ==================
 
 Installation
