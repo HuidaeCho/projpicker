@@ -202,27 +202,29 @@ queries and further logical operations in that unit. Currently, the following un
 
 - ``degree``
 - ``degree minute second hemisphere``
+- ``grad``
 - ``meter``
 - ``kilometer``
 - ``50 kilometers``
 - ``150 kilometers``
+- ``link``
 - ``foot``
 - ``US foot``
-- ``grad``
-- ``link``
-- ``British chain (Benoit 1895 B)``
-- ``British chain (Sears 1922 truncated)``
-- ``British chain (Sears 1922)``
 - ``British foot (1936)``
 - ``British foot (Sears 1922)``
 - ``British yard (Sears 1922)``
-- ``Clarke's foot``
+- ``British chain (Benoit 1895 B)``
+- ``British chain (Sears 1922 truncated)``
+- ``British chain (Sears 1922)``
 - ``Clarke's link``
+- ``Clarke's foot``
 - ``Clarke's yard``
 - ``German legal meter``
 - ``Gold Coast foot``
 - ``Indian yard (1937)``
 - ``Indian yard``
+
+Commonly used units are ``degree``, ``meter``, and ``US foot``.
 
 Special queries
 ---------------
