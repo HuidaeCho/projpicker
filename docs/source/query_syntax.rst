@@ -23,9 +23,9 @@ seperatly or in conjunction.
 
 For example,
 
-- Only xy: ``xy bbox 1323252,1374239,396255,434290``
-- Only latlon: ``latlon point 33.7490°N,84.3880°W``
-- Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
+- Only xy: ``xy 1323252,1374239,396255,434290``
+- Only latlon: ``latlon 33.7490°N,84.3880°W``
+- Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
 Unit specifier
 --------------
