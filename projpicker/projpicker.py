@@ -1808,7 +1808,7 @@ def query_all(
 
 def query_mixed_geoms(
         geoms,
-        unit,
+        unit="any",
         projpicker_db=None):
     """
     Return a list of BBox instances that completely contain mixed input
@@ -1834,6 +1834,7 @@ def query_mixed_geoms(
             "and", "or", "xor", "not", and parseable geometries. The first word
             can be either "all", "and", "or", "xor", or "postfix". See
             parse_points(), parse_polys(), and parse_bboxes().
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
