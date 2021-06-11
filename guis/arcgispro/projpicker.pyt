@@ -16,29 +16,29 @@ import projpicker as ppik
 WGS84 = 4326
 
 PROJPICKER_UNITS = [
-        'meter'
-        'degree',
-        'grad',
-        'US foot',
-        'foot',
-        'degree minute second hemisphere',
-        'Clarkes link',
-        'Gold Coast foot',
-        'kilometer',
-        'Clarkes foot',
-        'Indian yard',
-        'British chain (Benoit 1895 B)',
-        'British yard (Sears 1922)',
-        'German legal meter',
-        'British chain (Sears 1922)',
-        'British foot (Sears 1922)',
-        'link'
-        'British chain (Sears 1922 truncated)',
-        'Clarkes yard',
-        'Indian yard (1937)',
-        '50 kilometers',
-        '150 kilometers',
-        'British foot (1936)',
+        "degree",
+        "meter",
+        "US foot",
+        "degree minute second hemisphere",
+        "grad",
+        "kilometer",
+        "50 kilometers",
+        "150 kilometers",
+        "link",
+        "foot",
+        "British foot (1936)",
+        "British foot (Sears 1922)",
+        "British yard (Sears 1922)",
+        "British chain (Benoit 1895 B)",
+        "British chain (Sears 1922 truncated)",
+        "British chain (Sears 1922)",
+        "Clarke's link",
+        "Clarke's foot",
+        "Clarke's yard",
+        "German legal meter",
+        "Gold Coast foot",
+        "Indian yard (1937)",
+        "Indian yard"
         ]
 
 ################################################################################
@@ -150,7 +150,7 @@ class CreateFeatureClass(object):
         # Run GUI and return the selected CRS
         sel_crs = ppik.gui.select_bbox(crs, True,
                                        lambda b: textwrap.dedent(f"""\
-            CRS Type: {b.proj_table}
+            CRS Type: {b.proj_table.replace("_crs", "").capitalize()}
             CRS Code: {b.crs_auth_name}:{b.crs_code}
             Unit:     {b.unit}
             South:    {b.south_lat}°
@@ -159,10 +159,7 @@ class CreateFeatureClass(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        if len(sel_crs) > 0:
-            sel_crs = sel_crs[0]
-        else:
-            sel_crs = None
+        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
 
         # Get file path of output geometry
         desc = arcpy.Describe(new_feat)
@@ -275,7 +272,7 @@ class GuessProjection(object):
         # Run GUI and return the selected CRS
         sel_crs = ppik.gui.select_bbox(crs, True,
                                        lambda b: textwrap.dedent(f"""\
-            CRS Type: {b.proj_table}
+            CRS Type: {b.proj_table.replace("_crs", "").capitalize()}
             CRS Code: {b.crs_auth_name}:{b.crs_code}
             Unit:     {b.unit}
             South:    {b.south_lat}°
@@ -284,10 +281,7 @@ class GuessProjection(object):
             East:     {b.east_lon}°
             Area:     {b.area_sqkm:n} sqkm"""))
 
-        if len(sel_crs) > 0:
-            sel_crs = sel_crs[0]
-        else:
-            sel_crs = None
+        sel_crs = sel_crs[0] if len(sel_crs) > 0 else None
 
         # Create spatial reference object
         # MUST be integer so IGNF authority codes will not work
