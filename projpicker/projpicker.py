@@ -987,6 +987,7 @@ def parse_mixed_geoms(geoms):
         i = 0
         while i < n:
             geom = geoms[i]
+            typ = type(geom)
             if geom in query_ops:
                 if query_op == "postfix":
                     if geom == "not" and stack_size >= 1:
@@ -1004,14 +1005,14 @@ def parse_mixed_geoms(geoms):
                     set_latlon()
                 else:
                     set_xy()
-            elif geom.startswith("unit="):
+            elif typ == str and geom.startswith("unit="):
                 pass
             elif geom in ("none", "all"):
                 stack_size += 1
             else:
                 j = i
                 while (j < n and geoms[j] not in keywords and
-                       not geoms[j].startswith("unit=")):
+                       not (typ == str and geoms[j].startswith("unit="))):
                     j += 1
                 ogeoms = parse_geoms(geoms[i:j], geom_type)
                 i = j
@@ -1019,7 +1020,7 @@ def parse_mixed_geoms(geoms):
                     stack_size += len(ogeoms)
                     outgeoms.extend(ogeoms)
                 continue
-            if type(geom) == str:
+            if typ == str:
                 outgeoms.append(geom)
             i += 1
 
