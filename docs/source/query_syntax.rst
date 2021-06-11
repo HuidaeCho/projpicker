@@ -202,12 +202,12 @@ queries and further logical operations in that unit. Currently, the following un
 
 - ``degree``
 - ``degree minute second hemisphere``
-- ``foot``
-- ``US foot``
 - ``meter``
 - ``kilometer``
 - ``50 kilometers``
 - ``150 kilometers``
+- ``foot``
+- ``US foot``
 - ``grad``
 - ``link``
 - ``British chain (Benoit 1895 B)``
