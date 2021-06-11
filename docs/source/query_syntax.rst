@@ -42,14 +42,8 @@ For example,
 - Only latlon: ``latlon point 33.7490°N,84.3880°W``
 - Both: ``or xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W``
 
-Geometry types
---------------
-
-ProjPicker supports ``point``, ``poly``, and ``bbox`` geometry.
-
-
-Coordinate formats
-------------------
+Point formats for the latlon coordinate system
+----------------------------------------------
 
 The parser supports a wide range of point formats as seen below:
 
@@ -100,3 +94,8 @@ degrees:
      [34.2348, -83.8677],
      [34.2348, -83.8677],
      [34.2348, -83.8677]]
+
+Geometry types
+--------------
+
+ProjPicker supports ``point``, ``poly``, and ``bbox`` geometry.
