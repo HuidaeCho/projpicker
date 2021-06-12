@@ -2076,7 +2076,8 @@ def projpicker(
     Args:
         geoms (list): Geometries. Defaults to [].
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
-        outfile (str): Output file. Defaults to "-" for sys.stdout.
+        outfile (str): Output file. None for no output file.
+            Defaults to "-" for sys.stdout.
         fmt (str): Output format (plain, json, pretty, sqlite). Defaults to
             "plain".
         no_header (bool): Whether or not to print header for plain. Defaults to
@@ -2101,8 +2102,9 @@ def projpicker(
     Raises:
         Exception: If both overwrite and append are True, either projpicker_db
             or outfile already exists when overwrite is False, proj_db does not
-            exist when create is True, projpicker_db does not exist when
-            create is False, or sqlite format is written to stdout.
+            exist when create is True, projpicker_db does not exist when create
+            is False, output is None or "-" when append is True, or sqlite
+            format is written to stdout.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
@@ -2119,13 +2121,17 @@ def projpicker(
     elif not os.path.exists(projpicker_db):
         raise Exception(f"{projpicker_db}: No such file found")
 
-    if not overwrite and not append and os.path.exists(outfile):
+    if not overwrite and not append and outfile and os.path.exists(outfile):
         raise Exception(f"{outfile}: File already exists")
+
+    if append and (not overwrite or overwrite == "-"):
+        raise Exception("Cannot append output to None or stdout")
 
     if ((create and (infile != "-" or not sys.stdin.isatty())) or
         (not create and (len(geoms) == 0 or infile != "-" or
                          not sys.stdin.isatty()))):
         geoms.extend(read_file(infile))
+
     tidy_lines(geoms)
 
     if print_geoms:
@@ -2139,6 +2145,9 @@ def projpicker(
 
     if start_gui:
         bbox = gui.select_bbox(bbox)
+
+    if not outfile:
+        return bbox
 
     mode = "w"
     header = not no_header
