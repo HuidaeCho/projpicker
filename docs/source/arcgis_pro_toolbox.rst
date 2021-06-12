@@ -72,11 +72,11 @@ Additionally, the user is able to sort by unit and projection type to quickly ma
 Correcting shapefiles with missing projection data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-With the logical operators detailed in the :doc:`query_syntax`, one can guess the projection information of spatial data that is missing for some reason.
-This process can also be seen using the main library API outside of ArcGIS Pro at :doc:`finding_missing_projection`.
+With the logical operators detailed in the :doc:`query syntax <query_syntax>`, one can guess the projection information of spatial data that is missing for some reason.
+This process can also be seen using the main module API outside of ArcGIS Pro in :doc:`this example <finding_missing_projection>`.
 The tool titled ``ProjPicker Guess Projection`` provides this functionality with the tkinter GUI.
 
-Following a similar example as in :doc:`finding_missing_projection`, we create data in and around Atlanta, GA in the NAD 27 / Georgia West (EPSG:26767) projection.
+Following a similar example as in :doc:`finding missing projection <finding_missing_projection>`, we create data in and around Atlanta, GA in the NAD 27 / Georgia West (EPSG:26767) projection.
 The .prj file is then deleted.
 When viewed in its new undefined coordinate system, the data is placed in west Africa where the borders of Benin, Nigeria, and Niger touch.
 
@@ -97,7 +97,7 @@ When viewed in its new undefined coordinate system, the data is placed in west A
    Data with projection information missing
 
 Knowing the data is supposed to be in and around Atlanta, GA, ``ProjPicker Guess Projection`` allows the user to draw either a polygon or point to query the believed "correct" location.
-The tool then constructs the :doc:`query_syntax` to use both current location of the data and the believed location to generate a list of possible CRSs.
+The tool then constructs the :doc:`query syntax <query_syntax>` to use both current location of the data and the believed location to generate a list of possible CRSs.
 Again, this generated list will be sorted to show localized projections first.
 
 .. figure:: https://user-images.githubusercontent.com/55674113/121760900-14d46d00-cafb-11eb-8102-c194c31b71e2.png

@@ -20,7 +20,7 @@ If installed with pip, ProjPicker uses the following standard modules:
 
 The projpicker sqlite databse (``projpicker.db``) will come packaged when installed with pip.
 However, if any problems should arise and the ``projpicker.db`` should need to be recreated the additional dependency of `pyproj 3.1.0 <https://pypi.org/project/pyproj/3.1.0/>`_ will be needed.
-For more information about ``projpicker.db`` see :doc:`here <./database>`.
+For more information about ``projpicker.db`` see :doc:`here <database>`.
 
 Using pip
 ---------
