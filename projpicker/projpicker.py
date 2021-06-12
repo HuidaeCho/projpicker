@@ -2095,6 +2095,9 @@ def projpicker(
         create (bool): Whether or not to create a new projpicker.db. Defaults
             to False.
 
+    Returns:
+        list: List of queried BBox instances sorted by area.
+
     Raises:
         Exception: If both overwrite and append are True, either projpicker_db
             or outfile already exists when overwrite is False, proj_db does not
@@ -2127,10 +2130,10 @@ def projpicker(
 
     if print_geoms:
         pprint.pprint(parse_mixed_geoms(geoms))
-        return
+        return []
 
     if len(geoms) == 0:
-        return
+        return []
 
     bbox = query_mixed_geoms(geoms, projpicker_db)
 
@@ -2162,7 +2165,7 @@ def projpicker(
                     bbox_merged.append(b)
             sort_bbox(bbox_merged)
             write_bbox_db(bbox_merged, outfile, True)
-            return
+            return bbox_merged
     elif fmt == "json":
         bbox_json = jsonify_bbox(bbox)
     elif fmt == "pretty":
@@ -2171,7 +2174,7 @@ def projpicker(
         if outfile == "-":
             raise Exception("Cannot write sqlite output to stdout")
         write_bbox_db(bbox, outfile, True)
-        return
+        return bbox
 
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "plain":
@@ -2187,6 +2190,8 @@ def projpicker(
             pprint.pprint(bbox_dict, f)
     if outfile != "-":
         f.close()
+
+    return bbox
 
 
 ################################################################################
