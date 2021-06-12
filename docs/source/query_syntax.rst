@@ -25,6 +25,74 @@ For example,
 - Only latlon: ``latlon 33.7490°N,84.3880°W``
 - Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
+Coordinate formats
+------------------
+
+The parser supports a wide range of ``latlon`` coordinate formats as seen below in ``points.txt``:
+
+::
+
+    ################################
+    # decimal degrees and separators
+    ################################
+    34.2348,-83.8677   # comma
+    34.2348 -83.8677   # whitespace
+
+    ####################################################
+    # degree, minute, and second symbols
+    # degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
+    # minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
+    # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
+    #         '' (U+0027 U+0027, &apos; &apos;), s
+    ####################################################
+    34.2348°      -83.8677°       # without minutes, seconds, and [SNWE]
+    34°14.088'    -83°52.062'     # without seconds and [SNWE]
+    34°14'5.28"   -83°52'3.72"    # without [SNWE]
+    34.2348°N     83.8677°W       # without minutes and seconds
+    34°14.088'N   83°52.062'W     # without seconds
+    34°14'5.28"N  83°52'3.72"W    # full
+    34°14′5.28″N  83°52′3.72″W    # full using U+2032 and U+2033
+    34o14'5.28''N 83o52'3.72''W   # full using o' and ''
+    34d14m5.28sN  83d52m3.72sW    # full using dms
+    34:14:5.28N   83:52:3.72W     # full using :
+    34:14:5.28    -83:52:3.72     # without [SNWE]
+    34:14.088     -83:52.062      # without seconds and [SNWE]
+
+Using ``projpicker -p -i points.txt``, we get all specified points in decimal degrees:
+
+.. code-block:: python
+
+    [[34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677],
+     [34.2348, -83.8677]]
+
+For the ``xy`` coordinate system, x and y in floats separated by a comma or whitespaces are supported.
+
+For example, this input
+
+::
+
+    xy
+    396255,1374239
+    396255 1374239
+
+will generate
+
+.. code-block:: python
+
+    ['xy', [396255.0, 1374239.0], [396255.0, 1374239.0]]
+
 Units
 -----
 
@@ -102,74 +170,6 @@ This example shows two ``bbox`` geometries:
 .. code-block:: python
 
     ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
-
-Coordinate formats
-------------------
-
-The parser supports a wide range of ``latlon`` coordinate formats as seen below in ``points.txt``:
-
-::
-
-    ################################
-    # decimal degrees and separators
-    ################################
-    34.2348,-83.8677   # comma
-    34.2348 -83.8677   # whitespace
-
-    ####################################################
-    # degree, minute, and second symbols
-    # degree: ° (U+00B0, &deg;, alt+0 in xterm), o, d
-    # minute: ' (U+0027, &apos;), ′ (U+2032, &prime;), m
-    # second: " (U+0022, &quot;), ″ (U+2033, &Prime;),
-    #         '' (U+0027 U+0027, &apos; &apos;), s
-    ####################################################
-    34.2348°      -83.8677°       # without minutes, seconds, and [SNWE]
-    34°14.088'    -83°52.062'     # without seconds and [SNWE]
-    34°14'5.28"   -83°52'3.72"    # without [SNWE]
-    34.2348°N     83.8677°W       # without minutes and seconds
-    34°14.088'N   83°52.062'W     # without seconds
-    34°14'5.28"N  83°52'3.72"W    # full
-    34°14′5.28″N  83°52′3.72″W    # full using U+2032 and U+2033
-    34o14'5.28''N 83o52'3.72''W   # full using o' and ''
-    34d14m5.28sN  83d52m3.72sW    # full using dms
-    34:14:5.28N   83:52:3.72W     # full using :
-    34:14:5.28    -83:52:3.72     # without [SNWE]
-    34:14.088     -83:52.062      # without seconds and [SNWE]
-
-Using ``projpicker -p -i points.txt``, we get all specified points in decimal degrees:
-
-.. code-block:: python
-
-    [[34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677],
-     [34.2348, -83.8677]]
-
-For the ``xy`` coordinate system, x and y in floats separated by a comma or whitespaces are supported.
-
-For example, this input
-
-::
-
-    xy
-    396255,1374239
-    396255 1374239
-
-will generate
-
-.. code-block:: python
-
-    ['xy', [396255.0, 1374239.0], [396255.0, 1374239.0]]
 
 Logical operators
 -----------------
