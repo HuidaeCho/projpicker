@@ -141,18 +141,18 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     crs_listbox.bind("<<ListboxSelect>>", on_select_crs)
     crs_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    # scroll bar for CRS list
-    list_scrollbar = tk.Scrollbar(topleft_frame)
-    list_scrollbar.config(command=crs_listbox.yview)
-    list_scrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
-    crs_listbox.config(yscrollcommand=list_scrollbar.set)
+    # vertical scroll bar for CRS list
+    list_vscrollbar = tk.Scrollbar(topleft_frame)
+    list_vscrollbar.config(command=crs_listbox.yview)
+    list_vscrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
+    crs_listbox.config(yscrollcommand=list_vscrollbar.set)
 
     ################
     # middle-left frame
     middleleft_frame = tk.Frame(left_frame)
     middleleft_frame.pack(fill=tk.BOTH)
 
-    # scroll bar for CRS list
+    # horizontal scroll bar for CRS list
     list_hscrollbar = tk.Scrollbar(middleleft_frame, orient=tk.HORIZONTAL)
     list_hscrollbar.config(command=crs_listbox.xview)
     list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
@@ -202,7 +202,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.pack(fill=tk.BOTH, expand=True)
 
-    # scroll bar for CRS info
+    # horizontal scroll bar for CRS info
     info_hscrollbar = tk.Scrollbar(topright_frame, orient=tk.HORIZONTAL)
     info_hscrollbar.config(command=crs_text.xview)
     info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
