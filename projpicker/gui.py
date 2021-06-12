@@ -72,7 +72,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             # selected a new crs
             last_crs_ls = list(set(last_crs_ls) - set(prev_sel_crs_ls))[0]
             prev_sel_crs_ls.append(last_crs_ls)
-        else:
+        elif len(last_crs_ls) < len(prev_sel_crs_ls):
             # deselected an existing crs
             last_crs_ls = list(set(prev_sel_crs_ls) - set(last_crs_ls))[0]
             del prev_sel_crs_ls[prev_sel_crs_ls.index(last_crs_ls)]
@@ -81,6 +81,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
                 last_crs_ls = prev_sel_crs_ls[l-1]
             else:
                 last_crs_ls = None
+        else:
+            last_crs_ls = None
 
         crs_text.delete("1.0", tk.END)
         if last_crs_ls is not None:
