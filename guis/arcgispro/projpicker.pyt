@@ -86,7 +86,7 @@ class CreateFeatureClass(object):
                 direction='Input')
 
         new_feat = arcpy.Parameter(
-                displayName='Out Feature',
+                displayName='Output Feature',
                 name='Feature',
                 datatype='DEFeatureClass',
                 parameterType='Required',
@@ -194,7 +194,7 @@ class GuessProjection(object):
                 direction='Input')
 
         location = arcpy.Parameter(
-                displayName='Location of data',
+                displayName='Location of Data',
                 name='Location',
                 datatype='GPFeatureRecordSetLayer',
                 parameterType='Required',
