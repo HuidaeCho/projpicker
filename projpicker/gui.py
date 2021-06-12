@@ -117,7 +117,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     # root window
     root = tk.Tk()
-    root.geometry("800x800")
+    root.geometry("800x400")
     root.title("ProjPicker GUI")
     root.resizable(False, False)
 
@@ -142,15 +142,26 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     crs_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # scroll bar for CRS list
-    crs_scrollbar = tk.Scrollbar(topleft_frame)
-    crs_scrollbar.config(command=crs_listbox.yview)
-    crs_scrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
-    crs_listbox.config(yscrollcommand=crs_scrollbar.set)
+    list_scrollbar = tk.Scrollbar(topleft_frame)
+    list_scrollbar.config(command=crs_listbox.yview)
+    list_scrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
+    crs_listbox.config(yscrollcommand=list_scrollbar.set)
+
+    ################
+    # middle-left frame
+    middleleft_frame = tk.Frame(left_frame)
+    middleleft_frame.pack(fill=tk.BOTH)
+
+    # scroll bar for CRS list
+    list_hscrollbar = tk.Scrollbar(middleleft_frame, orient=tk.HORIZONTAL)
+    list_hscrollbar.config(command=crs_listbox.xview)
+    list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
+    crs_listbox.config(xscrollcommand=list_hscrollbar.set)
 
     ###################
     # bottom-left frame
     bottomleft_frame = tk.Frame(left_frame)
-    bottomleft_frame.pack(fill=tk.X, ipady=6, pady=2, padx=2)
+    bottomleft_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list box for projection types
     projection_types = ["all"]
@@ -186,10 +197,16 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     topright_frame = tk.Frame(right_frame)
     topright_frame.pack(fill=tk.BOTH, expand=True)
 
-    # text for CRS Info
+    # text for CRS info
     crs_text = tk.Text(topright_frame, width=20, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.pack(fill=tk.BOTH, expand=True)
+
+    # scroll bar for CRS info
+    info_hscrollbar = tk.Scrollbar(topright_frame, orient=tk.HORIZONTAL)
+    info_hscrollbar.config(command=crs_text.xview)
+    info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
+    crs_text.config(xscrollcommand=info_hscrollbar.set)
 
     ####################
     # bottom-right frame

@@ -2046,6 +2046,7 @@ def projpicker(
         overwrite=False,
         append=False,
         start_gui=False,
+        single=False,
         projpicker_db=None,
         proj_db=None,
         create=False):
@@ -2069,9 +2070,10 @@ def projpicker(
     the output file, but the append option only appends to the output file.
     Only one of the overwrite or append options must be given. For selecting a
     subset of queried BBox instances, a GUI can be launched by setting gui to
-    True. Results are sorted by area from the smallest to largest. If
-    projpicker_db or proj_db is None (default), get_projpicker_db() or
-    get_proj_db() is used, respectively.
+    True. Results are sorted by area from the smallest to largest. The single
+    argument is used to allow only one selection in the GUI. If projpicker_db
+    or proj_db is None (default), get_projpicker_db() or get_proj_db() is used,
+    respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
@@ -2089,8 +2091,10 @@ def projpicker(
             False.
         append (bool): Whether or not to append output to file. Defaults to
             False.
-        gui (bool): Whether or not to start a GUI for selecting part of queries
+        start_gui (bool): Whether or not to start a GUI for selecting part of queries
             BBox instances. Defaults to False.
+        single (bool): Whether or not to allow only one selection in the GUI.
+            Defaults to False.
         projpicker_db (str): projpicker.db path. Defaults to None.
         proj_db (str): proj.db path. Defaults to None.
         create (bool): Whether or not to create a new projpicker.db. Defaults
@@ -2144,7 +2148,7 @@ def projpicker(
     bbox = query_mixed_geoms(geoms, projpicker_db)
 
     if start_gui:
-        bbox = gui.select_bbox(bbox)
+        bbox = gui.select_bbox(bbox, single)
 
     if not outfile:
         return bbox
@@ -2284,6 +2288,10 @@ def parse():
             action="store_true",
             help="start GUI for selecting CRSs")
     parser.add_argument(
+            "-1", "--single",
+            action="store_true",
+            help="allow only one selection in GUI")
+    parser.add_argument(
             "geometry",
             nargs="*",
             help="query geometry in latitude and longitude (point or poly) or "
@@ -2313,6 +2321,7 @@ def main():
     infile = args.input
     outfile = args.output
     start_gui = args.gui
+    single = args.single
     geoms = args.geometry
 
     if version:
@@ -2335,6 +2344,7 @@ There is NO WARRANTY, to the extent permitted by law.""")
             overwrite,
             append,
             start_gui,
+            single,
             projpicker_db,
             proj_db,
             create)
