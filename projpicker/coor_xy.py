@@ -157,6 +157,9 @@ def is_bbox_within_bbox(bbox1, bbox2):
     n = bbox2.top
     w = bbox2.left
     e = bbox2.right
+    if None in (s, n, w, e):
+        # XXX: might be incorrect, but we cannot do better
+        return False
     return w <= l <= e and w <= r <= e and s <= b <= n and s <= t <= n
 
 
