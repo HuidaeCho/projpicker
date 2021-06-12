@@ -89,8 +89,17 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
 
     def on_select_proj_table_or_unit(event):
-        proj_table = projection_types[proj_table_combobox.current()]
-        unit = units[unit_combobox.current()]
+        proj_table_sel = proj_table_combobox.current()
+        if proj_table_sel in (-1, 0):
+            proj_table = "all"
+        else:
+            proj_table = projection_types[proj_table_sel]
+
+        unit_sel = unit_combobox.current()
+        if unit_sel in (-1, 0):
+            unit = "all"
+        else:
+            unit = units[unit_sel]
 
         if proj_table == "all" and unit == "all":
             filt_bbox = bbox
@@ -104,7 +113,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
         crs_listbox.delete(0, tk.END)
         for b in filt_bbox:
-            crs_listbox.insert(tk.END, f"{b.crs_auth_name}:{b.crs_code}")
+            crs_listbox.insert(tk.END, f"{b.crs_name} "
+                                       f"({b.crs_auth_name}:{b.crs_code})")
 
 
     def select():
