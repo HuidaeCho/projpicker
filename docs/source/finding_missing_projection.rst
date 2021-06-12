@@ -1,7 +1,7 @@
 Finding missing projection
 ==========================
 
-The ProjPicker can be used to guess the projection of data whose spatial reference information is missing for some reason (e.g., a Shapefile with no PRJ file).
+ProjPicker can be used to guess the projection of data whose spatial reference information is missing for some reason (e.g., a Shapefile with no PRJ file).
 For example, we can create a Shapefile (Atlanta_GA.shp) for Atlanta, Georgia, and deleted its PRJ file to simulate missing metadata.
 Only the filename gives the user a hint about its geographic location, but without the PRJ file, novice GIS users can have difficulty finding the right projection and repairing the Shapefile.
 When the file is opened in a GIS, it will be located far away from the true data location because projected coordinates are treated as latitudes and longitudes.
