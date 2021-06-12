@@ -115,6 +115,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         for b in filt_bbox:
             crs_listbox.insert(tk.END, f"{b.crs_name} "
                                        f"({b.crs_auth_name}:{b.crs_code})")
+        prev_sel_crs_ls.clear()
 
 
     def select():
