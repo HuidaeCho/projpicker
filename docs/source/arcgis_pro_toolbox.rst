@@ -18,7 +18,7 @@ Right click on the page when there and click save as to save a local copy of the
    :align: center
 
 
-One can also use ``cUrl`` or ``Wget`` to retrieve the install script
+One can also use ``curl`` or ``Wget`` to retrieve the install script
 
 Using curl
 __________
@@ -28,7 +28,7 @@ __________
    curl https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/install.bat -o install.bat
 
 
-Using wget
+Using Wget
 __________
 
 .. code-block:: bash
