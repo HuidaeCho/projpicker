@@ -25,8 +25,8 @@ For example,
 - Only latlon: ``latlon 33.7490°N,84.3880°W``
 - Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
-Unit specifier
---------------
+Units
+-----
 
 A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts queries and further logical operations in that unit.
 Currently, the following units are supported:
@@ -103,8 +103,8 @@ This example shows two ``bbox`` geometries:
 
     ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
 
-Supported coordinate formats
-----------------------------
+Coordinate formats
+------------------
 
 The parser supports a wide range of ``latlon`` coordinate formats as seen below in ``points.txt``:
 
