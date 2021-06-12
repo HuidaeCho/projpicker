@@ -216,7 +216,7 @@ For example, the following command queries CRSs that completely contain A, but n
 
 .. code-block:: shell
 
-    projpicker postfix A B 0,0 not and
+    projpicker postfix A B not and
 
 This command is useful to filter out global CRSs spatially.
 In an infix notation, it is equivalent to ``A and not B``.
