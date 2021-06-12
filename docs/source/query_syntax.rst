@@ -21,7 +21,7 @@ Each type can be use seperatly or in conjunction.
 
 For example,
 
-- Only xy: ``xy 1323252,1374239,396255,434290``
+- Only xy: ``xy 1323252,396255``
 - Only latlon: ``latlon 33.7490°N,84.3880°W``
 - Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
@@ -103,30 +103,6 @@ This example shows two ``bbox`` geometries:
 
     ['bbox', [1.0, 2.0, 3.0, 4.0], 'xy', [5.0, 6.0, 7.0, 8.0]]
 
-``none``
-^^^^^^^^
-
-A ``none`` geometry returns no CRSs.
-This special query is useful to clear results in the middle.
-This command returns CRSs that only contain X:
-
-.. code-block:: shell
-
-    projpicker postfix A B or C not and none and X or
-
-``all``
-^^^^^^^
-
-An ``all`` geometry returns all CRSs in a specified unit.
-The following command performs an all-but operation and returns CRSs not in degree that contain A:
-
-.. code-block:: shell
-
-    projpicker postfix A unit=degree all unit=any not and
-
-Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs from any-unit CRSs, not from the same degree CRSs.
-``unit=degree all not`` would yield ``none`` because in the same degree universe, the NOT of all is none.
-
 Supported coordinate formats
 ----------------------------
 
@@ -201,11 +177,33 @@ Logical operators
 The logical operators ``and``, ``or``, or ``xor`` can be used with ProjPicker for more extensible querying operations.
 The operators are not CLI options or flags, but are instead parsed directly by ProjPicker.
 The first word can be optionally ``and``, ``or``, or ``xor`` to define the query operator.
-It cannot be used again in the middle unless the first word is ``postfix``.
+It cannot be used again in the middle unless the first word is ``postfix``, which is for postfix logical operations explained below.
+
+The following command queries CRSs that completely contain all the geometries:
 
 .. code-block:: shell
 
-    projpicker and 34.2348,-83.8677 33.7490,-84.3880
+    projpicker and A B C D
+
+A, B, C, and D are any ``point``, ``poly``, or ``bbox`` geometries, not the letters literally.
+Set-theoretically, it is equivalent to ``A and B and C and D`` or ``postfix A B and C and D and`` in the ``postfix`` mode.
+
+This command finds CRSs that contain any, not necessarily all, of the geometries:
+
+.. code-block:: shell
+
+    projpicker or A B C D
+
+It is equivalent to ``A or B or C or D`` set-theoretically or ``postfix A B or C or D or`` in the ``postfix`` mode.
+
+An exclusive OR operation can be performed.
+This command finds CRSs that contain only one of the geometries, but not more than two:
+
+.. code-block:: shell
+
+    projpicker xor A B C D
+
+It is equivalent to ``A xor B xor C xor D`` set-theoretically or ``postfix A B xor C xor D xor`` in the ``postfix`` mode.
 
 Postfix logical operations
 --------------------------
@@ -214,20 +212,48 @@ If the first word is ``postfix``, ProjPicker supports postfix logical operations
 Postfix notations may not be straightforward to understand and write, but they are simpler to implement and do not require parentheses.
 In a vertically long input, writing logical operations without parentheses seems to be a better choice.
 
-For example, the following command queries CRSs that completely contain 34.2348,-83.8677, but not 0,0:
+For example, the following command queries CRSs that completely contain A, but not B:
 
 .. code-block:: shell
 
-    projpicker postfix 34.2348,-83.8677 0,0 not and
+    projpicker postfix A B 0,0 not and
 
 This command is useful to filter out global CRSs spatially.
-In an infix notation, it is equivalent to ``34.2348,-83.8677 and not 00``.
+In an infix notation, it is equivalent to ``A and not B``.
 
 Let's take another example.
-Let ``A``, ``B``, and ``C`` be the coordinates of cities A, B, and C, respectively.
-This command finds CRSs that contain cities A or B, but not C.
+This command finds CRSs that contain A or B, but not C.
 It's equivalent to ``(A or B) and not C`` in an infix notation.
 
 .. code-block:: shell
 
     projpicker postfix A B or C not and
+
+What about both A and B, or C, but not all?
+These CRSs would contain both A and B, but not C; or they would contain C, but neither A nor B.
+That is ``(A and B) xor C`` in an infix notation.
+
+.. code-block:: shell
+
+    projpicker postfix A B and C xor
+
+Special geometries for logical operations
+-----------------------------------------
+
+A ``none`` geometry returns no CRSs.
+This special geometry is useful to clear results in the middle of a postfix query.
+This command returns CRSs that only contain X:
+
+.. code-block:: shell
+
+    projpicker postfix A B or C not and none and X or
+
+An ``all`` geometry returns all CRSs in a specified unit.
+The following command performs an all-but operation and returns CRSs not in degree that contain A:
+
+.. code-block:: shell
+
+    projpicker postfix A unit=degree all unit=any not and
+
+Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs from any-unit CRSs, not from the same degree CRSs.
+``unit=degree all not`` would yield ``none`` because in the same degree universe, the NOT of all is none.
