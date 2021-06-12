@@ -18,7 +18,7 @@ Right click on the page when there and click save as to save a local copy of the
    :align: center
 
 
-One can also use ``curl`` or ``Wget`` to retrieve the install script
+One can also use curl or Wget to retrieve the install script
 
 Using curl
 __________
