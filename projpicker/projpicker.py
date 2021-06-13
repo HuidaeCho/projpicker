@@ -141,6 +141,29 @@ def tidy_lines(lines):
     return lines
 
 
+def get_separator(separator):
+    """
+    Convert a separator name to its corresponding character. If an unsupported
+    name is given, return it as is.
+
+    Args:
+        separator (str): Separator name. It supports special names including
+            pipe (|), comma (,), space ( ), tab (\t), and newline (\n).
+
+    Returns:
+        str: Separator character.
+    """
+    sep_dic = {
+            "pipe": "|",
+            "comma": ",",
+            "space": " ",
+            "tab": "\t",
+            "newline": "\n"}
+    if separator in sep_dic:
+        separator = sep_dic[separator]
+    return separator
+
+
 ################################################################################
 # Earth parameters
 
@@ -1966,12 +1989,15 @@ def stringify_bbox(bbox, header=True, separator="|"):
     Args:
         bbox (list or BBox): List of BBox instances or a BBox instance.
         header (bool): Whether or not to print header. Defaults to True.
-        separator (str): Column separator. Some CRS names contain commas.
-            Defaults to "|".
+        separator (str): Column separator. Some CRS names contain commas. It
+            supports special names including pipe (|), comma (,), space ( ),
+            tab (\t), and newline (\n). Defaults to "|".
 
     Returns:
         str: Stringified bbox rows.
     """
+    separator = get_separator(separator)
+
     if type(bbox) == BBox:
         bbox = [bbox]
 
@@ -2016,6 +2042,23 @@ def jsonify_bbox(bbox):
     return json.dumps(dictify_bbox(bbox))
 
 
+def extract_srids(bbox):
+    """
+    Extract spatial reference identifiers (SRIDs) from a list of BBox
+    instances.
+
+    Args:
+        bbox (list or BBox): List of BBox instances or a BBox instance.
+
+    Returns:
+        list: List of SRID strs.
+    """
+    srids = []
+    for b in bbox:
+        srids.append(f"{b.crs_auth_name}:{b.crs_code}")
+    return srids
+
+
 ################################################################################
 # plain printing
 
@@ -2027,9 +2070,35 @@ def print_bbox(bbox, outfile=sys.stdout, header=True, separator="|"):
         bbox (list): List of BBox instances.
         outfile (str): Output file object. Defaults to sys.stdout.
         header (bool): Whether or not to print header. Defaults to True.
-        separator (str): Column separator. Defaults to "|".
+        separator (str): Column separator. It supports special names including
+            pipe (|), comma (,), space ( ), tab (\t), and newline (\n).
+            Defaults to "|".
     """
+    separator = get_separator(separator)
     print(stringify_bbox(bbox, header, separator), end="", file=outfile)
+
+
+def print_srids(bbox, outfile=sys.stdout, separator="\n"):
+    """
+    Print a list of spatial reference identifiers (SRIDs) in a plain format.
+
+    Args:
+        bbox (list): List of BBox instances.
+        outfile (str): Output file object. Defaults to sys.stdout.
+        separator (str): SRID separator. It supports special names including
+            pipe (|), comma (,), space ( ), tab (\t), and newline (\n).
+            Defaults to "\n".
+    """
+    separator = get_separator(separator)
+
+    first = True
+    for srid in extract_srids(bbox):
+        if first:
+            first = False
+        else:
+            srid = separator + srid
+        print(srid, end="", file=outfile)
+    print(file=outfile)
 
 
 ################################################################################
@@ -2041,7 +2110,7 @@ def projpicker(
         outfile="-",
         fmt="plain",
         no_header=False,
-        separator="|",
+        separator=None,
         print_geoms=False,
         overwrite=False,
         append=False,
@@ -2064,10 +2133,10 @@ def projpicker(
     latitude-longitude and x-y coordinate systems, respectively. This function
     ignores the current coordinate system set by set_coordinate_system(),
     set_latlon(), or set_xy(), and always starts in the latitude-longitude
-    coordinate system by default. The "plain", "json", "pretty", "sqlite"
-    formats are supported. No header and separator options only apply to the
-    plain output format. The overwrite option applies to both projpicker.db and
-    the output file, but the append option only appends to the output file.
+    coordinate system by default. The "plain", "json", "pretty", "sqlite", and
+    "srid" formats are supported. No header and separator options only apply to
+    the plain output format. The overwrite option applies to both projpicker.db
+    and the output file, but the append option only appends to the output file.
     Only one of the overwrite or append options must be given. For selecting a
     subset of queried BBox instances, a GUI can be launched by setting gui to
     True. Results are sorted by area from the smallest to largest. The single
@@ -2078,13 +2147,16 @@ def projpicker(
     Args:
         geoms (list): Geometries. Defaults to [].
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
-        outfile (str): Output file. None for no output file.
-            Defaults to "-" for sys.stdout.
-        fmt (str): Output format (plain, json, pretty, sqlite). Defaults to
-            "plain".
+        outfile (str): Output file. None for no output file. Defaults to "-"
+            for sys.stdout.
+        fmt (str): Output format (plain, json, pretty, sqlite, srid). Defaults
+            to "plain".
         no_header (bool): Whether or not to print header for plain. Defaults to
             False.
-        separator (str): Column separator for plain. Defaults to "|".
+        separator (str): Column separator for plain and srid output formats. It
+            supports special names including pipe (|), comma (,), space ( ),
+            tab (\t), and newline (\n). Defaults to None, meaning "|" for plain
+            and "\n" for srid.
         print_geoms (bool): Whether or not to print parsed geometries and exit.
             Defaults to False.
         overwrite (bool): Whether or not to overwrite output file. Defaults to
@@ -2104,14 +2176,17 @@ def projpicker(
         list: List of queried BBox instances sorted by area.
 
     Raises:
-        Exception: If both overwrite and append are True, either projpicker_db
-            or outfile already exists when overwrite is False, proj_db does not
-            exist when create is True, projpicker_db does not exist when create
-            is False, output is None or "-" when append is True, or sqlite
-            format is written to stdout.
+        Exception: If format is invalid, both overwrite and append are True,
+            either projpicker_db or outfile already exists when overwrite is
+            False, proj_db does not exist when create is True, projpicker_db
+            does not exist when create is False, output is None or "-" when
+            append is True, or sqlite format is written to stdout.
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
+
+    if fmt not in ("plain", "json", "pretty", "sqlite", "srid"):
+        raise Exception(f"{fmt}: Unsupported output format")
 
     if overwrite and append:
         raise Exception("Both overwrite and append requested")
@@ -2128,7 +2203,7 @@ def projpicker(
     if not overwrite and not append and outfile and os.path.exists(outfile):
         raise Exception(f"{outfile}: File already exists")
 
-    if append and (not overwrite or overwrite == "-"):
+    if append and (not outfile or outfile == "-"):
         raise Exception("Cannot append output to None or stdout")
 
     if ((create and (infile != "-" or not sys.stdin.isatty())) or
@@ -2171,7 +2246,7 @@ def projpicker(
                 exec("bbox_dict = " + f.read(), globals(), lcls)
                 bbox_dict = lcls["bbox_dict"]
             bbox_dict.extend(dictify_bbox(bbox))
-        else:
+        elif fmt == "sqlite":
             bbox_merged = read_bbox_db(outfile)
             for b in bbox:
                 if b not in bbox_merged:
@@ -2179,6 +2254,8 @@ def projpicker(
             sort_bbox(bbox_merged)
             write_bbox_db(bbox_merged, outfile, True)
             return bbox_merged
+        else:
+            mode = "a"
     elif fmt == "json":
         bbox_json = jsonify_bbox(bbox)
     elif fmt == "pretty":
@@ -2189,18 +2266,26 @@ def projpicker(
         write_bbox_db(bbox, outfile, True)
         return bbox
 
+    if separator is None:
+        if fmt == "plain":
+            separator = "|"
+        else:
+            separator = "\n"
+
     f = sys.stdout if outfile == "-" else open(outfile, mode)
     if fmt == "plain":
         print_bbox(bbox, f, header, separator)
     elif fmt == "json":
         print(bbox_json, file=f)
-    else:
+    elif fmt == "pretty":
         # sort_dicts was added in Python 3.8, but I'm stuck with 3.7
         # https://docs.python.org/3/library/pprint.html
         if sys.version_info.major == 3 and sys.version_info.minor >= 8:
             pprint.pprint(bbox_dict, f, sort_dicts=False)
         else:
             pprint.pprint(bbox_dict, f)
+    else:
+        print_srids(bbox, f, separator)
     if outfile != "-":
         f.close()
 
@@ -2262,7 +2347,7 @@ def parse():
                 "and exit")
     parser.add_argument(
             "-f", "--format",
-            choices=("plain", "json", "pretty", "sqlite"),
+            choices=("plain", "json", "pretty", "sqlite", "srid"),
             default="plain",
             help="output format (default: plain)")
     parser.add_argument(
@@ -2271,8 +2356,9 @@ def parse():
             help="do not print header for plain output format")
     parser.add_argument(
             "-s", "--separator",
-            default="|",
-            help="separator for plain output format (default: pipe)")
+            default=None,
+            help="separator for plain output format (default: pipe for plain, "
+                "newline for srid)")
     parser.add_argument(
             "-i", "--input",
             default="-",
