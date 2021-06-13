@@ -9,8 +9,10 @@ Python module that allows the user to select all coordinate reference systems
 bounding boxes. The goal is to make it easy and visual to select a desired
 projection by location. This project was motivated by
 [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
-It is a work in progress; join [discussions](https://github.com/HuidaeCho/projpicker/wiki).
-See also [the command-line and API documentation](https://projpicker.readthedocs.io/en/latest/).
+A new GRASS GIS module [g.projpicker](https://github.com/OSGeo/grass-addons/pull/543)
+that wraps around this project is submitted. It is a work in progress; join
+[discussions](https://github.com/HuidaeCho/projpicker/wiki). See also
+[its documentation](https://projpicker.readthedocs.io/en/latest/).
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
 
