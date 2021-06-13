@@ -2053,9 +2053,19 @@ def extract_srids(bbox):
     Returns:
         list: List of SRID strs.
     """
+    if type(bbox) == BBox:
+        is_single = True
+        bbox = [bbox]
+    else:
+        is_single = False
+
     srids = []
     for b in bbox:
         srids.append(f"{b.crs_auth_name}:{b.crs_code}")
+
+    if is_single:
+        srids = srids[0]
+
     return srids
 
 
@@ -2090,6 +2100,9 @@ def print_srids(bbox, outfile=sys.stdout, separator="\n"):
             Defaults to "\n".
     """
     separator = get_separator(separator)
+
+    if type(bbox) == BBox:
+        bbox = [bbox]
 
     first = True
     for srid in extract_srids(bbox):
