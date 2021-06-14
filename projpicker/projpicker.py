@@ -1096,8 +1096,11 @@ def parse_mixed_geoms(geoms):
                 outgeoms.append(geom)
             i += 1
 
-        if query_op == "postfix" and stack_size != 1:
-            raise Exception("Incorrect stack size for postfix operations")
+        if query_op == "postfix":
+            if stack_size == 0:
+                raise Exception("Nothing to return from postfix stack")
+            elif stack_size > 1:
+                raise Exception("Excessive stack size for postfix operations")
     finally:
         if was_latlon and not is_latlon():
             set_latlon()
