@@ -1,0 +1,15 @@
+#geoms: postfix match_max=1 33.7490,-84.3880 xy 432697.24,1363705.31 match
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_mixed_geoms(["postfix", "match_max=1", [33.7490, -84.3880], "xy", [432697.24, 1363705.31], "match"])
+# ppik.print_bbox(bbox)
+#end
+
+postfix
+match_max=1
+33.7490,-84.3880
+xy
+432697.24,1363705.31
+match

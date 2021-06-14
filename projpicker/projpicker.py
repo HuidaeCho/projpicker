@@ -27,6 +27,7 @@
 This module implements the CLI and API of ProjPicker.
 """
 
+import collections
 import argparse
 import os
 import sys
@@ -62,6 +63,9 @@ proj_lib_env = "PROJ_LIB"
 rx = 6378.1370
 # polar radius in km
 ry = 6356.7523
+
+# geometry-bbox namedtuple class
+GeomBBox = collections.namedtuple("GeometryBBox", "is_latlon type geom bbox")
 
 
 ################################################################################
@@ -462,13 +466,55 @@ def find_unit(proj_table, crs_auth, crs_code, proj_cur):
     return unit
 
 
-def transform_bbox(bbox, to_crs):
+def transform_xy_point(point, from_crs):
+    """
+    Transform a point defined by x and y floats in the from_crs CRS to latitude
+    and longitude floats in decimal degrees in EPSG:4326. It requires the
+    pyproj module.
+
+    Args:
+        point (list): List of x and y floats.
+        from_crs (str): Source CRS.
+
+    Returns:
+        float, float: Latitude and longitude in decimal degrees.
+    """
+    import pyproj
+
+    x, y = point
+    trans = pyproj.Transformer.from_crs(from_crs, "EPSG:4326", always_xy=True)
+    lon, lat = trans.transform(x, y)
+    return lat, lon
+
+
+def transform_latlon_point(point, to_crs):
+    """
+    Transform a point defined by latitude and longitude floats in decimal
+    degrees in EPSG:4326 to the projected x and y floats in the to_crs CRS. It
+    requires the pyproj module.
+
+    Args:
+        point (list): List of latitude and longitude floats in decimal degrees.
+        to_crs (str): Target CRS.
+
+    Returns:
+        float, float: x and y floats.
+    """
+    import pyproj
+
+    lat, lon = point
+    trans = pyproj.Transformer.from_crs("EPSG:4326", to_crs, always_xy=True)
+    x, y = trans.transform(lon, lat)
+    return x, y
+
+
+def transform_latlon_bbox(bbox, to_crs):
     """
     Transform a bbox defined by south, north, west, and east floats in decimal
-    degrees to the projected bbox in the to_crs CRS defined by bottom, top,
-    left, and right floats in to_crs units. It uses the pyproj module. If, for
-    any reason, the transformed bbox is not finite, a tuple of four Nones is
-    returned.
+    degrees in EPSG:4326 to the projected bbox in the to_crs CRS defined by
+    bottom, top, left, and right floats in to_crs units. It requires the pyproj
+    module. If, for any reason, the transformed bbox is not finite, a tuple of
+    four Nones is returned.
 
     Args:
         bbox (list): List of south, north, west, and east floats in decimal
@@ -478,9 +524,6 @@ def transform_bbox(bbox, to_crs):
     Returns:
         float, float, float, float: Bottom, top, left, and right in to_crs
         units or all Nones on failed transformation.
-
-    Raises:
-        Exception: If projpicker_db already exists.
     """
     import pyproj
 
@@ -586,7 +629,8 @@ def create_projpicker_db(
                     # XXX: might be incorrect!
                     b, t, l, r = s, n, w, e
                 else:
-                    b, t, l, r = transform_bbox(bbox, f"{crs_auth}:{crs_code}")
+                    b, t, l, r = transform_latlon_bbox(bbox,
+                                                       f"{crs_auth}:{crs_code}")
 
                 sql = """INSERT INTO bbox
                          VALUES (?, ?,
@@ -968,9 +1012,10 @@ def parse_mixed_geoms(geoms):
 
     Args:
         geoms (list or str): List of "point", "poly", "bbox", "none", "all",
-            "latlon", "xy", "and", "or", "xor", "not", "unit=", and parseable
-            geometries. The first word can be either "and", "or", "xor", or
-            "postfix". See parse_points(), parse_polys(), and parse_bboxes().
+            "latlon", "xy", "and", "or", "xor", "not", "match", "unit=",
+            "match_tol=", "match_max=", and parseable geometries. The first
+            word can be either "and", "or", "xor", or "postfix". See
+            parse_points(), parse_polys(), and parse_bboxes().
 
     Returns:
         list: List of parsed geometries.
@@ -993,11 +1038,13 @@ def parse_mixed_geoms(geoms):
     else:
         query_op = "and"
 
-    query_ops = ("and", "or", "xor", "not")
+    query_ops = ("and", "or", "xor", "not", "match")
     spec_geoms = ("none", "all")
     geom_types = ("point", "poly", "bbox")
     coor_sys = ("latlon", "xy")
     keywords = query_ops + spec_geoms + geom_types + coor_sys
+
+    constraints = ("unit", "match_tol", "match_max")
 
     geom_type = "point"
 
@@ -1028,14 +1075,16 @@ def parse_mixed_geoms(geoms):
                     set_latlon()
                 else:
                     set_xy()
-            elif typ == str and geom.startswith("unit="):
+            elif (typ == str and "=" in geom and
+                  geom.split("=")[0] in constraints):
                 pass
             elif geom in ("none", "all"):
                 stack_size += 1
             else:
                 j = i
                 while (j < n and geoms[j] not in keywords and
-                       not (typ == str and geoms[j].startswith("unit="))):
+                       not (typ == str and "=" in geoms[j] and
+                            geoms[j].split("=")[0] in constraints)):
                     j += 1
                 ogeoms = parse_geoms(geoms[i:j], geom_type)
                 i = j
@@ -1181,6 +1230,99 @@ def sort_bbox(bbox):
                              x.crs_auth_name, x.crs_code,
                              x.usage_auth_name, x.usage_code,
                              x.extent_auth_name, x.extent_code))
+
+################################################################################
+# geometry operators
+
+def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
+    """
+    Match two geometries in different coordinate systems within a given
+    distance match_tol in xy and return a subset list of the BBox instances of
+    the xy geometry that can be transformed to the other geometry in latlon.
+    Only the first match_max number of matches are returned. If match_max is 0,
+    all matches are returned. This operation is useful when the coordinates of
+    a geometry in both latlon and xy are known. This operation requires the
+    pyproj module and is very slow.
+
+    Args:
+        gbbox1 (GeomBBox): Geometry-bbox 1.
+        gbbox2 (GeomBBox): Geometry-bbox 2.
+        match_max (int): Maximum number of matches to return. 0 to return all.
+        match_tol (float): Positive distance tolerance.
+
+    Returns:
+        list: List of matched BBox instances from the BBox instances of the xy
+        geometry.
+
+    Raises:
+        Exception: If matching cannot be done for any reason.
+    """
+    def find_matching_bbox(geom_latlon, geom, bbox):
+        obbox = []
+        if len(geom) == 2:
+            x1, y1 = geom
+        else:
+            b1, t1, l1, r1 = geom
+        nrows = len(bbox)
+        nrow = 1
+        for b in bbox:
+            message("\b"*80+f"Matching... {nrow}/{nrows}", end="")
+            crs = f"{b.crs_auth_name}:{b.crs_code}"
+            if len(geom) == 2:
+                x2, y2 = transform_latlon_point(geom_latlon, crs)
+                dist = math.sqrt((x1-x2)**2+(y1-y2)**2)
+                if dist <= match_tol:
+                    obbox.append(b)
+            else:
+                b2, t2, l2, r2 = transform_latlon_bbox(geom_latlon, crs)
+                dist1 = math.sqrt((b1-b2)**2+(l1-l2)**2)
+                dist2 = math.sqrt((b1-b2)**2+(r1-r2)**2)
+                dist3 = math.sqrt((t1-t2)**2+(l1-l2)**2)
+                dist4 = math.sqrt((t1-t2)**2+(r1-r2)**2)
+                if (dist1 <= match_tol and dist2 <= match_tol and
+                    dist3 <= match_tol and dist4 <= match_tol):
+                    obbox.append(b)
+            if len(obbox) >= match_max > 0:
+                break
+            nrow += 1
+        message()
+        return obbox
+
+    if None in (gbbox1.type, gbbox2.type):
+        raise Exception("Non-raw geometries cannot be matched")
+
+    if gbbox1.type != gbbox2.type:
+        raise Exception("Geometries in different types cannot be matched")
+
+    if gbbox1.is_latlon == gbbox2.is_latlon:
+        raise Exception("Geometries in the same coordinate system cannot be "
+                        "matched")
+
+    geom1 = gbbox1.geom
+    geom2 = gbbox2.geom
+
+    if len(geom1) != len(geom2):
+        raise Exception("Geometries in different lengths cannot be matched")
+
+    outbbox = gbbox1.bbox if gbbox2.is_latlon else gbbox2.bbox
+
+    if gbbox1.type == "poly":
+        for i in range(len(geom1)):
+            g1 = geom1[i]
+            g2 = geom2[i]
+            if gbbox1.is_latlon:
+                outbbox = find_matching_bbox(g1, g2, outbbox)
+            else:
+                outbbox = find_matching_bbox(g2, g1, outbbox)
+            if len(outbbox) >= match_max > 0:
+                break
+    else:
+        if gbbox1.is_latlon:
+            outbbox = find_matching_bbox(geom1, geom2, outbbox)
+        else:
+            outbbox = find_matching_bbox(geom2, geom1, outbbox)
+
+    return outbbox
 
 
 ################################################################################
@@ -1853,9 +1995,10 @@ def query_mixed_geoms(
 
     Args:
         geoms (list or str): List of "point", "poly", "bbox", "none", "all",
-            "latlon", "xy", "and", "or", "xor", "not", "unit=", and parseable
-            geometries. The first word can be either "and", "or", "xor", or
-            "postfix". See parse_points(), parse_polys(), and parse_bboxes().
+            "latlon", "xy", "and", "or", "xor", "not", "match", "unit=",
+            "match_tole=", "match_max=", and parseable geometries. The first
+            word can be either "and", "or", "xor", or "postfix". See
+            parse_points(), parse_polys(), and parse_bboxes().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
@@ -1878,7 +2021,7 @@ def query_mixed_geoms(
         query_op = "and"
 
     if query_op == "postfix":
-        bbox_stack = []
+        geombbox_stack = []
 
     geom_type = "point"
 
@@ -1889,11 +2032,17 @@ def query_mixed_geoms(
         first = True
         sort = False
         unit = "any"
+        match_tol = 1
+        match_max = 0
         bbox_all = {}
 
         for geom in geoms:
             if type(geom) == str and geom.startswith("unit="):
-                unit = geom[5:]
+                unit = geom.split("=")[1]
+            elif type(geom) == str and geom.startswith("match_tol="):
+                match_tol = float(geom.split("=")[1])
+            elif type(geom) == str and geom.startswith("match_max="):
+                match_max = int(geom.split("=")[1])
             elif geom in ("point", "poly", "bbox"):
                 geom_type = geom
             elif geom == "latlon":
@@ -1901,17 +2050,35 @@ def query_mixed_geoms(
             elif geom == "xy":
                 set_xy()
             elif query_op == "postfix":
-                n = len(bbox_stack)
+                n = len(geombbox_stack)
                 if geom == "not" and n >= 1:
                     if unit not in bbox_all:
                         bbox_all[unit] = query_all(unit, projpicker_db)
-                    bbox = bbox_stack.pop()
-                    bbox_stack.append(bbox_not(bbox, bbox_all[unit]))
-                elif geom in ("and", "or", "xor") and n >= 2:
-                    bbox2 = bbox_stack.pop()
-                    bbox1 = bbox_stack.pop()
-                    bbox_stack.append(bbox_binary_operator(bbox1, bbox2, geom))
-                elif geom in ("and", "or", "xor", "not"):
+                    gbbox = geombbox_stack.pop()
+                    obbox = bbox_not(gbbox.bbox, bbox_all[unit])
+                    geombbox_stack.append(GeomBBox(is_latlon(), None, geom,
+                                                   obbox))
+                elif geom in ("and", "or", "xor", "match") and n >= 2:
+                    gbbox2 = geombbox_stack.pop()
+                    gbbox1 = geombbox_stack.pop()
+                    if geom == "match":
+                        if None in (gbbox1.type, gbbox2.type):
+                            raise Exception("Non-raw geometries cannot be "
+                                            "matched")
+                        obbox = bbox_binary_operator(gbbox1.bbox, gbbox2.bbox,
+                                                     "and")
+                        gbbox1 = GeomBBox(gbbox1.is_latlon, gbbox1.type,
+                                          gbbox1.geom, obbox)
+                        gbbox2 = GeomBBox(gbbox2.is_latlon, gbbox2.type,
+                                          gbbox2.geom, obbox)
+                        obbox = match_geoms(gbbox1, gbbox2, match_max,
+                                            match_tol)
+                    else:
+                        obbox = bbox_binary_operator(gbbox1.bbox, gbbox2.bbox,
+                                                     geom)
+                    geombbox_stack.append(GeomBBox(is_latlon(), None, geom,
+                                                   obbox))
+                elif geom in ("and", "or", "xor", "not", "match"):
                     raise Exception(f"Not enough operands for {geom}")
                 else:
                     if geom == "none":
@@ -1922,7 +2089,8 @@ def query_mixed_geoms(
                         obbox = bbox_all[unit]
                     else:
                         obbox = query_geom(geom, geom_type, unit, projpicker_db)
-                    bbox_stack.append(obbox)
+                    geombbox_stack.append(GeomBBox(is_latlon(), geom_type,
+                                                   geom, obbox))
                 if geom in ("or", "xor", "not") and not sort:
                     sort = True
             elif geom in ("and", "or", "xor", "not"):
@@ -1968,9 +2136,9 @@ def query_mixed_geoms(
             set_xy()
 
     if query_op == "postfix":
-        if len(bbox_stack) > 1:
+        if len(geombbox_stack) > 1:
             raise Exception("Postfix operations failed")
-        outbbox = bbox_stack[0]
+        outbbox = geombbox_stack[0].bbox
 
     if sort:
         sort_bbox(outbbox)

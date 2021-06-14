@@ -1,0 +1,2 @@
+proj_table|crs_name|crs_auth_name|crs_code|usage_auth_name|usage_code|extent_auth_name|extent_code|south_lat|north_lat|west_lon|east_lon|bottom|top|left|right|unit|area_sqkm
+projected_crs|NAD27 / Georgia West|EPSG|26767|EPSG|6602|EPSG|2190|30.62|35.01|-85.61|-82.99|227321.736222316|1825636.8909584181|45969.582735703174|870089.0814069586|US foot|119521.02819197961
