@@ -1930,6 +1930,26 @@ def query_geoms_using_bbox(
     return outbbox
 
 
+def query_all(
+        unit="any",
+        projpicker_db=None):
+    """
+    Return a list of all BBox instances in unit. Each BBox instance is a named
+    tuple with all the columns from the bbox table in projpicker.db. Results
+    are sorted by area. If projpicker_db is None (default), get_projpicker_db()
+    is used.
+
+    Args:
+        unit (str): "any", unit values from projpicker.db. Defaults to "any".
+        projpicker_db (str): projpicker.db path. Defaults to None.
+
+    Returns:
+        list: List of all BBox instances sorted by area.
+    """
+    projpicker_db = get_projpicker_db(projpicker_db)
+    return read_bbox_db(projpicker_db, unit)
+
+
 def query_all_using_bbox(
         prevbbox,
         unit="any"):
@@ -1952,26 +1972,6 @@ def query_all_using_bbox(
             idx.append(i)
     outbbox = [prevbbox[i] for i in idx]
     return outbbox
-
-
-def query_all(
-        unit="any",
-        projpicker_db=None):
-    """
-    Return a list of all BBox instances in unit. Each BBox instance is a named
-    tuple with all the columns from the bbox table in projpicker.db. Results
-    are sorted by area. If projpicker_db is None (default), get_projpicker_db()
-    is used.
-
-    Args:
-        unit (str): "any", unit values from projpicker.db. Defaults to "any".
-        projpicker_db (str): projpicker.db path. Defaults to None.
-
-    Returns:
-        list: List of all BBox instances sorted by area.
-    """
-    projpicker_db = get_projpicker_db(projpicker_db)
-    return read_bbox_db(projpicker_db, unit)
 
 
 def query_mixed_geoms(
