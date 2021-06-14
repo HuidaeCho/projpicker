@@ -237,7 +237,7 @@ That is ``(A and B) xor C`` in an infix notation.
 
     projpicker postfix A B and C xor
 
-The ``match`` operator compares two geometries in ``llatlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be tranformed to the other ``latlon`` geometry.
+The ``match`` operator compares two geometries in ``latlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be tranformed to the other ``latlon`` geometry.
 It uses two constraints including ``match_tol=`` and ``match_max=``.
 ``match_tol=`` defines the maximum tolerance in the ``xy`` unit for distance matching (default 1) and ``match_max=`` limits the maximum number of matches (default 0 for all).
 The following command returns the first matching CRS in ``xy`` that contains B whose equivalent ``latlon`` is A:
