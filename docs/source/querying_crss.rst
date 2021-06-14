@@ -94,10 +94,10 @@ Read south,north,west,east from stdin:
 
     projpicker bbox <<EOT
     # region 1
-    0	0	10	10
+    0 0 10 10
 
     # region 2
-    20	20	50	50
+    20 20 50 50
     EOT
 
 Python
