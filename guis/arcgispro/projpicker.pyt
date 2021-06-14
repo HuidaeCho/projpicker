@@ -1,5 +1,11 @@
 """
 This module implements the ArcGIS Pro toolbox of ProjPicker.
+
+Tools: CreateFeatureClass,
+       GuessProjection,
+       GuessRasterProjection,
+       ReprojectFeature,
+       ReprojectRaster,
 """
 
 # vim: filetype=python tabstop=4 shiftwidth=4 expandtab smarttab autoindent
