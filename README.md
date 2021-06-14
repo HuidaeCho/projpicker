@@ -10,7 +10,7 @@ bounding boxes using set-theoretic logical operators in a postfix notation. The
 goal is to make it easy and visual to select a desired projection by location.
 This project was motivated by
 [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
-A new GRASS GIS module [g.projpicker](https://github.com/OSGeo/grass-addons/pull/543)
+A new GRASS GIS module [g.projpicker](https://github.com/OSGeo/grass-addons/tree/master/grass7/general/g.projpicker)
 that wraps around this project is submitted. It is a work in progress; join
 [discussions](https://github.com/HuidaeCho/projpicker/wiki). See also
 [its documentation](https://projpicker.readthedocs.io/en/latest/).
