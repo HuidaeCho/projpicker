@@ -5,7 +5,7 @@ ProjPicker uses a custom parser to enable a simple but flexible query interface 
 The ProjPicker query string allows the user to
 
 1. use logical operations,
-2. use latlon and xy coordinates in conjunction, and
+2. use latitude-longitude and x-y coordinates in conjunction, and
 3. switch between various geometry formats
 
 all within simple string representation.
@@ -21,8 +21,8 @@ Each type can be use seperatly or in conjunction.
 
 For example,
 
-- Only xy: ``xy 1323252,396255``
-- Only latlon: ``latlon 33.7490°N,84.3880°W``
+- Only x-y: ``xy 1323252,396255``
+- Only latitude-longitude: ``latlon 33.7490°N,84.3880°W``
 - Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
 Coordinate formats
@@ -208,7 +208,7 @@ It is equivalent to ``A xor B xor C xor D`` set-theoretically or ``postfix A B x
 Postfix logical operations
 --------------------------
 
-If the first word is ``postfix``, ProjPicker supports postfix logical operations using ``and``, ``or``, ``xor``, and ``not``.
+If the first word is ``postfix``, ProjPicker supports postfix logical operations using ``and``, ``or``, ``xor``, ``not``, and ``match``.
 Postfix notations may not be straightforward to understand and write, but they are simpler to implement and do not require parentheses.
 In a vertically long input, writing logical operations without parentheses seems to be a better choice.
 
@@ -236,6 +236,17 @@ That is ``(A and B) xor C`` in an infix notation.
 .. code-block:: shell
 
     projpicker postfix A B and C xor
+
+The ``match`` operator compares two geometries in ``llatlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be tranformed to the other ``latlon`` geometry.
+It uses two constraints including ``match_tol=`` and ``match_max=``.
+``match_tol=`` defines the maximum tolerance in the ``xy`` unit for distance matching (default 1) and ``match_max=`` limits the maximum number of matches (default 0 for all).
+The following command returns the first matching CRS in ``xy`` that contains B whose equivalent ``latlon`` is A:
+
+.. code-block:: shell
+
+    projpicker postfix match_max=1 A xy B match
+
+The ``match`` operation is slow because it needs to transform points in ``latlon`` to ``xy`` for comparison.
 
 Special geometries for logical operations
 -----------------------------------------
