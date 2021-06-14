@@ -967,10 +967,10 @@ def parse_mixed_geoms(geoms):
     coordinate system by default.
 
     Args:
-        geoms (list or str): List of "point", "poly", "bbox", "latlon", "xy",
-            and parseable geometries. The first word can be either "all",
-            "and", "or", "xor", or "not". See parse_points(), parse_polys(),
-            and parse_bboxes().
+        geoms (list or str): List of "point", "poly", "bbox", "none", "all",
+            "latlon", "xy", "and", "or", "xor", "not", "unit=", and parseable
+            geometries. The first word can be either "and", "or", "xor", or
+            "postfix". See parse_points(), parse_polys(), and parse_bboxes().
 
     Returns:
         list: List of parsed geometries.
@@ -1852,10 +1852,10 @@ def query_mixed_geoms(
     used.
 
     Args:
-        geoms (list or str): List of "point", "poly", "bbox", "latlon", "xy",
-            "and", "or", "xor", "not", and parseable geometries. The first word
-            can be either "all", "and", "or", "xor", or "postfix". See
-            parse_points(), parse_polys(), and parse_bboxes().
+        geoms (list or str): List of "point", "poly", "bbox", "none", "all",
+            "latlon", "xy", "and", "or", "xor", "not", "unit=", and parseable
+            geometries. The first word can be either "and", "or", "xor", or
+            "postfix". See parse_points(), parse_polys(), and parse_bboxes().
         projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
