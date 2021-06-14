@@ -14,9 +14,11 @@ The installation script provides a GUI interface that allows the user to install
 The link to the install script will direct you to the raw file.
 Right click on the page when there and click save as to save a local copy of the script.
 
-.. figure:: https://user-images.githubusercontent.com/55674113/121754165-e4340980-cae1-11eb-8972-0d0b0ec076fb.png
+.. figure:: arcgis_pro_save_as_install_bat.png
    :align: center
+   :alt: Save as install.bat
 
+   Save as install.bat
 
 One can also use curl or Wget to retrieve the install script
 
@@ -47,8 +49,9 @@ Additional GUI
 
 An additional GUI created with `tkinter <https://docs.python.org/3/library/tkinter.html>`_ and integrated into the ArcGIS Pro toolbox allows the user to sort through and view available projections for their data.
 
-.. figure:: https://user-images.githubusercontent.com/55674113/121754753-6244e000-cae3-11eb-8aee-a860da0caebc.png
+.. figure:: arcgis_pro_projpicker_gui.png
    :align: center
+   :alt: ProjPicker GUI
 
    ProjPicker GUI
 
@@ -62,9 +65,13 @@ Creating a feature class
 The tool allows the user to draw a spatial query area and get projection recommendations for the a feature class.
 This functionality is particularly useful when useful when a new project is undertaken and new data must be generated.
 
-.. image:: https://user-images.githubusercontent.com/55674113/121751862-fd868700-cadc-11eb-9c4d-e32a3c3349d7.png
+.. figure:: arcgis_pro_projpicker_create_feature_class.png
+   :align: center
    :width: 800
    :height: 800
+   :alt: ProjPicker Create Feature Class
+
+   ProjPicker Create Feature Class
 
 ProjPicker will query available CRSs based on the spatial query and sort them to show the most localized projections first.
 Additionally, the user is able to sort by unit and projection type to quickly make better decisions for the data.
@@ -80,19 +87,19 @@ Following a similar example as in :doc:`finding missing projection <finding_miss
 The .prj file is then deleted.
 When viewed in its new undefined coordinate system, the data is placed in west Africa where the borders of Benin, Nigeria, and Niger touch.
 
-.. figure:: https://user-images.githubusercontent.com/55674113/121760974-6d0b6f00-cafb-11eb-8335-3ecb2761aeba.png
+.. figure:: arcgis_pro_original_data.png
+   :align: center
    :width: 500
    :height: 500
-   :align: center
+   :alt: Created data with original projection
 
    Created data with original projection
 
-
-.. figure:: https://user-images.githubusercontent.com/55674113/121760481-084f1500-caf9-11eb-9449-7451ac061c40.png
-   :alt: missing projection
+.. figure:: arcgis_pro_missing_projection.png
+   :align: center
    :width: 500
    :height: 500
-   :align: center
+   :alt: Data with projection information missing
 
    Data with projection information missing
 
@@ -100,11 +107,11 @@ Knowing the data is supposed to be in and around Atlanta, GA, ``ProjPicker Guess
 The tool then constructs the :doc:`query syntax <query_syntax>` to use both current location of the data and the believed location to generate a list of possible CRSs.
 Again, this generated list will be sorted to show localized projections first.
 
-.. figure:: https://user-images.githubusercontent.com/55674113/121760900-14d46d00-cafb-11eb-8102-c194c31b71e2.png
-   :alt: mising proj gui
+.. figure:: arcgis_pro_projpicker_gui_output.png
+   :align: center
    :width: 800
    :height: 800
-   :align: center
+   :alt: ProjPicker GUI output
 
    ProjPicker GUI output
 

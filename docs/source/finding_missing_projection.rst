@@ -6,17 +6,17 @@ For example, we can create a Shapefile (Atlanta_GA.shp) for Atlanta, Georgia, an
 Only the filename gives the user a hint about its geographic location, but without the PRJ file, novice GIS users can have difficulty finding the right projection and repairing the Shapefile.
 When the file is opened in a GIS, it will be located far away from the true data location because projected coordinates are treated as latitudes and longitudes.
 
-.. figure:: https://user-images.githubusercontent.com/7456117/120870997-7da26f00-c568-11eb-9630-785b0bfaf535.png
+.. figure:: shapefile_with_missing_crs.png
    :align: center
-   :alt: Shapefile location with missing projection metadata
+   :alt: Shapefile location with its projection data removed
 
-   The Shapefile location with its projection data removed
+   Shapefile location with its projection data removed
 
 Nigeria is definitely not the right location, so the user can search for the latitude and longitude of Atlanta, GA (33.7490°N,84.3880°W) and check the extent of the Shapefile from the layer properties (1323252,1374239,396255,434290 in SNWE):
 
-.. figure:: https://user-images.githubusercontent.com/7456117/120871218-06210f80-c569-11eb-92c3-787e1e761d65.png
+.. figure:: shapefile_extent.png
    :align: center
-   :alt: Extent in layer properties
+   :alt: Extent of the geometry
 
    Extent of the geometry
 
@@ -44,10 +44,15 @@ Python
 
     import projpicker as ppik
 
-    bbox = ppik.query_mixed_geoms("xy bbox 1323252,1374239,396255,434290 latlon point 33.7490°N,84.3880°W")
-    # equivalent to
-    # bbox = ppik.query_mixed_geoms(['xy', 'bbox', [1323252.0, 1374239.0, 396255.0, 434290.0], 'latlon', 'point', [33.749, -84.388]])
+    bbox = ppik.query_mixed_geoms("""xy bbox 1323252,1374239,396255,434290
+                                     latlon point 33.7490°N,84.3880°W""")
+    ppik.print_bbox(bbox[0])
 
+    # or
+    bbox = ppik.query_mixed_geoms(["xy", "bbox",
+                                   [1323252.0, 1374239.0, 396255.0, 434290.0],
+                                   "latlon", "point",
+                                   [33.749, -84.388]])
     ppik.print_bbox(bbox[0])
 
 Results
@@ -63,8 +68,8 @@ The first EPSG code (EPSG:26767) is a CRS code, and the second and third ones ar
 The name of the CRS is "NAD27 / Georgia West".
 EPSG:26767 is actually the correct CRS:
 
-.. figure:: https://user-images.githubusercontent.com/7456117/120872533-091dff00-c56d-11eb-92c2-c2a9262aa017.png
+.. figure:: correct_shapefile_crs.png
    :align: center
-   :alt: Correct CRS
+   :alt: Correct spatial reference
 
    Correct spatial reference

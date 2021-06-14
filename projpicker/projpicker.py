@@ -146,7 +146,7 @@ def tidy_lines(lines):
 
 
 def get_separator(separator):
-    """
+    r"""
     Convert a separator name to its corresponding character. If an unsupported
     name is given, return it as is.
 
@@ -2153,7 +2153,7 @@ def query_mixed_geoms(
 # conversions
 
 def stringify_bbox(bbox, header=True, separator="|"):
-    """
+    r"""
     Convert a list of BBox instances to a str. If the input bbox list is empty,
     an empty string is returned.
 
@@ -2244,7 +2244,7 @@ def extract_srids(bbox):
 # plain printing
 
 def print_bbox(bbox, outfile=sys.stdout, header=True, separator="|"):
-    """
+    r"""
     Print a list of BBox instances in a plain format.
 
     Args:
@@ -2260,7 +2260,7 @@ def print_bbox(bbox, outfile=sys.stdout, header=True, separator="|"):
 
 
 def print_srids(bbox, outfile=sys.stdout, separator="\n"):
-    """
+    r"""
     Print a list of spatial reference identifiers (SRIDs) in a plain format.
 
     Args:
@@ -2303,7 +2303,7 @@ def projpicker(
         projpicker_db=None,
         proj_db=None,
         create=False):
-    """
+    r"""
     Process options and perform requested tasks. This is the main API function.
     If geometries and an input file are specified at the same time, both
     sources are used except when the default stdin input file is specified and

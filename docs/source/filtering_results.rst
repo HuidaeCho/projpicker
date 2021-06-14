@@ -33,9 +33,11 @@ Python
 GUI
 ---
 
-.. image:: https://user-images.githubusercontent.com/7456117/121037195-422cbe00-c77d-11eb-9744-9a54f2d08964.png
+.. figure:: projpicker_gui.png
    :align: center
    :alt: GUI for selecting a subset of queried results
+
+   GUI for selecting a subset of queried results
 
 Shell
 ^^^^^

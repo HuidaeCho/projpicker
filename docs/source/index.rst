@@ -20,6 +20,7 @@ This project is kindly funded by `the Institute for Environmental and Spatial An
    querying_crss
    filtering_results
    finding_missing_projection
+   matching_coordinates
 
 .. toctree::
    :caption: Program references
