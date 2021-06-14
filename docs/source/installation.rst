@@ -22,7 +22,7 @@ The projpicker sqlite databse (``projpicker.db``) will come packaged when instal
 However, if any problems should arise and the ``projpicker.db`` should need to be recreated, the additional dependency of `pyproj <https://pypi.org/project/pyproj/>`_ will be needed.
 For more information about ``projpicker.db``, see :doc:`here <database>`.
 
-`pyproj <https://pypi.org/project/pyproj/3.1.0/>`_ is also needed for ``match`` operations.
+`pyproj <https://pypi.org/project/pyproj/>`_ is also needed for ``match`` operations.
 To learn more about the ``match`` operator, refer to the :doc:`query syntax <query_syntax>`.
 
 Using pip
