@@ -146,7 +146,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     topleft_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
-    crs_listbox = tk.Listbox(topleft_frame,
+    crs_listbox = tk.Listbox(topleft_frame, height=1,
                              selectmode=tk.SINGLE if single else tk.MULTIPLE)
     for b in bbox:
         crs_listbox.insert(tk.END,
@@ -211,7 +211,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     topright_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for CRS info
-    crs_text = tk.Text(topright_frame, width=20, wrap=tk.NONE)
+    crs_text = tk.Text(topright_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.pack(fill=tk.BOTH, expand=True)
 
