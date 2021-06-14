@@ -246,7 +246,7 @@ The following command returns the first matching CRS in ``xy`` that contains B w
 
     projpicker postfix match_max=1 A xy B match
 
-The ``match`` operation is slow because it needs to transform points in ``latlon`` to ``xy`` for comparison using `pyproj <https://pypi.org/project/pyproj/3.1.0/>`_.
+The ``match`` operation is slow because it needs to transform points in ``latlon`` to ``xy`` for comparison using `pyproj <https://pypi.org/project/pyproj/>`_.
 
 Special geometries for logical operations
 -----------------------------------------
