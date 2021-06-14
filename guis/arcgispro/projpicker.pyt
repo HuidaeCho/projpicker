@@ -83,7 +83,7 @@ class Toolbox(object):
         self.alias = 'ProjPicker'
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateFeatureClass, GuessProjection, GuessRasterProjection]
+        self.tools = [CreateFeatureClass, GuessProjection, GuessRasterProjection, ReprojectFeature]
 
 
 class CreateFeatureClass(object):
@@ -393,3 +393,105 @@ class GuessRasterProjection(object):
 
         return
 
+class ReprojectFeature(object):
+    def __init__(self):
+        '''Define the tool (tool name is the name of the class).'''
+        self.label = 'ProjPicker Reproject Feature Class'
+        self.description = 'ProjPicker wrapper to guess missing projection'
+        self.canRunInBackground = False
+
+    def getParameterInfo(self):
+        '''Define parameter definitions'''
+        feature = arcpy.Parameter(
+                displayName='Input Feature Class',
+                name='InFeature',
+                datatype='DEFeatureClass',
+                parameterType='required',
+                direction='Input')
+
+        new_feat = arcpy.Parameter(
+                displayName='Output Feature',
+                name='Feature',
+                datatype='DEFeatureClass',
+                parameterType='Required',
+                direction='Output')
+
+        location = arcpy.Parameter(
+                displayName='Spatial Query',
+                name='Location',
+                datatype='GPFeatureRecordSetLayer',
+                parameterType='Required',
+                direction='Input')
+
+        unit = arcpy.Parameter(
+                displayName='Unit',
+                name='Unit',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        unit.value = 'any'
+
+        params = [feature, new_feat, location, unit]
+        return params
+
+    def isLicensed(self):
+        '''Set whether tool is licensed to execute.'''
+        return True
+
+    def updateParameters(self, parameters):
+        '''Modify the values and properties of parameters before internal
+        validation is performed.
+        This method is called whenever a parameter
+        has been changed.'''
+        return
+
+    def updateMessages(self, parameters):
+        '''Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation.'''
+        return
+
+    def execute(self, parameters, messages):
+        '''The source code of the tool.'''
+
+        # Read parameters
+        feature = parameters[0]
+        new_feat = parameters[1]
+        location = parameters[2]
+        unit = parameters[3].valueAsText
+        check_unit(unit)
+
+        # Get path of spatial query feature
+        desc = arcpy.Describe(location)
+
+        # get extent in lat lon
+        bbox = desc.extent.projectAs(arcpy.SpatialReference(WGS84))
+
+        b = bbox.YMin
+        t = bbox.YMax
+        l = bbox.XMin
+        r = bbox.XMax
+
+        arcpy.AddMessage(f"Querying CRS's within {[b, t, l, r]}")
+
+        # If querying shape is a point then query by point
+        # else use bounding box
+        crs = ppik.query_bbox([b, t, l, r], unit=unit)
+
+        sel_crs = run_gui(crs)
+
+        # Get file path of input geom
+        desc = arcpy.Describe(feature)
+        in_file = f"{desc.path}\{desc.name}"
+
+        # Get file path of output geo
+        desc = arcpy.Describe(new_feat)
+        out_file = f"{desc.path}\{desc.name}"
+
+        # Create spatial reference object
+        # MUST be integer so IGNF authority codes will not work
+        try:
+            spat_ref = arcpy.SpatialReference(int(sel_crs.crs_code))
+        except RuntimeError:
+            arcpy.AddError(f"Selected projection {sel_crs} is not avaible in ArcGIS Pro")
+        # Create output geometry
+        arcpy.management.Project(in_file, out_file, spat_ref)
