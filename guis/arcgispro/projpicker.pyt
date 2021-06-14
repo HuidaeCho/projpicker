@@ -302,7 +302,7 @@ class GuessRasterProjection(object):
 
     def getParameterInfo(self):
         '''Define parameter definitions'''
-        feature = arcpy.Parameter(
+        raster = arcpy.Parameter(
                 displayName='Missing Projection Raster',
                 name='Missing Projection Raster',
                 datatype='DERasterDataset',
@@ -324,7 +324,7 @@ class GuessRasterProjection(object):
                 direction='Input')
         unit.value = 'any'
 
-        params = [feature, location, unit]
+        params = [raster, location, unit]
         return params
 
     def isLicensed(self):
@@ -347,12 +347,12 @@ class GuessRasterProjection(object):
         '''The source code of the tool.'''
 
         # Read parameters
-        feature = parameters[0]
+        raster = parameters[0]
         location = parameters[1]
         unit = parameters[2].valueAsText
         check_unit(unit)
 
-        # Get path of spatial query feature
+        # Get path of spatial query raster
         desc = arcpy.Describe(location)
 
         # get extent in lat lon of the data location
@@ -363,9 +363,8 @@ class GuessRasterProjection(object):
         l = bbox.XMin
         r = bbox.XMax
 
-
         # get extent in xy of the missing projection data
-        desc = arcpy.Describe(feature)
+        desc = arcpy.Describe(raster)
         unproj_bbox = desc.extent
 
         ub = unproj_bbox.YMin
@@ -373,14 +372,13 @@ class GuessRasterProjection(object):
         ul = unproj_bbox.XMin
         ur = unproj_bbox.XMax
 
-
-        # get full path of feature class
-        feature_dir = desc.path
-        feature_name = desc.name
+        # get full path of raster class
+        raster_dir = desc.path
+        raster_name = desc.name
 
         arcpy.AddMessage(f"Querying CRS's within {[b, t, l, r]}")
 
-        # Query with guessed location and missing projection feature class
+        # Query with guessed location and missing projection raster class
         crs = ppik.query_mixed_geoms([f'unit={unit}', 'bbox',
                                       'xy', [ub,ut, ul, ur],
                                       'latlon', [b, t, l, r]])
@@ -393,7 +391,7 @@ class GuessRasterProjection(object):
             spat_ref = arcpy.SpatialReference(int(sel_crs.crs_code))
         except RuntimeError:
             arcpy.AddError(f"Selected projection {sel_crs} is not avaible in ArcGIS Pro")
-        arcpy.DefineProjection_management(os.path.join(feature_dir, feature_name), spat_ref)
+        arcpy.DefineProjection_management(os.path.join(raster_dir, raster_name), spat_ref)
 
         return
 
@@ -509,7 +507,7 @@ class ReprojectRaster(object):
 
     def getParameterInfo(self):
         '''Define parameter definitions'''
-        feature = arcpy.Parameter(
+        raster = arcpy.Parameter(
                 displayName='Input Feature Class',
                 name='InFeature',
                 datatype='DERasterDataset',
@@ -538,7 +536,7 @@ class ReprojectRaster(object):
                 direction='Input')
         unit.value = 'any'
 
-        params = [feature, new_feat, location, unit]
+        params = [raster, new_feat, location, unit]
         return params
 
     def isLicensed(self):
@@ -561,13 +559,13 @@ class ReprojectRaster(object):
         '''The source code of the tool.'''
 
         # Read parameters
-        feature = parameters[0]
+        raster = parameters[0]
         new_feat = parameters[1]
         location = parameters[2]
         unit = parameters[3].valueAsText
         check_unit(unit)
 
-        # Get path of spatial query feature
+        # Get path of spatial query raster
         desc = arcpy.Describe(location)
 
         # get extent in lat lon
@@ -587,7 +585,7 @@ class ReprojectRaster(object):
         sel_crs = run_gui(crs)
 
         # Get file path of input geom
-        desc = arcpy.Describe(feature)
+        desc = arcpy.Describe(raster)
         in_file = f"{desc.path}\{desc.name}"
 
         # Get file path of output geo
