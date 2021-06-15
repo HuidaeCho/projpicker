@@ -16,6 +16,8 @@ from pathlib import Path
 import textwrap
 import projpicker as ppik
 
+
+
 ################################################################################
 # Constants
 
@@ -94,6 +96,7 @@ class Toolbox(object):
                       GuessRasterProjection,
                       ReprojectFeature,
                       ReprojectRaster,
+                      Match
                      ]
 
 
@@ -674,6 +677,9 @@ class Match(object):
 
     def execute(self, parameters, messages):
         '''The source code of the tool.'''
+
+        # Add path to projpicker module
+        sys.path.insert(0, str(Path(__file__).parent / 'projpicker'))
 
         # Read parameters
         feature = parameters[0].valueAsText
