@@ -46,6 +46,7 @@ tar -xf main.zip
 
 :: Move module to main folder
 move projpicker-main\projpicker projpicker >nul
+:: Move bootstrap pyproj into projpicker root
 move projpicker-main\guis\arcgispro\pyproj projpicker\pyproj >nul
 
 :: clean up
