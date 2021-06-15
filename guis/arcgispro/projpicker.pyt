@@ -1,3 +1,4 @@
+# vim: filetype=python tabstop=4 shiftwidth=4 expandtab smarttab autoindent
 """
 This module implements the ArcGIS Pro toolbox of ProjPicker.
 
@@ -8,7 +9,6 @@ Tools: CreateFeatureClass,
        ReprojectRaster,
 """
 
-# vim: filetype=python tabstop=4 shiftwidth=4 expandtab smarttab autoindent
 import arcpy
 import os
 import sys
@@ -607,4 +607,92 @@ class ReprojectRaster(object):
         # Create output geometry
         arcpy.management.ProjectRaster(in_file, out_file, spat_ref)
 
+
+class Match(object):
+    def __init__(self):
+        '''Define the tool (tool name is the name of the class).'''
+        self.label = 'ProjPicker Match'
+        self.description = 'ProjPicker wrapper to guess missing projection'
+        self.canRunInBackground = False
+
+    def getParameterInfo(self):
+        '''Define parameter definitions'''
+        feature = arcpy.Parameter(
+                displayName='Missing XY',
+                name='XY',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+
+        location = arcpy.Parameter(
+                displayName='Destination LatLon',
+                name='latlon',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+
+        unit = arcpy.Parameter(
+                displayName='Unit',
+                name='Unit',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        unit.value = 'any'
+
+        match_max = arcpy.Parameter(
+                displayName='Max Match',
+                name='MaxMatch',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        match_max.value = '1'
+
+        tolerance = arcpy.Parameter(
+                displayName='Match Tolerance',
+                name='Tolerance',
+                datatype='GPString',
+                parameterType='Optional',
+                direction='Input')
+        params = [feature, location, unit, match_max, tolerance]
+        return params
+
+    def isLicensed(self):
+        '''Set whether tool is licensed to execute.'''
+        return True
+
+    def updateParameters(self, parameters):
+        '''Modify the values and properties of parameters before internal
+        validation is performed.
+        This method is called whenever a parameter
+        has been changed.'''
+        return
+
+    def updateMessages(self, parameters):
+        '''Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation.'''
+        return
+
+    def execute(self, parameters, messages):
+        '''The source code of the tool.'''
+
+        # Read parameters
+        feature = parameters[0].valueAsText
+        location = parameters[1].valueAsText
+        unit = parameters[2].valueAsText
+        max = int(parameters[3].valueAsText)
+        tolerance = int(parameters[4].valueAsText)
+
+        check_unit(unit)
+
+        # If querying shape is a point then query by point
+        # else use bounding box
+        xy = " ".join(feature).replace(" ", "")
+        latlon = " ".join(location).replace(" ", "")
+
+        query = f"postfix match_max={max} match_tol={tolerance} {latlon} xy {xy} match"
+        crs = ppik.query_mixed_geoms(query)
+
+        sel_crs = run_gui(crs)
+
+        arcpy.AddMessage(sel_crs)
 
