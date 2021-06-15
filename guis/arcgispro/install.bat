@@ -7,7 +7,6 @@ setlocal
 
 :: Constants
 set PYTURL=https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/projpicker.pyt
-set PYPROJURL=https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/pyproj.py
 
 set GITURL=https://github.com/HuidaeCho/projpicker/archive/main.zip
 
