@@ -34,9 +34,9 @@ class from_crs():
         else:
             if not self.always_xy:
                 x, y = y, x
-            point = arcpy.PointGeometry(arcpy.Point(x, y), from_crs)
-            point = point.ProjectAs(to_crs)
-            x, y = point.X, point.Y
+            point = arcpy.PointGeometry(arcpy.Point(x, y), self.from_crs)
+            point = point.projectAs(self.to_crs)
+            x, y = point.centroid.X, point.centroid.Y
         return x, y
 
 
