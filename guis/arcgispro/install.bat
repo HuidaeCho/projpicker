@@ -7,7 +7,6 @@ setlocal
 
 :: Constants
 set PYTURL=https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/projpicker.pyt
-
 set GITURL=https://github.com/HuidaeCho/projpicker/archive/main.zip
 
 
@@ -45,6 +44,8 @@ tar -xf main.zip
 
 :: Move module to main folder
 move projpicker-main\projpicker projpicker >nul
+:: Move bootstrap pyproj into projpicker root
+move projpicker-main\guis\arcgispro\pyproj projpicker\pyproj >nul
 
 :: clean up
 Rmdir /Q /S "projpicker-main"
