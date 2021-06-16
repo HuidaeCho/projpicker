@@ -53,13 +53,6 @@ exclude_patterns = []
 #
 
 html_theme = "alabaster"
-#html_theme = "press"
-
-#html_theme_options = {
-#  "external_links": [
-#      ("GitHub", "https://github.com/HuidaeCho/projpicker"),
-#  ]
-#}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
