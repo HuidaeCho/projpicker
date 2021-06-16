@@ -1,4 +1,4 @@
-#sphinx_rtd_theme Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
@@ -32,9 +32,9 @@ with open("../../projpicker/VERSION") as f:
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-        "sphinx.ext.napoleon",
-        "sphinx.ext.autodoc",
-        "sphinxarg.ext"
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    "sphinxarg.ext"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,6 +53,12 @@ exclude_patterns = []
 #
 
 html_theme = "press"
+
+html_theme_options = {
+    "external_links": [
+        ("GitHub", "https://github.com/HuidaeCho/projpicker")
+    ]
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
