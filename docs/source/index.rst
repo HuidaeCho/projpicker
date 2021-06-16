@@ -12,8 +12,8 @@ This project is kindly funded by `the Institute for Environmental and Spatial An
    installation
    command_line_options
    query_syntax
-   arcgis_pro_toolbox
    GRASS GIS module <https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html>
+   arcgis_pro_toolbox
 
 .. toctree::
    :caption: Usage examples
