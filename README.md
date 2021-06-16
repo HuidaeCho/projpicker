@@ -36,7 +36,6 @@ and not under active development.
 ## TODO
 
 1. GUI
-   * ArcGIS Pro Toolbox for ArcGIS users including IESA students
    * Web (client-only)
    * Desktop
 2. CRS hints
