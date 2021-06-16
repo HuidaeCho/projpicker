@@ -616,7 +616,7 @@ def create_projpicker_db(
             proj_cur.execute(sql)
             nrow = 1
             for row in proj_cur.fetchall():
-                message("\b"*80+f"{nrow}/{nrows}", end="")
+                message("\b"*80+f"{nrow}/{nrows}", "")
                 (proj_table, crs_name,
                  crs_auth, crs_code,
                  usg_auth, usg_code,
@@ -680,7 +680,7 @@ def write_bbox_db(
         nrows = len(bbox)
         nrow = 1
         for row in bbox:
-            message("\b"*80+f"{nrow}/{nrows}", end="")
+            message("\b"*80+f"{nrow}/{nrows}", "")
             sql = """INSERT INTO bbox
                      VALUES (?, ?,
                              ?, ?, ?, ?, ?, ?,
@@ -1269,7 +1269,7 @@ def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
         nrows = len(bbox)
         nrow = 1
         for b in bbox:
-            message("\b"*80+f"Matching... {nrow}/{nrows}", end="")
+            message("\b"*80+f"Matching... {nrow}/{nrows}", "")
             crs = f"{b.crs_auth_name}:{b.crs_code}"
             if len(geom) == 2:
                 x2, y2 = transform_latlon_point(geom_latlon, crs)
