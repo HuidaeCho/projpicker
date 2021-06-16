@@ -7,15 +7,7 @@ location.
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
 
-It is a work in progress. Read [a related feature request for
-GRASS](https://github.com/OSGeo/grass/issues/1253) and join
-[discussions](https://github.com/HuidaeCho/projpicker/wiki).
-
-This [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
-uses the rtree module to build the spatial index of projection extents. It
-supports point intersection. Check the
-[main](https://github.com/HuidaeCho/projpicker) branch for other geometries
-including polylines, polygons, and bounding boxes.
+This [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch utilizes the [rtree](https://github.com/Toblerity/rtree) module in an object-oriented programming (OOP) way. This branch supports point intersection. The rtree spatial indexing may not be able to handle reversed west and east longitudinal boundaries that cross the antimeridian. This branch is archived and not under active development. Please check the [main](https://github.com/HuidaeCho/projpicker) branch for more features.
 
 ## Requirements
 
