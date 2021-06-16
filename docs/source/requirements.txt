@@ -1,3 +1,4 @@
+# Fork of sphinx-argparse for sentence case headers
 git+https://github.com/ocsmit/sphinx-argparse.git@master
 sphinx_rtd_theme
 six
