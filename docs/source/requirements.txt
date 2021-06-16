@@ -1,3 +1,3 @@
-git+https://github.com/ocsmit/sphinx-argparse
+git+https://github.com/ocsmit/sphinx-argparse.git
 sphinx_press_theme
 six
