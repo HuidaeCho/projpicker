@@ -10,6 +10,9 @@ The goal is to make it easy and visual to select a desired projection by locatio
 
    Forward (works) and reverse (want) queries of coordinate reference systems
 
+Sponsor
+-------
+
 This project is kindly funded by `the Institute for Environmental and Spatial Analysis <https://ung.edu/institute-environmental-spatial-analysis/>`_ (IESA) at `the University of North Georgia <https://ung.edu/>`_ (UNG).
 
 Table of contents
