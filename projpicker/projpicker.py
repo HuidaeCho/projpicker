@@ -217,8 +217,9 @@ def calc_xy_at_lat_noscaling(lat):
     """
     # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
     r = calc_radius_at_lat(lat)
-    x = r*c
-    y = r*s
+    theta = lat/180*math.pi
+    x = r*math.cos(theta)
+    y = r*math.sin(theta)
     return x, y
 
 
@@ -257,9 +258,7 @@ def calc_radius_at_lat(lat):
 
     # (x/rx)**2 + (y/ry)**2 = (r*cos(theta)/rx)**2 + (r*sin(theta)/ry)**2 = 1
     theta = lat/180*math.pi
-    c = math.cos(theta)
-    s = math.sin(theta)
-    r = math.sqrt((rx*ry)**2/((c*ry)**2+(s*rx)**2))
+    r = math.sqrt((rx*ry)**2/((math.cos(theta)*ry)**2+(math.sin(theta)*rx)**2))
     return r
 
 
