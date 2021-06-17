@@ -65,7 +65,7 @@ rx = 6378.1370
 ry = 6356.7523
 
 # geometry-bbox namedtuple class
-GeomBBox = collections.namedtuple("GeometryBBox", "is_latlon type geom bbox")
+GeomBBox = collections.namedtuple("GeomBBox", "is_latlon type geom bbox")
 
 
 ################################################################################
