@@ -10,7 +10,7 @@ The ProjPicker query string allows the user to
 
 all within simple string representation.
 
-Complex queries can be quickly created to accomplish goals such as :doc:`finding missing projection <finding_missing_projection>`.
+Complex queries can be quickly created to accomplish goals such as :doc:`finding missing projection </usage_examples/finding_missing_projection>`.
 
 Coordinate systems
 ------------------

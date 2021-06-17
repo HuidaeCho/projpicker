@@ -6,28 +6,20 @@ The goal is to make it easy and visual to select a desired projection by locatio
 
 This project is kindly funded by `the Institute for Environmental and Spatial Analysis <https://ung.edu/institute-environmental-spatial-analysis/>`_ (IESA) at `the University of North Georgia <https://ung.edu/>`_ (UNG).
 
-.. toctree::
-   :caption: Getting started
-
-   installation
-   command_line_options
-   query_syntax
-   GRASS GIS module <https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html>
-   arcgis_pro_toolbox
+Table of contents
+-----------------
 
 .. toctree::
-   :caption: Usage examples
 
-   querying_crss
-   filtering_results
-   finding_missing_projection
-   matching_coordinates
+   getting_started/index
 
 .. toctree::
-   :caption: Program references
 
-   modules
-   database
+   usage_examples/index
+
+.. toctree::
+
+   program_references/index
 
 Indices and tables
 ------------------

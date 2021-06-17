@@ -80,10 +80,10 @@ Correcting shapefiles with missing projection data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 With the logical operators detailed in the :doc:`query syntax <query_syntax>`, one can guess the projection information of spatial data that is missing for some reason.
-This process can also be seen using the main module API outside of ArcGIS Pro in :doc:`this example <finding_missing_projection>`.
+This process can also be seen using the main module API outside of ArcGIS Pro in :doc:`this example </usage_examples/finding_missing_projection>`.
 The tool titled ``ProjPicker Guess Projection`` provides this functionality with the tkinter GUI.
 
-Following a similar example as in :doc:`finding missing projection <finding_missing_projection>`, we create data in and around Atlanta, GA in the NAD 27 / Georgia West (EPSG:26767) projection.
+Following a similar example as in :doc:`finding missing projection </usage_examples/finding_missing_projection>`, we create data in and around Atlanta, GA in the NAD 27 / Georgia West (EPSG:26767) projection.
 The .prj file is then deleted.
 When viewed in its new undefined coordinate system, the data is placed in west Africa where the borders of Benin, Nigeria, and Niger touch.
 
