@@ -38,16 +38,16 @@ import json
 import pprint
 
 # https://stackoverflow.com/a/49480246/16079666
-if __package__ is None or __package__ == "":
-    from common import bbox_schema, bbox_columns, get_float, BBox
-    import coor_latlon
-    import coor_xy
-    import gui
-else:
+if __package__:
     from .common import bbox_schema, bbox_columns, get_float, BBox
     from . import coor_latlon
     from . import coor_xy
     from . import gui
+else:
+    from common import bbox_schema, bbox_columns, get_float, BBox
+    import coor_latlon
+    import coor_xy
+    import gui
 
 # module path
 module_path = os.path.dirname(__file__)
