@@ -3,10 +3,11 @@
 This module implements the ArcGIS Pro toolbox of ProjPicker.
 
 Tools: CreateFeatureClass,
-       GuessProjection,
+       GuessFeatureClassProjection,
        GuessRasterProjection,
-       ReprojectFeature,
+       ReprojectFeatureClass,
        ReprojectRaster,
+       MatchCoordinates
 """
 
 import arcpy
@@ -92,18 +93,18 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [CreateFeatureClass,
-                      GuessProjection,
+                      GuessFeatureClassProjection,
                       GuessRasterProjection,
-                      ReprojectFeature,
+                      ReprojectFeatureClass,
                       ReprojectRaster,
-                      Match
+                      MatchCoordinates
                      ]
 
 
 class CreateFeatureClass(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Create Feature Class'
+        self.label = 'Create Feature Class'
         self.description = 'ProjPicker wrapper to create feature class'
         self.canRunInBackground = False
 
@@ -197,10 +198,10 @@ class CreateFeatureClass(object):
 
         return
 
-class GuessProjection(object):
+class GuessFeatureClassProjection(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Guess Projection'
+        self.label = 'Guess Feature Class Projection'
         self.description = 'ProjPicker wrapper to guess missing projection'
         self.canRunInBackground = False
 
@@ -305,7 +306,7 @@ class GuessProjection(object):
 class GuessRasterProjection(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Guess Raster Projection'
+        self.label = 'Guess Raster Projection'
         self.description = 'ProjPicker wrapper to guess missing projection'
         self.canRunInBackground = False
 
@@ -404,10 +405,10 @@ class GuessRasterProjection(object):
 
         return
 
-class ReprojectFeature(object):
+class ReprojectFeatureClass(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Reproject Feature Class'
+        self.label = 'Reproject Feature Class'
         self.description = 'ProjPicker wrapper to guess missing projection'
         self.canRunInBackground = False
 
@@ -510,7 +511,7 @@ class ReprojectFeature(object):
 class ReprojectRaster(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Reproject Raster'
+        self.label = 'Reproject Raster'
         self.description = 'ProjPicker wrapper to guess missing projection'
         self.canRunInBackground = False
 
@@ -611,10 +612,10 @@ class ReprojectRaster(object):
         arcpy.management.ProjectRaster(in_file, out_file, spat_ref)
 
 
-class Match(object):
+class MatchCoordinates(object):
     def __init__(self):
         '''Define the tool (tool name is the name of the class).'''
-        self.label = 'ProjPicker Match'
+        self.label = 'Match Coordinates'
         self.description = 'ProjPicker wrapper to guess missing projection'
         self.canRunInBackground = False
 
