@@ -30,7 +30,7 @@ Using pip
 
 `Python package <https://pypi.org/project/projpicker/>`_
 
-Installation with pip is the recommended way to install both the CLI appliction and the python module.
+Installation with pip is the recommended way to install both the CLI appliction and the Python module.
 
 .. code-block:: shell
 
@@ -49,8 +49,7 @@ From source
 -----------
 
 The current development version of ProjPicker can be downloaded and installed from source `here <https://github.com/HuidaeCho/projpicker>`_.
-
-pip can be used to install from the source directory with:
+Use pip to install ProjPicker from the source directory.
 
 .. code-block:: shell
 
