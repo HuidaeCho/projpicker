@@ -35,10 +35,12 @@ and not under active development.
 
 ## TODO
 
-1. GUI
+1. API
+   * JavaScript
+2. GUI
+   * Desktop (wxPython)
    * Web (client-only)
-   * Desktop
-2. CRS hints
+3. CRS hints
    * Crowdsourcing agency and product information? Is usage from PROJ enough?
 
 ## Versioning
