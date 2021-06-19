@@ -42,7 +42,11 @@ Included tools
 ^^^^^^^^^^^^^^
 
 - ``ProjPicker Create Feature Class``
-- ``ProjPicker Guess Projection``
+- ``ProjPicker Guess Feature Class Projection``
+- ``ProjPicker Guess Raster Projection``
+- ``Match Coordinates``
+- ``ProjPicker Reproject Feature Class``
+- ``ProjPicker Reproject Raster``
 
 Additional GUI
 ^^^^^^^^^^^^^^
@@ -117,3 +121,32 @@ Again, this generated list will be sorted to show localized projections first.
 
 We can see that ProjPicker is able to guess the projection along with a number of other localized guesses.
 With the proper CRS selected, we can press select and the projection information is now defined for the data placing it in the correct spatial location.
+
+Reprojecting a feature class / Raster
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When new projects are undertaken it is integral to choose the most appropriate CRS.
+Often when working with new data in the United States, county level boundaries will dictate the region of interest which all analysis will fall in.
+The US Census bureau provides :ref:`nation wide county data`_ which can be used to query counties.
+However the data is provided in EPSG:4269 which is unsuitable for analysis at a county scales.
+ProjPicker can be used to reproject the nationwide data into the proper county level CRS.
+Take for instance reprojecting King county, Washington.
+
+.. figure:: arcgis_pro_reproject_fc.png
+   :align: center
+   :width: 500
+   :height: 200
+
+The same logic would follow for a raster extracted from a larger dataset to fit nore localized analysis.
+
+Match coordinates
+^^^^^^^^^^^^^^^^^
+
+The toolbox also provides ProjPickers matching capabilities to match XY corrdinates of missing data to find what CRS the missing data is in.
+
+Using the example provided at :doc:`Matching coordinates <../usage_examples/matching_coordinates>` we are able to find the missing CRS of data for the Georgia Governers office.
+
+.. figure:: arcgis_pro_match.png
+   :align: center
+   :width: 500
+   :height: 500
