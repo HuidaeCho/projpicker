@@ -122,7 +122,7 @@ Again, this generated list will be sorted to show localized projections first.
 We can see that ProjPicker is able to guess the projection along with a number of other localized guesses.
 With the proper CRS selected, we can press select and the projection information is now defined for the data placing it in the correct spatial location.
 
-Reprojecting a feature class / Raster
+Reprojecting a feature class / raster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When new projects are undertaken it is integral to choose the most appropriate CRS.
