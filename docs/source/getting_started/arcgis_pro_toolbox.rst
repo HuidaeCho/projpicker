@@ -144,7 +144,7 @@ Matching coordinates
 
 The toolbox also provides ProjPicker's matching capabilities to match XY coordinates of missing data to find what CRS the missing data is in.
 
-Using the example provided at :doc:`Matching coordinates <../usage_examples/matching_coordinates>` we are able to find the missing CRS of data for the Georgia Governer's office.
+Using the example provided at :doc:`matching coordinates <../usage_examples/matching_coordinates>` we are able to find the missing CRS of data for the Georgia Governer's office.
 
 .. figure:: arcgis_pro_match.png
    :align: center
