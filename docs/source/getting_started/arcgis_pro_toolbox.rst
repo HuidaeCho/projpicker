@@ -139,8 +139,8 @@ Take for instance reprojecting King county, Washington.
 
 The same logic would follow for a raster extracted from a larger dataset to fit more localized analysis.
 
-Match coordinates
-^^^^^^^^^^^^^^^^^
+Matching coordinates
+^^^^^^^^^^^^^^^^^^^^
 
 The toolbox also provides ProjPicker's matching capabilities to match XY coordinates of missing data to find what CRS the missing data is in.
 
