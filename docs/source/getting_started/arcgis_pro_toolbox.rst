@@ -66,7 +66,7 @@ Creating a feature class
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``ProjPicker Create Feature Class`` provides a tool to aid in the creation of new data.
-The tool allows the user to draw a spatial query area and get projection recommendations for the a feature class.
+The tool allows the user to draw a spatial query area and get projection recommendations for the feature class.
 This functionality is particularly useful when useful when a new project is undertaken and new data must be generated.
 
 .. figure:: arcgis_pro_projpicker_create_feature_class.png
@@ -137,14 +137,14 @@ Take for instance reprojecting King county, Washington.
    :width: 500
    :height: 200
 
-The same logic would follow for a raster extracted from a larger dataset to fit nore localized analysis.
+The same logic would follow for a raster extracted from a larger dataset to fit more localized analysis.
 
 Match coordinates
 ^^^^^^^^^^^^^^^^^
 
-The toolbox also provides ProjPickers matching capabilities to match XY corrdinates of missing data to find what CRS the missing data is in.
+The toolbox also provides ProjPicker's matching capabilities to match XY coordinates of missing data to find what CRS the missing data is in.
 
-Using the example provided at :doc:`Matching coordinates <../usage_examples/matching_coordinates>` we are able to find the missing CRS of data for the Georgia Governers office.
+Using the example provided at :doc:`Matching coordinates <../usage_examples/matching_coordinates>` we are able to find the missing CRS of data for the Georgia Governer's office.
 
 .. figure:: arcgis_pro_match.png
    :align: center
