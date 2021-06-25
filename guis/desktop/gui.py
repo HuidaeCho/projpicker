@@ -1,9 +1,25 @@
 import wx
 import wx.lib.plot as plot
+import wx.lib.ogl as ogl
 import json
+from collections.abc import Sequence
+from itertools import chain, count
 
 CNTRYJSON = "./data/countries.json"
 
+def flatten_nested_arr(l):
+    # Flatten nested arrays of any depth
+    # Treats arrays like a tree
+    flat_arr = []
+    for i in range(len(l)):
+        # Move down the tree
+        if isinstance(l[i], list):
+            # Naive concat
+            flat_arr += flatten_nested_arr(l[i])
+        # Move to the next branch
+        else:
+            flat_arr.append(l[i])
+    return flat_arr
 
 def get_country(path):
     with open(path) as f:
@@ -11,6 +27,12 @@ def get_country(path):
 
     return data
 
+def create_coors(flat_arr):
+    result = []
+    for i in range(1, len(flat_arr), 2):
+        result.append([flat_arr[i - 1], flat_arr[i]])
+
+    return result
 
 class mainFrame(wx.Frame):
     def __init__(self):
@@ -70,26 +92,27 @@ class mainFrame(wx.Frame):
         right.Add(border, 1, wx.ALIGN_RIGHT, 0)
 
         # CANVAS
-        canvas = plot.PlotCanvas(panel)
+        canvas = ogl.ShapeCanvas(panel)
 
         # test data
         c_json = get_country(CNTRYJSON)
-        data = c_json['features'][0]['geometry']['coordinates']
-        print(data[0][0])
-        com_data = []
-        for i in data:
-            for j in i:
-                for ii in j:
-                    com_data.append(ii)
+        line = []
+        for i in range(len(c_json['features'])):
+            coors = c_json['features'][i]['geometry']['coordinates']
+            flat_coors = flatten_nested_arr(coors)
+            data = create_coors(flat_coors)
+            #shape = ogl.PolygonShape()
 
-        print(com_data)
+            #line.append(plot.PolyLine(data, legend='', colour='pink', width=2))
 
+        #gc = plot.PlotGraphics(line)
+        #canvas.Draw(gc, xAxis=(-180,180), yAxis=(-90,90))
 
+        # Create sizer for the box
 
-        line = plot.PolyLine(com_data, legend='', colour='pink', width=2)
-        gc = plot.PlotGraphics([line], 'Line Graph', 'X Axis', 'Y Axis')
-        canvas.Draw(gc, xAxis=(-90,90), yAxis=(-180,180))
-        right.Add(canvas, 1, wx.EXPAND, 100)
+        # Create border
+        # https://www.blog.pythonlibrary.org/2019/05/09/an-intro-to-staticbox-and-staticboxsizers/
+        right.Add(canvas, 1, wx.EXPAND | wx.ALL, 5)
 
         # Add right to main
         main.Add(right, wx.ALIGN_RIGHT)
