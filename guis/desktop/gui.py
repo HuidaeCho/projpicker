@@ -3,8 +3,6 @@ import textwrap
 import pprint
 import wx
 import wx.html2
-import folium
-from folium.plugins import Draw
 from pathlib import Path
 import projpicker as ppik
 from dataclasses import dataclass
@@ -31,26 +29,6 @@ class Geometry:
             for i in self.coors:
                 corrected_coors.append(i[::-1])
         self.coors = list(corrected_coors)
-
-
-def generate_map():
-    # Generate leaflet html
-    map_path = Path(MAP)
-    print(str(map_path))
-    if map_path.is_file():
-        print("Map exists")
-    else:
-        print("Creating map")
-        fmap = folium.Map([34.2347566, -83.8676613], zoom_start=5)
-        Draw(
-            export=False,
-            filename="my_data.geojson",
-            position="topleft",
-            draw_options={"polyline": {"allowIntersection": False}},
-            edit_options={"poly": {"allowIntersection": False}},
-        ).add_to(fmap)
-        fmap.save(MAP)
-
 
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
