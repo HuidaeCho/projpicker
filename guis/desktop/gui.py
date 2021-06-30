@@ -28,6 +28,7 @@ MAP = "openstreet.html"
 
 @dataclass
 class Geometry:
+    # Geometry struct for better handling of geojson
     type: str
     coors: list or tuple
 
@@ -175,36 +176,10 @@ class MainFrame(wx.Frame):
         browser_size = wx.BoxSizer(wx.HORIZONTAL)
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
-    def pop_info(self, event):
-        selection_index = self.lbox.GetSelection()
-        selection_name = self.lbox.GetString(selection_index)
-
-        try:
-            for i in self.crs:
-                if i.crs_name == selection_name:
-                    crs_info = self.__crs_string(i)
-            self.crs_info_text.SetLabel(crs_info)
-        except AttributeError:
-            self.crs_info_text.SetLabel('')
 
     def vertices_alert(self):
         wx.MessageBox("Too many vertices, please delete geometry.")
 
-    def get_json(self, event):
-        # Change title of HTML document within webview to the json.
-        # Super hacky solution in due to lack of Wx webview event handlers.
-        # Reads in the EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the ProjPicker query
-        pp = pprint.PrettyPrinter(indent=4)
-        # Get new JSON from title
-        # Document title can only grow to 999 chars so catch that error and alert
-        try:
-            self.json = json.loads(self.browser.GetCurrentTitle())
-        except json.decoder.JSONDecodeError:
-            self.vertices_alert()
-            raise RuntimeError("Too many vertices. Delete geometry.")
-        # temporary print
-        #pp.pprint(self.json)
-        self.query()
 
     def __crs_string(self, crs: list):
         return textwrap.dedent(f"""\
@@ -239,20 +214,48 @@ class MainFrame(wx.Frame):
         crs_names = [i.crs_name for i in self.crs]
         self.lbox.InsertItems(crs_names, 0)
 
-        # TODO: Modularize the code to enable event handlers based off the EVT_WEBVIEW_TITLE_CHANGED
-        #       event.
-
     def construct_ppik(self, geo: Geometry):
         if geo.type == "Polygon":
             ppik_type = "poly"
             return [ppik_type, geo.coors]
         return ['latlon', geo.coors]
 
+    #################################
+    # Event Handlers
+
     def close(self, event):
         self.Close()
 
     def confirm_load(self, event):
         print("OpenStreetMap loaded.")
+
+    def get_json(self, event):
+        # Change title of HTML document within webview to the json.
+        # Super hacky solution in due to lack of Wx webview event handlers.
+        # Reads in the EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the ProjPicker query
+        pp = pprint.PrettyPrinter(indent=4)
+        # Get new JSON from title
+        # Document title can only grow to 999 chars so catch that error and alert
+        try:
+            self.json = json.loads(self.browser.GetCurrentTitle())
+        except json.decoder.JSONDecodeError:
+            self.vertices_alert()
+            raise RuntimeError("Too many vertices. Delete geometry.")
+        # temporary print
+        #pp.pprint(self.json)
+        self.query()
+
+    def pop_info(self, event):
+        selection_index = self.lbox.GetSelection()
+        selection_name = self.lbox.GetString(selection_index)
+
+        try:
+            for i in self.crs:
+                if i.crs_name == selection_name:
+                    crs_info = self.__crs_string(i)
+            self.crs_info_text.SetLabel(crs_info)
+        except AttributeError:
+            self.crs_info_text.SetLabel('')
 
 
 
