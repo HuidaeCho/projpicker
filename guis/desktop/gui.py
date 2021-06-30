@@ -8,9 +8,13 @@ import projpicker as ppik
 from dataclasses import dataclass
 
 
+#################################
+# Constants
 MAP = "openstreet.html"
 
 
+#################################
+# Structs
 @dataclass
 class Geometry:
     # Struct for easier handling of drawn geometry
@@ -30,7 +34,10 @@ class Geometry:
                 corrected_coors.append(i[::-1])
         self.coors = list(corrected_coors)
 
-class MainFrame(wx.Frame):
+
+#################################
+# GUI
+class ProjpickerGui(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
@@ -244,6 +251,6 @@ class MainFrame(wx.Frame):
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = MainFrame(None)
+    frame = ProjpickerGui(None)
     frame.Show()
     app.MainLoop()
