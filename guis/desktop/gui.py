@@ -1,16 +1,3 @@
-# Use folium to stream in OpenStreetMap
-#
-# Has both pros and cons.
-# If we use OpenStreetMap we will have to download and stream data in somehow.
-# It would not be feasible to have an up to data OSM database with all levels of
-# tiles.
-# Folium allows us to use OSM quickly.
-# It however would not allow easy integration into GRASS if we fail to make the
-# GUi modular enough.
-# So if we make it modular, say split core widgets from the actual view itself,
-# it could be realistically used with any WX framework.
-# But if our widgets are designed to get the events from one specific source,
-# then it would not be able to used as fluidly as first hoped.
 import json
 import textwrap
 import pprint
@@ -28,7 +15,7 @@ MAP = "openstreet.html"
 
 @dataclass
 class Geometry:
-    # Geometry struct for better handling of geojson
+    # Struct for easier handling of drawn geometry
     type: str
     coors: list or tuple
 
@@ -47,6 +34,7 @@ class Geometry:
 
 
 def generate_map():
+    # Generate leaflet html
     map_path = Path(MAP)
     print(str(map_path))
     if map_path.is_file():
@@ -88,21 +76,26 @@ class MainFrame(wx.Frame):
         # Set sizer for main container
         self.panel.SetSizer(self.main)
 
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
-
-        # Handler for the Document title change to read the json and trigger the ppik query
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.get_json)
-
-        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
-
-
-        # Set size of window last otherwise sizers wont work.
         width = 900
         height = 700
         size = wx.Size(width, height)
         self.SetMaxSize(size)
         self.SetMinSize(size)
         self.SetSize(size)
+
+        #################################
+        # EVENTS
+
+        # Confirm loading of map
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
+
+        # Handler for the Document title change to read the json and trigger the ppik query
+        # This event will trigger the projpicker query and population of the CRS list
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.get_json)
+
+
+        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
+
 
     #################################
     # LEFT
@@ -125,6 +118,7 @@ class MainFrame(wx.Frame):
         self.left.Add(self.lbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
 
     def buttons(self):
+        # Space out buttons
         width = self.left_width // 7
         # Create bottom left sizer for buttons
         btm_left = wx.BoxSizer(wx.HORIZONTAL)
@@ -166,13 +160,13 @@ class MainFrame(wx.Frame):
         self.right.Add(border, 1, wx.ALIGN_RIGHT, 100)
 
     def osm_map(self):
-
-        # CANVAS
+        # Create webview
         self.browser = wx.html2.WebView.New(self.panel)
 
-
+        # Load the local html
         Url = wx.FileSystem.FileNameToURL(MAP)
         self.browser.LoadURL(Url)
+        # Set sizer
         browser_size = wx.BoxSizer(wx.HORIZONTAL)
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
@@ -182,6 +176,8 @@ class MainFrame(wx.Frame):
 
 
     def __crs_string(self, crs: list):
+        # Format CRS Info
+        # Same as lambda function in projpicker.gui
         return textwrap.dedent(f"""\
         CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
         CRS Code: {crs.crs_auth_name}:{crs.crs_code}
@@ -194,27 +190,32 @@ class MainFrame(wx.Frame):
 
 
     def query(self):
+        # Load all features drawn
         features = self.json["features"]
 
+        # Create Geometry struct for each feature
         geoms = []
         for i in features:
             json_geo = i['geometry']
             geo_type = json_geo['type']
             coors = json_geo['coordinates']
             geo = Geometry(json_geo['type'], json_geo['coordinates'])
+            # Reverse coordinates as leaflet returns oppisite order of what ProjPicker takes.
             geo.flip()
             geoms.extend(self.construct_ppik(geo))
 
+        # DEBUGGING
         print(geoms)
+        # Query with ProjPicker
         self.crs = ppik.query_mixed_geoms(geoms)
-        #ppik.print_bbox(crs)
 
-
+        # Populate crs listbox
         self.lbox.Clear()
         crs_names = [i.crs_name for i in self.crs]
         self.lbox.InsertItems(crs_names, 0)
 
     def construct_ppik(self, geo: Geometry):
+        # Construct projpicker query
         if geo.type == "Polygon":
             ppik_type = "poly"
             return [ppik_type, geo.coors]
@@ -222,18 +223,20 @@ class MainFrame(wx.Frame):
 
     #################################
     # Event Handlers
-
     def close(self, event):
         self.Close()
 
     def confirm_load(self, event):
+        # Confirm map is loaded for debugging purposes
         print("OpenStreetMap loaded.")
 
     def get_json(self, event):
+        # Main event handler which will trigger functionality.
+
         # Change title of HTML document within webview to the json.
         # Super hacky solution in due to lack of Wx webview event handlers.
         # Reads in the EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the ProjPicker query
-        pp = pprint.PrettyPrinter(indent=4)
+
         # Get new JSON from title
         # Document title can only grow to 999 chars so catch that error and alert
         try:
@@ -241,14 +244,15 @@ class MainFrame(wx.Frame):
         except json.decoder.JSONDecodeError:
             self.vertices_alert()
             raise RuntimeError("Too many vertices. Delete geometry.")
-        # temporary print
-        #pp.pprint(self.json)
+        # Run query
         self.query()
 
     def pop_info(self, event):
+        # Populate CRS info with information of selected CRS
         selection_index = self.lbox.GetSelection()
         selection_name = self.lbox.GetString(selection_index)
 
+        # Catch error of empty CRS at load time
         try:
             for i in self.crs:
                 if i.crs_name == selection_name:
