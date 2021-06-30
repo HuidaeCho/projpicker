@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+    <script>
+    L_NO_TOUCH = false;
+    L_DISABLE_3D = false;
+    </script>
+
+    <style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+    <style>
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js">
+    </script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+    </script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js">
+    </script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js">
+    </script>
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css" />
+    <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css" />
+
+    <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+    #map {
+        position: relative;
+        width: 100.0%;
+        height: 100.0%;
+        left: 0.0%;
+        top: 0.0%;
+    }
+    </style>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js">
+    </script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.css" />
+</head>
+
+<body>
+
+    <div class="folium-map" id="map"></div>
+
+</body>
+<script>
+var map = L.map(
+    "map",
+    {
+        center: [34.2347566, -83.8676613],
+        crs: L.CRS.EPSG3857,
+        zoom: 5,
+        zoomControl: true,
+        preferCanvas: false,
+    }
+);
+
+
+
+
+var tile_layer = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        "attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.",
+        "detectRetina": false,
+        "maxNativeZoom": 18,
+        "maxZoom": 18,
+        "minZoom": 0,
+        "noWrap": false,
+        "opacity": 1,
+        "subdomains": "abc",
+        "tms": false
+    }
+).addTo(map);
+
+
+var options = {
+    position: "topleft",
+    draw: {
+        "polyline": {
+            "allowIntersection": false
+        }
+    },
+    edit: {
+        "poly": {
+            "allowIntersection": false
+        }
+    },
+}
+// FeatureGroup is to store editable layers.
+var drawnItems = new L.featureGroup().addTo(
+    map
+);
+options.edit.featureGroup = drawnItems;
+var draw_control = new L.Control.Draw(
+    options
+).addTo(map);
+map.on(L.Draw.Event.CREATED, function (e) {
+    var layer = e.layer,
+        type = e.layerType;
+    var coords = JSON.stringify(layer.toGeoJSON());
+    layer.on('click', function () {
+        alert(coords);
+        console.log(coords);
+    });
+    drawnItems.addLayer(layer);
+});
+
+map.on('draw:created', function (e) {
+    // Logs the lat long of shapes drawn by user
+    var type = e.layerType,
+        layer = e.layer;
+
+    console.log(layer.getLatLngs());
+
+
+    drawnItems.addLayer(layer);
+
+    // Get
+    var shape = drawnItems.toGeoJSON()
+    var shape_for_db = JSON.stringify(shape);
+    // Print the GeoJSON to the console for debugging purposes
+    console.log(shape);
+    console.log(shape_for_db);
+    // Change document title to be the json string
+    // of the drawn geometry
+    document.title = shape_for_db;
+    // download(shape_for_db, 'query.json');
+
+
+});
+
+
+function download(content, filename, contentType)
+{
+
+
+    var scripts = document.getElementsByTagName("script"),
+    src = scripts[scripts.length-1].src;
+    var path = scripts.item(0).baseURI;
+    var path = path.slice(0, -15);
+
+    if (!contentType) contentType = 'application/octet-stream';
+    var a = document.createElement('a');
+    var blob = new Blob([content], {
+        'type': contentType
+    });
+    a.href = window.URL.createObjectURL(blob);
+    a.download = path;
+    a.click();
+};
+</script>
