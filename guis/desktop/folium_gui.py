@@ -11,14 +11,17 @@
 # it could be realistically used with any WX framework.
 # But if our widgets are designed to get the events from one specific source,
 # then it would not be able to used as fluidly as first hoped.
+import json
+import textwrap
+import pprint
 import wx
 import wx.html2
 import folium
 from folium.plugins import Draw
 from pathlib import Path
+import projpicker as ppik
 
 MAP = 'openstreet.html'
-
 
 def generate_map():
     map_path = Path(MAP)
@@ -37,37 +40,7 @@ def generate_map():
         ).add_to(fmap)
         fmap.save(MAP)
 
-# Generate map base html
-generate_map()
-
-class MyBrowser(wx.Dialog):
-    def __init__(self, *args, **kwds):
-        wx.Dialog.__init__(self, *args, **kwds)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.browser = wx.html2.WebView.New(self)
-
-        def confirm_load(event):
-            print("OpenStreetMap loaded.")
-
-
-        Url = wx.FileSystem.FileNameToURL(MAP)
-        print(Url)
-
-        self.browser.LoadURL(Url)
-        sizer.Add(self.browser, 1, wx.EXPAND, 10)
-
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, confirm_load)
-
-        self.SetSizer(sizer)
-        self.SetSize((1280, 720))
-
-
-
-import wx
-import wx.lib.plot as plot
-
-class mainFrame(wx.Frame):
+class MainFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
         panel = wx.Panel(self)
@@ -125,23 +98,20 @@ class mainFrame(wx.Frame):
         right.Add(border, 1, wx.ALIGN_RIGHT, 0)
 
         # CANVAS
-        browser = wx.html2.WebView.New(panel)
+        self.browser = wx.html2.WebView.New(panel)
 
         def confirm_load(event):
             print("OpenStreetMap loaded.")
 
+
         Url = wx.FileSystem.FileNameToURL(MAP)
-
-        browser.LoadURL(Url)
+        self.browser.LoadURL(Url)
         wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, confirm_load)
+
+        # Handler for the Document title change to read the json and trigger the ppik query
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.get_json)
         browser_size = wx.BoxSizer(wx.HORIZONTAL)
-        right.Add(browser, 1, wx.EXPAND, 10)
-
-
-        '''
-        right.Add(browser, -1, wx.RIGHT, 10)
-
-        '''
+        right.Add(self.browser, 1, wx.EXPAND, 10)
 
         # Add right to main
         main.Add(right, wx.ALIGN_RIGHT)
@@ -152,10 +122,46 @@ class mainFrame(wx.Frame):
         size = wx.Size(800, 800)
         self.SetSize(size)
 
+    def get_json(self, event):
+        # Change title of HTML document within webview to the json.
+        # Super hacky solution in due to lack of Wx webview event handlers.
+        # Reads in the EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the ProjPicker query
+        pp = pprint.PrettyPrinter(indent=4)
+        # Get new JSON from title
+        self.json = json.loads(self.browser.GetCurrentTitle())
+        # temporary print
+        pp.pprint(self.json)
+        self.query()
+
+    def __reverse_lat_lon(self, coors):
+        '''
+        Switch lat lon
+        '''
+        corrected_coors = []
+        for i in coors[0]:
+            corrected_coors.append(i[::-1])
+        return corrected_coors
+
+    def query(self):
+        features = self.json['features']
+        if len(features) == 1:
+            coors = features[0]['geometry']['coordinates']
+            pprint.pprint(coors)
+            corrected = self.__reverse_lat_lon(coors)
+            bbox = ppik.query_polys(corrected)
+            # Print bbox query for now
+            ppik.print_bbox(bbox)
+        else:
+            print('Handle multiple geometry')
+
+
+        # TODO: Modularize the code to enable event handlers based off the EVT_WEBVIEW_TITLE_CHANGED
+        #       event.
+
 
 
 if __name__ == '__main__':
     app = wx.App()
-    frame = mainFrame(None)
+    frame = MainFrame(None)
     frame.Show()
     app.MainLoop()
