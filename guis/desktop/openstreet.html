@@ -112,7 +112,9 @@ var options = {
     draw: {
         "polyline": {
             "allowIntersection": false
-        }
+        },
+        circle: false,
+        circlemarker: false,
     },
     edit: {
         "poly": {
@@ -120,6 +122,9 @@ var options = {
         }
     },
 }
+
+
+
 // FeatureGroup is to store editable layers.
 var drawnItems = new L.featureGroup().addTo(
     map
