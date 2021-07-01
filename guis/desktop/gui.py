@@ -229,10 +229,7 @@ class ProjPickerGUI(wx.Frame):
 
     def construct_ppik(self, geom: Geometry):
         # Construct projpicker query
-        if geom.type == "Polygon":
-            geom_type = "poly"
-        else:
-            geom_type = "latlon"
+        geom_type = "poly" if geom.type == "Polygon" else "latlon"
         return [geom_type, geom.coors]
 
 
