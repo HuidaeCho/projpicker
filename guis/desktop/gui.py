@@ -53,10 +53,13 @@ class Geometry:
         """
         corrected_coors = []
         if self.type == "Point":
+            # Coordinates in "Point" type are single depth tuple [i, j]
             corrected_coors = self.coors[1], self.coors[0]
         else:
-            self.coors = self.coors[0]
-            for i in self.coors:
+            # Coordinates in "Poly" type are in multi depth
+            # array of size [[[i, j], [i1, j1], ...]]
+            # Move down array depth for easier iteration
+            for i in self.coors[0]:
                 corrected_coors.append(i[::-1])
         self.coors = list(corrected_coors)
 
