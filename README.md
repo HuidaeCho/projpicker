@@ -19,7 +19,7 @@ that wraps around this project is available. It is a work in progress; join
 
 ## Desktop GUI
 
-![image](https://user-images.githubusercontent.com/7456117/124180203-e1de2300-da81-11eb-9b79-f9ac70d5623e.png)
+![image](https://user-images.githubusercontent.com/7456117/124199416-d64e2480-daa0-11eb-9bf1-8a8778a1e424.png)
 
 ## Branches
 
