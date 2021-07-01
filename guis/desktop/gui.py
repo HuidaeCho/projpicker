@@ -270,7 +270,7 @@ class ProjPickerGUI(wx.Frame):
         # XXX: RunScript() still returns None? GetSelected(Source|Text)() don't
         # work? GetPageSource() returns the original page source only;
         # GetPageText() returns an empty text; Document title can only grow to
-        # 1000 chars; Implement a workaround using pull messages;
+        # 1000 characters; Implement a workaround using pull messages;
         # pushGeometryChunk() changes the title of HTML document within webview
         # to a chunk of JSON; Super hacky solution because other methods don't
         # work as expected
