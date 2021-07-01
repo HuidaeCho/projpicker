@@ -104,7 +104,6 @@ class ProjPickerGUI(wx.Frame):
         # This event will trigger the projpicker query and population of the CRS list
         wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.get_json)
 
-
         wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
 
 
