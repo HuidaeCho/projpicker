@@ -178,8 +178,6 @@ class ProjPickerGUI(wx.Frame):
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        # Set sizer
-        browser_size = wx.BoxSizer(wx.HORIZONTAL)
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
 
