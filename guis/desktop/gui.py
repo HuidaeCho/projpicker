@@ -267,21 +267,19 @@ class ProjPickerGUI(wx.Frame):
 
 
     def get_json(self, event):
-        # Main event handler which will trigger functionality
-
-        # Change title of HTML document within webview to the JSON; Super hacky
-        # solution in due to lack of Wx webview event handlers; Reads in the
-        # EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the
-        # ProjPicker query
-
-        # Get new JSON from title
+        # Get new JSON from title; Main event handler which will trigger
+        # functionality
 
         # http://trac.wxwidgets.org/ticket/13859
         # https://wxpython.org/Phoenix/docs/html/wx.webkit.WebKitCtrl.html
         # XXX: RunScript() still returns None? GetSelected(Source|Text)() don't
         # work? GetPageSource() returns the original page source only;
         # GetPageText() returns an empty text; Document title can only grow to
-        # 1000 chars; Implement a workaround using pull messages
+        # 1000 chars; Implement a workaround using pull messages;
+        # pushGeometryChunk() changes the title of HTML document within webview
+        # to a chunk of JSON; Super hacky solution because other methods don't
+        # work as expected
+
         geom_chunk = self.browser.GetCurrentTitle()
         if geom_chunk == "pull":
             self.geom_buf = ""
