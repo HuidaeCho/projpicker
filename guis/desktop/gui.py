@@ -5,7 +5,7 @@
 # Authors:  Owen Smith, Huidae Cho
 #           Institute for Environmental and Spatial Analysis
 #           University of North Georgia
-# Since:    May 27, 2021
+# Since:    June 30, 2021
 #
 # Copyright (C) 2021 Huidae Cho <https://faculty.ung.edu/hcho/> and
 #                    Owen Smith <https://www.gaderian.io/>
@@ -29,13 +29,13 @@ import pprint
 import wx
 import wx.html2
 from pathlib import Path
-import projpicker as ppik
 from dataclasses import dataclass
+import projpicker as ppik
 
 
 #################################
 # Constants
-MAP = "openstreet.html"
+MAP_URL = "openstreet.html"
 
 
 #################################
@@ -45,6 +45,7 @@ class Geometry:
     # Struct for easier handling of drawn geometry
     type: str
     coors: list or tuple
+
 
     def flip(self):
         """
@@ -62,7 +63,7 @@ class Geometry:
 
 #################################
 # GUI
-class ProjpickerGui(wx.Frame):
+class ProjPickerGUI(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
@@ -127,6 +128,7 @@ class ProjpickerGui(wx.Frame):
         # Add CRS listbox to main left side
         self.left.Add(self.lbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
 
+
     def buttons(self):
         # Space out buttons
         width = self.left_width // 7
@@ -169,12 +171,13 @@ class ProjpickerGui(wx.Frame):
         # Add to right column
         self.right.Add(border, 1, wx.ALIGN_RIGHT, 100)
 
+
     def osm_map(self):
         # Create webview
         self.browser = wx.html2.WebView.New(self.panel)
 
         # Load the local html
-        Url = wx.FileSystem.FileNameToURL(MAP)
+        Url = wx.FileSystem.FileNameToURL(MAP_URL)
         self.browser.LoadURL(Url)
         # Set sizer
         browser_size = wx.BoxSizer(wx.HORIZONTAL)
@@ -224,6 +227,7 @@ class ProjpickerGui(wx.Frame):
         crs_names = [i.crs_name for i in self.crs]
         self.lbox.InsertItems(crs_names, 0)
 
+
     def construct_ppik(self, geo: Geometry):
         # Construct projpicker query
         if geo.type == "Polygon":
@@ -231,14 +235,17 @@ class ProjpickerGui(wx.Frame):
             return [ppik_type, geo.coors]
         return ['latlon', geo.coors]
 
+
     #################################
     # Event Handlers
     def close(self, event):
         self.Close()
 
+
     def confirm_load(self, event):
         # Confirm map is loaded for debugging purposes
         print("OpenStreetMap loaded.")
+
 
     def get_json(self, event):
         # Main event handler which will trigger functionality.
@@ -257,6 +264,7 @@ class ProjpickerGui(wx.Frame):
         # Run query
         self.query()
 
+
     def pop_info(self, event):
         # Populate CRS info with information of selected CRS
         selection_index = self.lbox.GetSelection()
@@ -272,10 +280,7 @@ class ProjpickerGui(wx.Frame):
             self.crs_info_text.SetLabel('')
 
 
-
-
 if __name__ == "__main__":
     app = wx.App()
-    frame = ProjpickerGui(None)
-    frame.Show()
+    ProjPickerGUI(None).Show()
     app.MainLoop()
