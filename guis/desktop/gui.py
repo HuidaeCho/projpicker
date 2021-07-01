@@ -52,7 +52,7 @@ class Geometry:
         Switch lat lon
         """
         corrected_coors = []
-        if self.type == 'Point':
+        if self.type == "Point":
             corrected_coors = self.coors[1], self.coors[0]
         else:
             self.coors = self.coors[0]
@@ -121,7 +121,7 @@ class ProjPickerGUI(wx.Frame):
             self.panel,
             id=1,
             size=(self.left_width, self.left_height),
-            choices=["Draw geometry to query CRS's"],
+            choices=["Draw geometry to query CRSs"],
         )
 
         # Add CRS listbox to main left side
@@ -208,10 +208,10 @@ class ProjPickerGUI(wx.Frame):
         # Create Geometry struct for each feature
         geoms = []
         for i in features:
-            json_geo = i['geometry']
-            geo_type = json_geo['type']
-            coors = json_geo['coordinates']
-            geo = Geometry(json_geo['type'], json_geo['coordinates'])
+            json_geo = i["geometry"]
+            geo_type = json_geo["type"]
+            coors = json_geo["coordinates"]
+            geo = Geometry(json_geo["type"], json_geo["coordinates"])
             # Reverse coordinates as leaflet returns oppisite order of what ProjPicker takes.
             geo.flip()
             geoms.extend(self.construct_ppik(geo))
@@ -232,7 +232,7 @@ class ProjPickerGUI(wx.Frame):
         if geo.type == "Polygon":
             ppik_type = "poly"
             return [ppik_type, geo.coors]
-        return ['latlon', geo.coors]
+        return ["latlon", geo.coors]
 
 
     #################################
@@ -276,7 +276,7 @@ class ProjPickerGUI(wx.Frame):
                     crs_info = self.__crs_string(i)
             self.crs_info_text.SetLabel(crs_info)
         except AttributeError:
-            self.crs_info_text.SetLabel('')
+            self.crs_info_text.SetLabel("")
 
 
 if __name__ == "__main__":
