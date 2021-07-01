@@ -76,14 +76,14 @@ class ProjPickerGUI(wx.Frame):
         self.left = wx.BoxSizer(wx.VERTICAL)
         self.right = wx.BoxSizer(wx.VERTICAL)
 
-        self.crs_list_box()
-        self.buttons()
+        self.create_crs_listbox()
+        self.create_buttons()
 
         # Add bottom left sizer to left side sizer
         self.main.Add(self.left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
 
-        self.crs_info("CRS Info")
-        self.osm_map()
+        self.create_crs_info()
+        self.create_map()
 
         # Add right to main
         self.main.Add(self.right, wx.ALIGN_RIGHT)
@@ -114,7 +114,7 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # LEFT
-    def crs_list_box(self):
+    def create_crs_listbox(self):
         st = wx.StaticText(self.panel, 0, "CRS List", pos=(0, 0))
         self.left.Add(st, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
 
@@ -122,7 +122,7 @@ class ProjPickerGUI(wx.Frame):
         self.left_height = 700
 
         # CRS Choice listbox
-        self.lbox = wx.ListBox(
+        self.crs_listbox = wx.ListBox(
             self.panel,
             id=1,
             size=(self.left_width, self.left_height),
@@ -130,10 +130,11 @@ class ProjPickerGUI(wx.Frame):
         )
 
         # Add CRS listbox to main left side
-        self.left.Add(self.lbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
+        self.left.Add(self.crs_listbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM,
+                      0)
 
 
-    def buttons(self):
+    def create_buttons(self):
         # Space out buttons
         width = self.left_width // 7
         # Create bottom left sizer for buttons
@@ -151,7 +152,7 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # RIGHT
-    def crs_info(self, text):
+    def create_crs_info(self):
         # CRS INFO
         # Set static box
         crs_info_box = wx.StaticBox(self.panel, 0, "CRS Info")
@@ -159,7 +160,7 @@ class ProjPickerGUI(wx.Frame):
         crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
-        self.crs_info_text = wx.StaticText(self.panel, -1, text,
+        self.crs_info_text = wx.StaticText(self.panel, -1, "",
                                            style=wx.ALIGN_LEFT, size=(600, 300))
         # Set font
         font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
@@ -177,7 +178,7 @@ class ProjPickerGUI(wx.Frame):
         self.right.Add(border, 1, wx.ALIGN_RIGHT, 100)
 
 
-    def osm_map(self):
+    def create_map(self):
         # Create webview
         self.browser = wx.html2.WebView.New(self.panel)
 
@@ -193,7 +194,7 @@ class ProjPickerGUI(wx.Frame):
         wx.MessageBox("Too many vertices, please delete geometry.")
 
 
-    def __crs_string(self, crs: list):
+    def get_crs_string(self, crs: list):
         # Format CRS Info
         # Same as lambda function in projpicker.gui
         return textwrap.dedent(f"""\
@@ -221,7 +222,7 @@ class ProjPickerGUI(wx.Frame):
             # Reverse coordinates as leaflet returns opposite order of what
             # ProjPicker takes
             geom.flip()
-            geoms.extend(self.construct_ppik(geom))
+            geoms.extend(self.construct_query_string(geom))
 
         # DEBUGGING
         print(geoms)
@@ -229,12 +230,12 @@ class ProjPickerGUI(wx.Frame):
         self.crs = ppik.query_mixed_geoms(geoms)
 
         # Populate CRS listbox
-        self.lbox.Clear()
+        self.crs_listbox.Clear()
         crs_names = [i.crs_name for i in self.crs]
-        self.lbox.InsertItems(crs_names, 0)
+        self.crs_listbox.InsertItems(crs_names, 0)
 
 
-    def construct_ppik(self, geom: Geometry):
+    def construct_query_string(self, geom: Geometry):
         # Construct ProjPicker query
         geom_type = "poly" if geom.type == "Polygon" else "latlon"
         return [geom_type, geom.coors]
@@ -272,14 +273,14 @@ class ProjPickerGUI(wx.Frame):
 
     def pop_info(self, event):
         # Populate CRS info with information of selected CRS
-        selection_index = self.lbox.GetSelection()
-        selection_name = self.lbox.GetString(selection_index)
+        selection_index = self.crs_listbox.GetSelection()
+        selection_name = self.crs_listbox.GetString(selection_index)
 
         # Catch error of empty CRS at load time
         try:
             for i in self.crs:
                 if i.crs_name == selection_name:
-                    crs_info = self.__crs_string(i)
+                    crs_info = self.get_crs_string(i)
             self.crs_info_text.SetLabel(crs_info)
         except AttributeError:
             self.crs_info_text.SetLabel("")
