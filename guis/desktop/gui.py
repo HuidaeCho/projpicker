@@ -207,8 +207,8 @@ class ProjPickerGUI(wx.Frame):
 
         # Create Geometry struct for each feature
         geoms = []
-        for i in features:
-            json_geom = i["geometry"]
+        for feature in features:
+            json_geom = feature["geometry"]
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
