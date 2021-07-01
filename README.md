@@ -17,6 +17,10 @@ that wraps around this project is available. It is a work in progress; join
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
 
+## Desktop GUI
+
+![image](https://user-images.githubusercontent.com/7456117/124180203-e1de2300-da81-11eb-9b79-f9ac70d5623e.png)
+
 ## Branches
 
 ### main
