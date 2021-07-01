@@ -111,8 +111,8 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # LEFT
     def create_crs_listbox(self):
-        st = wx.StaticText(self.panel, 0, "CRS List", pos=(0, 0))
-        self.left.Add(st, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
+        text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
+        self.left.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
 
         self.left_width = 500
         self.left_height = 700
@@ -159,10 +159,6 @@ class ProjPickerGUI(wx.Frame):
         # Input text
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
                                            style=wx.ALIGN_LEFT, size=(600, 300))
-        # Set font
-        font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
-        font.SetPointSize(15)
-        self.crs_info_text.SetFont(font)
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
