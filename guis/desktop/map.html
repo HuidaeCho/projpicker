@@ -19,10 +19,10 @@ html, body {
 }
 #map {
     position: relative;
-    width: 100.0%;
-    height: 100.0%;
-    left: 0.0%;
-    top: 0.0%;
+    width: 100%;
+    height: 100%;
+    left: 0%;
+    top: 0%;
 }
 </style>
 <script>
@@ -90,6 +90,9 @@ var drawControl = new L.Control.Draw(
     options
 ).addTo(map);
 
+var geomChunks = [];
+var geomChunkIndex = -1;
+
 map.on(L.Draw.Event.CREATED, function (e) {
     var layer = e.layer;
     var type = e.layerType;
@@ -115,8 +118,10 @@ map.on('draw:created', function (e) {
     console.log(shape);
     console.log(shapeForDB);
     // Change document title to be the json string
-    // of the drawn geometry
-    document.title = shapeForDB;
+    // of the drawn geometry; The max length of title is 1000
+    geomChunks = chunkString(shapeForDB, 1000);
+    geomChunkIndex = 0;
+    document.title = 'pull';
     // download(shapeForDB, 'query.json');
 });
 
@@ -134,7 +139,22 @@ function download(content, filename, contentType) {
     a.href = window.URL.createObjectURL(blob);
     a.download = path;
     a.click();
-};
+}
+
+// https://stackoverflow.com/a/29202760/16079666
+function chunkString(str, size) {
+    const numChunks = Math.ceil(str.length / size)
+    const chunks = new Array(numChunks)
+
+    for (let i = 0, o = 0; i < numChunks; ++i, o += size)
+        chunks[i] = str.substr(o, size)
+
+    return chunks
+}
+
+function pushGeometryChunk() {
+    document.title = geomChunkIndex < geomChunks.length ? geomChunks[geomChunkIndex++] : 'done';
+}
 </script>
 </body>
 </html>

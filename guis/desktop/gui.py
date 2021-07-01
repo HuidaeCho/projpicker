@@ -23,45 +23,39 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ################################################################################
-import json
-import textwrap
-import pprint
+
 import wx
 import wx.html2
-from pathlib import Path
-from dataclasses import dataclass
+import json
+import textwrap
 import projpicker as ppik
 
 
 #################################
 # Constants
+DEBUG = True
 MAP_HTML = "map.html"
 
 
 #################################
-# Structs
-@dataclass
+# Geometry
 class Geometry:
-    # Struct for easier handling of drawn geometry
-    type: str
-    coors: list or tuple
+    def __init__(self, type, coors):
+        self.type = "poly" if type == "Polygon" else "point"
 
-
-    def flip(self):
-        """
-        Switch lat lon
-        """
-        corrected_coors = []
-        if self.type == "Point":
+        # Reverse coordinates as leaflet returns opposite order of what
+        # ProjPicker takes
+        if self.type == "point":
             # Coordinates in "Point" type are single-depth tuple [i, j]
-            corrected_coors = self.coors[1], self.coors[0]
+            self.coors = coors[::-1]
         else:
             # Coordinates in "Poly" type are in multi-depth array of size
             # [[[i0, j0], [i1, j1], ...]]; Move down array depth for easier
             # iteration
-            for i in self.coors[0]:
-                corrected_coors.append(i[::-1])
-        self.coors = list(corrected_coors)
+            reversed_coors = []
+            for lonlat in coors[0]:
+                reversed_coors.append(lonlat[::-1])
+            self.coors = list(reversed_coors)
 
 
 #################################
@@ -84,6 +78,8 @@ class ProjPickerGUI(wx.Frame):
 
         self.create_crs_info()
         self.create_map()
+
+        self.crs = None
 
         # Add right to main
         self.main.Add(self.right, wx.ALIGN_RIGHT)
@@ -139,14 +135,15 @@ class ProjPickerGUI(wx.Frame):
         width = self.left_width // 7
         # Create bottom left sizer for buttons
         btm_left = wx.BoxSizer(wx.HORIZONTAL)
-        # OK button
-        self.btn_ok = wx.Button(self.panel, label="Ok")
+        # Select button
+        select_button = wx.Button(self.panel, label="Select")
+        select_button.Bind(wx.EVT_BUTTON, self.select)
         # Cancel button
-        self.btn_cancel = wx.Button(self.panel, label="Cancel")
-        self.btn_cancel.Bind(wx.EVT_BUTTON, self.close)
+        cancel_button = wx.Button(self.panel, label="Cancel")
+        cancel_button.Bind(wx.EVT_BUTTON, self.close)
         # Add buttons to bottom left
-        btm_left.Add(self.btn_ok, 1, wx.LEFT | wx.RIGHT, width)
-        btm_left.Add(self.btn_cancel, 1, wx.LEFT | wx.RIGHT, width)
+        btm_left.Add(select_button, 1, wx.LEFT | wx.RIGHT, width)
+        btm_left.Add(cancel_button, 1, wx.LEFT | wx.RIGHT, width)
         self.left.Add(btm_left, 0, wx.BOTTOM)
 
 
@@ -190,11 +187,7 @@ class ProjPickerGUI(wx.Frame):
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
 
-    def vertices_alert(self):
-        wx.MessageBox("Too many vertices, please delete geometry.")
-
-
-    def get_crs_string(self, crs: list):
+    def get_crs_info(self, crs: list):
         # Format CRS Info
         # Same as lambda function in projpicker.gui
         return textwrap.dedent(f"""\
@@ -219,37 +212,58 @@ class ProjPickerGUI(wx.Frame):
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
-            # Reverse coordinates as leaflet returns opposite order of what
-            # ProjPicker takes
-            geom.flip()
             geoms.extend(self.construct_query_string(geom))
 
-        # DEBUGGING
-        print(geoms)
         # Query with ProjPicker
         self.crs = ppik.query_mixed_geoms(geoms)
 
+        if DEBUG:
+            print("Query geometries:", geoms)
+            print("Number of queried CRSs:", len(self.crs))
+
         # Populate CRS listbox
         self.crs_listbox.Clear()
-        crs_names = [i.crs_name for i in self.crs]
+        crs_names = [crs.crs_name for crs in self.crs]
         self.crs_listbox.InsertItems(crs_names, 0)
 
 
     def construct_query_string(self, geom: Geometry):
         # Construct ProjPicker query
-        geom_type = "poly" if geom.type == "Polygon" else "latlon"
-        return [geom_type, geom.coors]
+        return geom.type, geom.coors
+
+
+    def find_selected_crs(self):
+        sel_crs = None
+        if self.crs is not None:
+            sel_index = self.crs_listbox.GetSelection()
+            if sel_index >= 0:
+                sel_crs_name = self.crs_listbox.GetString(sel_index)
+                for crs in self.crs:
+                    if crs.crs_name == sel_crs_name:
+                        sel_crs = crs
+                        break
+        return sel_crs
 
 
     #################################
     # Event Handlers
+    def select(self, event):
+        crs_auth_code = ""
+        crs = self.find_selected_crs()
+        if crs is not None:
+            crs_auth_code = f"{crs.crs_auth_name}:{crs.crs_code}\n"
+        print(crs_auth_code, end="")
+        self.Close()
+
+
     def close(self, event):
         self.Close()
 
 
     def confirm_load(self, event):
-        # Confirm map is loaded for debugging purposes
-        print("OpenStreetMap loaded.")
+        if DEBUG:
+            # Confirm map is loaded for debugging purposes
+            print("OpenStreetMap loaded.")
 
 
     def get_json(self, event):
@@ -260,30 +274,34 @@ class ProjPickerGUI(wx.Frame):
         # EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the
         # ProjPicker query
 
-        # Get new JSON from title; Document title can only grow to 999 chars so
-        # catch that error and alert
-        try:
-            self.json = json.loads(self.browser.GetCurrentTitle())
-        except json.decoder.JSONDecodeError:
-            self.vertices_alert()
-            raise RuntimeError("Too many vertices. Delete geometry.")
-        # Run query
-        self.query()
+        # Get new JSON from title
+
+        # http://trac.wxwidgets.org/ticket/13859
+        # https://wxpython.org/Phoenix/docs/html/wx.webkit.WebKitCtrl.html
+        # XXX: RunScript() still returns None? GetSelected(Source|Text)() don't
+        # work? GetPageSource() returns the original page source only;
+        # GetPageText() returns an empty text; Document title can only grow to
+        # 1000 chars; Implement a workaround using pull messages
+        geom_chunk = self.browser.GetCurrentTitle()
+        if geom_chunk == "pull":
+            self.geom_buf = ""
+        elif geom_chunk == "done":
+            self.json = json.loads(self.geom_buf)
+            # Run query
+            self.query()
+            return
+        else:
+            self.geom_buf += geom_chunk
+        self.browser.RunScript("pushGeometryChunk()")
 
 
     def pop_info(self, event):
         # Populate CRS info with information of selected CRS
-        selection_index = self.crs_listbox.GetSelection()
-        selection_name = self.crs_listbox.GetString(selection_index)
-
-        # Catch error of empty CRS at load time
-        try:
-            for i in self.crs:
-                if i.crs_name == selection_name:
-                    crs_info = self.get_crs_string(i)
-            self.crs_info_text.SetLabel(crs_info)
-        except AttributeError:
-            self.crs_info_text.SetLabel("")
+        crs_info = ""
+        crs = self.find_selected_crs()
+        if crs is not None:
+            crs_info = self.get_crs_info(crs)
+        self.crs_info_text.SetLabel(crs_info)
 
 
 if __name__ == "__main__":
