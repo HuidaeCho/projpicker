@@ -111,8 +111,8 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # LEFT
     def create_crs_listbox(self):
-        st = wx.StaticText(self.panel, 0, "CRS List", pos=(0, 0))
-        self.left.Add(st, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
+        text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
+        self.left.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
 
         self.left_width = 500
         self.left_height = 700
@@ -152,17 +152,14 @@ class ProjPickerGUI(wx.Frame):
     def create_crs_info(self):
         # CRS INFO
         # Set static box
-        crs_info_box = wx.StaticBox(self.panel, 0, "CRS Info")
+        crs_info_box = wx.StaticBox(self.panel, 0, "CRS Info",
+                                    style=wx.ALIGN_CENTER)
         # Create sizer for the box
         crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
                                            style=wx.ALIGN_LEFT, size=(600, 300))
-        # Set font
-        font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
-        font.SetPointSize(15)
-        self.crs_info_text.SetFont(font)
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
@@ -182,8 +179,6 @@ class ProjPickerGUI(wx.Frame):
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        # Set sizer
-        browser_size = wx.BoxSizer(wx.HORIZONTAL)
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
 
@@ -207,8 +202,8 @@ class ProjPickerGUI(wx.Frame):
 
         # Create Geometry struct for each feature
         geoms = []
-        for i in features:
-            json_geom = i["geometry"]
+        for feature in features:
+            json_geom = feature["geometry"]
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
@@ -267,21 +262,19 @@ class ProjPickerGUI(wx.Frame):
 
 
     def get_json(self, event):
-        # Main event handler which will trigger functionality
-
-        # Change title of HTML document within webview to the JSON; Super hacky
-        # solution in due to lack of Wx webview event handlers; Reads in the
-        # EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the
-        # ProjPicker query
-
-        # Get new JSON from title
+        # Get new JSON from title; Main event handler which will trigger
+        # functionality
 
         # http://trac.wxwidgets.org/ticket/13859
         # https://wxpython.org/Phoenix/docs/html/wx.webkit.WebKitCtrl.html
         # XXX: RunScript() still returns None? GetSelected(Source|Text)() don't
         # work? GetPageSource() returns the original page source only;
         # GetPageText() returns an empty text; Document title can only grow to
-        # 1000 chars; Implement a workaround using pull messages
+        # 1000 chars; Implement a workaround using pull messages;
+        # pushGeometryChunk() changes the title of HTML document within webview
+        # to a chunk of JSON; Super hacky solution because other methods don't
+        # work as expected
+
         geom_chunk = self.browser.GetCurrentTitle()
         if geom_chunk == "pull":
             self.geom_buf = ""

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
@@ -63,7 +63,10 @@ var tileLayer = L.tileLayer(
     }
 ).addTo(map);
 
-var options = {
+// FeatureGroup is to store editable layers.
+var drawnItems = new L.featureGroup().addTo(map);
+
+var drawControl = new L.Control.Draw({
     position: 'topleft',
     draw: {
         'polyline': {
@@ -76,26 +79,13 @@ var options = {
     edit: {
         'poly': {
             'allowIntersection': false
-        }
+        },
+	'featureGroup': drawnItems
     },
-}
-
-// FeatureGroup is to store editable layers.
-var drawnItems = new L.featureGroup().addTo(
-    map
-);
-options.edit.featureGroup = drawnItems;
-
-var drawControl = new L.Control.Draw(
-    options
-).addTo(map);
-
-var geomChunks = [];
-var geomChunkIndex = -1;
+}).addTo(map);
 
 map.on(L.Draw.Event.CREATED, function (e) {
     var layer = e.layer;
-    var type = e.layerType;
     var coords = JSON.stringify(layer.toGeoJSON());
     layer.on('click', function () {
         alert(coords);
@@ -106,39 +96,25 @@ map.on(L.Draw.Event.CREATED, function (e) {
 
 map.on('draw:created', function (e) {
     // Logs the lat long of shapes drawn by user
-    var type = e.layerType;
     var layer = e.layer;
 
     drawnItems.addLayer(layer);
 
     // Get
-    var shape = drawnItems.toGeoJSON()
-    var shapeForDB = JSON.stringify(shape);
-    // Print the GeoJSON to the console for debugging purposes
-    console.log(shape);
-    console.log(shapeForDB);
-    // Change document title to be the json string
-    // of the drawn geometry; The max length of title is 1000
-    geomChunks = chunkString(shapeForDB, 1000);
+    var geomJSON = drawnItems.toGeoJSON()
+    var geomString = JSON.stringify(geomJSON);
+    // Change document title to be the JSON string of the drawn geometry;
+    // The max length of title is 1000
+    geomChunks = chunkString(geomString, 1000);
     geomChunkIndex = 0;
     document.title = 'pull';
-    // download(shapeForDB, 'query.json');
 });
 
-function download(content, filename, contentType) {
-    var scripts = document.getElementsByTagName('script');
-    var src = scripts[scripts.length-1].src;
-    var path = scripts.item(0).baseURI;
-    var path = path.slice(0, -15);
+var geomChunks = [];
+var geomChunkIndex = -1;
 
-    if (!contentType) contentType = 'application/octet-stream';
-    var a = document.createElement('a');
-    var blob = new Blob([content], {
-        'type': contentType
-    });
-    a.href = window.URL.createObjectURL(blob);
-    a.download = path;
-    a.click();
+function pushGeometryChunk() {
+    document.title = geomChunkIndex < geomChunks.length ? geomChunks[geomChunkIndex++] : 'done';
 }
 
 // https://stackoverflow.com/a/29202760/16079666
@@ -150,10 +126,6 @@ function chunkString(str, size) {
         chunks[i] = str.substr(o, size)
 
     return chunks
-}
-
-function pushGeometryChunk() {
-    document.title = geomChunkIndex < geomChunks.length ? geomChunks[geomChunkIndex++] : 'done';
 }
 </script>
 </body>
