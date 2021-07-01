@@ -53,12 +53,12 @@ class Geometry:
         """
         corrected_coors = []
         if self.type == "Point":
-            # Coordinates in "Point" type are single depth tuple [i, j]
+            # Coordinates in "Point" type are single-depth tuple [i, j]
             corrected_coors = self.coors[1], self.coors[0]
         else:
-            # Coordinates in "Poly" type are in multi depth
-            # array of size [[[i, j], [i1, j1], ...]]
-            # Move down array depth for easier iteration
+            # Coordinates in "Poly" type are in multi-depth array of size
+            # [[[i0, j0], [i1, j1], ...]]; Move down array depth for easier
+            # iteration
             for i in self.coors[0]:
                 corrected_coors.append(i[::-1])
         self.coors = list(corrected_coors)
@@ -103,9 +103,11 @@ class ProjPickerGUI(wx.Frame):
         # Confirm loading of map
         wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
 
-        # Handler for the Document title change to read the json and trigger the ppik query
-        # This event will trigger the projpicker query and population of the CRS list
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.get_json)
+        # Handler for the Document title change to read the JSON and trigger
+        # the ProjPicker query; This event will trigger the ProjPicker query
+        # and population of the CRS list
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED,
+                           self.get_json)
 
         wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
 
@@ -136,7 +138,7 @@ class ProjPickerGUI(wx.Frame):
         width = self.left_width // 7
         # Create bottom left sizer for buttons
         btm_left = wx.BoxSizer(wx.HORIZONTAL)
-        # Ok button
+        # OK button
         self.btn_ok = wx.Button(self.panel, label="Ok")
         # Cancel button
         self.btn_cancel = wx.Button(self.panel, label="Cancel")
@@ -157,7 +159,8 @@ class ProjPickerGUI(wx.Frame):
         crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
-        self.crs_info_text = wx.StaticText(self.panel, -1, text, style=wx.ALIGN_LEFT, size=(600, 300))
+        self.crs_info_text = wx.StaticText(self.panel, -1, text,
+                                           style=wx.ALIGN_LEFT, size=(600, 300))
         # Set font
         font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
         font.SetPointSize(15)
@@ -215,7 +218,8 @@ class ProjPickerGUI(wx.Frame):
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
-            # Reverse coordinates as leaflet returns oppisite order of what ProjPicker takes.
+            # Reverse coordinates as leaflet returns opposite order of what
+            # ProjPicker takes
             geom.flip()
             geoms.extend(self.construct_ppik(geom))
 
@@ -224,14 +228,14 @@ class ProjPickerGUI(wx.Frame):
         # Query with ProjPicker
         self.crs = ppik.query_mixed_geoms(geoms)
 
-        # Populate crs listbox
+        # Populate CRS listbox
         self.lbox.Clear()
         crs_names = [i.crs_name for i in self.crs]
         self.lbox.InsertItems(crs_names, 0)
 
 
     def construct_ppik(self, geom: Geometry):
-        # Construct projpicker query
+        # Construct ProjPicker query
         geom_type = "poly" if geom.type == "Polygon" else "latlon"
         return [geom_type, geom.coors]
 
@@ -248,14 +252,15 @@ class ProjPickerGUI(wx.Frame):
 
 
     def get_json(self, event):
-        # Main event handler which will trigger functionality.
+        # Main event handler which will trigger functionality
 
-        # Change title of HTML document within webview to the json.
-        # Super hacky solution in due to lack of Wx webview event handlers.
-        # Reads in the EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the ProjPicker query
+        # Change title of HTML document within webview to the JSON; Super hacky
+        # solution in due to lack of Wx webview event handlers; Reads in the
+        # EVT_WEBVIEW_TITLE_CHANGED event which will then trigger the
+        # ProjPicker query
 
-        # Get new JSON from title
-        # Document title can only grow to 999 chars so catch that error and alert
+        # Get new JSON from title; Document title can only grow to 999 chars so
+        # catch that error and alert
         try:
             self.json = json.loads(self.browser.GetCurrentTitle())
         except json.decoder.JSONDecodeError:
