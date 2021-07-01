@@ -1,3 +1,1 @@
-# TODO
-
-* Lowest priority
+# Cool Desktop GUI for ProjPicker
