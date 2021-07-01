@@ -35,7 +35,7 @@ import projpicker as ppik
 
 #################################
 # Constants
-MAP_URL = "openstreet.html"
+MAP_HTML = "map.html"
 
 
 #################################
@@ -176,7 +176,7 @@ class ProjPickerGUI(wx.Frame):
         self.browser = wx.html2.WebView.New(self.panel)
 
         # Load the local html
-        url = wx.FileSystem.FileNameToURL(MAP_URL)
+        url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
         # Set sizer
         browser_size = wx.BoxSizer(wx.HORIZONTAL)
