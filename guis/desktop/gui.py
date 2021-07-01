@@ -208,13 +208,13 @@ class ProjPickerGUI(wx.Frame):
         # Create Geometry struct for each feature
         geoms = []
         for i in features:
-            json_geo = i["geometry"]
-            geo_type = json_geo["type"]
-            coors = json_geo["coordinates"]
-            geo = Geometry(json_geo["type"], json_geo["coordinates"])
+            json_geom = i["geometry"]
+            geom_type = json_geom["type"]
+            coors = json_geom["coordinates"]
+            geom = Geometry(json_geom["type"], json_geom["coordinates"])
             # Reverse coordinates as leaflet returns oppisite order of what ProjPicker takes.
-            geo.flip()
-            geoms.extend(self.construct_ppik(geo))
+            geom.flip()
+            geoms.extend(self.construct_ppik(geom))
 
         # DEBUGGING
         print(geoms)
@@ -227,12 +227,13 @@ class ProjPickerGUI(wx.Frame):
         self.lbox.InsertItems(crs_names, 0)
 
 
-    def construct_ppik(self, geo: Geometry):
+    def construct_ppik(self, geom: Geometry):
         # Construct projpicker query
-        if geo.type == "Polygon":
-            ppik_type = "poly"
-            return [ppik_type, geo.coors]
-        return ["latlon", geo.coors]
+        if geom.type == "Polygon":
+            geom_type = "poly"
+        else:
+            geom_type = "latlon"
+        return [geom_type, geom.coors]
 
 
     #################################
