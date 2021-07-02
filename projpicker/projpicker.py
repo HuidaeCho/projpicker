@@ -2302,6 +2302,7 @@ def projpicker(
         fmt="plain",
         no_header=False,
         separator=None,
+        max_bbox=0,
         print_geoms=False,
         overwrite=False,
         append=False,
@@ -2326,14 +2327,15 @@ def projpicker(
     set_latlon(), or set_xy(), and always starts in the latitude-longitude
     coordinate system by default. The "plain", "json", "pretty", "sqlite", and
     "srid" formats are supported. No header and separator options only apply to
-    the plain output format. The overwrite option applies to both projpicker.db
-    and the output file, but the append option only appends to the output file.
-    Only one of the overwrite or append options must be given. For selecting a
-    subset of queried BBox instances, a GUI can be launched by setting gui to
-    True. Results are sorted by area from the smallest to largest. The single
-    argument is used to allow only one selection in the GUI. If projpicker_db
-    or proj_db is None (default), get_projpicker_db() or get_proj_db() is used,
-    respectively.
+    the plain output format. The max_bbox option is used to limit the maximum
+    number of returned BBox instances. Use 0 for all. The overwrite option
+    applies to both projpicker.db and the output file, but the append option
+    only appends to the output file. Only one of the overwrite or append
+    options must be given. For selecting a subset of queried BBox instances, a
+    GUI can be launched by setting gui to True. Results are sorted by area from
+    the smallest to largest. The single argument is used to allow only one
+    selection in the GUI. If projpicker_db or proj_db is None (default),
+    get_projpicker_db() or get_proj_db() is used, respectively.
 
     Args:
         geoms (list): Geometries. Defaults to [].
@@ -2348,6 +2350,8 @@ def projpicker(
             supports special names including pipe (|), comma (,), space ( ),
             tab (\t), and newline (\n). Defaults to None, meaning "|" for plain
             and "\n" for srid.
+        max_bbox (int): Maximum number of returned BBox instances. Defaults to
+            0, meaning all.
         print_geoms (bool): Whether or not to print parsed geometries and exit.
             Defaults to False.
         overwrite (bool): Whether or not to overwrite output file. Defaults to
@@ -2415,6 +2419,9 @@ def projpicker(
 
     if has_gui and start_gui:
         bbox = gui.select_bbox(bbox, single)
+
+    if max_bbox > 0:
+        bbox = bbox[:max_bbox]
 
     if not outfile:
         return bbox
@@ -2551,6 +2558,12 @@ def parse():
             help="separator for plain output format (default: pipe for plain, "
                 "newline for srid)")
     parser.add_argument(
+            "-m", "--max",
+            type=int,
+            default=0,
+            help="maximum number of returned CRSs (default: all); use 0 for "
+                "all")
+    parser.add_argument(
             "-i", "--input",
             default="-",
             help="input geometry file path (default: stdin); use - for stdin; "
@@ -2596,6 +2609,7 @@ def main():
     fmt = args.format
     no_header = args.no_header
     separator = args.separator
+    max_bbox = args.max
     infile = args.input
     outfile = args.output
     if has_gui:
@@ -2622,6 +2636,7 @@ There is NO WARRANTY, to the extent permitted by law.""")
             fmt,
             no_header,
             separator,
+            max_bbox,
             print_geoms,
             overwrite,
             append,
