@@ -37,17 +37,25 @@ import math
 import json
 import pprint
 
+has_gui = True
+
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
     from .common import bbox_schema, bbox_columns, get_float, BBox
     from . import coor_latlon
     from . import coor_xy
-    from . import gui
+    try:
+        from . import gui
+    except:
+        has_gui = False
 else:
     from common import bbox_schema, bbox_columns, get_float, BBox
     import coor_latlon
     import coor_xy
-    import gui
+    try:
+        import gui
+    except:
+        has_gui = False
 
 # module path
 module_path = os.path.dirname(__file__)
@@ -2405,7 +2413,7 @@ def projpicker(
 
     bbox = query_mixed_geoms(geoms, projpicker_db)
 
-    if start_gui:
+    if has_gui and start_gui:
         bbox = gui.select_bbox(bbox, single)
 
     if not outfile:
@@ -2552,10 +2560,11 @@ def parse():
             "-o", "--output",
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
-    parser.add_argument(
-            "-g", "--gui",
-            action="store_true",
-            help="start GUI for selecting CRSs")
+    if has_gui:
+        parser.add_argument(
+                "-g", "--gui",
+                action="store_true",
+                help="start GUI for selecting CRSs")
     parser.add_argument(
             "-1", "--single",
             action="store_true",
@@ -2589,7 +2598,7 @@ def main():
     separator = args.separator
     infile = args.input
     outfile = args.output
-    start_gui = args.gui
+    start_gui = args.gui if has_gui else False
     single = args.single
     geoms = args.geometry
 
