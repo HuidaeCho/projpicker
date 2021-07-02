@@ -25,6 +25,11 @@ that wraps around this project is available. It is a work in progress; join
 
 ![image](https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png)
 
+1. Install [Termux](https://termux.com/) from [F-Droid](https://f-droid.org/packages/com.termux/)
+2. Run it from Android
+3. Install Python: `pkg install python`
+4. Install ProjPicker: `pip install projpicker`
+
 ## Branches
 
 ### main
