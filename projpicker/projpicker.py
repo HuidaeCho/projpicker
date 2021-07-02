@@ -2565,10 +2565,10 @@ def parse():
                 "-g", "--gui",
                 action="store_true",
                 help="start GUI for selecting CRSs")
-    parser.add_argument(
-            "-1", "--single",
-            action="store_true",
-            help="allow only one selection in GUI")
+        parser.add_argument(
+                "-1", "--single",
+                action="store_true",
+                help="allow only one selection in GUI")
     parser.add_argument(
             "geometry",
             nargs="*",
@@ -2598,8 +2598,12 @@ def main():
     separator = args.separator
     infile = args.input
     outfile = args.output
-    start_gui = args.gui if has_gui else False
-    single = args.single
+    if has_gui:
+        start_gui = args.gui
+        single = args.single
+    else:
+        start_gui = False
+        single = False
     geoms = args.geometry
 
     if version:
