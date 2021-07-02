@@ -52,10 +52,10 @@ class Geometry:
             # Coordinates in "Poly" type are in multi-depth array of size
             # [[[i0, j0], [i1, j1], ...]]; Move down array depth for easier
             # iteration
-            reversed_coors = []
+            latlon_coors = []
             for lonlat in coors[0]:
-                reversed_coors.append(lonlat[::-1])
-            self.coors = list(reversed_coors)
+                latlon_coors.append(lonlat[::-1])
+            self.coors = list(latlon_coors)
 
 
 #################################
