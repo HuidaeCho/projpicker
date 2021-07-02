@@ -61,6 +61,8 @@ class Geometry:
 #################################
 # GUI
 class ProjPickerGUI(wx.Frame):
+    selected_crs = None
+
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
@@ -94,7 +96,7 @@ class ProjPickerGUI(wx.Frame):
         self.SetSize(size)
 
         #################################
-        # EVENTS
+        # Bind Event Handlers
 
         # Confirm loading of map
         wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
@@ -107,9 +109,11 @@ class ProjPickerGUI(wx.Frame):
 
         wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
 
+        self.Show()
+
 
     #################################
-    # LEFT
+    # Left Frame
     def create_crs_listbox(self):
         text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
         self.left.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
@@ -148,9 +152,9 @@ class ProjPickerGUI(wx.Frame):
 
 
     #################################
-    # RIGHT
+    # Right Frame
     def create_crs_info(self):
-        # CRS INFO
+        # CRS Info
         # Set static box
         crs_info_box = wx.StaticBox(self.panel, 0, "CRS Info",
                                     style=wx.ALIGN_CENTER)
@@ -182,77 +186,15 @@ class ProjPickerGUI(wx.Frame):
         self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
 
 
-    def get_crs_info(self, crs: list):
-        # Format CRS Info
-        # Same as lambda function in projpicker.gui
-        return textwrap.dedent(f"""\
-        CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
-        CRS Code: {crs.crs_auth_name}:{crs.crs_code}
-        Unit:     {crs.unit}
-        South:    {crs.south_lat}°
-        North:    {crs.north_lat}°
-        West:     {crs.west_lon}°
-        East:     {crs.east_lon}°
-        Area:     {crs.area_sqkm:n} sqkm""")
-
-
-    def query(self):
-        # Load all features drawn
-        features = self.json["features"]
-
-        # Create Geometry struct for each feature
-        geoms = []
-        for feature in features:
-            json_geom = feature["geometry"]
-            geom_type = json_geom["type"]
-            coors = json_geom["coordinates"]
-            geom = Geometry(json_geom["type"], json_geom["coordinates"])
-            geoms.extend(self.construct_query_string(geom))
-
-        # Query with ProjPicker
-        self.crs = ppik.query_mixed_geoms(geoms)
-
-        if DEBUG:
-            print("Query geometries:", geoms)
-            print("Number of queried CRSs:", len(self.crs))
-
-        # Populate CRS listbox
-        self.crs_listbox.Clear()
-        crs_names = [crs.crs_name for crs in self.crs]
-        self.crs_listbox.InsertItems(crs_names, 0)
-
-
-    def construct_query_string(self, geom: Geometry):
-        # Construct ProjPicker query
-        return geom.type, geom.coors
-
-
-    def find_selected_crs(self):
-        sel_crs = None
-        if self.crs is not None:
-            sel_index = self.crs_listbox.GetSelection()
-            if sel_index >= 0:
-                sel_crs_name = self.crs_listbox.GetString(sel_index)
-                for crs in self.crs:
-                    if crs.crs_name == sel_crs_name:
-                        sel_crs = crs
-                        break
-        return sel_crs
-
-
     #################################
     # Event Handlers
     def select(self, event):
-        crs_auth_code = ""
-        crs = self.find_selected_crs()
-        if crs is not None:
-            crs_auth_code = f"{crs.crs_auth_name}:{crs.crs_code}\n"
-        print(crs_auth_code, end="")
-        self.Close()
+        self.selected_crs = self.find_selected_crs()
+        self.Destroy()
 
 
     def close(self, event):
-        self.Close()
+        self.Destroy()
 
 
     def confirm_load(self, event):
@@ -297,7 +239,88 @@ class ProjPickerGUI(wx.Frame):
         self.crs_info_text.SetLabel(crs_info)
 
 
+    #################################
+    # Utilities
+    def query(self):
+        # Load all features drawn
+        features = self.json["features"]
+
+        # Create Geometry struct for each feature
+        geoms = []
+        for feature in features:
+            json_geom = feature["geometry"]
+            geom_type = json_geom["type"]
+            coors = json_geom["coordinates"]
+            geom = Geometry(json_geom["type"], json_geom["coordinates"])
+            geoms.extend(self.construct_query_string(geom))
+
+        # Query with ProjPicker
+        self.crs = ppik.query_mixed_geoms(geoms)
+
+        if DEBUG:
+            print("Query geometries:", geoms)
+            print("Number of queried CRSs:", len(self.crs))
+
+        # Populate CRS listbox
+        self.crs_listbox.Clear()
+        crs_names = [crs.crs_name for crs in self.crs]
+        self.crs_listbox.InsertItems(crs_names, 0)
+
+
+    def construct_query_string(self, geom: Geometry):
+        # Construct ProjPicker query
+        return geom.type, geom.coors
+
+
+    def find_selected_crs(self):
+        sel_crs = None
+        if self.crs is not None:
+            sel_index = self.crs_listbox.GetSelection()
+            if sel_index >= 0:
+                sel_crs_name = self.crs_listbox.GetString(sel_index)
+                for crs in self.crs:
+                    if crs.crs_name == sel_crs_name:
+                        sel_crs = crs
+                        break
+        return sel_crs
+
+
+    def get_crs_info(self, crs: list):
+        # Format CRS Info
+        # Same as lambda function in projpicker.gui
+        return textwrap.dedent(f"""\
+        CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
+        CRS Code: {crs.crs_auth_name}:{crs.crs_code}
+        Unit:     {crs.unit}
+        South:    {crs.south_lat}°
+        North:    {crs.north_lat}°
+        West:     {crs.west_lon}°
+        East:     {crs.east_lon}°
+        Area:     {crs.area_sqkm:n} sqkm""")
+
+
+    def get_crs_auth_code(self, crs):
+        crs_auth_code = ""
+        if crs is not None:
+            crs_auth_code = f"{crs.crs_auth_name}:{crs.crs_code}"
+        return crs_auth_code
+
+
+    def print_crs_auth_code(self, crs):
+        crs_auth_code = self.get_crs_auth_code(crs)
+        print(crs_auth_code, end="" if crs_auth_code == "" else "\n")
+
+
+    def print_selected_crs_auth_code(self):
+        self.print_crs_auth_code(self.selected_crs)
+
+
+    def get_selected_crs(self):
+        return self.selected_crs
+
+
 if __name__ == "__main__":
     app = wx.App()
-    ProjPickerGUI(None).Show()
+    ppik_gui = ProjPickerGUI(None)
     app.MainLoop()
+    ppik_gui.print_selected_crs_auth_code()
