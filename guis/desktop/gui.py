@@ -61,9 +61,6 @@ class Geometry:
 #################################
 # GUI
 class ProjPickerGUI(wx.Frame):
-    selected_crs = None
-
-
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
@@ -83,6 +80,7 @@ class ProjPickerGUI(wx.Frame):
         self.create_map()
 
         self.crs = None
+        self.selected_crs = None
 
         # Add right to main
         self.main.Add(self.right, wx.ALIGN_RIGHT)
