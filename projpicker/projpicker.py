@@ -131,9 +131,6 @@ def tidy_lines(lines):
 
     Args:
         lines (list): List of str lines.
-
-    Returns:
-        list: List of tidied str lines.
     """
     for i in reversed(range(len(lines))):
         if lines[i].startswith("#"):
@@ -150,7 +147,6 @@ def tidy_lines(lines):
                 del lines[i]
     if len(lines) > 0 and lines[0] == "":
         del lines[0]
-    return lines
 
 
 def get_separator(separator):
