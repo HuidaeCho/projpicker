@@ -273,7 +273,7 @@ class ProjPickerGUI(wx.Frame):
         # 1000 characters; Implement a workaround using pull messages;
         # pushGeometryChunk() changes the title of HTML document within webview
         # to a chunk of JSON; Super hacky solution because other methods don't
-        # work as expected
+        # work as documented
 
         geom_chunk = self.browser.GetCurrentTitle()
         if geom_chunk == "pull":
