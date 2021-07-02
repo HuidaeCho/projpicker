@@ -21,6 +21,10 @@ that wraps around this project is available. It is a work in progress; join
 
 ![image](https://user-images.githubusercontent.com/7456117/124199416-d64e2480-daa0-11eb-9bf1-8a8778a1e424.png)
 
+## ProjPicker running on Android using [Termux](https://termux.com/)
+
+![image](https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png)
+
 ## Branches
 
 ### main
