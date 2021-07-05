@@ -172,7 +172,7 @@ class ProjPickerGUI(wx.Frame):
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
-        crs_info_hsizer.Add(crs_info_vsizer, 1, wx.EXPAND, 10)
+        crs_info_hsizer.Add(crs_info_vsizer, 1, wx.ALIGN_CENTER, 10)
         # Create border
         # https://www.blog.pythonlibrary.org/2019/05/09/an-intro-to-staticbox-and-staticboxsizers/
         border = wx.BoxSizer(wx.HORIZONTAL)
@@ -193,7 +193,7 @@ class ProjPickerGUI(wx.Frame):
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        self.right.Add(self.browser, 1, wx.EXPAND | wx.ALL, 10)
+        self.right.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT | wx.BOTTOM, 11)
 
 
     #################################
