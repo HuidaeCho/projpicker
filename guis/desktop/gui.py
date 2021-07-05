@@ -161,7 +161,7 @@ class ProjPickerGUI(wx.Frame):
     def create_crs_info(self):
         # CRS Info
         # Set static box
-        crs_info_box = wx.StaticBox(self.panel, 0, "CRS Info",
+        crs_info_box = wx.StaticBox(self.panel, 0,
                                     style=wx.ALIGN_CENTER)
         # Create sizer for the box
         crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
@@ -176,7 +176,12 @@ class ProjPickerGUI(wx.Frame):
         # Create border
         # https://www.blog.pythonlibrary.org/2019/05/09/an-intro-to-staticbox-and-staticboxsizers/
         border = wx.BoxSizer(wx.HORIZONTAL)
-        border.Add(crs_info_hsizer, 0, wx.ALL | wx.EXPAND, 10)
+        border.Add(crs_info_hsizer, 0,
+                wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+
+        # Add text header
+        text = wx.StaticText(self.panel, 0, "CRS Info")
+        self.right.Add(text, 0, wx.CENTER | wx.TOP, 10)
         # Add to right column
         self.right.Add(border, 1, wx.ALIGN_RIGHT, 100)
 
