@@ -258,7 +258,7 @@ class ProjPickerGUI(wx.Frame):
 
 
     def get_bbox(self, crs_object):
-        # crs_object is a projpicker BBOX data object
+        # crs_object is a projpicker BBox data object
         # Run within pop_info event handler to
         # Draw CRS bbox
         geojson = self.construct_crs_bbox(crs_object)
@@ -342,7 +342,7 @@ class ProjPickerGUI(wx.Frame):
         return self.selected_crs
 
     def construct_crs_bbox(self, crs_object):
-        # crs_object is a projpicker BBOX data object
+        # crs_object is a projpicker BBox data object
 
         # bbox => geojson polygon
         w = crs_object.west_lon
@@ -352,8 +352,13 @@ class ProjPickerGUI(wx.Frame):
         coors = [[[w, n], [e, n], [e, s], [w,s]]]
 
         # Make geojson to pass to JS
-        geojson = {"type": "Feature", "properties": {"name": "BBOX"},
-                   "geometry": {"type": "Polygon", "coordinates": coors}}
+        geojson = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": coors
+            }
+        }
 
         return geojson
 
