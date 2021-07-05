@@ -193,7 +193,8 @@ class ProjPickerGUI(wx.Frame):
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        self.right.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT | wx.BOTTOM, 11)
+        self.right.Add(self.browser, 1,
+                       wx.EXPAND | wx.RIGHT | wx.LEFT | wx.BOTTOM, 11)
 
 
     #################################
@@ -247,7 +248,7 @@ class ProjPickerGUI(wx.Frame):
         if crs is not None:
             crs_info = self.get_crs_info(crs)
         self.crs_info_text.SetLabel(crs_info)
-        self.get_bbox(crs)
+        self.draw_crs_bbox(crs)
 
 
     def selection_events(self, event):
@@ -257,14 +258,11 @@ class ProjPickerGUI(wx.Frame):
         wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
 
 
-    def get_bbox(self, crs_object):
-        # crs_object is a projpicker BBox data object
-        # Run within pop_info event handler to
-        # Draw CRS bbox
-        geojson = self.construct_crs_bbox(crs_object)
-        self.browser.RunScript(f"drawCRSBBox({geojson})")
-
-
+    def draw_crs_bbox(self, crs):
+        # crs is a ProjPicker BBox instance; Run within pop_info event handler
+        # to draw CRS bbox
+        crs_bbox_feature = self.create_crs_bbox_feature(crs)
+        self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
 
 
     #################################
@@ -291,7 +289,8 @@ class ProjPickerGUI(wx.Frame):
 
         # Populate CRS listbox
         self.crs_listbox.Clear()
-        crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})" for crs in self.crs]
+        crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})"
+                     for crs in self.crs]
         self.crs_listbox.InsertItems(crs_names, 0)
 
 
@@ -308,9 +307,8 @@ class ProjPickerGUI(wx.Frame):
         return sel_crs
 
 
-    def get_crs_info(self, crs: list):
-        # Format CRS Info
-        # Same as lambda function in projpicker.gui
+    def get_crs_info(self, crs):
+        # Format CRS Info; Same as lambda function in projpicker.gui
         return textwrap.dedent(f"""\
         CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
         CRS Code: {crs.crs_auth_name}:{crs.crs_code}
@@ -341,18 +339,18 @@ class ProjPickerGUI(wx.Frame):
     def get_selected_crs(self):
         return self.selected_crs
 
-    def construct_crs_bbox(self, crs_object):
-        # crs_object is a projpicker BBox data object
+    def create_crs_bbox_feature(self, crs):
+        # crs is a ProjPicker BBox instance
 
-        # bbox => geojson polygon
-        w = crs_object.west_lon
-        e = crs_object.east_lon
-        s = crs_object.south_lat
-        n = crs_object.north_lat
+        # BBox => GeoJSON polygon
+        s = crs.south_lat
+        n = crs.north_lat
+        w = crs.west_lon
+        e = crs.east_lon
         coors = [[[w, n], [e, n], [e, s], [w,s]]]
 
-        # Make geojson to pass to JS
-        geojson = {
+        # Make GeoJSON to pass to JS
+        crs_bbox_feature = {
             "type": "Feature",
             "geometry": {
                 "type": "Polygon",
@@ -360,7 +358,7 @@ class ProjPickerGUI(wx.Frame):
             }
         }
 
-        return geojson
+        return crs_bbox_feature
 
 
 if __name__ == "__main__":
