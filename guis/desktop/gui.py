@@ -257,7 +257,7 @@ class ProjPickerGUI(wx.Frame):
         # Run within pop_info event handler to
         # Draw CRS bbox
         geojson = self.construct_crs_bbox(crs_object)
-        self.browser.RunScript(f"drawCRSBBOX({geojson})")
+        self.browser.RunScript(f"drawCRSBBox({geojson})")
 
 
 
