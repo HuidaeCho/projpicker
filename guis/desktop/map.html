@@ -67,7 +67,7 @@ var tileLayer = L.tileLayer(
 // FeatureGroup is to store editable layers.
 var drawnItems = new L.featureGroup().addTo(map);
 
-var drawControl = new L.Control.Draw({
+new L.Control.Draw({
     position: 'topleft',
     draw: {
         'polyline': {
@@ -81,7 +81,7 @@ var drawControl = new L.Control.Draw({
         'poly': {
             'allowIntersection': false
         },
-    'featureGroup': drawnItems
+        'featureGroup': drawnItems
     },
 }).addTo(map);
 
@@ -107,6 +107,15 @@ map.on('draw:created', function (e) {
     document.title = 'pull';
 });
 
+// Intial empty bbox geometry; Seperate layer group from drawItems so as to not
+// interfere with ProjPicker query.
+var bboxLayer = L.geoJSON(null, {
+    style: {
+        color: 'red',
+        opacity: 0.3
+    }
+}).addTo(map);
+
 var geomChunks = [];
 var geomChunkIndex = -1;
 
@@ -125,24 +134,10 @@ function chunkString(str, size) {
     return chunks
 }
 
-// intial empty bbox geometry
-// Seperate layer group from drawItems so as to not interfere with projpicker
-// query.
-var bboxLayers = L.geoJSON().addTo(map);
-
-function drawCRSBBox(geo) {
-    // Clear CRS bbox from map
-    bboxLayers.clearLayers();
-
-    // Style of bbox geom
-    var geomStyle =  {style: {
-                        color: "red",
-                        opacity: 0.3,
-                        }
-                     };
-
-    // Add bbox to map
-    bboxLayers = L.geoJSON(geo, geomStyle).addTo(map);
+function drawCRSBBox(geom) {
+    bboxLayer.clearLayers();
+    bboxLayer.addData(geom);
+    map.fitBounds(bboxLayer.getBounds());
 }
 </script>
 </body>
