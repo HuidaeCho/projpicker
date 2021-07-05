@@ -127,6 +127,26 @@ function chunkString(str, size) {
 
     return chunks
 }
+
+// intial empty bbox geometry
+// Seperate layer group from drawItems so as to not interfere with projpicker
+// query.
+var bboxLayers = L.geoJSON().addTo(map);
+
+function drawCRSBBOX(geo) {
+    // Clear CRS bbox from map
+    bboxLayers.clearLayers();
+
+    // Style of bbox geom
+    var geomStyle =  {style: {
+                        color: "red",
+                        opacity: 0.3,
+                        }
+                     };
+
+    // Add bbox to map
+    bboxLayers = L.geoJSON(geo, geomStyle).addTo(map);
+}
 </script>
 </body>
 </html>

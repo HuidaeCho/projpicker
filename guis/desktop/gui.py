@@ -106,7 +106,13 @@ class ProjPickerGUI(wx.Frame):
         wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED,
                            self.get_json)
 
-        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
+        # All selection events are contained within following event.
+        # This is done to allow the crslist selection and the drawing of the
+        # selection CRS's bounding box to communicate witheach other.
+        # Additionally, RunScript() is unable to run unless it is run within a
+        # member function bound by wx.html2 event.
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED,
+                self.selection_events)
 
         self.Show()
 
@@ -236,6 +242,24 @@ class ProjPickerGUI(wx.Frame):
         if crs is not None:
             crs_info = self.get_crs_info(crs)
         self.crs_info_text.SetLabel(crs_info)
+        self.get_bbox(crs)
+
+
+    def selection_events(self, event):
+        # List box selection is within wx.html2.EVT_WEBVIEW_LOADED event
+        # listener in order to allow any JS scripts which rely on selected
+        # CRS info to be ran.
+        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
+
+
+    def get_bbox(self, crs_object):
+        # crs_object is a projpicker BBOX data object
+        # Run within pop_info event handler to
+        # Draw CRS bbox
+        geojson = self.construct_crs_bbox(crs_object)
+        self.browser.RunScript(f"drawCRSBBOX({geojson})")
+
+
 
 
     #################################
@@ -311,6 +335,22 @@ class ProjPickerGUI(wx.Frame):
 
     def get_selected_crs(self):
         return self.selected_crs
+
+    def construct_crs_bbox(self, crs_object):
+        # crs_object is a projpicker BBOX data object
+
+        # bbox => geojson polygon
+        w = crs_object.west_lon
+        e = crs_object.east_lon
+        s = crs_object.south_lat
+        n = crs_object.north_lat
+        coors = [[[w, n], [e, n], [e, s], [w,s]]]
+
+        # Make geojson to pass to JS
+        geojson = {"type": "Feature", "properties": {"name": "BBOX"},
+                   "geometry": {"type": "Polygon", "coordinates": coors}}
+
+        return geojson
 
 
 if __name__ == "__main__":
