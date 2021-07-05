@@ -19,7 +19,7 @@ that wraps around this project is available. It is a work in progress; join
 
 ## Desktop GUI
 
-![image](https://user-images.githubusercontent.com/7456117/124199416-d64e2480-daa0-11eb-9bf1-8a8778a1e424.png)
+![image](https://user-images.githubusercontent.com/55674113/124519750-3225ef80-ddb8-11eb-90e6-9ee3d2903875.png)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
