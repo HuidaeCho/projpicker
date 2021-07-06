@@ -27,7 +27,6 @@
 import wx
 import wx.html2
 import json
-import textwrap
 import projpicker as ppik
 
 
@@ -308,15 +307,36 @@ class ProjPickerGUI(wx.Frame):
 
     def get_crs_info(self, crs):
         # Format CRS Info; Same as lambda function in projpicker.gui
-        return textwrap.dedent(f"""\
-        CRS Type:\t {crs.proj_table.replace("_crs", "").capitalize()}
-        CRS Code:\t {crs.crs_auth_name}:{crs.crs_code}
-        Unit:\t\t {crs.unit}
-        South:\t\t {crs.south_lat}°
-        North:\t\t {crs.north_lat}°
-        West:\t\t {crs.west_lon}°
-        East:\t\t {crs.east_lon}°
-        Area:\t\t {crs.area_sqkm:n} sqkm""")
+        crs_info = f"""\
+            CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
+            CRS Code: {crs.crs_auth_name}:{crs.crs_code}
+            Unit:     {crs.unit}
+            South:    {crs.south_lat}°
+            North:    {crs.north_lat}°
+            West:     {crs.west_lon}°
+            East:     {crs.east_lon}°
+            Area:     {crs.area_sqkm:n} sqkm"""
+
+        # align fields using tabs
+        lines = crs_info.split("\n")
+        pairs = []
+        # calculate the max key length
+        key_len = 0
+        for line in lines:
+            key, val = line.split(": ")
+            key = key.strip()
+            val = val.strip()
+            key_len = max(len(key), key_len)
+            pairs.append([key, val])
+        # length of tabs
+        key_len = (key_len // 8 + 1) * 8
+        crs_info = ""
+        for pair in pairs:
+            key, val = pair
+            # ceil: https://stackoverflow.com/a/17511341/16079666
+            num_tabs = -(-(key_len - len(key)) // 8)
+            crs_info += f"{key}:" + "\t" * num_tabs + f"{val}\n"
+        return crs_info
 
 
     def get_crs_auth_code(self, crs):
