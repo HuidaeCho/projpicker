@@ -77,6 +77,7 @@ class ProjPickerGUI(wx.Frame):
 
         self.create_crs_info()
         self.create_map()
+        self.create_logical_buttons()
 
         self.crs = None
         self.selected_crs = None
@@ -152,7 +153,7 @@ class ProjPickerGUI(wx.Frame):
         # Add buttons to bottom left
         btm_left.Add(select_button, 1, wx.LEFT | wx.RIGHT, width)
         btm_left.Add(cancel_button, 1, wx.LEFT | wx.RIGHT, width)
-        self.left.Add(btm_left, 0, wx.BOTTOM)
+        self.left.Add(btm_left, 0, wx.BOTTOM | wx.TOP, 4)
 
 
     #################################
@@ -166,7 +167,7 @@ class ProjPickerGUI(wx.Frame):
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
-                                           style=wx.ALIGN_LEFT, size=(600, 300))
+                style=wx.ALIGN_LEFT, size=(400, 300))
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
@@ -192,7 +193,22 @@ class ProjPickerGUI(wx.Frame):
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
         self.right.Add(self.browser, 1,
-                       wx.EXPAND | wx.RIGHT | wx.LEFT | wx.BOTTOM, 11)
+                wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
+
+
+    def create_logical_buttons(self):
+
+        width = 400 // 11
+
+        btm_right = wx.BoxSizer(wx.HORIZONTAL)
+        and_btn = wx.RadioButton(self.panel, label="and")
+        btm_right.Add(and_btn, 0, wx.LEFT | wx.RIGHT, width)
+        or_btn = wx.RadioButton(self.panel, label="or")
+        btm_right.Add(or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
+        xor_btn = wx.RadioButton(self.panel, label="xor")
+        btm_right.Add(xor_btn, 0, wx.LEFT | wx.RIGHT, width)
+
+        self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
 
 
     #################################
