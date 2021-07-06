@@ -219,6 +219,7 @@ class ProjPickerGUI(wx.Frame):
         # Add to main sizer
         self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
 
+        # Higher level abstraction to bind buttons
         def bind_btn(btn):
             btn.Bind(wx.EVT_RADIOBUTTON, self.get_logical_operator(btn))
 
@@ -312,6 +313,7 @@ class ProjPickerGUI(wx.Frame):
     # Utilities
     def query(self):
         # Load all features drawn
+        # Handle error when switching logical operators and no geometry is drawn
         try:
             features = self.json["features"]
         except AttributeError:
