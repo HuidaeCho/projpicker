@@ -2,12 +2,9 @@
 This module implements the GUI of ProjPicker.
 """
 
-import sys
 import re
-import projpicker as ppik
 import tkinter as tk
 from tkinter import ttk
-import textwrap
 
 
 def select_bbox(bbox, single=False, crs_info_func=None):
