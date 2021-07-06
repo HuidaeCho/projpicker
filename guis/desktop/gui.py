@@ -197,22 +197,50 @@ class ProjPickerGUI(wx.Frame):
 
 
     def create_logical_buttons(self):
+        # Default
+        self.logical_operator = "and"
 
         width = 400 // 11
 
+        # Horizontal sizer for spacing
         btm_right = wx.BoxSizer(wx.HORIZONTAL)
-        and_btn = wx.RadioButton(self.panel, label="and", style=wx.RB_GROUP)
-        btm_right.Add(and_btn, 0, wx.LEFT | wx.RIGHT, width)
-        or_btn = wx.RadioButton(self.panel, label="or")
-        btm_right.Add(or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
-        xor_btn = wx.RadioButton(self.panel, label="xor")
-        btm_right.Add(xor_btn, 0, wx.LEFT | wx.RIGHT, width)
 
+        # AND
+        self.and_btn = wx.RadioButton(self.panel, label="and",
+                style=wx.RB_GROUP)
+        btm_right.Add(self.and_btn, 0, wx.LEFT | wx.RIGHT, width)
+        # OR
+        self.or_btn = wx.RadioButton(self.panel, label="or")
+        btm_right.Add(self.or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
+        # XOR
+        self.xor_btn = wx.RadioButton(self.panel, label="xor")
+        btm_right.Add(self.xor_btn, 0, wx.LEFT | wx.RIGHT, width)
+
+        # Add to main sizer
         self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
+
+        # Bind buttons to get chosen logical operator
+        self.and_btn.Bind(wx.EVT_RADIOBUTTON,
+                self.get_logical_operator(self.and_btn))
+        self.xor_btn.Bind(wx.EVT_RADIOBUTTON,
+                self.get_logical_operator(self.xor_btn))
+        self.or_btn.Bind(wx.EVT_RADIOBUTTON,
+                self.get_logical_operator(self.or_btn))
 
 
     #################################
     # Event Handlers
+    def get_logical_operator(self, button_object):
+        # Allow button to be passed into event handler
+        def onclick(event):
+            self.logical_operator = button_object.Label
+            if DEBUG:
+                print("Chosen logical operator: ", self.logical_operator)
+            return button_object.Label
+
+        return onclick
+
+
     def select(self, event):
         self.selected_crs = self.find_selected_crs()
         self.Destroy()
