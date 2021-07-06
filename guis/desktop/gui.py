@@ -234,6 +234,8 @@ class ProjPickerGUI(wx.Frame):
         # Allow button to be passed into event handler
         def onclick(event):
             self.logical_operator = button_object.Label
+            # Rerun query
+            self.query()
             if DEBUG:
                 print("Chosen logical operator: ", self.logical_operator)
             return button_object.Label
@@ -314,7 +316,7 @@ class ProjPickerGUI(wx.Frame):
         features = self.json["features"]
 
         # Create Geometry struct for each feature
-        geoms = []
+        geoms = [self.logical_operator]
         for feature in features:
             json_geom = feature["geometry"]
             geom_type = json_geom["type"]
