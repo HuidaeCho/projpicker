@@ -161,8 +161,7 @@ class ProjPickerGUI(wx.Frame):
     def create_crs_info(self):
         # CRS Info
         # Set static box
-        crs_info_box = wx.StaticBox(self.panel, 0,
-                                    style=wx.ALIGN_CENTER)
+        crs_info_box = wx.StaticBox(self.panel, 0, style=wx.ALIGN_CENTER)
         # Create sizer for the box
         crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
