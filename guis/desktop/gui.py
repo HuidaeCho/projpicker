@@ -201,7 +201,7 @@ class ProjPickerGUI(wx.Frame):
         width = 400 // 11
 
         btm_right = wx.BoxSizer(wx.HORIZONTAL)
-        and_btn = wx.RadioButton(self.panel, label="and")
+        and_btn = wx.RadioButton(self.panel, label="and", style=wx.RB_GROUP)
         btm_right.Add(and_btn, 0, wx.LEFT | wx.RIGHT, width)
         or_btn = wx.RadioButton(self.panel, label="or")
         btm_right.Add(or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
