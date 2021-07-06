@@ -219,13 +219,12 @@ class ProjPickerGUI(wx.Frame):
         # Add to main sizer
         self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
 
-        # Bind buttons to get chosen logical operator
-        self.and_btn.Bind(wx.EVT_RADIOBUTTON,
-                self.get_logical_operator(self.and_btn))
-        self.xor_btn.Bind(wx.EVT_RADIOBUTTON,
-                self.get_logical_operator(self.xor_btn))
-        self.or_btn.Bind(wx.EVT_RADIOBUTTON,
-                self.get_logical_operator(self.or_btn))
+        def bind_btn(btn):
+            btn.Bind(wx.EVT_RADIOBUTTON, self.get_logical_operator(btn))
+
+        bind_btn(self.and_btn)
+        bind_btn(self.or_btn)
+        bind_btn(self.xor_btn)
 
 
     #################################
@@ -313,7 +312,10 @@ class ProjPickerGUI(wx.Frame):
     # Utilities
     def query(self):
         # Load all features drawn
-        features = self.json["features"]
+        try:
+            features = self.json["features"]
+        except AttributeError:
+            return None
 
         # Create Geometry struct for each feature
         geoms = [self.logical_operator]
