@@ -295,6 +295,9 @@ class ProjPickerGUI(wx.Frame):
         # work as documented
 
         geom_chunk = self.browser.GetCurrentTitle()
+        if geom_chunk == "ProjPicker Desktop GUI Map":
+            print("No geometry drawn at startup")
+            return
         if geom_chunk == "pull":
             self.geom_buf = ""
         elif geom_chunk == "done":
