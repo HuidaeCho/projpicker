@@ -1031,15 +1031,17 @@ def parse_mixed_geoms(geoms):
 
     outgeoms = []
 
-    if len(geoms) == 0:
+    ngeoms = len(geoms)
+    if ngeoms == 0:
         return outgeoms
 
     if geoms[0] in ("and", "or", "xor", "postfix"):
         query_op = geoms[0]
-        del geoms[0]
+        first_index = 1
         outgeoms.append(query_op)
     else:
         query_op = "and"
+        first_index = 0
 
     query_ops = ("and", "or", "xor", "not", "match")
     spec_geoms = ("none", "all")
@@ -1055,11 +1057,11 @@ def parse_mixed_geoms(geoms):
     try:
         set_latlon()
 
-        n = len(geoms)
         stack_size = 0
-        i = 0
-        while i < n:
-            geom = geoms[i]
+        g = first_index
+
+        while g < ngeoms:
+            geom = geoms[g]
             typ = type(geom)
             if geom in query_ops:
                 if query_op == "postfix":
@@ -1084,20 +1086,20 @@ def parse_mixed_geoms(geoms):
             elif geom in ("none", "all"):
                 stack_size += 1
             else:
-                j = i
-                while (j < n and geoms[j] not in keywords and
-                       not (typ == str and "=" in geoms[j] and
-                            geoms[j].split("=")[0] in constraints)):
-                    j += 1
-                ogeoms = parse_geoms(geoms[i:j], geom_type)
-                i = j
+                i = g
+                while (i < ngeoms and geoms[i] not in keywords and
+                       not (typ == str and "=" in geoms[i] and
+                            geoms[i].split("=")[0] in constraints)):
+                    i += 1
+                ogeoms = parse_geoms(geoms[g:i], geom_type)
+                g = i
                 if len(ogeoms) > 0 and None not in ogeoms:
                     stack_size += len(ogeoms)
                     outgeoms.extend(ogeoms)
                 continue
             if typ == str:
                 outgeoms.append(geom)
-            i += 1
+            g += 1
 
         if query_op == "postfix":
             if stack_size == 0:
@@ -2017,14 +2019,16 @@ def query_mixed_geoms(
 
     outbbox = []
 
-    if len(geoms) == 0:
+    ngeoms = len(geoms)
+    if ngeoms == 0:
         return outbbox
 
     if geoms[0] in ("and", "or", "xor", "postfix"):
         query_op = geoms[0]
-        del geoms[0]
+        first_index = 1
     else:
         query_op = "and"
+        first_index = 0
 
     if query_op == "postfix":
         geombbox_stack = []
@@ -2042,7 +2046,9 @@ def query_mixed_geoms(
         match_max = 0
         bbox_all = {}
 
-        for geom in geoms:
+        for g in range(first_index, ngeoms):
+            geom = geoms[g]
+
             if type(geom) == str and geom.startswith("unit="):
                 unit = geom.split("=")[1]
             elif type(geom) == str and geom.startswith("match_tol="):
