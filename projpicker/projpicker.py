@@ -2128,7 +2128,9 @@ def query_mixed_geoms(
                         for i in reversed(idx):
                             del outbbox[i]
                     else:
-                        outbbox.extend(obbox)
+                        for b in obbox:
+                            if b not in outbbox:
+                                outbbox.append(b)
                 first = False
             elif geom == "none":
                 outbbox.clear()
