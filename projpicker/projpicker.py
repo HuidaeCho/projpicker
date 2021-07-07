@@ -1219,16 +1219,14 @@ def bbox_binary_operator(bbox1, bbox2, bbox_op):
 def sort_bbox(bbox):
     """
     Sort a list of BBox instances by area_sqkm in place after deduplicating
-    data by crs_auth_name and crs_code.
+    data.
 
     Args:
         bbox (list): List of BBox instances.
     """
     bbox.sort(key=lambda x: x.crs_auth_name+":"+x.crs_code)
     for i in reversed(range(len(bbox))):
-        if (i > 0 and
-            bbox[i].crs_auth_name == bbox[i-1].crs_auth_name and
-            bbox[i].crs_code == bbox[i-1].crs_code):
+        if i > 0 and bbox[i] == bbox[i-1]:
             del bbox[i]
     bbox.sort(key=lambda x: (x.area_sqkm,
                              x.proj_table,
