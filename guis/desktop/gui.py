@@ -206,7 +206,7 @@ class ProjPickerGUI(wx.Frame):
 
         # CRS Choice listbox
         self.crs_listbox = wx.ListBox(self.panel, id=1, size=size,
-                                      choices=["Draw geometry to query CRSs"])
+                                      choices=["Draw geometries to query CRSs"])
 
         # Add CRS listbox to main left side
         parent.Add(self.crs_listbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
