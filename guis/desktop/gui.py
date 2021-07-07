@@ -301,7 +301,7 @@ class ProjPickerGUI(wx.Frame):
         # work as documented
 
         geom_chunk = self.browser.GetCurrentTitle()
-        if geom_chunk == self.default_html_title:
+        while geom_chunk == self.default_html_title:
             return
         if geom_chunk == "pull":
             self.geom_buf = ""
