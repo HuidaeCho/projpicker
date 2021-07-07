@@ -60,106 +60,153 @@ class Geometry:
 #################################
 # GUI
 class ProjPickerGUI(wx.Frame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, layout, *args, **kwargs):
+        if layout not in ("big_list", "big_map"):
+            raise ValueError(f"{layout}: Invalid layout; "
+                             "Use big_list or big_map")
+
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
 
-        # Add left size for layout
-        self.main = wx.BoxSizer(wx.HORIZONTAL)
-        self.left = wx.BoxSizer(wx.VERTICAL)
-        self.right = wx.BoxSizer(wx.VERTICAL)
+        main_size = wx.Size(900, 700)
 
-        self.create_crs_listbox()
-        self.create_select_buttons()
+        if layout == "big_list":
+            # Sizers for layout
+            main = wx.BoxSizer(wx.HORIZONTAL)
+            left = wx.BoxSizer(wx.VERTICAL)
+            bottom_left = wx.BoxSizer(wx.HORIZONTAL)
+            bottom_right = wx.BoxSizer(wx.HORIZONTAL)
+            right = wx.BoxSizer(wx.VERTICAL)
 
-        # Add bottom left sizer to left side sizer
-        self.main.Add(self.left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
+            # Widget sizes and parents
+            left.SetMinSize(main_size.Width // 2, main_size.Height)
+            right.SetMinSize(main_size.Width - left.MinSize.Width,
+                             left.MinSize.Height)
 
-        self.create_crs_info()
-        self.create_map()
-        self.create_logical_buttons()
+            crs_listbox_parent = left
+            crs_listbox_size = wx.Size(crs_listbox_parent.MinSize.Width,
+                                       crs_listbox_parent.MinSize.Height)
 
-        self.crs = None
-        self.selected_crs = None
+            select_buttons_parent = bottom_left
 
-        # Add right to main
-        self.main.Add(self.right, wx.ALIGN_RIGHT)
+            crs_info_parent = right
+            crs_info_size = wx.Size(crs_info_parent.MinSize.Width, 125)
+            map_parent = right
+            map_size = wx.Size(map_parent.MinSize.Width,
+                               main_size.Height - crs_info_size.Height)
+            logical_buttons_parent = bottom_right
+        elif layout == "big_map":
+            # Sizers for layout
+            main = wx.BoxSizer(wx.VERTICAL)
+            top = wx.BoxSizer(wx.VERTICAL)
+            top_bottom = wx.BoxSizer(wx.HORIZONTAL)
+            bottom = wx.BoxSizer(wx.HORIZONTAL)
+            bottom_left = wx.BoxSizer(wx.VERTICAL)
+            bottom_left_bottom = wx.BoxSizer(wx.HORIZONTAL)
+            bottom_right = wx.BoxSizer(wx.VERTICAL)
+
+            # Widget sizes and parents
+            top.SetMinSize(main_size.Width, main_size.Height // 2)
+            bottom.SetMinSize(main_size.Width,
+                              main_size.Height - top.MinSize.Height)
+            bottom_left.SetMinSize(bottom.MinSize.Width // 2,
+                                   bottom.MinSize.Height)
+            bottom_right.SetMinSize(
+                    bottom.MinSize.Width - bottom_left.MinSize.Width,
+                    bottom.MinSize.Height)
+
+            crs_listbox_parent = bottom_left
+            crs_listbox_size = wx.Size(crs_listbox_parent.MinSize.Width,
+                                       crs_listbox_parent.MinSize.Height)
+
+            select_buttons_parent = bottom_left_bottom
+
+            crs_info_parent = bottom_right
+            crs_info_size = wx.Size(crs_info_parent.MinSize.Width,
+                                    crs_info_parent.MinSize.Height)
+            map_parent = top
+            map_size = wx.Size(map_parent.MinSize.Width,
+                               map_parent.MinSize.Height)
+            logical_buttons_parent = top_bottom
+
+        # Add widgets
+        self.add_crs_listbox(crs_listbox_parent, crs_listbox_size)
+        self.add_select_buttons(select_buttons_parent)
+
+        self.add_crs_info(crs_info_parent, crs_info_size)
+        self.add_map(map_parent, map_size)
+        self.add_logical_buttons(logical_buttons_parent)
+
+        # Add panels to main
+        if layout == "big_list":
+            left.Add(bottom_left, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 5)
+            right.Add(bottom_right, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 10)
+            main.Add(left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
+            main.Add(right, wx.ALIGN_RIGHT)
+        elif layout == "big_map":
+            top.Add(top_bottom, 0, wx.ALIGN_CENTER | wx.TOP, 5)
+            bottom_left.Add(bottom_left_bottom, 0, wx.TOP, 5)
+            bottom.Add(bottom_left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
+            bottom.Add(bottom_right, wx.ALIGN_RIGHT)
+            main.Add(top, 0, wx.ALIGN_TOP | wx.TOP, 5)
+            main.Add(bottom, wx.ALIGN_BOTTOM)
+
         # Set sizer for main container
-        self.panel.SetSizer(self.main)
+        self.panel.SetSizer(main)
 
-        width = 900
-        height = 700
-        size = wx.Size(width, height)
-        self.SetMaxSize(size)
-        self.SetMinSize(size)
-        self.SetSize(size)
-
-        #################################
-        # Bind Event Handlers
-
-        # Confirm loading of map
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
-
-        # Handler for the Document title change to read the JSON and trigger
-        # the ProjPicker query; This event will trigger the ProjPicker query
-        # and population of the CRS list
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED,
-                           self.get_json)
+        self.SetSize(main_size)
+        self.SetMinSize(main_size)
+        self.SetMaxSize(main_size)
 
         # All selection events are contained within following event.
         # This is done to allow the crslist selection and the drawing of the
         # selection CRS's bounding box to communicate witheach other.
         # Additionally, RunScript() is unable to run unless it is run within a
         # member function bound by wx.html2 event.
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED,
-                self.selection_events)
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.on_load_map)
 
         self.Show()
+
+        self.crs = None
+        self.selected_crs = None
 
 
     #################################
     # Left Frame
-    def create_crs_listbox(self):
+    def add_crs_listbox(self, parent, size):
         text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
-        self.left.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
-
-        self.left_width = 500
-        self.left_height = 700
+        parent.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
 
         # CRS Choice listbox
-        self.crs_listbox = wx.ListBox(
-            self.panel,
-            id=1,
-            size=(self.left_width, self.left_height),
-            choices=["Draw geometry to query CRSs"],
-        )
+        self.crs_listbox = wx.ListBox(self.panel, id=1, size=size,
+                                      choices=["Draw geometry to query CRSs"])
 
         # Add CRS listbox to main left side
-        self.left.Add(self.crs_listbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM,
-                      0)
+        parent.Add(self.crs_listbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
 
 
-    def create_select_buttons(self):
-        # Space out buttons
-        width = self.left_width // 7
-        # Create bottom left sizer for buttons
-        btm_left = wx.BoxSizer(wx.HORIZONTAL)
+    def add_select_buttons(self, parent):
         # Select button
         select_button = wx.Button(self.panel, label="Select")
-        select_button.Bind(wx.EVT_BUTTON, self.select)
+        select_button.Bind(wx.EVT_BUTTON, self.on_select)
+
         # Cancel button
         cancel_button = wx.Button(self.panel, label="Cancel")
-        cancel_button.Bind(wx.EVT_BUTTON, self.close)
-        # Add buttons to bottom left
-        btm_left.Add(select_button, 1, wx.LEFT | wx.RIGHT, width)
-        btm_left.Add(cancel_button, 1, wx.LEFT | wx.RIGHT, width)
-        self.left.Add(btm_left, 0, wx.BOTTOM | wx.TOP, 4)
+        cancel_button.Bind(wx.EVT_BUTTON, self.on_close)
+
+        # Add buttons to parent
+        parent.Add(select_button, 1)
+        parent.AddStretchSpacer()
+        parent.Add(cancel_button, 1)
 
 
     #################################
     # Right Frame
-    def create_crs_info(self):
+    def add_crs_info(self, parent, size):
         # CRS Info
+        # Add header
+        header = wx.StaticText(self.panel, 0, "CRS Info")
+
         # Set static box
         crs_info_box = wx.StaticBox(self.panel, 0, style=wx.ALIGN_CENTER)
         # Create sizer for the box
@@ -167,7 +214,7 @@ class ProjPickerGUI(wx.Frame):
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
-                                           style=wx.ALIGN_LEFT, size=(400, 300))
+                                           style=wx.ALIGN_LEFT, size=size)
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
@@ -178,79 +225,62 @@ class ProjPickerGUI(wx.Frame):
         border.Add(crs_info_hsizer, 0,
                    wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
 
-        # Add text header
-        text = wx.StaticText(self.panel, 0, "CRS Info")
-        self.right.Add(text, 0, wx.CENTER | wx.TOP, 10)
-        # Add to right column
-        self.right.Add(border, 1, wx.ALIGN_RIGHT, 100)
+        # Add widgets to parent
+        parent.Add(header, 0, wx.CENTER | wx.TOP, 10)
+        parent.Add(border, 1, wx.ALIGN_RIGHT, 100)
 
 
-    def create_map(self):
+    def add_map(self, parent, size):
         # Create webview
-        self.browser = wx.html2.WebView.New(self.panel)
+        self.browser = wx.html2.WebView.New(self.panel, size=size)
 
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        self.right.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
+        parent.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
 
 
-    def create_logical_buttons(self):
-        # Default
-        self.logical_operator = "and"
-
-        width = 400 // 11
-
-        # Horizontal sizer for spacing
-        btm_right = wx.BoxSizer(wx.HORIZONTAL)
-
-        # AND
-        and_button = wx.RadioButton(self.panel, label="and")
-        btm_right.Add(and_button, 0, wx.LEFT | wx.RIGHT, width)
-        # OR
-        or_button = wx.RadioButton(self.panel, label="or")
-        btm_right.Add(or_button, 0 ,wx.LEFT | wx.RIGHT, width)
-        # XOR
-        xor_button = wx.RadioButton(self.panel, label="xor")
-        btm_right.Add(xor_button, 0, wx.LEFT | wx.RIGHT, width)
-
-        # Add to main sizer
-        self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
-
+    def add_logical_buttons(self, parent):
         # Higher level abstraction to bind buttons
-        def bind_button(button):
-            button.Bind(wx.EVT_RADIOBUTTON, self.switch_logical_operator)
+        def create_button(op):
+            button = wx.RadioButton(self.panel, label=op)
+            button.Bind(wx.EVT_RADIOBUTTON, self.on_switch_logical_operator)
+            return button
 
-        bind_button(and_button)
-        bind_button(or_button)
-        bind_button(xor_button)
+        self.logical_operator = "and"
+        for op in ("and", "or", "xor"):
+            if op != "and":
+                parent.AddStretchSpacer()
+            parent.Add(create_button(op), 1)
 
 
     #################################
     # Event Handlers
-    def switch_logical_operator(self, event):
+    def on_load_map(self, event):
+        if DEBUG:
+            # Confirm map is loaded for debugging purposes
+            print("OpenStreetMap loaded.")
+
+        # Handler for the Document title change to read the JSON and trigger
+        # the ProjPicker query; This event will trigger the ProjPicker query
+        # and population of the CRS list
+        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED,
+                           self.on_pull)
+
+        # List box selection is within wx.html2.EVT_WEBVIEW_LOADED event
+        # listener in order to allow any JS scripts which rely on selected
+        # CRS info to be ran.
+        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.on_select_crs)
+
+
+    def on_switch_logical_operator(self, event):
         self.logical_operator = event.GetEventObject().Label
         self.query()
         if DEBUG:
             print("Chosen logical operator: ", self.logical_operator)
 
 
-    def select(self, event):
-        self.selected_crs = self.find_selected_crs()
-        self.Destroy()
-
-
-    def close(self, event):
-        self.Destroy()
-
-
-    def confirm_load(self, event):
-        if DEBUG:
-            # Confirm map is loaded for debugging purposes
-            print("OpenStreetMap loaded.")
-
-
-    def get_json(self, event):
+    def on_pull(self, event):
         # Get new JSON from title; Main event handler which will trigger
         # functionality
 
@@ -269,7 +299,6 @@ class ProjPickerGUI(wx.Frame):
             self.geom_buf = ""
         elif geom_chunk == "done":
             self.json = json.loads(self.geom_buf)
-            # Run query
             self.query()
             return
         elif hasattr(self, "geom_buf"):
@@ -277,28 +306,25 @@ class ProjPickerGUI(wx.Frame):
         self.browser.RunScript("pushGeometryChunk()")
 
 
-    def pop_info(self, event):
+    def on_select_crs(self, event):
         # Populate CRS info with information of selected CRS
         crs_info = ""
         crs = self.find_selected_crs()
         if crs is not None:
             crs_info = self.get_crs_info(crs)
         self.crs_info_text.SetLabel(crs_info)
-        self.draw_crs_bbox(crs)
 
-
-    def selection_events(self, event):
-        # List box selection is within wx.html2.EVT_WEBVIEW_LOADED event
-        # listener in order to allow any JS scripts which rely on selected
-        # CRS info to be ran.
-        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
-
-
-    def draw_crs_bbox(self, crs):
-        # crs is a ProjPicker BBox instance; Run within pop_info event handler
-        # to draw CRS bbox
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
         self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
+
+
+    def on_select(self, event):
+        self.selected_crs = self.find_selected_crs()
+        self.Destroy()
+
+
+    def on_close(self, event):
+        self.Destroy()
 
 
     #################################
@@ -319,7 +345,7 @@ class ProjPickerGUI(wx.Frame):
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
-            geoms.extend(self.construct_query_string(geom))
+            geoms.extend([geom.type, geom.coors])
 
         # Query with ProjPicker
         self.crs = ppik.query_mixed_geoms(geoms)
@@ -333,11 +359,6 @@ class ProjPickerGUI(wx.Frame):
         crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})"
                      for crs in self.crs]
         self.crs_listbox.InsertItems(crs_names, 0)
-
-
-    def construct_query_string(self, geom: Geometry):
-        # Construct ProjPicker query
-        return geom.type, geom.coors
 
 
     def find_selected_crs(self):
@@ -382,25 +403,6 @@ class ProjPickerGUI(wx.Frame):
         return crs_info
 
 
-    def get_crs_auth_code(self, crs):
-        crs_auth_code = ""
-        if crs is not None:
-            crs_auth_code = f"{crs.crs_auth_name}:{crs.crs_code}"
-        return crs_auth_code
-
-
-    def print_crs_auth_code(self, crs):
-        crs_auth_code = self.get_crs_auth_code(crs)
-        print(crs_auth_code, end="" if crs_auth_code == "" else "\n")
-
-
-    def print_selected_crs_auth_code(self):
-        self.print_crs_auth_code(self.selected_crs)
-
-
-    def get_selected_crs(self):
-        return self.selected_crs
-
     def create_crs_bbox_feature(self, crs):
         # crs is a ProjPicker BBox instance
 
@@ -423,8 +425,28 @@ class ProjPickerGUI(wx.Frame):
         return crs_bbox_feature
 
 
+    def get_crs_auth_code(self, crs):
+        crs_auth_code = ""
+        if crs is not None:
+            crs_auth_code = f"{crs.crs_auth_name}:{crs.crs_code}"
+        return crs_auth_code
+
+
+    def print_crs_auth_code(self, crs):
+        crs_auth_code = self.get_crs_auth_code(crs)
+        print(crs_auth_code, end="" if crs_auth_code == "" else "\n")
+
+
+    def print_selected_crs_auth_code(self):
+        self.print_crs_auth_code(self.selected_crs)
+
+
+    def get_selected_crs(self):
+        return self.selected_crs
+
+
 if __name__ == "__main__":
     app = wx.App()
-    ppik_gui = ProjPickerGUI(None)
+    ppik_gui = ProjPickerGUI("big_list", None)
     app.MainLoop()
     ppik_gui.print_selected_crs_auth_code()
