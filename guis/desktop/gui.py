@@ -97,9 +97,6 @@ class ProjPickerGUI(wx.Frame):
         #################################
         # Bind Event Handlers
 
-        # Confirm loading of map
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.confirm_load)
-
         # Handler for the Document title change to read the JSON and trigger
         # the ProjPicker query; This event will trigger the ProjPicker query
         # and population of the CRS list
@@ -244,7 +241,7 @@ class ProjPickerGUI(wx.Frame):
         self.Destroy()
 
 
-    def confirm_load(self, event):
+    def confirm_load(self):
         if DEBUG:
             # Confirm map is loaded for debugging purposes
             print("OpenStreetMap loaded.")
@@ -266,6 +263,7 @@ class ProjPickerGUI(wx.Frame):
 
         geom_chunk = self.browser.GetCurrentTitle()
         if geom_chunk == "ProjPicker Desktop GUI Map":
+            print("No geometry drawn at startup")
             return
         if geom_chunk == "pull":
             self.geom_buf = ""
@@ -294,6 +292,8 @@ class ProjPickerGUI(wx.Frame):
         # listener in order to allow any JS scripts which rely on selected
         # CRS info to be ran.
         wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.pop_info)
+        # Confirm loading of map
+        self.confirm_load()
 
 
     def draw_crs_bbox(self, crs):
