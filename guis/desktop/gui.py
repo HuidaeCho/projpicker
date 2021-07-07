@@ -130,13 +130,13 @@ class ProjPickerGUI(wx.Frame):
             logical_buttons_parent = top_bottom
 
         # Add widgets
-        self.add_map(map_parent, map_size)
-        self.add_logical_buttons(logical_buttons_parent)
-
         self.add_crs_listbox(crs_listbox_parent, crs_listbox_size)
         self.add_select_buttons(select_buttons_parent)
 
         self.add_crs_info(crs_info_parent, crs_info_size)
+
+        self.add_map(map_parent, map_size)
+        self.add_logical_buttons(logical_buttons_parent)
 
         # Add panels to main
         if layout == "big_list":
