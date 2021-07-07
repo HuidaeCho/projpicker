@@ -27,6 +27,7 @@
 import wx
 import wx.html2
 import json
+import re
 import projpicker as ppik
 
 
@@ -69,6 +70,8 @@ class ProjPickerGUI(wx.Frame):
         self.panel = wx.Panel(self)
 
         main_size = wx.Size(900, 700)
+
+        self.default_html_title = self.get_default_html_title()
 
         if layout == "big_list":
             # Sizers for layout
@@ -298,6 +301,8 @@ class ProjPickerGUI(wx.Frame):
         # work as documented
 
         geom_chunk = self.browser.GetCurrentTitle()
+        if geom_chunk == self.default_html_title:
+            return
         if geom_chunk == "pull":
             self.geom_buf = ""
         elif geom_chunk == "done":
@@ -446,6 +451,14 @@ class ProjPickerGUI(wx.Frame):
 
     def get_selected_crs(self):
         return self.selected_crs
+
+
+    def get_default_html_title(self, map_html=MAP_HTML):
+        regex = re.compile(".*?<title>(.*?)</title>.*")
+        with open(map_html, 'r') as html:
+            title = regex.findall(html.read())
+
+        return title[0]
 
 
 if __name__ == "__main__":
