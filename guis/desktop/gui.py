@@ -304,7 +304,9 @@ class ProjPickerGUI(wx.Frame):
             self.json = json.loads(self.geom_buf)
             self.query()
             return
-        elif hasattr(self, "geom_buf"):
+        elif not hasattr(self, "geom_buf"):
+            return
+        else:
             self.geom_buf += geom_chunk
         self.browser.RunScript("pushGeometryChunk()")
 
