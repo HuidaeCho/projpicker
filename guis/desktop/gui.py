@@ -262,7 +262,7 @@ class ProjPickerGUI(wx.Frame):
     def on_load_map(self, event):
         if DEBUG:
             # Confirm map is loaded for debugging purposes
-            print("OpenStreetMap loaded.")
+            ppik.message("OpenStreetMap loaded.")
 
         # Handler for the Document title change to read the JSON and trigger
         # the ProjPicker query; This event will trigger the ProjPicker query
@@ -280,7 +280,7 @@ class ProjPickerGUI(wx.Frame):
         self.logical_operator = event.GetEventObject().Label
         self.query()
         if DEBUG:
-            print("Chosen logical operator: ", self.logical_operator)
+            ppik.message(f"Chosen logical operator: {self.logical_operator}")
 
 
     def on_pull(self, event):
@@ -356,8 +356,8 @@ class ProjPickerGUI(wx.Frame):
         self.crs = ppik.query_mixed_geoms(geoms)
 
         if DEBUG:
-            print("Query geometries:", geoms)
-            print("Number of queried CRSs:", len(self.crs))
+            ppik.message(f"Query geometries: {geoms}")
+            ppik.message(f"Number of queried CRSs: {len(self.crs)}")
 
         # Populate CRS listbox
         self.crs_listbox.Clear()
