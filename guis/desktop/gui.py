@@ -361,9 +361,11 @@ class ProjPickerGUI(wx.Frame):
 
         # Populate CRS listbox
         self.crs_listbox.Clear()
-        crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})"
-                     for crs in self.crs]
-        self.crs_listbox.InsertItems(crs_names, 0)
+
+        if len(self.crs):
+            crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})"
+                         for crs in self.crs]
+            self.crs_listbox.InsertItems(crs_names, 0)
 
 
     def find_selected_crs(self):
