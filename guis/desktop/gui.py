@@ -70,7 +70,7 @@ class ProjPickerGUI(wx.Frame):
         self.right = wx.BoxSizer(wx.VERTICAL)
 
         self.create_crs_listbox()
-        self.create_buttons()
+        self.create_select_buttons()
 
         # Add bottom left sizer to left side sizer
         self.main.Add(self.left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
@@ -139,7 +139,7 @@ class ProjPickerGUI(wx.Frame):
                       0)
 
 
-    def create_buttons(self):
+    def create_select_buttons(self):
         # Space out buttons
         width = self.left_width // 7
         # Create bottom left sizer for buttons
@@ -205,14 +205,14 @@ class ProjPickerGUI(wx.Frame):
         btm_right = wx.BoxSizer(wx.HORIZONTAL)
 
         # AND
-        and_btn = wx.RadioButton(self.panel, label="and", style=wx.RB_GROUP)
-        btm_right.Add(and_btn, 0, wx.LEFT | wx.RIGHT, width)
+        and_button = wx.RadioButton(self.panel, label="and")
+        btm_right.Add(and_button, 0, wx.LEFT | wx.RIGHT, width)
         # OR
-        or_btn = wx.RadioButton(self.panel, label="or")
-        btm_right.Add(or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
+        or_button = wx.RadioButton(self.panel, label="or")
+        btm_right.Add(or_button, 0 ,wx.LEFT | wx.RIGHT, width)
         # XOR
-        xor_btn = wx.RadioButton(self.panel, label="xor")
-        btm_right.Add(xor_btn, 0, wx.LEFT | wx.RIGHT, width)
+        xor_button = wx.RadioButton(self.panel, label="xor")
+        btm_right.Add(xor_button, 0, wx.LEFT | wx.RIGHT, width)
 
         # Add to main sizer
         self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
@@ -221,9 +221,9 @@ class ProjPickerGUI(wx.Frame):
         def bind_button(button):
             button.Bind(wx.EVT_RADIOBUTTON, self.switch_logical_operator)
 
-        bind_button(and_btn)
-        bind_button(or_btn)
-        bind_button(xor_btn)
+        bind_button(and_button)
+        bind_button(or_button)
+        bind_button(xor_button)
 
 
     #################################
@@ -272,7 +272,7 @@ class ProjPickerGUI(wx.Frame):
             # Run query
             self.query()
             return
-        else:
+        elif hasattr(self, "geom_buf"):
             self.geom_buf += geom_chunk
         self.browser.RunScript("pushGeometryChunk()")
 
@@ -304,12 +304,13 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # Utilities
     def query(self):
-        # Load all features drawn; Handle error when switching logical
-        # operators and no geometry is drawn
-        try:
-            features = self.json["features"]
-        except AttributeError:
-            return None
+        # Handle error when switching logical operators and no geometry is
+        # drawn
+        if not hasattr(self, "json"):
+            return
+
+        # Load all features drawn
+        features = self.json["features"]
 
         # Create Geometry struct for each feature
         geoms = [self.logical_operator]
