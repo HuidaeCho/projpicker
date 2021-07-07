@@ -130,12 +130,13 @@ class ProjPickerGUI(wx.Frame):
             logical_buttons_parent = top_bottom
 
         # Add widgets
+        self.add_map(map_parent, map_size)
+        self.add_logical_buttons(logical_buttons_parent)
+
         self.add_crs_listbox(crs_listbox_parent, crs_listbox_size)
         self.add_select_buttons(select_buttons_parent)
 
         self.add_crs_info(crs_info_parent, crs_info_size)
-        self.add_map(map_parent, map_size)
-        self.add_logical_buttons(logical_buttons_parent)
 
         # Add panels to main
         if layout == "big_list":
@@ -172,7 +173,33 @@ class ProjPickerGUI(wx.Frame):
 
 
     #################################
-    # Left Frame
+    # Map
+    def add_map(self, parent, size):
+        # Create webview
+        self.browser = wx.html2.WebView.New(self.panel, size=size)
+
+        # Load the local html
+        url = wx.FileSystem.FileNameToURL(MAP_HTML)
+        self.browser.LoadURL(url)
+        parent.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
+
+
+    def add_logical_buttons(self, parent):
+        # Higher level abstraction to bind buttons
+        def create_button(op):
+            button = wx.RadioButton(self.panel, label=op)
+            button.Bind(wx.EVT_RADIOBUTTON, self.on_switch_logical_operator)
+            return button
+
+        self.logical_operator = "and"
+        for op in ("and", "or", "xor"):
+            if op != "and":
+                parent.AddStretchSpacer()
+            parent.Add(create_button(op), 1)
+
+
+    #################################
+    # CRS List
     def add_crs_listbox(self, parent, size):
         text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
         parent.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
@@ -201,7 +228,7 @@ class ProjPickerGUI(wx.Frame):
 
 
     #################################
-    # Right Frame
+    # CRS Info
     def add_crs_info(self, parent, size):
         # CRS Info
         # Add header
@@ -228,30 +255,6 @@ class ProjPickerGUI(wx.Frame):
         # Add widgets to parent
         parent.Add(header, 0, wx.CENTER | wx.TOP, 10)
         parent.Add(border, 1, wx.ALIGN_RIGHT, 100)
-
-
-    def add_map(self, parent, size):
-        # Create webview
-        self.browser = wx.html2.WebView.New(self.panel, size=size)
-
-        # Load the local html
-        url = wx.FileSystem.FileNameToURL(MAP_HTML)
-        self.browser.LoadURL(url)
-        parent.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
-
-
-    def add_logical_buttons(self, parent):
-        # Higher level abstraction to bind buttons
-        def create_button(op):
-            button = wx.RadioButton(self.panel, label=op)
-            button.Bind(wx.EVT_RADIOBUTTON, self.on_switch_logical_operator)
-            return button
-
-        self.logical_operator = "and"
-        for op in ("and", "or", "xor"):
-            if op != "and":
-                parent.AddStretchSpacer()
-            parent.Add(create_button(op), 1)
 
 
     #################################
