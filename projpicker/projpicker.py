@@ -1219,8 +1219,7 @@ def bbox_binary_operator(bbox1, bbox2, bbox_op):
 def sort_bbox(bbox):
     """
     Sort a list of BBox instances by area_sqkm in place after deduplicating
-    data by crs_auth_name, crs_code, usage_auth_name, usage_code,
-    extent_auth_name, and extent_code.
+    data by crs_auth_name and crs_code.
 
     Args:
         bbox (list): List of BBox instances.
@@ -1229,9 +1228,7 @@ def sort_bbox(bbox):
     for i in reversed(range(len(bbox))):
         if (i > 0 and
             bbox[i].crs_auth_name == bbox[i-1].crs_auth_name and
-            bbox[i].crs_code == bbox[i-1].crs_code and
-            bbox[i].usage_auth_name == bbox[i-1].usage_code and
-            bbox[i].extent_auth_name == bbox[i-1].extent_code):
+            bbox[i].crs_code == bbox[i-1].crs_code):
             del bbox[i]
     bbox.sort(key=lambda x: (x.area_sqkm,
                              x.proj_table,
