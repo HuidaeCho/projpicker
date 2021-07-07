@@ -77,6 +77,7 @@ class ProjPickerGUI(wx.Frame):
 
         self.create_crs_info()
         self.create_map()
+        self.create_logical_buttons()
 
         self.crs = None
         self.selected_crs = None
@@ -152,7 +153,7 @@ class ProjPickerGUI(wx.Frame):
         # Add buttons to bottom left
         btm_left.Add(select_button, 1, wx.LEFT | wx.RIGHT, width)
         btm_left.Add(cancel_button, 1, wx.LEFT | wx.RIGHT, width)
-        self.left.Add(btm_left, 0, wx.BOTTOM)
+        self.left.Add(btm_left, 0, wx.BOTTOM | wx.TOP, 4)
 
 
     #################################
@@ -166,7 +167,7 @@ class ProjPickerGUI(wx.Frame):
         crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
         # Input text
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
-                                           style=wx.ALIGN_LEFT, size=(600, 300))
+                style=wx.ALIGN_LEFT, size=(400, 300))
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
@@ -192,11 +193,56 @@ class ProjPickerGUI(wx.Frame):
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
         self.right.Add(self.browser, 1,
-                       wx.EXPAND | wx.RIGHT | wx.LEFT | wx.BOTTOM, 11)
+                wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
+
+
+    def create_logical_buttons(self):
+        # Default
+        self.logical_operator = "and"
+
+        width = 400 // 11
+
+        # Horizontal sizer for spacing
+        btm_right = wx.BoxSizer(wx.HORIZONTAL)
+
+        # AND
+        self.and_btn = wx.RadioButton(self.panel, label="and",
+                style=wx.RB_GROUP)
+        btm_right.Add(self.and_btn, 0, wx.LEFT | wx.RIGHT, width)
+        # OR
+        self.or_btn = wx.RadioButton(self.panel, label="or")
+        btm_right.Add(self.or_btn, 0 ,wx.LEFT | wx.RIGHT, width)
+        # XOR
+        self.xor_btn = wx.RadioButton(self.panel, label="xor")
+        btm_right.Add(self.xor_btn, 0, wx.LEFT | wx.RIGHT, width)
+
+        # Add to main sizer
+        self.right.Add(btm_right, 0, wx.TOP | wx.BOTTOM, 10)
+
+        # Higher level abstraction to bind buttons
+        def bind_btn(btn):
+            btn.Bind(wx.EVT_RADIOBUTTON, self.get_logical_operator(btn))
+
+        bind_btn(self.and_btn)
+        bind_btn(self.or_btn)
+        bind_btn(self.xor_btn)
 
 
     #################################
     # Event Handlers
+    def get_logical_operator(self, button_object):
+        # Allow button to be passed into event handler
+        def onclick(event):
+            self.logical_operator = button_object.Label
+            # Rerun query
+            self.query()
+            if DEBUG:
+                print("Chosen logical operator: ", self.logical_operator)
+            return button_object.Label
+
+        return onclick
+
+
     def select(self, event):
         self.selected_crs = self.find_selected_crs()
         self.Destroy()
@@ -267,10 +313,14 @@ class ProjPickerGUI(wx.Frame):
     # Utilities
     def query(self):
         # Load all features drawn
-        features = self.json["features"]
+        # Handle error when switching logical operators and no geometry is drawn
+        try:
+            features = self.json["features"]
+        except AttributeError:
+            return None
 
         # Create Geometry struct for each feature
-        geoms = []
+        geoms = [self.logical_operator]
         for feature in features:
             json_geom = feature["geometry"]
             geom_type = json_geom["type"]
