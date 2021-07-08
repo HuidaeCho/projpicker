@@ -145,7 +145,7 @@ def parse_point(point):
     For example, "10,20" returns (10.0, 20.0).
 
     Args:
-        point (str): Parseable str of latitude and longitude.
+        point (str): Parsable str of latitude and longitude.
 
     Returns:
         float, float: Parsed latitude and longitude in decimal degrees.
@@ -178,7 +178,7 @@ def parse_bbox(bbox):
     For example, "10,20,30,40" returns (10.0, 20.0, 30.0, 40.0).
 
     Args:
-        bbox (str): Parseable str of south, north, west, and east.
+        bbox (str): Parsable str of south, north, west, and east.
 
     Returns:
         float, float, float, float: South, north, west, and east in decimal
@@ -217,7 +217,7 @@ def calc_poly_bbox(poly):
     west, and east floats in decimal degrees.
 
     Args:
-        poly (list): List of parseable point geometries. See parse_poly().
+        poly (list): List of parsable point geometries. See parse_poly().
 
     Returns:
         float, float, float, float: South, north, west, and east in decimal
@@ -332,7 +332,7 @@ def query_point_using_cursor(
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         point (list or str): List of latitude and longitude floats in decimal
-            degrees or parseable str of latitude and longitude. See
+            degrees or parsable str of latitude and longitude. See
             parse_point().
         unit (str): "any", unit values from projpicker.db.
         negate (bool): Whether or not to negate query. Defaults to False.
@@ -390,7 +390,7 @@ def query_bbox_using_cursor(
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         bbox (list or str): List of south, north, west, and east floats in
-            decimal degrees or parseable str of south, north, west, and east.
+            decimal degrees or parsable str of south, north, west, and east.
             See parse_bbox().
         unit (str): "any", unit values from projpicker.db.
         negate (bool): Whether or not to negate query. Defaults to False.

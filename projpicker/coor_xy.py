@@ -33,7 +33,7 @@ def parse_point(point):
     For example, "10,20" returns (10.0, 20.0).
 
     Args:
-        point (str): Parseable str of x and y.
+        point (str): Parsable str of x and y.
 
     Returns:
         float, float: Parsed x and y floats.
@@ -62,7 +62,7 @@ def parse_bbox(bbox):
     For example, "10,20,30,40" returns (10.0, 20.0, 30.0, 40.0).
 
     Args:
-        bbox (str): Parseable str of bottom, top, left, and right.
+        bbox (str): Parsable str of bottom, top, left, and right.
 
     Returns:
         float, float, float, float: Bottom, top, left, and right floats.
@@ -96,7 +96,7 @@ def calc_poly_bbox(poly):
     and right floats.
 
     Args:
-        poly (list): List of parseable point geometries. See parse_poly().
+        poly (list): List of parsable point geometries. See parse_poly().
 
     Returns:
         float, float, float, float: Bottom, top, left, and right.
@@ -181,8 +181,8 @@ def query_point_using_cursor(
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
-        point (list or str): List of x and y floats or parseable str of x and
-            y. See parse_point().
+        point (list or str): List of x and y floats or parsable str of x and y.
+            See parse_point().
         unit (str): "any", unit values from projpicker.db.
         negate (bool): Whether or not to negate query. Defaults to False.
 
@@ -233,7 +233,7 @@ def query_bbox_using_cursor(
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         bbox (list or str): List of bottom, top, left, and right floats or
-            parseable str of bottom, top, left, and right. See parse_bbox().
+            parsable str of bottom, top, left, and right. See parse_bbox().
         unit (str): "any", unit values from projpicker.db.
         negate (bool): Whether or not to negate query. Defaults to False.
 

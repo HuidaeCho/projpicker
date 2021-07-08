@@ -811,7 +811,7 @@ def parse_points(points):
     """
     Parse a list of strs of latitude and longitude or x and y, and return a
     list of lists of two floats. A list of two floats can be used in place of a
-    str of latitude and longitude. Any unparseable str is ignored with a
+    str of latitude and longitude. Any unparsable str is ignored with a
     warning. If an output from this function is passed, the same output is
     returned.
 
@@ -819,10 +819,10 @@ def parse_points(points):
     ["1,2", "3,4", ",", "5,6", "7,8"] or
     [[1,2], "3,4", ",", "5,6", [7,8]] returns the same
     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]] with a warning about the
-    unparseable comma.
+    unparsable comma.
 
     Args:
-        points (list): List of parseable point geometries.
+        points (list): List of parsable point geometries.
 
     Returns:
         list: List of lists of parsed point geometries in float.
@@ -852,7 +852,7 @@ def parse_polys(polys):
     """
     Parse a list of strs of latitude and longitude or x and y, and return a
     list of lists of lists of two floats. A list of two floats can be used in
-    place of a str of coordinates. Any unparseable str starts a new poly. If an
+    place of a str of coordinates. Any unparsable str starts a new poly. If an
     output from this function is passed, the same output is returned.
 
     For example,
@@ -861,8 +861,8 @@ def parse_polys(polys):
     [[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]].
 
     Args:
-        points (list): List of parseable point geometries with an unparseable
-            str as a poly separator.
+        points (list): List of parsable point geometries with an unparsable str
+            as a poly separator.
 
     Returns:
         list: List of lists of lists of parsed point geometries in float.
@@ -911,7 +911,7 @@ def parse_polys(polys):
 def parse_bboxes(bboxes):
     """
     Parse a list of strs of four floats, and return them as a list. A list of
-    four floats can be used in place of a str of four floats. Any unparseable
+    four floats can be used in place of a str of four floats. Any unparsable
     str is ignored. If an output from this function is passed, the same output
     is returned.
 
@@ -919,7 +919,7 @@ def parse_bboxes(bboxes):
     [[10.0, 20.0, 30.0, 40.0], [50.0, 60.0, 70.0, 80.0]]
 
     Args:
-        bboxes (list): List of parseable strs of four floats.
+        bboxes (list): List of parsable strs of four floats.
 
     Returns:
         list: List of lists of four floats.
@@ -947,7 +947,7 @@ def parse_geom(geom, geom_type="point"):
     Parse a geometry and return it as a list.
 
     Args:
-        geom (list): List or a str of a parseable geometry. See parse_point(),
+        geom (list): List or a str of a parsable geometry. See parse_point(),
             parse_poly(), and parse_bbox().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -975,7 +975,7 @@ def parse_geoms(geoms, geom_type="point"):
     Parse geometries and return them as a list.
 
     Args:
-        geom (list): List of parseable geometries. See parse_points(),
+        geom (list): List of parsable geometries. See parse_points(),
             parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -1016,9 +1016,9 @@ def parse_mixed_geoms(geoms):
     Args:
         geoms (list or str): List of "point", "poly", "bbox", "none", "all",
             "latlon", "xy", "and", "or", "xor", "not", "match", "unit=",
-            "match_tol=", "match_max=", and parseable geometries. The first
-            word can be either "and", "or", "xor", or "postfix". See
-            parse_points(), parse_polys(), and parse_bboxes().
+            "match_tol=", "match_max=", and parsable geometries. The first word
+            can be either "and", "or", "xor", or "postfix". See parse_points(),
+            parse_polys(), and parse_bboxes().
 
     Returns:
         list: List of parsed geometries.
@@ -1343,7 +1343,7 @@ def query_point(
     get_projpicker_db() is used.
 
     Args:
-        point (list or str): List of two floats or a parseable point geometry.
+        point (list or str): List of two floats or a parsable point geometry.
             See parse_point().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -1371,7 +1371,7 @@ def query_point_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        point (list or str): List of two floats or a parseable str of a point.
+        point (list or str): List of two floats or a parsable str of a point.
             See parse_point().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
@@ -1403,7 +1403,7 @@ def query_points(
     largest. If projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
-        points (list): List of parseable point geometries. See parse_points().
+        points (list): List of parsable point geometries. See parse_points().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -1469,7 +1469,7 @@ def query_points_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        points (list): List of parseable point geometries. See parse_points().
+        points (list): List of parsable point geometries. See parse_points().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
@@ -1513,7 +1513,7 @@ def query_poly(
     get_projpicker_db() is used.
 
     Args:
-        poly (list): List of parseable point geometries. See parse_poly().
+        poly (list): List of parsable point geometries. See parse_poly().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
 
@@ -1535,7 +1535,7 @@ def query_poly_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        poly (list): List of parseable point geometries. See parse_poly().
+        poly (list): List of parsable point geometries. See parse_poly().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
     Returns:
@@ -1558,7 +1558,7 @@ def query_polys(
     largest. If projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
-        polys (list): List of parseable poly geometries. See parse_polys().
+        polys (list): List of parsable poly geometries. See parse_polys().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -1585,7 +1585,7 @@ def query_polys_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        polys (list): List of parseable poly geometries. See parse_polys().
+        polys (list): List of parsable poly geometries. See parse_polys().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
@@ -1610,7 +1610,7 @@ def query_bbox(
     get_projpicker_db() is used.
 
     Args:
-        bbox (list or str): List of four floats or a parseable str of a bbox
+        bbox (list or str): List of four floats or a parsable str of a bbox
             geometry. See parse_bbox().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -1640,7 +1640,7 @@ def query_bbox_using_bbox(
     Args:
         prevbbox (list): List of BBox instances from a previous query.
         bbox (list or str): List of south, north, west, and east floats in
-            decimal degrees or a parseable str of south, north, west, and east.
+            decimal degrees or a parsable str of south, north, west, and east.
             See parse_bbox().
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
@@ -1672,7 +1672,7 @@ def query_bboxes(
     largest. If projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
-        bboxes (list): List of parseable bbox geometries. See parse_bboxes().
+        bboxes (list): List of parsable bbox geometries. See parse_bboxes().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -1738,7 +1738,7 @@ def query_bboxes_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        bboxes (list): List of parseable bbox geometries. See parse_bboxes().
+        bboxes (list): List of parsable bbox geometries. See parse_bboxes().
         query_op (str): Query operator (and, or, xor). Defaults to "and".
         unit (str): "any", unit values from projpicker.db. Defaults to "any".
 
@@ -1783,7 +1783,7 @@ def query_geom(
     used.
 
     Args:
-        geom (list or str): List or str of a parseable geometry. See
+        geom (list or str): List or str of a parsable geometry. See
             parse_points(), parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -1821,7 +1821,7 @@ def query_geom_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        geom (list or str): List or str of a parseable geometry. See
+        geom (list or str): List or str of a parsable geometry. See
             parse_points(), parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -1861,7 +1861,7 @@ def query_geoms(
     largest. If projpicker_db is None (default), get_projpicker_db() is used.
 
     Args:
-        geoms (list): List of parseable geometries. See parse_points(),
+        geoms (list): List of parsable geometries. See parse_points(),
             parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -1905,7 +1905,7 @@ def query_geoms_using_bbox(
 
     Args:
         prevbbox (list): List of BBox instances from a previous query.
-        geoms (list): List of parseable geometries. See parse_points(),
+        geoms (list): List of parsable geometries. See parse_points(),
             parse_polys(), and parse_bboxes().
         geom_type (str): Geometry type (point, poly, bbox). Defaults to
             "point".
@@ -1999,7 +1999,7 @@ def query_mixed_geoms(
     Args:
         geoms (list or str): List of "point", "poly", "bbox", "none", "all",
             "latlon", "xy", "and", "or", "xor", "not", "match", "unit=",
-            "match_tole=", "match_max=", and parseable geometries. The first
+            "match_tole=", "match_max=", and parsable geometries. The first
             word can be either "and", "or", "xor", or "postfix". See
             parse_points(), parse_polys(), and parse_bboxes().
         projpicker_db (str): projpicker.db path. Defaults to None.
