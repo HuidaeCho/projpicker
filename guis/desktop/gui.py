@@ -140,17 +140,17 @@ class ProjPickerGUI(wx.Frame):
 
         # Add panels to main
         if layout == "big_list":
-            left.Add(bottom_left, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 5)
-            right.Add(bottom_right, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 10)
-            main.Add(left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
-            main.Add(right, wx.ALIGN_RIGHT)
+            left.Add(bottom_left, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
+            right.Add(bottom_right, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
+            main.Add(left)
+            main.Add(right)
         elif layout == "big_map":
-            top.Add(top_bottom, 0, wx.ALIGN_CENTER | wx.TOP, 5)
-            bottom_left.Add(bottom_left_bottom, 0, wx.TOP, 5)
-            bottom.Add(bottom_left, 0, wx.ALIGN_LEFT | wx.LEFT, 5)
-            bottom.Add(bottom_right, wx.ALIGN_RIGHT)
-            main.Add(top, 0, wx.ALIGN_TOP | wx.TOP, 5)
-            main.Add(bottom, wx.ALIGN_BOTTOM)
+            top.Add(top_bottom, 0, wx.ALIGN_CENTER)
+            bottom_left.Add(bottom_left_bottom, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
+            bottom.Add(bottom_left)
+            bottom.Add(bottom_right)
+            main.Add(top)
+            main.Add(bottom)
 
         # Set sizer for main container
         self.panel.SetSizer(main)
@@ -181,7 +181,7 @@ class ProjPickerGUI(wx.Frame):
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
         self.browser.LoadURL(url)
-        parent.Add(self.browser, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 10)
+        parent.Add(self.browser, 1, wx.ALL, 5)
 
 
     def add_logical_buttons(self, parent):
@@ -202,14 +202,14 @@ class ProjPickerGUI(wx.Frame):
     # CRS List
     def add_crs_listbox(self, parent, size):
         text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
-        parent.Add(text, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 10)
+        parent.Add(text, 0, wx.CENTER | wx.TOP, 5)
 
         # CRS Choice listbox
-        self.crs_listbox = wx.ListBox(self.panel, id=1, size=size,
+        self.crs_listbox = wx.ListBox(self.panel, size=size,
                                       choices=["Draw geometries to query CRSs"])
 
-        # Add CRS listbox to main left side
-        parent.Add(self.crs_listbox, 1, wx.ALIGN_RIGHT | wx.ALL | wx.BOTTOM, 0)
+        # Add CRS listbox to parent
+        parent.Add(self.crs_listbox, 1, wx.ALL, 5)
 
 
     def add_select_buttons(self, parent):
@@ -233,17 +233,13 @@ class ProjPickerGUI(wx.Frame):
         # Add header
         header = wx.StaticText(self.panel, 0, "CRS Info")
 
-        # Input text, read only
-        self.crs_info_text = wx.TextCtrl(self.panel, -1,
-                                         style=wx.VERTICAL | wx.TE_MULTILINE |
-                                         wx.TE_READONLY, size=size)
+        # Info text, read only
+        self.crs_info_text = wx.TextCtrl(self.panel, size=size,
+                                         style=wx.TE_MULTILINE | wx.TE_READONLY)
 
-        # Add text to correct sizer
-        crs_info_text_sizer = wx.BoxSizer(wx.VERTICAL)
-        crs_info_text_sizer.Add(self.crs_info_text, 1, wx.ALIGN_CENTER, 100)
         # Add widgets to parent
-        parent.Add(header, 0, wx.CENTER | wx.TOP, 10)
-        parent.Add(crs_info_text_sizer, 1, wx.ALIGN_RIGHT | wx.ALL, 10)
+        parent.Add(header, 0, wx.CENTER | wx.TOP, 5)
+        parent.Add(self.crs_info_text, 1, wx.ALL, 5)
 
 
     #################################
@@ -306,8 +302,7 @@ class ProjPickerGUI(wx.Frame):
         crs = self.find_selected_crs()
         if crs is not None:
             crs_info = self.get_crs_info(crs)
-        self.crs_info_text.Clear()
-        self.crs_info_text.WriteText(crs_info)
+        self.crs_info_text.SetValue(crs_info)
 
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
         self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
@@ -397,6 +392,7 @@ class ProjPickerGUI(wx.Frame):
             # ceil: https://stackoverflow.com/a/17511341/16079666
             num_tabs = -(-(key_len - len(key)) // 8)
             crs_info += f"{key}:" + "\t" * num_tabs + f"{val}\n"
+        crs_info = crs_info.rstrip()
         return crs_info
 
 
