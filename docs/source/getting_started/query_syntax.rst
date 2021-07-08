@@ -197,13 +197,20 @@ This command finds CRSs that contain any, not necessarily all, of the geometries
 It is equivalent to ``A or B or C or D`` set-theoretically or ``postfix A B or C or D or`` in the ``postfix`` mode.
 
 An exclusive OR operation can be performed.
-This command finds CRSs that contain only one of the geometries, but not more than two:
+This command finds CRSs that contain only one of the geometries, but not both:
 
 .. code-block:: shell
 
-    projpicker xor A B C D
+    projpicker xor A B
 
-It is equivalent to ``A xor B xor C xor D`` set-theoretically or ``postfix A B xor C xor D xor`` in the ``postfix`` mode.
+It is equivalent to ``A xor B`` set-theoretically or ``postfix A B xor`` in the ``postfix`` mode.
+
+Since this operator is performed on two sets at a time, feeding more than two geometries does not result in CRSs that are mutually exclusive among all geometries.
+For example, the following operation results in CRSs that contain only A, B, or C exclusively, and additionally all three geometries:
+
+.. code-block:: shell
+
+    projpicker xor A B C
 
 Postfix logical operations
 --------------------------
@@ -236,6 +243,12 @@ That is ``(A and B) xor C`` in an infix notation.
 .. code-block:: shell
 
     projpicker postfix A B and C xor
+
+To find CRSs that contain only A, B, or C exclusively, the following query can be used:
+
+.. code-block:: shell
+
+    projpicker postfix A B xor C xor A B and C and not and
 
 The ``match`` operator compares two geometries in ``latlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be tranformed to the other ``latlon`` geometry.
 It uses two constraints including ``match_tol=`` and ``match_max=``.
