@@ -46,6 +46,10 @@ The rtree spatial indexing may not be able to handle reversed west and east
 longitudinal boundaries that cross the antimeridian. This branch is archived
 and not under active development.
 
+## Change Log
+
+See [here](https://github.com/HuidaeCho/projpicker/blob/main/projpicker/ChangeLog.md).
+
 ## TODO
 
 1. API
