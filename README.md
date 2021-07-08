@@ -19,7 +19,7 @@ that wraps around this project is available. It is a work in progress; join
 
 ## Subprojects
 
-* [Desktop GUI](https://github.com/HuidaeCho/projpicker-gui)
+* [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui)
 * [ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro)
 * [Work-in-progress JavaScript implementation](https://github.com/HuidaeCho/projpicker-js)
 
