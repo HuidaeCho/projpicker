@@ -28,9 +28,9 @@ This module implements the CLI and API of ProjPicker.
 """
 
 import collections
-import argparse
 import os
 import sys
+import argparse
 import sqlite3
 import re
 import math
