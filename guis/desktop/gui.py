@@ -90,7 +90,12 @@ class ProjPickerGUI(wx.Frame):
             select_buttons_parent = bottom_left
 
             crs_info_parent = right
-            crs_info_size = wx.Size(crs_info_parent.MinSize.Width, 125)
+            # TODO: make it dynamic
+            num_lines_crs_info = 8
+            font_height = self.panel.GetFont().GetPixelSize().Height * 1.025
+            crs_info_size = wx.Size(crs_info_parent.MinSize.Width,
+                                    int(num_lines_crs_info * font_height))
+
             map_parent = right
             map_size = wx.Size(map_parent.MinSize.Width,
                                main_size.Height - crs_info_size.Height)
@@ -124,6 +129,7 @@ class ProjPickerGUI(wx.Frame):
             crs_info_parent = bottom_right
             crs_info_size = wx.Size(crs_info_parent.MinSize.Width,
                                     crs_info_parent.MinSize.Height)
+
             map_parent = top
             map_size = wx.Size(map_parent.MinSize.Width,
                                map_parent.MinSize.Height)
@@ -141,7 +147,7 @@ class ProjPickerGUI(wx.Frame):
         # Add panels to main
         if layout == "big_list":
             left.Add(bottom_left, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
-            right.Add(bottom_right, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
+            right.Add(bottom_right, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 5)
             main.Add(left)
             main.Add(right)
         elif layout == "big_map":
