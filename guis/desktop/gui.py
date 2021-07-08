@@ -243,7 +243,7 @@ class ProjPickerGUI(wx.Frame):
         self.crs_info_text = wx.StaticText(self.panel, -1, "",
                                            style=wx.ALIGN_LEFT, size=size)
 
-        self.crs_info_text.Bind(wx.EVT_RIGHT_DOWN, self.copy_crs_info_text)
+        self.crs_info_text.Bind(wx.EVT_RIGHT_DOWN, self.on_copy_crs_info_text)
 
         # Add text to correct sizer
         crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
@@ -325,7 +325,7 @@ class ProjPickerGUI(wx.Frame):
         self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
 
 
-    def copy_crs_info_text(self, event):
+    def on_copy_crs_info_text(self, event):
         # Copy crs info text on right click
         copied_text = wx.TextDataObject()
         copied_text.SetText(self.crs_info_text.Label)
