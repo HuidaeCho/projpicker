@@ -1,7 +1,11 @@
 #!/bin/sh
+exclude=""
+for i in COPYING README.md setup.py data deploy docs guis tests utils; do
+	exclude="$exclude :(exclude)../$i"
+done
 (
 echo "# Change log"
-git log --pretty="* [%h](https://github.com/HuidaeCho/projpicker/commit/%h) %d %s %cd" --decorate=full ":(exclude)../guis" |
+git log --pretty="* [%h](https://github.com/HuidaeCho/projpicker/commit/%h) %d %s %cd" --decorate=full $exclude |
 sed '
 /(HEAD/{
 	s/^\(.*\) (HEAD.*HEAD) \(.* \(\([^ ]\+ \)\{5\}[^ ]\+\)\)$/\n## HEAD\n\3\n\n\1 \2/
