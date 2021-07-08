@@ -89,15 +89,17 @@ class ProjPickerGUI(wx.Frame):
 
             select_buttons_parent = bottom_left
 
-            crs_info_parent = right
+            line_height = self.panel.GetFont().GetPixelSize().Height * 1.025
             num_lines_crs_info = self.get_crs_info(None)
-            font_height = self.panel.GetFont().GetPixelSize().Height * 1.025
+
+            crs_info_parent = right
             crs_info_size = wx.Size(crs_info_parent.MinSize.Width,
-                                    int(num_lines_crs_info * font_height))
+                                    int(num_lines_crs_info * line_height))
 
             map_parent = right
             map_size = wx.Size(map_parent.MinSize.Width,
                                main_size.Height - crs_info_size.Height)
+
             logical_buttons_parent = bottom_right
         elif layout == "big_map":
             # Sizers for layout
@@ -132,6 +134,7 @@ class ProjPickerGUI(wx.Frame):
             map_parent = top
             map_size = wx.Size(map_parent.MinSize.Width,
                                map_parent.MinSize.Height)
+
             logical_buttons_parent = top_bottom
 
         # Add widgets
