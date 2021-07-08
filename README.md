@@ -38,13 +38,9 @@ See [here](https://github.com/HuidaeCho/projpicker/blob/main/projpicker/ChangeLo
 
 ## TODO
 
-1. API
-   * JavaScript
-2. GUI
-   * Desktop (wxPython)
-   * Web (client-only)
-3. CRS hints
-   * Crowdsourcing agency and product information? Is usage from PROJ enough?
+1. [JavaScript API](https://github.com/HuidaeCho/projpicker-js)
+2. Client-only web UI
+3. CRS hints: Crowdsourcing agency and product information? Is usage from PROJ enough?
 
 ## Versioning
 
