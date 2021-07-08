@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Thu Jul 8 00:57:51 2021 -0400
+Thu Jul 8 01:12:51 2021 -0400
 
+* [482a461](https://github.com/HuidaeCho/projpicker/commit/482a461)  Exclude non-core commits from ChangeLog.md
 * [b2ca3a5](https://github.com/HuidaeCho/projpicker/commit/b2ca3a5)  Add HEAD logs to Change Log
 * [b860119](https://github.com/HuidaeCho/projpicker/commit/b860119)  Use sentence case for Change Log
 * [81086d0](https://github.com/HuidaeCho/projpicker/commit/81086d0)  Exclude guis log from ChangeLog.md
@@ -11,21 +12,21 @@ Thu Jul 8 00:57:51 2021 -0400
 * [0973846](https://github.com/HuidaeCho/projpicker/commit/0973846)  0.1.6.post2
 * [0b1033a](https://github.com/HuidaeCho/projpicker/commit/0b1033a)  Use BBox comparison for deduplication
 * [a983210](https://github.com/HuidaeCho/projpicker/commit/a983210)  Do not append existing BBoxs for OR even before deduplicating
-* [0e1b938](https://github.com/HuidaeCho/projpicker/commit/0e1b938)  Fix deduplicating code in sort_bbox()
-* [75999c2](https://github.com/HuidaeCho/projpicker/commit/75999c2)  Do not modify input geoms from (parse|query)_mixed_geoms()
+* [0e1b938](https://github.com/HuidaeCho/projpicker/commit/0e1b938)  Fix deduplicating code in sort\_bbox()
+* [75999c2](https://github.com/HuidaeCho/projpicker/commit/75999c2)  Do not modify input geoms from (parse|query)\_mixed\_geoms()
 * [c7c333a](https://github.com/HuidaeCho/projpicker/commit/c7c333a)  Remove unused imports from gui.py
 * [6811dd3](https://github.com/HuidaeCho/projpicker/commit/6811dd3)  v0.1.6.post1
-* [b50809b](https://github.com/HuidaeCho/projpicker/commit/b50809b)  tidy_line() should not return anything as documented
+* [b50809b](https://github.com/HuidaeCho/projpicker/commit/b50809b)  tidy\_line() should not return anything as documented
 * [46da756](https://github.com/HuidaeCho/projpicker/commit/46da756)  Add max argument to avoid broken pipe errors when applying head
 
 ## v0.1.6
 Thu Jul 1 20:48:03 2021 -0400
 
 * [d2dea0e](https://github.com/HuidaeCho/projpicker/commit/d2dea0e)  (tag: refs/tags/v0.1.6) Core version 0.1.6
-* [b157191](https://github.com/HuidaeCho/projpicker/commit/b157191)  single only for has_gui
+* [b157191](https://github.com/HuidaeCho/projpicker/commit/b157191)  single only for has\_gui
 * [20f24a2](https://github.com/HuidaeCho/projpicker/commit/20f24a2)  Some embedded systems do not provide tkinter
-* [d0e4995](https://github.com/HuidaeCho/projpicker/commit/d0e4995)  Fix calc_xy_at_lat_noscaling
-* [fde486f](https://github.com/HuidaeCho/projpicker/commit/fde486f)  Simplify __package__ evaluation
+* [d0e4995](https://github.com/HuidaeCho/projpicker/commit/d0e4995)  Fix calc\_xy\_at\_lat\_noscaling
+* [fde486f](https://github.com/HuidaeCho/projpicker/commit/fde486f)  Simplify \_\_package\_\_ evaluation
 * [8cda846](https://github.com/HuidaeCho/projpicker/commit/8cda846)  Namedtuple name
 * [2545022](https://github.com/HuidaeCho/projpicker/commit/2545022)  Add a missing hash
 * [b64a35a](https://github.com/HuidaeCho/projpicker/commit/b64a35a)  message() has only two arguments, omit end=
@@ -36,7 +37,7 @@ Mon Jun 14 17:52:52 2021 -0400
 * [31e4d76](https://github.com/HuidaeCho/projpicker/commit/31e4d76)  (tag: refs/tags/v0.1.5.post7) 0.1.5.post7
 * [f019e93](https://github.com/HuidaeCho/projpicker/commit/f019e93)  Fix hidden buttons (default widget heights can push them outside the window)
 * [1396f51](https://github.com/HuidaeCho/projpicker/commit/1396f51)  Download all images from github; Use figure:: only; Add matching coordinates examples
-* [2ba1c3c](https://github.com/HuidaeCho/projpicker/commit/2ba1c3c)  Consistent order of query_all*
+* [2ba1c3c](https://github.com/HuidaeCho/projpicker/commit/2ba1c3c)  Consistent order of query\_all*
 
 ## v0.1.5.post6
 Mon Jun 14 02:23:31 2021 -0400
@@ -65,7 +66,7 @@ Sat Jun 12 14:08:40 2021 -0400
 * [f5f696f](https://github.com/HuidaeCho/projpicker/commit/f5f696f)  (tag: refs/tags/v0.1.5.post3) v0.1.5.post3
 * [c880af5](https://github.com/HuidaeCho/projpicker/commit/c880af5)  Fix selection on filtering
 * [5aa165d](https://github.com/HuidaeCho/projpicker/commit/5aa165d)  Clear selection on filtering because indices change
-* [3f5c182](https://github.com/HuidaeCho/projpicker/commit/3f5c182)  Fix proj_table and unit filters
+* [3f5c182](https://github.com/HuidaeCho/projpicker/commit/3f5c182)  Fix proj\_table and unit filters
 * [e3ed04f](https://github.com/HuidaeCho/projpicker/commit/e3ed04f)  Add single option; Add horizontal scroll bars
 * [233628b](https://github.com/HuidaeCho/projpicker/commit/233628b)  Add single option; Add horizontal scroll bars
 
@@ -76,14 +77,14 @@ Sat Jun 12 11:19:27 2021 -0400
 * [b7b7210](https://github.com/HuidaeCho/projpicker/commit/b7b7210)  Return queries results from projpicker()
 * [e2c37a6](https://github.com/HuidaeCho/projpicker/commit/e2c37a6)  Revert 45f4835 (check comment)
 * [4f805a4](https://github.com/HuidaeCho/projpicker/commit/4f805a4)  Add default, docs
-* [45f4835](https://github.com/HuidaeCho/projpicker/commit/45f4835)  Units for query_mixed_geoms
+* [45f4835](https://github.com/HuidaeCho/projpicker/commit/45f4835)  Units for query\_mixed\_geoms
 * [184769a](https://github.com/HuidaeCho/projpicker/commit/184769a)  Fix a rebase issue?
 * [84bcb21](https://github.com/HuidaeCho/projpicker/commit/84bcb21)  Implement postfix logical operations (and, or, xor, not) for advanced spatial filtering
 * [cad7d4a](https://github.com/HuidaeCho/projpicker/commit/cad7d4a)  Fix sort; Add xy parsing test
 * [0b85ea2](https://github.com/HuidaeCho/projpicker/commit/0b85ea2)  Documentation reorganized
 * [7ec5347](https://github.com/HuidaeCho/projpicker/commit/7ec5347)  Explain the single argument
-* [0db5d02](https://github.com/HuidaeCho/projpicker/commit/0db5d02)  single selection mode for gui.select_bbox
-* [e944011](https://github.com/HuidaeCho/projpicker/commit/e944011)  single selection mode for gui.select_bbox
+* [0db5d02](https://github.com/HuidaeCho/projpicker/commit/0db5d02)  single selection mode for gui.select\_bbox
+* [e944011](https://github.com/HuidaeCho/projpicker/commit/e944011)  single selection mode for gui.select\_bbox
 
 ## v0.1.5
 Tue Jun 8 09:57:17 2021 -0400
@@ -97,7 +98,7 @@ Tue Jun 8 09:57:17 2021 -0400
 * [22165e9](https://github.com/HuidaeCho/projpicker/commit/22165e9)  Implement a tkinter GUI for CRS selection
 * [1996ea7](https://github.com/HuidaeCho/projpicker/commit/1996ea7)  Implement a tkinter GUI for CRS selection
 * [c80514b](https://github.com/HuidaeCho/projpicker/commit/c80514b)  Comments and shebangs
-* [06a9b04](https://github.com/HuidaeCho/projpicker/commit/06a9b04)  unsorted query_all
+* [06a9b04](https://github.com/HuidaeCho/projpicker/commit/06a9b04)  unsorted query\_all
 * [58dea80](https://github.com/HuidaeCho/projpicker/commit/58dea80)  sorted by area comments; TODO: OR will violate this rule
 
 ## v0.1.4.post2
@@ -109,7 +110,7 @@ Mon Jun 7 02:39:42 2021 -0400
 * [813f9b9](https://github.com/HuidaeCho/projpicker/commit/813f9b9)  Support dd:mm:ss coordinate format
 * [19051f2](https://github.com/HuidaeCho/projpicker/commit/19051f2)  Support DD:MM:SS format
 * [085c035](https://github.com/HuidaeCho/projpicker/commit/085c035)  Remove collections import (used only in common.py)
-* [96485b0](https://github.com/HuidaeCho/projpicker/commit/96485b0)  Rename latlon/xy => coor_latlon/xy to avoid potential conflicts and sorting
+* [96485b0](https://github.com/HuidaeCho/projpicker/commit/96485b0)  Rename latlon/xy => coor\_latlon/xy to avoid potential conflicts and sorting
 * [1d2d571](https://github.com/HuidaeCho/projpicker/commit/1d2d571)  Restore coor system after mixed geom functions
 
 ## v0.1.4.post1
@@ -122,8 +123,8 @@ Fri Jun 4 20:08:09 2021 -0400
 * [b406b6e](https://github.com/HuidaeCho/projpicker/commit/b406b6e)  Add new py files
 * [ec55279](https://github.com/HuidaeCho/projpicker/commit/ec55279)  Move the experimental version to the root
 * [3e27749](https://github.com/HuidaeCho/projpicker/commit/3e27749)  Add VERSION
-* [97d606c](https://github.com/HuidaeCho/projpicker/commit/97d606c)  add __init__.py to experimental
-* [89480f0](https://github.com/HuidaeCho/projpicker/commit/89480f0)  Make __main__ work with relative imports
+* [97d606c](https://github.com/HuidaeCho/projpicker/commit/97d606c)  add \_\_init\_\_.py to experimental
+* [89480f0](https://github.com/HuidaeCho/projpicker/commit/89480f0)  Make \_\_main\_\_ work with relative imports
 * [b3bef38](https://github.com/HuidaeCho/projpicker/commit/b3bef38)  Import BBox
 * [4db19af](https://github.com/HuidaeCho/projpicker/commit/4db19af)  Relative imports
 * [3edc25e](https://github.com/HuidaeCho/projpicker/commit/3edc25e)  Update test outfiles
@@ -136,9 +137,9 @@ Fri Jun 4 20:08:09 2021 -0400
 * [59d015e](https://github.com/HuidaeCho/projpicker/commit/59d015e)  Query mode help
 * [0fd82a2](https://github.com/HuidaeCho/projpicker/commit/0fd82a2)  indentation
 * [c048437](https://github.com/HuidaeCho/projpicker/commit/c048437)  Reorder args for projpicker
-* [c881f92](https://github.com/HuidaeCho/projpicker/commit/c881f92)  Use bbox_columns for output formats
+* [c881f92](https://github.com/HuidaeCho/projpicker/commit/c881f92)  Use bbox\_columns for output formats
 * [607ab24](https://github.com/HuidaeCho/projpicker/commit/607ab24)  Do not rely on len() for AND
-* [de2aeab](https://github.com/HuidaeCho/projpicker/commit/de2aeab)  Fix a call to calc_area()
+* [de2aeab](https://github.com/HuidaeCho/projpicker/commit/de2aeab)  Fix a call to calc\_area()
 * [7c1b6bd](https://github.com/HuidaeCho/projpicker/commit/7c1b6bd)  Rename gui to guis to be consistent with other plural directories
 * [855e3c6](https://github.com/HuidaeCho/projpicker/commit/855e3c6)  Update ArcGIS Pro README
 * [d07fda2](https://github.com/HuidaeCho/projpicker/commit/d07fda2)  Add collections to README.md and resort modules (logical order)
@@ -163,14 +164,14 @@ Wed Jun 2 10:57:18 2021 -0400
 * [d804013](https://github.com/HuidaeCho/projpicker/commit/d804013)  Try to normalize unit names
 * [7d9188e](https://github.com/HuidaeCho/projpicker/commit/7d9188e)  Do not select unused columns
 * [0d62b0f](https://github.com/HuidaeCho/projpicker/commit/0d62b0f)  Add unit of measure
-* [fd52579](https://github.com/HuidaeCho/projpicker/commit/fd52579)  Add back west_lon = east_lon for the sake of completeness and improve the test script
-* [bc02425](https://github.com/HuidaeCho/projpicker/commit/bc02425)  Add test_pyproj.*
+* [fd52579](https://github.com/HuidaeCho/projpicker/commit/fd52579)  Add back west\_lon = east\_lon for the sake of completeness and improve the test script
+* [bc02425](https://github.com/HuidaeCho/projpicker/commit/bc02425)  Add test\_pyproj.*
 
 ## v0.1.4.dev2
 Tue Jun 1 23:29:20 2021 -0400
 
 * [f34b3de](https://github.com/HuidaeCho/projpicker/commit/f34b3de)  (tag: refs/tags/v0.1.4.dev2) v0.1.4dev2
-* [c82a630](https://github.com/HuidaeCho/projpicker/commit/c82a630)  No extents whose west_lon = east_lon; Handle point bboxes
+* [c82a630](https://github.com/HuidaeCho/projpicker/commit/c82a630)  No extents whose west\_lon = east\_lon; Handle point bboxes
 * [0e8a58c](https://github.com/HuidaeCho/projpicker/commit/0e8a58c)  WIP: Not complete.
 * [c237774](https://github.com/HuidaeCho/projpicker/commit/c237774)  bbox entry => bbox row
 * [9fe60f2](https://github.com/HuidaeCho/projpicker/commit/9fe60f2)  Correct help for --input
@@ -204,8 +205,8 @@ Mon May 31 13:24:55 2021 -0400
 * [c9e6821](https://github.com/HuidaeCho/projpicker/commit/c9e6821)  Help message
 * [44198ca](https://github.com/HuidaeCho/projpicker/commit/44198ca)  Help messages
 * [d5807e1](https://github.com/HuidaeCho/projpicker/commit/d5807e1)  Allow whitespaces before a comma
-* [06e9444](https://github.com/HuidaeCho/projpicker/commit/06e9444)  Comments for tidy_lines()
-* [896aee0](https://github.com/HuidaeCho/projpicker/commit/896aee0)  Comments for tidy_lines()
+* [06e9444](https://github.com/HuidaeCho/projpicker/commit/06e9444)  Comments for tidy\_lines()
+* [896aee0](https://github.com/HuidaeCho/projpicker/commit/896aee0)  Comments for tidy\_lines()
 * [46645d8](https://github.com/HuidaeCho/projpicker/commit/46645d8)  More flexible input format; Add --print-geometries for input validation
 * [2eaaf29](https://github.com/HuidaeCho/projpicker/commit/2eaaf29)  s,n,w,e => south,north,west,east in help
 
@@ -235,12 +236,12 @@ Sat May 29 16:47:42 2021 -0400
 * [9a6840c](https://github.com/HuidaeCho/projpicker/commit/9a6840c)  Reformat copyright block to the GNU template
 * [a2b5cab](https://github.com/HuidaeCho/projpicker/commit/a2b5cab)  No comma between copyright year and authors following GNU practices
 * [e7c849e](https://github.com/HuidaeCho/projpicker/commit/e7c849e)  Raise an exception on not being able to overwrite projpicker.db
-* [b0a853f](https://github.com/HuidaeCho/projpicker/commit/b0a853f)  Make all parse_*() functions return input if their output is give as is
-* [624d323](https://github.com/HuidaeCho/projpicker/commit/624d323)  Fix and improve parse_polys()
+* [b0a853f](https://github.com/HuidaeCho/projpicker/commit/b0a853f)  Make all parse\_*() functions return input if their output is give as is
+* [624d323](https://github.com/HuidaeCho/projpicker/commit/624d323)  Fix and improve parse\_polys()
 * [4357a9b](https://github.com/HuidaeCho/projpicker/commit/4357a9b)  reorganize single-file version
-* [b0ddcf2](https://github.com/HuidaeCho/projpicker/commit/b0ddcf2)  Add missing parse_points()
+* [b0ddcf2](https://github.com/HuidaeCho/projpicker/commit/b0ddcf2)  Add missing parse\_points()
 * [7d8854c](https://github.com/HuidaeCho/projpicker/commit/7d8854c)  80 cols
-* [3c8fc2b](https://github.com/HuidaeCho/projpicker/commit/3c8fc2b)  arrayify_bbox => listify_bbox
+* [3c8fc2b](https://github.com/HuidaeCho/projpicker/commit/3c8fc2b)  arrayify\_bbox => listify\_bbox
 * [c36001d](https://github.com/HuidaeCho/projpicker/commit/c36001d)  Fix bboxes/polys parsing
 * [03ff492](https://github.com/HuidaeCho/projpicker/commit/03ff492)  Fix append
 * [3c647d2](https://github.com/HuidaeCho/projpicker/commit/3c647d2)  Better stdin reading
@@ -259,7 +260,7 @@ Sat May 29 16:47:42 2021 -0400
 * [ede36e1](https://github.com/HuidaeCho/projpicker/commit/ede36e1)  Add URL to help
 * [170ac21](https://github.com/HuidaeCho/projpicker/commit/170ac21)  Fix parsing
 * [8307e71](https://github.com/HuidaeCho/projpicker/commit/8307e71)  Update usage
-* [8f25d21](https://github.com/HuidaeCho/projpicker/commit/8f25d21)  sort_dicts for pprint for Python 3.8+
+* [8f25d21](https://github.com/HuidaeCho/projpicker/commit/8f25d21)  sort\_dicts for pprint for Python 3.8+
 * [c336375](https://github.com/HuidaeCho/projpicker/commit/c336375)  Support for pretty print format
 * [d193dd9](https://github.com/HuidaeCho/projpicker/commit/d193dd9)  points in a poly are separated by a space
 * [89ad756](https://github.com/HuidaeCho/projpicker/commit/89ad756)  description
@@ -268,18 +269,18 @@ Sat May 29 16:47:42 2021 -0400
 * [8f33e61](https://github.com/HuidaeCho/projpicker/commit/8f33e61)  Add usage
 * [41f20af](https://github.com/HuidaeCho/projpicker/commit/41f20af)  Support for arrays of polys in addition to flat polys with separators
 * [5bd99f7](https://github.com/HuidaeCho/projpicker/commit/5bd99f7)  README
-* [16981bb](https://github.com/HuidaeCho/projpicker/commit/16981bb)  Handle special cases where west_lon == east_lon or (west_lon == -180 and east_lon == 180); in other words, entire longitude space
-* [9d0a37a](https://github.com/HuidaeCho/projpicker/commit/9d0a37a)  Handle special cases where west_lon == east_lon or (west_lon == -180 and east_lon == 180); in other words, entire longitude space
+* [16981bb](https://github.com/HuidaeCho/projpicker/commit/16981bb)  Handle special cases where west\_lon == east\_lon or (west\_lon == -180 and east\_lon == 180); in other words, entire longitude space
+* [9d0a37a](https://github.com/HuidaeCho/projpicker/commit/9d0a37a)  Handle special cases where west\_lon == east\_lon or (west\_lon == -180 and east\_lon == 180); in other words, entire longitude space
 * [bff2fee](https://github.com/HuidaeCho/projpicker/commit/bff2fee)  Help messages
 * [3528b6b](https://github.com/HuidaeCho/projpicker/commit/3528b6b)  input from stdin if no geometries are given in command line
 * [1f90717](https://github.com/HuidaeCho/projpicker/commit/1f90717)  Comments
 * [5b7c010](https://github.com/HuidaeCho/projpicker/commit/5b7c010)  Move parsing functions
 * [010b68b](https://github.com/HuidaeCho/projpicker/commit/010b68b)  Try to handle antimeridian-cross geometries
 * [8d43dda](https://github.com/HuidaeCho/projpicker/commit/8d43dda)  Add single queries for poly and bbox
-* [9e13cc9](https://github.com/HuidaeCho/projpicker/commit/9e13cc9)  query_points_bbox replaced by query_polys
+* [9e13cc9](https://github.com/HuidaeCho/projpicker/commit/9e13cc9)  query\_points\_bbox replaced by query\_polys
 * [bb44fc7](https://github.com/HuidaeCho/projpicker/commit/bb44fc7)  Fix a message
 * [61c46a0](https://github.com/HuidaeCho/projpicker/commit/61c46a0)  Support for poly(line|gon) and bbox
-* [cd8d271](https://github.com/HuidaeCho/projpicker/commit/cd8d271)  Properly handle reversed west_lon and east_lon (crossing antimeridian)
+* [cd8d271](https://github.com/HuidaeCho/projpicker/commit/cd8d271)  Properly handle reversed west\_lon and east\_lon (crossing antimeridian)
 * [dfdb724](https://github.com/HuidaeCho/projpicker/commit/dfdb724)  Remove a debug message
 * [8aa3578](https://github.com/HuidaeCho/projpicker/commit/8aa3578)  minor refactoring
 * [9264b6f](https://github.com/HuidaeCho/projpicker/commit/9264b6f)  Lowercase help to be consistent with the default help
@@ -296,14 +297,14 @@ Sat May 29 16:47:42 2021 -0400
 * [a551081](https://github.com/HuidaeCho/projpicker/commit/a551081)  Update README.md
 * [c36c1e1](https://github.com/HuidaeCho/projpicker/commit/c36c1e1)  Update README.md
 * [01a68a5](https://github.com/HuidaeCho/projpicker/commit/01a68a5)  TODO
-* [df57d42](https://github.com/HuidaeCho/projpicker/commit/df57d42)  Use crs_view and JOIN
+* [df57d42](https://github.com/HuidaeCho/projpicker/commit/df57d42)  Use crs\_view and JOIN
 * [1005d6c](https://github.com/HuidaeCho/projpicker/commit/1005d6c)  Since May 13?
 * [82946b3](https://github.com/HuidaeCho/projpicker/commit/82946b3)  markdown syntax
 * [f4085e6](https://github.com/HuidaeCho/projpicker/commit/f4085e6)  Add single-file script
-* [374a68a](https://github.com/HuidaeCho/projpicker/commit/374a68a)  Rename build_data.sh to build_rtree_data.sh
+* [374a68a](https://github.com/HuidaeCho/projpicker/commit/374a68a)  Rename build\_data.sh to build\_rtree\_data.sh
 * [c5e868f](https://github.com/HuidaeCho/projpicker/commit/c5e868f)  python3
 * [800ac39](https://github.com/HuidaeCho/projpicker/commit/800ac39)  Use set -e
-* [5f27633](https://github.com/HuidaeCho/projpicker/commit/5f27633)  Let's keep the original build script names without _
+* [5f27633](https://github.com/HuidaeCho/projpicker/commit/5f27633)  Let's keep the original build script names without \_
 * [7c815af](https://github.com/HuidaeCho/projpicker/commit/7c815af)  Owen Smith as 1st author; Add IESA, UNG affiliation
 * [2223615](https://github.com/HuidaeCho/projpicker/commit/2223615)  Update for new add method
 * [eb1a8d6](https://github.com/HuidaeCho/projpicker/commit/eb1a8d6)  Add execution method
@@ -316,13 +317,13 @@ Sat May 29 16:47:42 2021 -0400
 * [b61bd9e](https://github.com/HuidaeCho/projpicker/commit/b61bd9e)  Add 'codes' table to provide ids for all potential PROJ authority codes. This is done so as to account for CRS codes from different authorities being either integers or a mix of both characters and integers. RTREE can only accept integers.
 * [0f82dc2](https://github.com/HuidaeCho/projpicker/commit/0f82dc2)  Shell script to generate database and RTree index
 * [eed7de4](https://github.com/HuidaeCho/projpicker/commit/eed7de4)  ignore data folder
-* [83ca6cf](https://github.com/HuidaeCho/projpicker/commit/83ca6cf)  Add '_' to denote files which are not part of core apii
+* [83ca6cf](https://github.com/HuidaeCho/projpicker/commit/83ca6cf)  Add '\_' to denote files which are not part of core apii
 * [6824e39](https://github.com/HuidaeCho/projpicker/commit/6824e39)  utils -> core
 * [ef2683c](https://github.com/HuidaeCho/projpicker/commit/ef2683c)  utils -> core
 * [42264aa](https://github.com/HuidaeCho/projpicker/commit/42264aa)  Remove argparse
 * [4025d32](https://github.com/HuidaeCho/projpicker/commit/4025d32)  Remove argparse
 * [f4eb1b2](https://github.com/HuidaeCho/projpicker/commit/f4eb1b2)  Update constant file paths to ensure their constant location for both creation and reading
-* [360d851](https://github.com/HuidaeCho/projpicker/commit/360d851)  Add __all__ for * imports
+* [360d851](https://github.com/HuidaeCho/projpicker/commit/360d851)  Add \_\_all\_\_ for * imports
 * [5c270c0](https://github.com/HuidaeCho/projpicker/commit/5c270c0)  Update Python submodule imports to import the neccesary front facing functions under the main namespace.
 * [9a22bff](https://github.com/HuidaeCho/projpicker/commit/9a22bff)  Remove spatialite module
 * [c6e8ab0](https://github.com/HuidaeCho/projpicker/commit/c6e8ab0)  Remove densified bbox/spatialite operations
@@ -331,7 +332,7 @@ Sat May 29 16:47:42 2021 -0400
 * [5cf3972](https://github.com/HuidaeCho/projpicker/commit/5cf3972)  Fix utils import
 * [c785d0f](https://github.com/HuidaeCho/projpicker/commit/c785d0f)  Readd densified BBOX function import
 * [74e2486](https://github.com/HuidaeCho/projpicker/commit/74e2486)  Overwrite db if exists
-* [bf67f9c](https://github.com/HuidaeCho/projpicker/commit/bf67f9c)  Rename generate_db and gen_rtree
+* [bf67f9c](https://github.com/HuidaeCho/projpicker/commit/bf67f9c)  Rename generate\_db and gen\_rtree
 * [1f8cb90](https://github.com/HuidaeCho/projpicker/commit/1f8cb90)  remove print statement, re import
 * [d078b87](https://github.com/HuidaeCho/projpicker/commit/d078b87)  remove print statement, re import
 * [738ed5d](https://github.com/HuidaeCho/projpicker/commit/738ed5d)  Fix utils import
@@ -347,13 +348,13 @@ Sat May 29 16:47:42 2021 -0400
 * [f140866](https://github.com/HuidaeCho/projpicker/commit/f140866)  WIP
 * [24bc791](https://github.com/HuidaeCho/projpicker/commit/24bc791)  Script to generate an RTree index on file
 * [03d1dd0](https://github.com/HuidaeCho/projpicker/commit/03d1dd0)  Change densified functionality
-* [c674e05](https://github.com/HuidaeCho/projpicker/commit/c674e05)  Switch order of bbox, add get_bounds function
+* [c674e05](https://github.com/HuidaeCho/projpicker/commit/c674e05)  Switch order of bbox, add get\_bounds function
 * [8e37c17](https://github.com/HuidaeCho/projpicker/commit/8e37c17)  Switch order of bbox
 * [740133e](https://github.com/HuidaeCho/projpicker/commit/740133e)  Move denifying operations to geom.py
-* [9dfaba9](https://github.com/HuidaeCho/projpicker/commit/9dfaba9)  spatial_operations.py -> geom.py
+* [9dfaba9](https://github.com/HuidaeCho/projpicker/commit/9dfaba9)  spatial\_operations.py -> geom.py
 * [e01b4d0](https://github.com/HuidaeCho/projpicker/commit/e01b4d0)  line
 * [da29e6f](https://github.com/HuidaeCho/projpicker/commit/da29e6f)  Accept multiple tables as positional arguments, black formating
-* [981e9ff](https://github.com/HuidaeCho/projpicker/commit/981e9ff)  Move bounding box operations to spatial_operations.py
+* [981e9ff](https://github.com/HuidaeCho/projpicker/commit/981e9ff)  Move bounding box operations to spatial\_operations.py
 * [ea494ef](https://github.com/HuidaeCho/projpicker/commit/ea494ef)  Only create tables if they do not exists
 * [641760f](https://github.com/HuidaeCho/projpicker/commit/641760f)  Take one CRS only
 * [dd769a7](https://github.com/HuidaeCho/projpicker/commit/dd769a7)  Change n to -n N
@@ -368,7 +369,7 @@ Sat May 29 16:47:42 2021 -0400
 * [769aea4](https://github.com/HuidaeCho/projpicker/commit/769aea4)  Fix missing return
 * [4300489](https://github.com/HuidaeCho/projpicker/commit/4300489)  Projpicker connection
 * [525f6fe](https://github.com/HuidaeCho/projpicker/commit/525f6fe)  Geometry types for Spatialite creation
-* [2c0b7d2](https://github.com/HuidaeCho/projpicker/commit/2c0b7d2)  proj_operations.py -> db_operations.py
+* [2c0b7d2](https://github.com/HuidaeCho/projpicker/commit/2c0b7d2)  proj\_operations.py -> db\_operations.py
 * [a9ed561](https://github.com/HuidaeCho/projpicker/commit/a9ed561)  Functions to create densified bbox
 * [774da10](https://github.com/HuidaeCho/projpicker/commit/774da10)  Remove deprecated CRS's from db. They have no bbox
 * [2e0ee69](https://github.com/HuidaeCho/projpicker/commit/2e0ee69)  Correct bbox x, y order
@@ -377,7 +378,7 @@ Sat May 29 16:47:42 2021 -0400
 * [801de8b](https://github.com/HuidaeCho/projpicker/commit/801de8b)  Update bbox polygon output
 * [c3a770d](https://github.com/HuidaeCho/projpicker/commit/c3a770d)  Black formatting
 * [32fb8c4](https://github.com/HuidaeCho/projpicker/commit/32fb8c4)  Set up superlinter
-* [ccbaab6](https://github.com/HuidaeCho/projpicker/commit/ccbaab6)  crs_usage function to generate full usage dictionary for a crs table
+* [ccbaab6](https://github.com/HuidaeCho/projpicker/commit/ccbaab6)  crs\_usage function to generate full usage dictionary for a crs table
 * [66e298e](https://github.com/HuidaeCho/projpicker/commit/66e298e)  New line
 * [56520fa](https://github.com/HuidaeCho/projpicker/commit/56520fa)  Move general proj.db operation functions into own file to increase extensibility
 * [e99aad1](https://github.com/HuidaeCho/projpicker/commit/e99aad1)  Reformat SQL statements
