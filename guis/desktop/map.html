@@ -52,7 +52,7 @@ var tileLayer = L.tileLayer(
 ).addTo(map);
 
 // FeatureGroup is to store editable layers.
-var drawnItems = new L.featureGroup().addTo(map);
+var geomsLayer = new L.geoJSON().addTo(map);
 
 new L.Control.Draw({
     position: 'topleft',
@@ -68,33 +68,16 @@ new L.Control.Draw({
         'poly': {
             'allowIntersection': false
         },
-        'featureGroup': drawnItems
+        'featureGroup': geomsLayer
     },
 }).addTo(map);
 
 map.on(L.Draw.Event.CREATED, function (e) {
-    var layer = e.layer;
-    var coords = JSON.stringify(layer.toGeoJSON());
-    drawnItems.addLayer(layer);
+    geomsLayer.addLayer(e.layer);
+    pushGeometries();
 });
 
-map.on('draw:created', function (e) {
-    // Logs the lat long of shapes drawn by user
-    var layer = e.layer;
-
-    drawnItems.addLayer(layer);
-
-    // Get
-    var geomJSON = drawnItems.toGeoJSON()
-    var geomString = JSON.stringify(geomJSON);
-    // Change document title to be the JSON string of the drawn geometry;
-    // The max length of title is 1000
-    geomChunks = chunkString(geomString, 1000);
-    geomChunkIndex = 0;
-    document.title = 'pull';
-});
-
-// Intial empty bbox geometry; Seperate layer group from drawItems so as to not
+// Intial empty bbox geometry; Seperate layer group from geomsLayer so as to not
 // interfere with ProjPicker query.
 var bboxLayer = L.geoJSON(null, {
     style: {
@@ -102,6 +85,16 @@ var bboxLayer = L.geoJSON(null, {
         opacity: 0.3
     }
 }).addTo(map);
+
+function pushGeometries() {
+    var geomString = JSON.stringify(geomsLayer.toGeoJSON());
+
+    // Change document title to be the JSON string of the drawn geometry;
+    // The max length of title is 1000
+    geomChunks = chunkString(geomString, 1000);
+    geomChunkIndex = 0;
+    document.title = 'pull';
+}
 
 var geomChunks = [];
 var geomChunkIndex = -1;
@@ -119,6 +112,13 @@ function chunkString(str, size) {
         chunks[i] = str.substr(o, size)
 
     return chunks
+}
+
+function drawGeometries(geoms) {
+    geomsLayer.clearLayers();
+    geomsLayer.addData(geoms);
+    map.fitBounds(geomsLayer.getBounds());
+    pushGeometries();
 }
 
 function drawCRSBBox(geom) {

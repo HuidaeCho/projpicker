@@ -24,11 +24,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ################################################################################
 
+import sys
+import argparse
 import wx
 import wx.html2
 import json
 import projpicker as ppik
-import argparse
 
 
 #################################
@@ -61,11 +62,19 @@ class Geometry:
 #################################
 # GUI
 class ProjPickerGUI(wx.Frame):
-    def __init__(self, layout, *args, **kwargs):
+    def __init__(self, layout, geoms, *args, **kwargs):
         if layout not in ("big_list", "big_map"):
             raise ValueError(f"{layout}: Invalid layout; "
                              "Use big_list or big_map")
 
+        self.geoms = geoms
+        self.geom_buf = None
+        self.json = None
+        self.crs = None
+        self.selected_crs = None
+        self.map_loaded_count = 0
+
+        # Create GUI
         wx.Frame.__init__(self, *args, **kwargs)
         self.panel = wx.Panel(self)
 
@@ -171,16 +180,14 @@ class ProjPickerGUI(wx.Frame):
 
         self.Show()
 
-        self.crs = None
-        self.selected_crs = None
-
 
     #################################
     # Map
     def add_map(self, parent, size):
         self.map = wx.html2.WebView.New(self.panel, size=size)
         self.map.LoadURL(wx.FileSystem.FileNameToURL(MAP_HTML))
-        self.map.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.on_pull)
+        self.map.Bind(wx.html2.EVT_WEBVIEW_LOADED, self.on_load_map)
+        self.map.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.on_pull_geoms)
 
         parent.Add(self.map, 1, wx.ALL, 5)
 
@@ -192,11 +199,14 @@ class ProjPickerGUI(wx.Frame):
             button.Bind(wx.EVT_RADIOBUTTON, self.on_switch_logical_operator)
             return button
 
-        self.logical_operator = "and"
+        self.logical_buttons = {}
         for op in ("and", "or", "xor"):
             if op != "and":
                 parent.AddStretchSpacer()
-            parent.Add(create_button(op), 1)
+            button = create_button(op)
+            parent.Add(button, 1)
+            self.logical_buttons[op] = button
+        self.switch_logical_operator("and")
 
 
     #################################
@@ -239,14 +249,49 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # Event Handlers
+    def on_load_map(self, event):
+        self.map_loaded_count += 1
+        if self.map_loaded_count != 2:
+            # XXX: EVT_WEBVIEW_LOADED is triggered twice? Drawing didn't work
+            # on the first event
+            return
+
+        if self.geoms is None:
+            return
+
+        parsed_geoms = ppik.parse_mixed_geoms(self.geoms)
+
+        features = []
+        geom_type = "point"
+        for geom in parsed_geoms:
+            if geom in ("and", "or", "xor"):
+                print(geom)
+                self.switch_logical_operator(geom)
+                continue
+            elif geom in ("point", "poly", "bbox"):
+                geom_type = geom
+                continue
+            elif type(geom) != list:
+                # Ignore unsupported geometries
+                continue
+            if geom_type == "point":
+                feature = self.create_geojson_feature("Point", geom[::-1])
+            elif geom_type == "poly":
+                feature = self.create_geojson_feature("Polygon", geom)
+            else:
+                s, n, w, e = geom
+                coors = [[[w, n], [e, n], [e, s], [w, s]]]
+                feature = self.create_geojson_feature("Polygon", coors)
+            features.append(feature)
+
+        self.map.RunScript(f"drawGeometries({features})")
+
+
     def on_switch_logical_operator(self, event):
-        self.logical_operator = event.GetEventObject().Label
-        self.query()
-        if DEBUG:
-            ppik.message(f"Chosen logical operator: {self.logical_operator}")
+        self.switch_logical_operator(event.GetEventObject().Label)
 
 
-    def on_pull(self, event):
+    def on_pull_geoms(self, event):
         # Get new JSON from title; Main event handler which will trigger
         # functionality
 
@@ -265,9 +310,9 @@ class ProjPickerGUI(wx.Frame):
             self.geom_buf = ""
         elif geom_chunk == "done":
             self.json = json.loads(self.geom_buf)
-            self.query()
+            self.query(self.create_parsable_geoms())
             return
-        elif not hasattr(self, "geom_buf"):
+        elif self.geom_buf is None:
             return
         else:
             self.geom_buf += geom_chunk
@@ -297,35 +342,50 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # Utilities
-    def query(self):
-        # Handle error when switching logical operators and no geometry is
-        # drawn
-        if not hasattr(self, "json"):
-            return
+    def switch_logical_operator(self, op):
+        self.logical_buttons[op].SetValue(True)
+        self.logical_operator = op
+        self.query(self.create_parsable_geoms())
+        if DEBUG:
+            ppik.message(f"Logical operator: {self.logical_operator}")
 
-        # Load all features drawn
-        features = self.json["features"]
 
-        # Create Geometry struct for each feature
-        geoms = [self.logical_operator]
-        for feature in features:
+    def create_parsable_geoms(self):
+        # When switching logical operators and no geometry is drawn
+        if self.json is None:
+            return None
+
+        geoms = self.logical_operator
+        for feature in self.json["features"]:
             json_geom = feature["geometry"]
             geom_type = json_geom["type"]
             coors = json_geom["coordinates"]
             geom = Geometry(json_geom["type"], json_geom["coordinates"])
-            geoms.extend([geom.type, geom.coors])
+            geoms += f"\n{geom.type}"
+            if geom.type == "point":
+                geoms += f"\n{geom.coors[0]},{geom.coors[1]}"
+            else:
+                for coors in geom.coors:
+                    geoms += f"\n{coors[0]},{coors[1]}"
 
-        # Query with ProjPicker
-        self.crs = ppik.query_mixed_geoms(geoms)
+        return geoms
 
-        if DEBUG:
-            ppik.message(f"Query geometries: {geoms}")
-            ppik.message(f"Number of queried CRSs: {len(self.crs)}")
+
+    def query(self, geoms):
+        if geoms is not None:
+            parsed_geoms = ppik.parse_mixed_geoms(geoms)
+            self.crs = ppik.query_mixed_geoms(parsed_geoms)
+
+            if DEBUG:
+                ppik.message(f"Query geometries: {parsed_geoms}")
+                ppik.message(f"Number of queried CRSs: {len(self.crs)}")
+        else:
+            self.crs = None
 
         self.crs_list.DeleteAllItems()
 
         # Populate CRS list
-        if len(self.crs) > 0:
+        if self.crs is not None and len(self.crs) > 0:
             for crs in self.crs:
                 self.crs_list.Append((crs.crs_name,
                                       f"{crs.crs_auth_name}:{crs.crs_code}"))
@@ -382,26 +442,24 @@ class ProjPickerGUI(wx.Frame):
         return crs_info
 
 
-    def create_crs_bbox_feature(self, crs):
-        # crs is a ProjPicker BBox instance
+    def create_geojson_feature(self, typ, coors):
+        geojson_feature = {
+            "type": "Feature",
+            "geometry": {
+                "type": typ,
+                "coordinates": coors
+            }
+        }
+        return geojson_feature
 
-        # Convert BBox to GeoJSON polygon
+
+    def create_crs_bbox_feature(self, crs):
         s = crs.south_lat
         n = crs.north_lat
         w = crs.west_lon
         e = crs.east_lon
-        coors = [[[w, n], [e, n], [e, s], [w,s]]]
-
-        # Make GeoJSON to pass to JS
-        crs_bbox_feature = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": coors
-            }
-        }
-
-        return crs_bbox_feature
+        coors = [[[w, n], [e, n], [e, s], [w, s]]]
+        return self.create_geojson_feature("Polygon", coors)
 
 
     def get_crs_auth_code(self, crs):
@@ -424,18 +482,31 @@ class ProjPickerGUI(wx.Frame):
         return self.selected_crs
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--layout",
-                        help="Switch layout to big_map",
-                        action="store_true")
+    parser.add_argument(
+            "-l", "--layout",
+            choices=("big_list", "big_map"),
+            default="big_list",
+            help="select the layout (default: big_list)")
+    parser.add_argument(
+            "geometry",
+            nargs="*",
+            help="query geometry in latitude and longitude (point or poly) or "
+                "south, north, west, and east (bbox); each point or bbox is a "
+                "separate argument and multiple polys are separated by any "
+                "non-coordinate argument such as a comma")
+
     args = parser.parse_args()
-    if args.layout:
-        layout = "big_map"
-    else:
-        layout = "big_list"
+
+    layout = args.layout
+    geoms = args.geometry
 
     app = wx.App()
-    ppik_gui = ProjPickerGUI(layout, None, title="ProjPicker Desktop GUI")
+    ppik_gui = ProjPickerGUI(layout, geoms, None, title="ProjPicker GUI")
     app.MainLoop()
     ppik_gui.print_selected_crs_auth_code()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
