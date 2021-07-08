@@ -230,33 +230,20 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # CRS Info
     def add_crs_info(self, parent, size):
-        # CRS Info
         # Add header
         header = wx.StaticText(self.panel, 0, "CRS Info")
 
-        # Set static box
-        crs_info_box = wx.StaticBox(self.panel, 0, style=wx.ALIGN_CENTER)
-        # Create sizer for the box
-        crs_info_vsizer = wx.StaticBoxSizer(crs_info_box, wx.HORIZONTAL)
-        crs_info_hsizer = wx.BoxSizer(wx.VERTICAL)
-        # Input text
-        self.crs_info_text = wx.StaticText(self.panel, -1, "",
-                                           style=wx.ALIGN_LEFT, size=size)
-
-        self.crs_info_text.Bind(wx.EVT_RIGHT_DOWN, self.on_copy_crs_info_text)
+        # Input text, read only
+        self.crs_info_text = wx.TextCtrl(self.panel, -1,
+                                         style=wx.VERTICAL | wx.TE_MULTILINE |
+                                         wx.TE_READONLY, size=size)
 
         # Add text to correct sizer
-        crs_info_vsizer.Add(self.crs_info_text, 1, wx.EXPAND, 100)
-        crs_info_hsizer.Add(crs_info_vsizer, 1, wx.ALIGN_CENTER, 10)
-        # Create border
-        # https://www.blog.pythonlibrary.org/2019/05/09/an-intro-to-staticbox-and-staticboxsizers/
-        border = wx.BoxSizer(wx.HORIZONTAL)
-        border.Add(crs_info_hsizer, 0,
-                   wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-
+        crs_info_text_sizer = wx.BoxSizer(wx.VERTICAL)
+        crs_info_text_sizer.Add(self.crs_info_text, 1, wx.ALIGN_CENTER, 100)
         # Add widgets to parent
         parent.Add(header, 0, wx.CENTER | wx.TOP, 10)
-        parent.Add(border, 1, wx.ALIGN_RIGHT, 100)
+        parent.Add(crs_info_text_sizer, 1, wx.ALIGN_RIGHT | wx.ALL, 10)
 
 
     #################################
@@ -319,19 +306,10 @@ class ProjPickerGUI(wx.Frame):
         crs = self.find_selected_crs()
         if crs is not None:
             crs_info = self.get_crs_info(crs)
-        self.crs_info_text.SetLabel(crs_info)
+        self.crs_info_text.WriteText(crs_info)
 
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
         self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
-
-
-    def on_copy_crs_info_text(self, event):
-        # Copy crs info text on right click
-        copied_text = wx.TextDataObject()
-        copied_text.SetText(self.crs_info_text.Label)
-        wx.TheClipboard.Open()
-        wx.TheClipboard.SetData(copied_text)
-        wx.TheClipboard.Close()
 
 
     def on_select(self, event):
