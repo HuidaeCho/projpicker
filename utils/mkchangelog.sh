@@ -1,10 +1,10 @@
 #!/bin/sh
 if [ "$1" = "-w" ]; then
 	file=../projpicker/ChangeLog.md
-	hash="[%h](https://github.com/HuidaeCho/projpicker/commit/%h)"
+	hash='[`%h`](https://github.com/HuidaeCho/projpicker/commit/%h)'
 else
 	file=/dev/stdout
-	hash="%h"
+	hash='%h'
 fi
 
 exclude=""
