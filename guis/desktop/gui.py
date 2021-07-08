@@ -28,6 +28,7 @@ import wx
 import wx.html2
 import json
 import projpicker as ppik
+import argparse
 
 
 #################################
@@ -424,7 +425,17 @@ class ProjPickerGUI(wx.Frame):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-l", "--layout",
+                        help="Switch layout to big_map",
+                        action="store_true")
+    args = parser.parse_args()
+    if args.layout:
+        layout = "big_map"
+    else:
+        layout = "big_list"
+
     app = wx.App()
-    ppik_gui = ProjPickerGUI("big_list", None, title="ProjPicker Desktop GUI")
+    ppik_gui = ProjPickerGUI(layout, None, title="ProjPicker Desktop GUI")
     app.MainLoop()
     ppik_gui.print_selected_crs_auth_code()
