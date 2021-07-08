@@ -306,6 +306,7 @@ class ProjPickerGUI(wx.Frame):
         crs = self.find_selected_crs()
         if crs is not None:
             crs_info = self.get_crs_info(crs)
+        self.crs_info_text.Clear()
         self.crs_info_text.WriteText(crs_info)
 
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
