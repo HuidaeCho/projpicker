@@ -457,6 +457,6 @@ class ProjPickerGUI(wx.Frame):
 
 if __name__ == "__main__":
     app = wx.App()
-    ppik_gui = ProjPickerGUI("big_list", None)
+    ppik_gui = ProjPickerGUI("big_list", None, title="ProjPicker Desktop GUI")
     app.MainLoop()
     ppik_gui.print_selected_crs_auth_code()
