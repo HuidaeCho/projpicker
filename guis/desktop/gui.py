@@ -83,9 +83,9 @@ class ProjPickerGUI(wx.Frame):
             right.SetMinSize(main_size.Width - left.MinSize.Width,
                              left.MinSize.Height)
 
-            crs_listbox_parent = left
-            crs_listbox_size = wx.Size(crs_listbox_parent.MinSize.Width,
-                                       crs_listbox_parent.MinSize.Height)
+            crs_list_parent = left
+            crs_list_size = wx.Size(crs_list_parent.MinSize.Width,
+                                    crs_list_parent.MinSize.Height)
 
             select_buttons_parent = bottom_left
 
@@ -121,9 +121,9 @@ class ProjPickerGUI(wx.Frame):
                     bottom.MinSize.Width - bottom_left.MinSize.Width,
                     bottom.MinSize.Height)
 
-            crs_listbox_parent = bottom_left
-            crs_listbox_size = wx.Size(crs_listbox_parent.MinSize.Width,
-                                       crs_listbox_parent.MinSize.Height)
+            crs_list_parent = bottom_left
+            crs_list_size = wx.Size(crs_list_parent.MinSize.Width,
+                                    crs_list_parent.MinSize.Height)
 
             select_buttons_parent = bottom_left_bottom
 
@@ -138,7 +138,7 @@ class ProjPickerGUI(wx.Frame):
             logical_buttons_parent = top_bottom
 
         # Add widgets
-        self.add_crs_listbox(crs_listbox_parent, crs_listbox_size)
+        self.add_crs_list(crs_list_parent, crs_list_size)
         self.add_select_buttons(select_buttons_parent)
 
         self.add_crs_info(crs_info_parent, crs_info_size)
@@ -168,13 +168,6 @@ class ProjPickerGUI(wx.Frame):
         self.SetMinSize(main_size)
         self.SetMaxSize(main_size)
 
-        # All selection events are contained within following event.
-        # This is done to allow the crslist selection and the drawing of the
-        # selection CRS's bounding box to communicate witheach other.
-        # Additionally, RunScript() is unable to run unless it is run within a
-        # member function bound by wx.html2 event.
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_LOADED, self.on_load_map)
-
         self.Show()
 
         self.crs = None
@@ -185,12 +178,15 @@ class ProjPickerGUI(wx.Frame):
     # Map
     def add_map(self, parent, size):
         # Create webview
-        self.browser = wx.html2.WebView.New(self.panel, size=size)
+        self.map = wx.html2.WebView.New(self.panel, size=size)
 
         # Load the local html
         url = wx.FileSystem.FileNameToURL(MAP_HTML)
-        self.browser.LoadURL(url)
-        parent.Add(self.browser, 1, wx.ALL, 5)
+        self.map.LoadURL(url)
+
+        self.map.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.on_pull)
+
+        parent.Add(self.map, 1, wx.ALL, 5)
 
 
     def add_logical_buttons(self, parent):
@@ -209,16 +205,19 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # CRS List
-    def add_crs_listbox(self, parent, size):
+    def add_crs_list(self, parent, size):
         text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
         parent.Add(text, 0, wx.CENTER | wx.TOP, 5)
 
-        # CRS Choice listbox
-        self.crs_listbox = wx.ListBox(self.panel, size=size,
-                                      choices=["Draw geometries to query CRSs"])
+        # CRS selection list
+        self.crs_list = wx.ListCtrl(self.panel, size=size,
+                                    style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+        self.crs_list.AppendColumn("Name", width=parent.MinSize.Width - 100)
+        self.crs_list.AppendColumn("Code", width=100)
+        self.crs_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_select_crs)
 
-        # Add CRS listbox to parent
-        parent.Add(self.crs_listbox, 1, wx.ALL, 5)
+        # Add CRS list to parent
+        parent.Add(self.crs_list, 1, wx.ALL, 5)
 
 
     def add_select_buttons(self, parent):
@@ -253,23 +252,6 @@ class ProjPickerGUI(wx.Frame):
 
     #################################
     # Event Handlers
-    def on_load_map(self, event):
-        if DEBUG:
-            # Confirm map is loaded for debugging purposes
-            ppik.message("OpenStreetMap loaded.")
-
-        # Handler for the Document title change to read the JSON and trigger
-        # the ProjPicker query; This event will trigger the ProjPicker query
-        # and population of the CRS list
-        wx.EvtHandler.Bind(self, wx.html2.EVT_WEBVIEW_TITLE_CHANGED,
-                           self.on_pull)
-
-        # List box selection is within wx.html2.EVT_WEBVIEW_LOADED event
-        # listener in order to allow any JS scripts which rely on selected
-        # CRS info to be ran.
-        wx.EvtHandler.Bind(self, wx.EVT_LISTBOX, self.on_select_crs)
-
-
     def on_switch_logical_operator(self, event):
         self.logical_operator = event.GetEventObject().Label
         self.query()
@@ -291,7 +273,7 @@ class ProjPickerGUI(wx.Frame):
         # to a chunk of JSON; Super hacky solution because other methods don't
         # work as documented
 
-        geom_chunk = self.browser.GetCurrentTitle()
+        geom_chunk = self.map.GetCurrentTitle()
         if geom_chunk == "pull":
             self.geom_buf = ""
         elif geom_chunk == "done":
@@ -302,7 +284,7 @@ class ProjPickerGUI(wx.Frame):
             return
         else:
             self.geom_buf += geom_chunk
-        self.browser.RunScript("pushGeometryChunk()")
+        self.map.RunScript("pushGeometryChunk()")
 
 
     def on_select_crs(self, event):
@@ -314,7 +296,7 @@ class ProjPickerGUI(wx.Frame):
         self.crs_info_text.SetValue(crs_info)
 
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
-        self.browser.RunScript(f"drawCRSBBox({crs_bbox_feature})")
+        self.map.RunScript(f"drawCRSBBox({crs_bbox_feature})")
 
 
     def on_select(self, event):
@@ -353,18 +335,18 @@ class ProjPickerGUI(wx.Frame):
             ppik.message(f"Query geometries: {geoms}")
             ppik.message(f"Number of queried CRSs: {len(self.crs)}")
 
-        # Populate CRS listbox
-        self.crs_listbox.Clear()
+        self.crs_list.DeleteAllItems()
 
+        # Populate CRS list
         if len(self.crs) > 0:
-            crs_names = [f"{crs.crs_name} ({crs.crs_auth_name}:{crs.crs_code})"
-                         for crs in self.crs]
-            self.crs_listbox.InsertItems(crs_names, 0)
+            for crs in self.crs:
+                self.crs_list.Append((crs.crs_name,
+                                      f"{crs.crs_auth_name}:{crs.crs_code}"))
 
 
     def find_selected_crs(self):
         sel_crs = None
-        sel_index = self.crs_listbox.GetSelection()
+        sel_index = self.crs_list.GetFirstSelected()
         if self.crs is not None and sel_index >= 0:
             sel_crs = self.crs[sel_index]
         return sel_crs
