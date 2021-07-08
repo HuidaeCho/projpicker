@@ -17,13 +17,10 @@ that wraps around this project is available. It is a work in progress; join
 
 ![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
 
-## GUIs
+## Subprojects
 
 * [Desktop GUI](https://github.com/HuidaeCho/projpicker-gui)
 * [ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro)
-
-## JavaScript implementation
-
 * [Work-in-progress JavaScript implementation](https://github.com/HuidaeCho/projpicker-js)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
