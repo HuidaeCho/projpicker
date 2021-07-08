@@ -20,8 +20,8 @@ that wraps around this project is available. It is a work in progress; join
 ## Subprojects
 
 * [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui)
-* [ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro)
-* [Work-in-progress JavaScript implementation](https://github.com/HuidaeCho/projpicker-js)
+* [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro)
+* [ProjPicker JavaScript](https://github.com/HuidaeCho/projpicker-js) (work in progress)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
