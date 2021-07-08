@@ -90,8 +90,7 @@ class ProjPickerGUI(wx.Frame):
             select_buttons_parent = bottom_left
 
             crs_info_parent = right
-            # TODO: make it dynamic
-            num_lines_crs_info = 8
+            num_lines_crs_info = self.get_crs_info(None)
             font_height = self.panel.GetFont().GetPixelSize().Height * 1.025
             crs_info_size = wx.Size(crs_info_parent.MinSize.Width,
                                     int(num_lines_crs_info * font_height))
@@ -369,6 +368,14 @@ class ProjPickerGUI(wx.Frame):
 
 
     def get_crs_info(self, crs):
+        if crs is None:
+            # Return the number of lines in crs_info;
+            # XXX: Tricky to count the number of lines in crs_info dynamically
+            # because we use an f-string with a namedtuple and it's not a good
+            # idea to eval() its template; Just update this number as needed
+            # when adding or deleting lines to and from crs_info below
+            return 8
+
         # Format CRS Info; Same as lambda function in projpicker.gui
         crs_info = f"""\
             CRS Type: {crs.proj_table.replace("_crs", "").capitalize()}
@@ -406,7 +413,7 @@ class ProjPickerGUI(wx.Frame):
     def create_crs_bbox_feature(self, crs):
         # crs is a ProjPicker BBox instance
 
-        # BBox => GeoJSON polygon
+        # Convert BBox to GeoJSON polygon
         s = crs.south_lat
         n = crs.north_lat
         w = crs.west_lon
