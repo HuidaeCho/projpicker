@@ -19,21 +19,12 @@ that wraps around this project is available. It is a work in progress; join
 
 ## GUIs
 
-### Desktop GUI
+* [Desktop GUI](https://github.com/HuidaeCho/projpicker-gui)
+* [ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro)
 
-[Repository](https://github.com/HuidaeCho/projpicker-gui)
+## JavaScript implementation
 
-![image](https://user-images.githubusercontent.com/7456117/124940674-2d3f8680-dfd8-11eb-9a8c-7078543043f4.png)
-
-### ArcGIS Pro Toolbox
-
-[Repository](https://github.com/HuidaeCho/projpicker-arcgispro)
-
-![image](https://user-images.githubusercontent.com/7456117/124984600-6c390080-e007-11eb-88de-d5eb0e87e325.png)
-
-### Work-in-progress JavaScript implementation
-
-[Repository](https://github.com/HuidaeCho/projpicker-js)
+* [Work-in-progress JavaScript implementation](https://github.com/HuidaeCho/projpicker-js)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
