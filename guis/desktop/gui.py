@@ -146,7 +146,8 @@ class ProjPickerGUI(wx.Frame):
             main.Add(right)
         elif layout == "big_map":
             top.Add(top_bottom, 0, wx.ALIGN_CENTER)
-            bottom_left.Add(bottom_left_bottom, 0, wx.ALIGN_CENTER | wx.BOTTOM, 5)
+            bottom_left.Add(bottom_left_bottom, 0, wx.ALIGN_CENTER | wx.BOTTOM,
+                            5)
             bottom.Add(bottom_left)
             bottom.Add(bottom_right)
             main.Add(top)
