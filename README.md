@@ -32,22 +32,6 @@ that wraps around this project is available. It is a work in progress; join
 3. Install Python: `pkg install python`
 4. Install ProjPicker: `pip install projpicker`
 
-## Branches
-
-### main
-
-This branch is the main development and release branch for both the API and CLI
-of ProjPicker.
-
-### rtree-oop
-
-The [rtree-oop](https://github.com/HuidaeCho/projpicker/tree/rtree-oop) branch
-utilizes [the rtree module](https://github.com/Toblerity/rtree) in an
-object-oriented programming (OOP) way. This branch supports point intersection.
-The rtree spatial indexing may not be able to handle reversed west and east
-longitudinal boundaries that cross the antimeridian. This branch is archived
-and not under active development.
-
 ## Change log
 
 See [here](https://github.com/HuidaeCho/projpicker/blob/main/projpicker/ChangeLog.md).
