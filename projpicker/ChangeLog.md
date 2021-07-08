@@ -1,5 +1,15 @@
 # Change log
 
+## HEAD
+Thu Jul 8 00:40:40 2021 -0400
+
+* [b860119](https://github.com/HuidaeCho/projpicker/commit/b860119)  Use sentence case for Change Log
+* [a700ddd](https://github.com/HuidaeCho/projpicker/commit/a700ddd)  Add Change Log to README.md
+* [44e46ed](https://github.com/HuidaeCho/projpicker/commit/44e46ed)  Add mkchangelog.sh script
+* [81086d0](https://github.com/HuidaeCho/projpicker/commit/81086d0)  Exclude guis log from ChangeLog.md
+* [2ad1802](https://github.com/HuidaeCho/projpicker/commit/2ad1802)  Add commit links
+* [96ef2b4](https://github.com/HuidaeCho/projpicker/commit/96ef2b4)  Add ChangeLog.md
+
 ## v0.1.6.post2
 Wed Jul 7 18:06:09 2021 -0400
 
