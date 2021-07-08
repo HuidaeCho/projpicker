@@ -177,13 +177,8 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # Map
     def add_map(self, parent, size):
-        # Create webview
         self.map = wx.html2.WebView.New(self.panel, size=size)
-
-        # Load the local html
-        url = wx.FileSystem.FileNameToURL(MAP_HTML)
-        self.map.LoadURL(url)
-
+        self.map.LoadURL(wx.FileSystem.FileNameToURL(MAP_HTML))
         self.map.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.on_pull)
 
         parent.Add(self.map, 1, wx.ALL, 5)
@@ -206,30 +201,25 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # CRS List
     def add_crs_list(self, parent, size):
-        text = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
-        parent.Add(text, 0, wx.CENTER | wx.TOP, 5)
+        header = wx.StaticText(self.panel, 0, "Select a CRS", pos=(0, 0))
 
-        # CRS selection list
         self.crs_list = wx.ListCtrl(self.panel, size=size,
                                     style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.crs_list.AppendColumn("Name", width=parent.MinSize.Width - 100)
         self.crs_list.AppendColumn("Code", width=100)
         self.crs_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_select_crs)
 
-        # Add CRS list to parent
+        parent.Add(header, 0, wx.CENTER | wx.TOP, 5)
         parent.Add(self.crs_list, 1, wx.ALL, 5)
 
 
     def add_select_buttons(self, parent):
-        # Select button
         select_button = wx.Button(self.panel, label="Select")
         select_button.Bind(wx.EVT_BUTTON, self.on_select)
 
-        # Cancel button
         cancel_button = wx.Button(self.panel, label="Cancel")
         cancel_button.Bind(wx.EVT_BUTTON, self.on_close)
 
-        # Add buttons to parent
         parent.Add(select_button, 1)
         parent.AddStretchSpacer()
         parent.Add(cancel_button, 1)
@@ -238,16 +228,12 @@ class ProjPickerGUI(wx.Frame):
     #################################
     # CRS Info
     def add_crs_info(self, parent, size):
-        # Add header
         header = wx.StaticText(self.panel, 0, "CRS Info")
+        self.crs_info = wx.TextCtrl(self.panel, size=size,
+                                    style=wx.TE_MULTILINE | wx.TE_READONLY)
 
-        # Info text, read only
-        self.crs_info_text = wx.TextCtrl(self.panel, size=size,
-                                         style=wx.TE_MULTILINE | wx.TE_READONLY)
-
-        # Add widgets to parent
         parent.Add(header, 0, wx.CENTER | wx.TOP, 5)
-        parent.Add(self.crs_info_text, 1, wx.ALL, 5)
+        parent.Add(self.crs_info, 1, wx.ALL, 5)
 
 
     #################################
@@ -293,7 +279,7 @@ class ProjPickerGUI(wx.Frame):
         crs = self.find_selected_crs()
         if crs is not None:
             crs_info = self.get_crs_info(crs)
-        self.crs_info_text.SetValue(crs_info)
+        self.crs_info.SetValue(crs_info)
 
         crs_bbox_feature = self.create_crs_bbox_feature(crs)
         self.map.RunScript(f"drawCRSBBox({crs_bbox_feature})")
