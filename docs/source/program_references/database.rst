@@ -15,7 +15,7 @@ Shell
 
 .. code-block:: shell
 
-    projpicker -c
+    projpicker -C
 
 Python
 ^^^^^^
