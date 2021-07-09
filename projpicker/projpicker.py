@@ -1168,13 +1168,14 @@ def parse_mixed_geoms(geoms):
                         typ = type(geom)
                         if typ == str and not geom.startswith(":"):
                             geom = parse_geom(geom, geom_type)
-                            typ = type(geom)
-                            outgeoms.append(geom)
+                        outgeoms.append(geom)
                     if use:
                         if name not in geom_vars:
                             raise Exception(f"{name}: Undefined geometry "
                                             "variable")
                         stack_size += 1
+                        outgeoms.append(geom)
+                    g += 1
                 else:
                     i = g
                     while (i < ngeoms and geoms[i] not in keywords and
@@ -1188,7 +1189,7 @@ def parse_mixed_geoms(geoms):
                     if len(ogeoms) > 0 and None not in ogeoms:
                         stack_size += len(ogeoms)
                         outgeoms.extend(ogeoms)
-                    continue
+                continue
             if typ == str:
                 outgeoms.append(geom)
             g += 1
