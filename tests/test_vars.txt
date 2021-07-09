@@ -1,0 +1,19 @@
+#geoms: postfix ung: 34.2348,-83.8677 zero: 0,0 :ung :zero not and
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_mixed_geoms(["postfix", "ung:", [34.2348, -83.8677], "zero:", [0, 0], ":ung", ":zero", "not", "and"])
+# ppik.print_bbox(bbox)
+#end
+
+postfix
+
+# geometry variables
+ung:				# UNG Gainesville Campus
+34.2348         83°52'3.72"W
+
+zero: 0,0
+
+# start query
+:ung :zero not and
