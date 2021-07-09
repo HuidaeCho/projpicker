@@ -8,7 +8,7 @@ else
 fi
 
 exclude=""
-for i in COPYING README.md setup.py data deploy docs guis tests utils; do
+for i in COPYING README.md setup.py data deploy docs tests utils; do
 	exclude="$exclude :(exclude)../$i"
 done
 (
