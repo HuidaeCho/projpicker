@@ -166,7 +166,7 @@ def tidy_lines(lines):
                     # normalize lat lon to lat,lon for multiple geometries per
                     # line; avoid any constraining directives using =
                     lines[i] = coor_sep.join(words)
-                elif ("=" in words[0] and '"' not in words[0] and
+                elif (words[0].startswith("unit=") and '"' not in words[0] and
                       "'" not in words[0]):
                     # protect whitespaces in constraining directives
                     m = re.match("""^([^ =]+=)([^"'].*)$""", lines[i])
