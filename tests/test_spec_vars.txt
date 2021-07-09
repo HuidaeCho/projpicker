@@ -1,0 +1,12 @@
+#geoms: postfix :no_where: none not
+#python
+# import sys
+# sys.path.insert(0, "../projpicker")
+# import projpicker as ppik
+# bbox = ppik.query_mixed_geoms(["postfix", ":no_where:", "none", "not"])
+# ppik.print_bbox(bbox)
+#end
+
+postfix
+:no_where: none
+not
