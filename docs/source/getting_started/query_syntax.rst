@@ -281,3 +281,17 @@ The following command performs an all-but operation and returns CRSs not in degr
 
 Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs from any-unit CRSs, not from the same degree CRSs.
 ``unit=degree all not`` would yield ``none`` because in the same degree universe, the NOT of all is none.
+
+Geometry variables
+------------------
+
+A geometry can be saved as a geomery variable and used later.
+The name of a variable can contain lowercase and uppercase letters, numbers, and underscores.
+This syntax uses colons to define and use variables.
+If the variable name is followed by a colon, but it does not start with another one (e.g., ``var_name:``), it saves the following geometry and is not used in place.
+If the variable name is enclosed by two colons (e.g., ``:var_name:``), it is defined ans used immediately.
+If the variable name starts with a colon, but it does not end with another one (e.g., ``:var_name``), its saved geometry is restored.
+
+.. code-block:: shell
+
+    projpicker postfix A: 34.2348,-83.8677 zero: 0,0 :A :zero not and

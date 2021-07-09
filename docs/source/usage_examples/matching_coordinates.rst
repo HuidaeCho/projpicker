@@ -20,6 +20,22 @@ Shell
     # to speed up, let's just return the first match only
     projpicker postfix match_max=1 match_tol=200 33.7490,-84.3880 xy 432697.24,1363705.31 match
 
+Using geometry variables:
+
+.. code-block:: shell
+
+    projpicker <<EOT
+    postfix
+    match_max=1
+    match_tol=200
+
+    A: 33.7490,-84.3880
+    xy
+    B: 432697.24,1363705.31
+
+    :A :B match
+    EOT
+
 Python
 ------
 
