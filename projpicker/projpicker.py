@@ -41,7 +41,7 @@ has_gui = True
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .common import bbox_schema, bbox_columns, get_float, BBox
+    from .common import coor_sep, bbox_schema, bbox_columns, get_float, BBox
     from . import coor_latlon
     from . import coor_xy
     try:
@@ -49,7 +49,7 @@ if __package__:
     except:
         has_gui = False
 else:
-    from common import bbox_schema, bbox_columns, get_float, BBox
+    from common import coor_sep, bbox_schema, bbox_columns, get_float, BBox
     import coor_latlon
     import coor_xy
     try:
@@ -126,8 +126,8 @@ def tidy_lines(lines):
     whitespaces including newlines. Comments start with a hash and comment-only
     lines are deleted as if they did not even exist. A line starting with
     whitespaces immediately followed by a comment is considered a comment-only
-    line and deleted. This function directly modifies the input list to save
-    memory and does not return anything.
+    line and deleted. This function directly modifies the input list and does
+    not return anything.
 
     Args:
         lines (list): List of str lines.
@@ -145,8 +145,61 @@ def tidy_lines(lines):
             lines[i] = lines[i].strip()
             if commented and lines[i] == "":
                 del lines[i]
+            elif " " in lines[i] or "\t" in lines[i]:
+                words = lines[i].split()
+                n = len(words)
+                if (n in (2, 4) and coor_sep not in lines[i] and
+                    "=" not in lines[i]):
+                    # normalize lat lon to lat,lon for multiple geometries per
+                    # line; avoid any restriction directives using =
+                    lines[i] = coor_sep.join(words)
+                elif ("=" in words[0] and '"' not in words[0] and
+                      "'" not in words[0]):
+                    # protect whitespaces in restriction directives
+                    m = re.match("""^([^ =]+=)([^"'].*)$""", lines[i])
+                    if m:
+                        quote = "'" if '"' in m[2] else '"'
+                        lines[i] = f"{m[1]}{quote}{m[2]}{quote}"
     if len(lines) > 0 and lines[0] == "":
         del lines[0]
+
+    text = " ".join(lines)
+    lines.clear()
+    lines.extend(text.split())
+    normalize_lines(lines)
+
+
+def normalize_lines(lines):
+    """
+    Normalize a list of str lines in place by splitting combined lines into
+    individual lines.
+
+    Args:
+        lines (list): List of str lines.
+    """
+    idx = []
+    n = len(lines)
+    i = 0
+    while i < n:
+        m = re.match("""^(|[a-z_]+=)(["'])(.*)$""", lines[i])
+        if m:
+            lines[i] = m[1] + m[3]
+            quote = m[2]
+            if lines[i].endswith(quote):
+                lines[i] = lines[i][:-len(quote)]
+            else:
+                for j in range(i+1, n):
+                    idx.append(j)
+                    m = re.match(f"^(.*){quote}$", lines[j])
+                    if m:
+                        lines[i] += f" {m[1]}"
+                        break
+                    else:
+                        lines[i] += f" {lines[j]}"
+                i = j
+        i += 1
+    for i in reversed(idx):
+        del lines[i]
 
 
 def get_separator(separator):
@@ -1028,6 +1081,7 @@ def parse_mixed_geoms(geoms):
     """
     if type(geoms) == str:
         geoms = geoms.split()
+        normalize_lines(geoms)
 
     outgeoms = []
 

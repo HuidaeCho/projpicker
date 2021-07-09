@@ -8,7 +8,8 @@ import collections
 
 # regular expression patterns
 # coordinate separator
-coor_sep_pat = "[ \t]*[, \t][ \t]*"
+coor_sep = ","
+coor_sep_pat = f"[ \t]*[{coor_sep} \t][ \t]*"
 # positive float
 pos_float_pat = "(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)"
 
