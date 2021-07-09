@@ -2508,11 +2508,11 @@ def parse():
                 "whose bounding box contains given geometries; visit "
                 "https://github.com/HuidaeCho/projpicker for more details")
     parser.add_argument(
-            "-v", "--version",
+            "-V", "--version",
             action="store_true",
             help=f"print version ({get_version()}) and copyright, and exit")
     parser.add_argument(
-            "-c", "--create",
+            "-C", "--create",
             action="store_true",
             help="create ProjPicker database")
     output_exclusive = parser.add_mutually_exclusive_group()
@@ -2522,12 +2522,12 @@ def parse():
             help="overwrite output files; applies to both projpicker.db and "
                 "query output file")
     output_exclusive.add_argument(
-            "-a", "--append",
+            "-A", "--append",
             action="store_true",
             help="append to output file if any; applies only to query output "
                 "file")
     parser.add_argument(
-            "-d", "--projpicker-db",
+            "-D", "--projpicker-db",
             default=projpicker_db,
             help=f"projpicker database path (default: {projpicker_db}); use "
                 "PROJPICKER_DB environment variable to skip this option")
