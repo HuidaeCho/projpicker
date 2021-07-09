@@ -9,11 +9,13 @@
 
 postfix
 
+####################
 # geometry variables
 ung:				# UNG Gainesville Campus
 34.2348         83°52'3.72"W
 
 zero: 0,0
 
+####################
 # start query
 :ung :zero not and

@@ -1159,10 +1159,22 @@ def parse_mixed_geoms(geoms):
                     sav = m[1] is not None or m[2] is not None
                     use = m[2] is not None or m[3] is not None
                     name = m[1] or m[2] or m[3]
-                    if sav and name not in geom_vars:
-                        geom_vars.append(name)
-                    if use and name not in geom_vars:
-                        raise Exception(f"{name}: Undefined geometry variable")
+                    if sav:
+                        if name not in geom_vars:
+                            geom_vars.append(name)
+                        outgeoms.append(geom)
+                        g += 1
+                        geom = geoms[g]
+                        typ = type(geom)
+                        if typ == str and not geom.startswith(":"):
+                            geom = parse_geom(geom, geom_type)
+                            typ = type(geom)
+                            outgeoms.append(geom)
+                    if use:
+                        if name not in geom_vars:
+                            raise Exception(f"{name}: Undefined geometry "
+                                            "variable")
+                        stack_size += 1
                 else:
                     i = g
                     while (i < ngeoms and geoms[i] not in keywords and
@@ -1185,7 +1197,8 @@ def parse_mixed_geoms(geoms):
             if stack_size == 0:
                 raise Exception("Nothing to return from postfix stack")
             elif stack_size > 1:
-                raise Exception("Excessive stack size for postfix operations")
+                raise Exception(f"{stack_size}: Excessive stack size for "
+                                "postfix operations")
     finally:
         if was_latlon and not is_latlon():
             set_latlon()
