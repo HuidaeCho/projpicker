@@ -41,7 +41,8 @@ has_gui = True
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .common import coor_sep, bbox_schema, bbox_columns, get_float, BBox
+    from .common import (pos_float_pat, coor_sep, bbox_schema, bbox_columns,
+                         get_float, BBox)
     from . import coor_latlon
     from . import coor_xy
     try:
@@ -49,7 +50,8 @@ if __package__:
     except:
         has_gui = False
 else:
-    from common import coor_sep, bbox_schema, bbox_columns, get_float, BBox
+    from common import (pos_float_pat, coor_sep, bbox_schema, bbox_columns,
+                        get_float, BBox)
     import coor_latlon
     import coor_xy
     try:
@@ -72,8 +74,14 @@ rx = 6378.1370
 # polar radius in km
 ry = 6356.7523
 
+geom_var_chars = "([a-zA-Z0-9_]+)"
+geom_var_re = re.compile(f"^(?:{geom_var_chars}:|:{geom_var_chars}:|"
+                         f":{geom_var_chars})$")
+
 # geometry-bbox namedtuple class
 GeomBBox = collections.namedtuple("GeomBBox", "is_latlon type geom bbox")
+# geometry namedtuple class
+Geom = collections.namedtuple("Geom", "is_latlon type geom")
 
 
 ################################################################################
@@ -147,15 +155,20 @@ def tidy_lines(lines):
                 del lines[i]
             elif " " in lines[i] or "\t" in lines[i]:
                 words = lines[i].split()
+                all_nums = True
+                for word in words:
+                    if not re.match(f"^[+-]?{pos_float_pat}", word):
+                        all_nums = False
+                        break
                 n = len(words)
-                if (n in (2, 4) and coor_sep not in lines[i] and
+                if (all_nums and n in (2, 4) and coor_sep not in lines[i] and
                     "=" not in lines[i]):
                     # normalize lat lon to lat,lon for multiple geometries per
-                    # line; avoid any restriction directives using =
+                    # line; avoid any constraining directives using =
                     lines[i] = coor_sep.join(words)
                 elif ("=" in words[0] and '"' not in words[0] and
                       "'" not in words[0]):
-                    # protect whitespaces in restriction directives
+                    # protect whitespaces in constraining directives
                     m = re.match("""^([^ =]+=)([^"'].*)$""", lines[i])
                     if m:
                         quote = "'" if '"' in m[2] else '"'
@@ -1111,6 +1124,7 @@ def parse_mixed_geoms(geoms):
     try:
         set_latlon()
 
+        geom_vars = []
         stack_size = 0
         g = first_index
 
@@ -1140,17 +1154,29 @@ def parse_mixed_geoms(geoms):
             elif geom in ("none", "all"):
                 stack_size += 1
             else:
-                i = g
-                while (i < ngeoms and geoms[i] not in keywords and
-                       not (typ == str and "=" in geoms[i] and
-                            geoms[i].split("=")[0] in constraints)):
-                    i += 1
-                ogeoms = parse_geoms(geoms[g:i], geom_type)
-                g = i
-                if len(ogeoms) > 0 and None not in ogeoms:
-                    stack_size += len(ogeoms)
-                    outgeoms.extend(ogeoms)
-                continue
+                m = geom_var_re.match(geom) if typ == str else None
+                if m:
+                    sav = m[1] is not None or m[2] is not None
+                    use = m[2] is not None or m[3] is not None
+                    name = m[1] or m[2] or m[3]
+                    if sav and name not in geom_vars:
+                        geom_vars.append(name)
+                    if use and name not in geom_vars:
+                        raise Exception(f"{name}: Undefined geometry variable")
+                else:
+                    i = g
+                    while (i < ngeoms and geoms[i] not in keywords and
+                           not (type(geoms[i]) == str and
+                                (("=" in geoms[i] and
+                                  geoms[i].split("=")[0] in constraints) or
+                                 geom_var_re.match(geoms[i])))):
+                        i += 1
+                    ogeoms = parse_geoms(geoms[g:i], geom_type)
+                    g = i
+                    if len(ogeoms) > 0 and None not in ogeoms:
+                        stack_size += len(ogeoms)
+                        outgeoms.extend(ogeoms)
+                    continue
             if typ == str:
                 outgeoms.append(geom)
             g += 1
@@ -2094,15 +2120,58 @@ def query_mixed_geoms(
         match_tol = 1
         match_max = 0
         bbox_all = {}
+        geom_vars = {}
+        sav_is_latlon = sav_geom_type = None
 
-        for g in range(first_index, ngeoms):
+        g = first_index
+        while g < ngeoms:
             geom = geoms[g]
+            typ = type(geom)
 
-            if type(geom) == str and geom.startswith("unit="):
+            m = geom_var_re.match(geom) if typ == str else None
+            if m:
+                sav = m[1] is not None or m[2] is not None
+                use = m[2] is not None or m[3] is not None
+                name = m[1] or m[2] or m[3]
+                if sav:
+                    g += 1
+                    geom_vars[name] = Geom(is_latlon(), geom_type, geoms[g])
+                if use:
+                    if name not in geom_vars:
+                        raise Exception(f"{name}: Undefined geometry variable")
+                    nam = name
+                    while True:
+                        geom = geom_vars[nam]
+                        typ = type(geom.geom)
+                        if not (typ == str and geom.geom.startswith(":")):
+                            break
+                        nam = geom.geom[1:]
+                        if nam == name:
+                            raise Exception(f"{name}: Recursive geometry "
+                                            "variable")
+                    if geom.is_latlon != is_latlon():
+                        sav_is_latlon = is_latlon()
+                        if geom.is_latlon:
+                            set_latlon()
+                        else:
+                            set_xy()
+                    else:
+                        sav_is_latlon = None
+                    if geom.type != geom_type:
+                        sav_geom_type = geom_type
+                        geom_type = geom.type
+                    else:
+                        save_geom_type = None
+                    geom = geom.geom
+                else:
+                    g += 1
+                    continue
+
+            if typ == str and geom.startswith("unit="):
                 unit = geom.split("=")[1]
-            elif type(geom) == str and geom.startswith("match_tol="):
+            elif typ == str and geom.startswith("match_tol="):
                 match_tol = float(geom.split("=")[1])
-            elif type(geom) == str and geom.startswith("match_max="):
+            elif typ == str and geom.startswith("match_max="):
                 match_max = int(geom.split("=")[1])
             elif geom in ("point", "poly", "bbox"):
                 geom_type = geom
@@ -2192,6 +2261,19 @@ def query_mixed_geoms(
                 outbbox = bbox_all[unit]
             else:
                 outbbox = query_geom_using_bbox(outbbox, geom, geom_type, unit)
+
+            if sav_is_latlon is not None:
+                if sav_is_latlon:
+                    set_latlon()
+                else:
+                    set_xy()
+                sav_is_latlon = None
+
+            if sav_geom_type is not None:
+                geom_type = sav_geom_type
+                sav_geom_type = None
+
+            g += 1
     finally:
         if was_latlon and not is_latlon():
             set_latlon()
