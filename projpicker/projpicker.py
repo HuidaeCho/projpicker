@@ -1166,7 +1166,8 @@ def parse_mixed_geoms(geoms):
                         g += 1
                         geom = geoms[g]
                         typ = type(geom)
-                        if typ == str and not geom.startswith(":"):
+                        if (typ == str and not geom.startswith(":") and
+                            geom not in spec_geoms):
                             geom = parse_geom(geom, geom_type)
                         outgeoms.append(geom)
                     if use:
@@ -1174,7 +1175,8 @@ def parse_mixed_geoms(geoms):
                             raise Exception(f"{name}: Undefined geometry "
                                             "variable")
                         stack_size += 1
-                        outgeoms.append(geom)
+                        if not sav:
+                            outgeoms.append(geom)
                     g += 1
                 else:
                     i = g
