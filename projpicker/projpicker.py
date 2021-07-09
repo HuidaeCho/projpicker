@@ -2391,7 +2391,7 @@ def projpicker(
     get_projpicker_db() or get_proj_db() is used, respectively.
 
     Args:
-        geoms (list): Geometries. Defaults to [].
+        geoms (list): List of parsable geometries. Defaults to [].
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
         outfile (str): Output file. None for no output file. Defaults to "-"
             for sys.stdout.
