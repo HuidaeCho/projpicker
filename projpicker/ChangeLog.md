@@ -1,5 +1,11 @@
 # Change log
 
+* [`5e73d9c`](https://github.com/HuidaeCho/projpicker/commit/5e73d9c)  (HEAD -> refs/heads/main) v0.1.6.post3
+* [`2da2cf4`](https://github.com/HuidaeCho/projpicker/commit/2da2cf4)  (refs/remotes/origin/main, refs/remotes/origin/HEAD) Support for multiple geometries per line
+* [`0c987fb`](https://github.com/HuidaeCho/projpicker/commit/0c987fb)  Use uppercase single characters for rarely used flags
+* [`62172ec`](https://github.com/HuidaeCho/projpicker/commit/62172ec)  core: Import order
+* [`8d59217`](https://github.com/HuidaeCho/projpicker/commit/8d59217)  core: parseable => parsable
+* [`59fcfc6`](https://github.com/HuidaeCho/projpicker/commit/59fcfc6)  mkchangelog.sh: Hash in monospace font
 * [`8c74c33`](https://github.com/HuidaeCho/projpicker/commit/8c74c33)  Escape backslashes in ChangeLog.md
 * [`482a461`](https://github.com/HuidaeCho/projpicker/commit/482a461)  Exclude non-core commits from ChangeLog.md
 * [`b2ca3a5`](https://github.com/HuidaeCho/projpicker/commit/b2ca3a5)  Add HEAD logs to Change Log
