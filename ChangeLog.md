@@ -1,8 +1,10 @@
 # Change log
 
 ## HEAD
-Sat Jul 10 11:40:46 2021 -0400
+Sat Jul 10 12:19:09 2021 -0400
 
+* [`b564895`](https://github.com/HuidaeCho/projpicker/commit/b564895)  Move ChangeLog.md to the root
+* [`8fa2a72`](https://github.com/HuidaeCho/projpicker/commit/8fa2a72)  Move ChangeLog.md to the root
 * [`4b072ab`](https://github.com/HuidaeCho/projpicker/commit/4b072ab)  Improve mkchangelog.sh
 * [`ded7d64`](https://github.com/HuidaeCho/projpicker/commit/ded7d64)  Do not exclude any items from ChangeLog because sometimes tags happen to be attached to excluded items
 * [`f14c7d0`](https://github.com/HuidaeCho/projpicker/commit/f14c7d0)  ChangeLog
