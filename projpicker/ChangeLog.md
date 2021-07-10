@@ -1,5 +1,11 @@
 # Change log
 
+## HEAD
+Sat Jul 10 10:58:22 2021 -0400
+
+* [`7c334b7`](https://github.com/HuidaeCho/projpicker/commit/7c334b7)  Use list bool returns instead of len(list) to checkout its emptiness
+* [`d76e9e4`](https://github.com/HuidaeCho/projpicker/commit/d76e9e4)  Add an exception for undefined geometry variable
+* [`53a4965`](https://github.com/HuidaeCho/projpicker/commit/53a4965)  v0.1.6.post4
 * [`5be501a`](https://github.com/HuidaeCho/projpicker/commit/5be501a)  Fix polygon variables
 * [`25b4889`](https://github.com/HuidaeCho/projpicker/commit/25b4889)  Support multi-constraints in one line
 * [`eb0f25b`](https://github.com/HuidaeCho/projpicker/commit/eb0f25b)  Support special geometries in variables
