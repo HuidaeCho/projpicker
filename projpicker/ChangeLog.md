@@ -1,11 +1,26 @@
 # Change log
 
-* [`5e73d9c`](https://github.com/HuidaeCho/projpicker/commit/5e73d9c)  (HEAD -> refs/heads/main) v0.1.6.post3
-* [`2da2cf4`](https://github.com/HuidaeCho/projpicker/commit/2da2cf4)  (refs/remotes/origin/main, refs/remotes/origin/HEAD) Support for multiple geometries per line
+* [`5be501a`](https://github.com/HuidaeCho/projpicker/commit/5be501a)  Fix polygon variables
+* [`25b4889`](https://github.com/HuidaeCho/projpicker/commit/25b4889)  Support multi-constraints in one line
+* [`eb0f25b`](https://github.com/HuidaeCho/projpicker/commit/eb0f25b)  Support special geometries in variables
+* [`89da9fb`](https://github.com/HuidaeCho/projpicker/commit/89da9fb)  Fix geometry variable parsing again
+* [`483544f`](https://github.com/HuidaeCho/projpicker/commit/483544f)  Fix geometry variable parsing
+* [`a7e1a82`](https://github.com/HuidaeCho/projpicker/commit/a7e1a82)  Implement geometry variables
+* [`77f9dbb`](https://github.com/HuidaeCho/projpicker/commit/77f9dbb)  comment
+* [`ec48022`](https://github.com/HuidaeCho/projpicker/commit/ec48022)  changelog
+* [`5e73d9c`](https://github.com/HuidaeCho/projpicker/commit/5e73d9c)  v0.1.6.post3
+* [`2da2cf4`](https://github.com/HuidaeCho/projpicker/commit/2da2cf4)  Support for multiple geometries per line
 * [`0c987fb`](https://github.com/HuidaeCho/projpicker/commit/0c987fb)  Use uppercase single characters for rarely used flags
+* [`3b315ab`](https://github.com/HuidaeCho/projpicker/commit/3b315ab)  Remove the guis directory (moved to their own repos)
 * [`62172ec`](https://github.com/HuidaeCho/projpicker/commit/62172ec)  core: Import order
+* [`be748bf`](https://github.com/HuidaeCho/projpicker/commit/be748bf)  desktop gui: Allow geometries input from command line
+* [`b75d441`](https://github.com/HuidaeCho/projpicker/commit/b75d441)  argparse to switch layouts. Temporary, would like to be able to switch from within application
 * [`8d59217`](https://github.com/HuidaeCho/projpicker/commit/8d59217)  core: parseable => parsable
+* [`4de1fa9`](https://github.com/HuidaeCho/projpicker/commit/4de1fa9)  desktop gui: Delete trivial comments
+* [`94ce406`](https://github.com/HuidaeCho/projpicker/commit/94ce406)  desktop gui: Use ListCtrl instead of ListBox for CRS list; Bind handlers directly to widgets
+* [`b158b35`](https://github.com/HuidaeCho/projpicker/commit/b158b35)  desktop gui: Add title to the main window
 * [`59fcfc6`](https://github.com/HuidaeCho/projpicker/commit/59fcfc6)  mkchangelog.sh: Hash in monospace font
+* [`b469aac`](https://github.com/HuidaeCho/projpicker/commit/b469aac)  Update the screenshot in guis/desktop/README.md
 * [`8c74c33`](https://github.com/HuidaeCho/projpicker/commit/8c74c33)  Escape backslashes in ChangeLog.md
 * [`482a461`](https://github.com/HuidaeCho/projpicker/commit/482a461)  Exclude non-core commits from ChangeLog.md
 * [`b2ca3a5`](https://github.com/HuidaeCho/projpicker/commit/b2ca3a5)  Add HEAD logs to Change Log
@@ -13,15 +28,71 @@
 * [`81086d0`](https://github.com/HuidaeCho/projpicker/commit/81086d0)  Exclude guis log from ChangeLog.md
 * [`2ad1802`](https://github.com/HuidaeCho/projpicker/commit/2ad1802)  Add commit links
 * [`96ef2b4`](https://github.com/HuidaeCho/projpicker/commit/96ef2b4)  Add ChangeLog.md
+* [`6b13858`](https://github.com/HuidaeCho/projpicker/commit/6b13858)  minor refactoring
+* [`a1f36e4`](https://github.com/HuidaeCho/projpicker/commit/a1f36e4)  Move the number of lines in crs\_info to get\_crs\_info()
+* [`9bf8c90`](https://github.com/HuidaeCho/projpicker/commit/9bf8c90)  Align the bottom of map; Try to guess the crs\_info\_text height
+* [`5901662`](https://github.com/HuidaeCho/projpicker/commit/5901662)  80cols
+* [`c2d03dc`](https://github.com/HuidaeCho/projpicker/commit/c2d03dc)  Universal 5px margins; Use SetValue() instead of Clear and WriteText
+* [`45e4ce1`](https://github.com/HuidaeCho/projpicker/commit/45e4ce1)  Clear text before new selection (#37)
+* [`1495d97`](https://github.com/HuidaeCho/projpicker/commit/1495d97)  Change StaticText to read only TextCtrl (#37)
+* [`f989423`](https://github.com/HuidaeCho/projpicker/commit/f989423)  Event handlers naming on\_*
+* [`f537f20`](https://github.com/HuidaeCho/projpicker/commit/f537f20)  Right click to copy whole of CRS info text, still not selectable (#37)
+* [`1fc3a61`](https://github.com/HuidaeCho/projpicker/commit/1fc3a61)  Use > 0
+* [`af14e15`](https://github.com/HuidaeCho/projpicker/commit/af14e15)  Fix C++ assertion !items.IsEmpty exception when no results are returned
+* [`1b9a70c`](https://github.com/HuidaeCho/projpicker/commit/1b9a70c)  Draw geometry => Draw geometries
+* [`ce46926`](https://github.com/HuidaeCho/projpicker/commit/ce46926)  Print debug messages to stderr immediately using ppik.message()
 * [`0973846`](https://github.com/HuidaeCho/projpicker/commit/0973846)  0.1.6.post2
+* [`ebe9f5d`](https://github.com/HuidaeCho/projpicker/commit/ebe9f5d)  Fix #35
+* [`40c609c`](https://github.com/HuidaeCho/projpicker/commit/40c609c)  Oops! Revert add widgets order
+* [`5e50c69`](https://github.com/HuidaeCho/projpicker/commit/5e50c69)  Logical order of widgets (map => list => info)
+* [`fae577b`](https://github.com/HuidaeCho/projpicker/commit/fae577b)  Resolve conflicts
+* [`bfe4eb4`](https://github.com/HuidaeCho/projpicker/commit/bfe4eb4)  Merge branch 'main' into desktop\_gui\_refactor
+* [`dfccdf4`](https://github.com/HuidaeCho/projpicker/commit/dfccdf4)  Support for multiple layouts
+* [`5d0129b`](https://github.com/HuidaeCho/projpicker/commit/5d0129b)  Move confirm\_load into sole webview\_loaded event handler
+* [`0a04c52`](https://github.com/HuidaeCho/projpicker/commit/0a04c52)  Javascript error was poping up at startup when there was no title change
 * [`0b1033a`](https://github.com/HuidaeCho/projpicker/commit/0b1033a)  Use BBox comparison for deduplication
 * [`a983210`](https://github.com/HuidaeCho/projpicker/commit/a983210)  Do not append existing BBoxs for OR even before deduplicating
+* [`2917b1c`](https://github.com/HuidaeCho/projpicker/commit/2917b1c)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
 * [`0e1b938`](https://github.com/HuidaeCho/projpicker/commit/0e1b938)  Fix deduplicating code in sort\_bbox()
+* [`7105803`](https://github.com/HuidaeCho/projpicker/commit/7105803)  Merge pull request #33 from HuidaeCho/desktop\_gui\_refactor
+* [`5c2a360`](https://github.com/HuidaeCho/projpicker/commit/5c2a360)  Refactor logical operation code
 * [`75999c2`](https://github.com/HuidaeCho/projpicker/commit/75999c2)  Do not modify input geoms from (parse|query)\_mixed\_geoms()
+* [`3a487cd`](https://github.com/HuidaeCho/projpicker/commit/3a487cd)  Refactor desktop GUI
+* [`8d040bc`](https://github.com/HuidaeCho/projpicker/commit/8d040bc)  Comments
+* [`cf8ddf4`](https://github.com/HuidaeCho/projpicker/commit/cf8ddf4)  Handle error that occurs when there is no drawn geometry but logical operator is switched
+* [`64b2e8c`](https://github.com/HuidaeCho/projpicker/commit/64b2e8c)  Add logical operator to query, rerun query when new logical operator is chosen
+* [`e63d86f`](https://github.com/HuidaeCho/projpicker/commit/e63d86f)  Bind buttons to get chosen logical operator
+* [`3981926`](https://github.com/HuidaeCho/projpicker/commit/3981926)  Add rb group
+* [`e4e2532`](https://github.com/HuidaeCho/projpicker/commit/e4e2532)  Add logical operator radio buttons. Not bound yet
+* [`cfddc58`](https://github.com/HuidaeCho/projpicker/commit/cfddc58)  Merge pull request #29 from HuidaeCho/folium
+* [`aaad574`](https://github.com/HuidaeCho/projpicker/commit/aaad574)  Remove unneeded global switches
+* [`c36a68f`](https://github.com/HuidaeCho/projpicker/commit/c36a68f)  Add the default title to map.html
+* [`ff56881`](https://github.com/HuidaeCho/projpicker/commit/ff56881)  Download external CSSs and JSs just in case (we can even make them available locally)
 * [`c7c333a`](https://github.com/HuidaeCho/projpicker/commit/c7c333a)  Remove unused imports from gui.py
+* [`c42a90d`](https://github.com/HuidaeCho/projpicker/commit/c42a90d)  automatic tabbing
+* [`e7851a4`](https://github.com/HuidaeCho/projpicker/commit/e7851a4)  Add integrity and crossorigin attributes for security
+* [`cfbf88d`](https://github.com/HuidaeCho/projpicker/commit/cfbf88d)  Try to remove unnecessary CSSs and JSs
+* [`14fe4dd`](https://github.com/HuidaeCho/projpicker/commit/14fe4dd)  Do we use folium?
+* [`956bfdc`](https://github.com/HuidaeCho/projpicker/commit/956bfdc)  80cols
+* [`d35744d`](https://github.com/HuidaeCho/projpicker/commit/d35744d)  Add tabs for aligned text. (#28)
+* [`0fdfb70`](https://github.com/HuidaeCho/projpicker/commit/0fdfb70)  naming
+* [`c16ad00`](https://github.com/HuidaeCho/projpicker/commit/c16ad00)  Refactoring Desktop GUI
+* [`c252c7a`](https://github.com/HuidaeCho/projpicker/commit/c252c7a)  Dont allow drawn features to be clickable
+* [`589fbda`](https://github.com/HuidaeCho/projpicker/commit/589fbda)  Map inline with other parts
+* [`f227d1c`](https://github.com/HuidaeCho/projpicker/commit/f227d1c)  Consistent label styles between crs list and info
+* [`64ac70e`](https://github.com/HuidaeCho/projpicker/commit/64ac70e)  drawCRSBBOX -> drawCRSBBox for consistent naming
+* [`29e4beb`](https://github.com/HuidaeCho/projpicker/commit/29e4beb)  Selection of CRS now draws CRS bbox on map (#25)
+
+## v0.1.6.post1
+Fri Jul 2 13:54:23 2021 -0400
+
+* [`c1aabdc`](https://github.com/HuidaeCho/projpicker/commit/c1aabdc)  (tag: refs/tags/v0.1.6.post1) Use self.crs to find selected\_crs and expose auth:code to be consistent with the core GUI
 * [`6811dd3`](https://github.com/HuidaeCho/projpicker/commit/6811dd3)  v0.1.6.post1
 * [`b50809b`](https://github.com/HuidaeCho/projpicker/commit/b50809b)  tidy\_line() should not return anything as documented
 * [`46da756`](https://github.com/HuidaeCho/projpicker/commit/46da756)  Add max argument to avoid broken pipe errors when applying head
+* [`4ccab08`](https://github.com/HuidaeCho/projpicker/commit/4ccab08)  Use an instance variable instead of a class variable
+* [`d2faf7e`](https://github.com/HuidaeCho/projpicker/commit/d2faf7e)  Two blank lines above def
+* [`12aff8c`](https://github.com/HuidaeCho/projpicker/commit/12aff8c)  Reorder methods; Expose selected CRS to we can reuse the ProjPickerGUI class in another project
 
 ## v0.1.6
 Thu Jul 1 20:48:03 2021 -0400
@@ -29,11 +100,77 @@ Thu Jul 1 20:48:03 2021 -0400
 * [`d2dea0e`](https://github.com/HuidaeCho/projpicker/commit/d2dea0e)  (tag: refs/tags/v0.1.6) Core version 0.1.6
 * [`b157191`](https://github.com/HuidaeCho/projpicker/commit/b157191)  single only for has\_gui
 * [`20f24a2`](https://github.com/HuidaeCho/projpicker/commit/20f24a2)  Some embedded systems do not provide tkinter
+* [`3db855d`](https://github.com/HuidaeCho/projpicker/commit/3db855d)  reversed\_coors => latlon\_coors to be more specific
+* [`c80cd60`](https://github.com/HuidaeCho/projpicker/commit/c80cd60)  as expected => as documented
+* [`76e5d6d`](https://github.com/HuidaeCho/projpicker/commit/76e5d6d)  chars => characters
+* [`686b79b`](https://github.com/HuidaeCho/projpicker/commit/686b79b)  Update README.md
+* [`2d7ec0c`](https://github.com/HuidaeCho/projpicker/commit/2d7ec0c)  Center CRS Info
+* [`06d24ff`](https://github.com/HuidaeCho/projpicker/commit/06d24ff)  Remove unused browser\_size
+* [`35d595d`](https://github.com/HuidaeCho/projpicker/commit/35d595d)  CRS List => Select a CRS
+* [`bc44e74`](https://github.com/HuidaeCho/projpicker/commit/bc44e74)  More refactoring
+* [`69185fb`](https://github.com/HuidaeCho/projpicker/commit/69185fb)  Comments
+* [`5c84e14`](https://github.com/HuidaeCho/projpicker/commit/5c84e14)  Refactor gui.py
+* [`1e8dacd`](https://github.com/HuidaeCho/projpicker/commit/1e8dacd)  verbify method names
+* [`4ace099`](https://github.com/HuidaeCho/projpicker/commit/4ace099)  80 columns; no periods in comments (use semi-colons because in many cases for single sentences, we do not use a period)
+* [`cb58392`](https://github.com/HuidaeCho/projpicker/commit/cb58392)  Merge pull request #19 from HuidaeCho/desktop\_gui\_python
+* [`45d09f5`](https://github.com/HuidaeCho/projpicker/commit/45d09f5)  Merge branch 'main' into desktop\_gui\_python
+* [`eef953d`](https://github.com/HuidaeCho/projpicker/commit/eef953d)  Remove unneeded line
+* [`d1964c0`](https://github.com/HuidaeCho/projpicker/commit/d1964c0)  Update README
+* [`13eeaae`](https://github.com/HuidaeCho/projpicker/commit/13eeaae)  functional assignment over if else
+* [`e9f1fc2`](https://github.com/HuidaeCho/projpicker/commit/e9f1fc2)  geo => geom
+* [`3eee720`](https://github.com/HuidaeCho/projpicker/commit/3eee720)  single quotes; CRS's => CRSs
+* [`e770292`](https://github.com/HuidaeCho/projpicker/commit/e770292)  openstreat.html => map.html
+* [`2dedc68`](https://github.com/HuidaeCho/projpicker/commit/2dedc68)  Single blank line within defs
+* [`ae8792d`](https://github.com/HuidaeCho/projpicker/commit/ae8792d)  Url => url
+* [`744f9dd`](https://github.com/HuidaeCho/projpicker/commit/744f9dd)  Capitalization following PEP8; Two blank lines between defs
+* [`bbfed90`](https://github.com/HuidaeCho/projpicker/commit/bbfed90)  Remove blank lines between HTML tags
+* [`8868a22`](https://github.com/HuidaeCho/projpicker/commit/8868a22)  HTML and JavaScript formatting
+* [`1dad8e0`](https://github.com/HuidaeCho/projpicker/commit/1dad8e0)  Shebang, header
+* [`e870bcc`](https://github.com/HuidaeCho/projpicker/commit/e870bcc)  Rename main gui class
+* [`a3ad762`](https://github.com/HuidaeCho/projpicker/commit/a3ad762)  Folium dependencies no longer needed as functionality of Leaflet is expanded through custom JS.
+* [`cb9471a`](https://github.com/HuidaeCho/projpicker/commit/cb9471a)  Commenting
+* [`ead061d`](https://github.com/HuidaeCho/projpicker/commit/ead061d)  Group event handler functions
+* [`338de46`](https://github.com/HuidaeCho/projpicker/commit/338de46)  Remove json data
+* [`86a2a53`](https://github.com/HuidaeCho/projpicker/commit/86a2a53)  folium\_gui.py -> gui.py
+* [`7353bbe`](https://github.com/HuidaeCho/projpicker/commit/7353bbe)  It's alive
+* [`4ac07ec`](https://github.com/HuidaeCho/projpicker/commit/4ac07ec)  Remove polyline drawing options
+* [`4580656`](https://github.com/HuidaeCho/projpicker/commit/4580656)  Remove circle and circlemarker drawing options
+* [`1f003d2`](https://github.com/HuidaeCho/projpicker/commit/1f003d2)  Getting lat lon produces errors for points, circles
+* [`233b751`](https://github.com/HuidaeCho/projpicker/commit/233b751)  Black formatting
+* [`fc4ebca`](https://github.com/HuidaeCho/projpicker/commit/fc4ebca)  Hacky method for getting GeoJSON data from drawn shapes in folium
+* [`6663652`](https://github.com/HuidaeCho/projpicker/commit/6663652)  Add JS functions for downloading json, and changing html document title to GeoJSON
+* [`f953854`](https://github.com/HuidaeCho/projpicker/commit/f953854)  WIP: GUI layout
+* [`d4820d7`](https://github.com/HuidaeCho/projpicker/commit/d4820d7)  low res countries json
+* [`a3ff911`](https://github.com/HuidaeCho/projpicker/commit/a3ff911)  Test folium GUI layout
+* [`7310d78`](https://github.com/HuidaeCho/projpicker/commit/7310d78)  WIP: GUI layout
+* [`d846036`](https://github.com/HuidaeCho/projpicker/commit/d846036)  WIP: GUI layout
 * [`d0e4995`](https://github.com/HuidaeCho/projpicker/commit/d0e4995)  Fix calc\_xy\_at\_lat\_noscaling
 * [`fde486f`](https://github.com/HuidaeCho/projpicker/commit/fde486f)  Simplify \_\_package\_\_ evaluation
+* [`deabc22`](https://github.com/HuidaeCho/projpicker/commit/deabc22)  Class names; Remove ProjPicker from tool names (already under the ProjPicker toolbox)
 * [`8cda846`](https://github.com/HuidaeCho/projpicker/commit/8cda846)  Namedtuple name
 * [`2545022`](https://github.com/HuidaeCho/projpicker/commit/2545022)  Add a missing hash
+* [`f3bc894`](https://github.com/HuidaeCho/projpicker/commit/f3bc894)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
 * [`b64a35a`](https://github.com/HuidaeCho/projpicker/commit/b64a35a)  message() has only two arguments, omit end=
+* [`187f2c6`](https://github.com/HuidaeCho/projpicker/commit/187f2c6)  Blank line
+* [`bdc38ab`](https://github.com/HuidaeCho/projpicker/commit/bdc38ab)  Remove an unused variable
+* [`8d273f1`](https://github.com/HuidaeCho/projpicker/commit/8d273f1)  Forgot word
+* [`dee3012`](https://github.com/HuidaeCho/projpicker/commit/dee3012)  Update readme to reflect documentation
+* [`8975868`](https://github.com/HuidaeCho/projpicker/commit/8975868)  Comment
+* [`8ad6983`](https://github.com/HuidaeCho/projpicker/commit/8ad6983)  Update install scipt for pyproj
+* [`9ef2d19`](https://github.com/HuidaeCho/projpicker/commit/9ef2d19)  Make bootstrap pytproj a submodule for import
+* [`3b45579`](https://github.com/HuidaeCho/projpicker/commit/3b45579)  Add match to toolbox tree, add local path for pyproj
+* [`fdc7995`](https://github.com/HuidaeCho/projpicker/commit/fdc7995)  Minor fixes
+* [`9366664`](https://github.com/HuidaeCho/projpicker/commit/9366664)  Match function
+* [`c84ae0f`](https://github.com/HuidaeCho/projpicker/commit/c84ae0f)  two blank lines
+* [`1e2110e`](https://github.com/HuidaeCho/projpicker/commit/1e2110e)  two blank lines
+* [`90a8bd0`](https://github.com/HuidaeCho/projpicker/commit/90a8bd0)  file mode bits
+* [`93158ab`](https://github.com/HuidaeCho/projpicker/commit/93158ab)  Add a limited version of pyproj.Transformer.from\_crs for coordinate matching
+* [`5a0a2e9`](https://github.com/HuidaeCho/projpicker/commit/5a0a2e9)  Add list of tools to header, close #13
+* [`11bf748`](https://github.com/HuidaeCho/projpicker/commit/11bf748)  feature -> raster for variables
+* [`6c5a7a7`](https://github.com/HuidaeCho/projpicker/commit/6c5a7a7)  Add reproject raster
+* [`1295a16`](https://github.com/HuidaeCho/projpicker/commit/1295a16)  Slight restructure to spatial object error handling
+* [`a9fa124`](https://github.com/HuidaeCho/projpicker/commit/a9fa124)  Add reproject feature class
+* [`675d3a2`](https://github.com/HuidaeCho/projpicker/commit/675d3a2)  Add guess raster projection
 
 ## v0.1.5.post7
 Mon Jun 14 17:52:52 2021 -0400
@@ -79,13 +216,29 @@ Sat Jun 12 11:19:27 2021 -0400
 
 * [`2958709`](https://github.com/HuidaeCho/projpicker/commit/2958709)  (tag: refs/tags/v0.1.5.post2) Support no output from projpicker()
 * [`b7b7210`](https://github.com/HuidaeCho/projpicker/commit/b7b7210)  Return queries results from projpicker()
+* [`7578c89`](https://github.com/HuidaeCho/projpicker/commit/7578c89)  Case consistency; Out => Output
+* [`79ea442`](https://github.com/HuidaeCho/projpicker/commit/79ea442)  No need to repeat bbox
+* [`fe4387f`](https://github.com/HuidaeCho/projpicker/commit/fe4387f)  Fix query\_mixed\_geoms usage
 * [`e2c37a6`](https://github.com/HuidaeCho/projpicker/commit/e2c37a6)  Revert 45f4835 (check comment)
+* [`72ee9bb`](https://github.com/HuidaeCho/projpicker/commit/72ee9bb)  minor refactoring to check\_unit()
+* [`55abd16`](https://github.com/HuidaeCho/projpicker/commit/55abd16)  Fix Clarke's unit names; Single-liner for sel\_crs; Drop \_crs and capitalize CRS\_Type
+* [`3ef6c24`](https://github.com/HuidaeCho/projpicker/commit/3ef6c24)  Add unit selector for Guess Projection
 * [`4f805a4`](https://github.com/HuidaeCho/projpicker/commit/4f805a4)  Add default, docs
 * [`45f4835`](https://github.com/HuidaeCho/projpicker/commit/45f4835)  Units for query\_mixed\_geoms
+* [`f9d68f4`](https://github.com/HuidaeCho/projpicker/commit/f9d68f4)  Fix unit check
+* [`f6398fe`](https://github.com/HuidaeCho/projpicker/commit/f6398fe)  Add unit selector to 'Create Feature Class'
 * [`184769a`](https://github.com/HuidaeCho/projpicker/commit/184769a)  Fix a rebase issue?
 * [`84bcb21`](https://github.com/HuidaeCho/projpicker/commit/84bcb21)  Implement postfix logical operations (and, or, xor, not) for advanced spatial filtering
 * [`cad7d4a`](https://github.com/HuidaeCho/projpicker/commit/cad7d4a)  Fix sort; Add xy parsing test
 * [`0b85ea2`](https://github.com/HuidaeCho/projpicker/commit/0b85ea2)  Documentation reorganized
+* [`252d35a`](https://github.com/HuidaeCho/projpicker/commit/252d35a)  single liner for sel\_crs
+* [`946ec3c`](https://github.com/HuidaeCho/projpicker/commit/946ec3c)  Tool to guess and assign projection for missing featureclasses/shapefiles
+* [`71eca07`](https://github.com/HuidaeCho/projpicker/commit/71eca07)  Rename tool
+* [`7824a87`](https://github.com/HuidaeCho/projpicker/commit/7824a87)  cd to chosen folder, fixed path issues
+* [`3f96b80`](https://github.com/HuidaeCho/projpicker/commit/3f96b80)  Windows style paths
+* [`edf58c0`](https://github.com/HuidaeCho/projpicker/commit/edf58c0)  header
+* [`36352ed`](https://github.com/HuidaeCho/projpicker/commit/36352ed)  Add comments
+* [`b5ecc4d`](https://github.com/HuidaeCho/projpicker/commit/b5ecc4d)  Windows batch script for ArcGIS toolbox install
 * [`7ec5347`](https://github.com/HuidaeCho/projpicker/commit/7ec5347)  Explain the single argument
 * [`0db5d02`](https://github.com/HuidaeCho/projpicker/commit/0db5d02)  single selection mode for gui.select\_bbox
 * [`e944011`](https://github.com/HuidaeCho/projpicker/commit/e944011)  single selection mode for gui.select\_bbox
@@ -96,7 +249,9 @@ Tue Jun 8 09:57:17 2021 -0400
 * [`4e2ea19`](https://github.com/HuidaeCho/projpicker/commit/4e2ea19)  (tag: refs/tags/v0.1.5) 0.1.5 for GUI
 * [`05e5407`](https://github.com/HuidaeCho/projpicker/commit/05e5407)  Fix sort and duplicated BBoxes for "or"
 * [`0b96ae8`](https://github.com/HuidaeCho/projpicker/commit/0b96ae8)  Lowercase all; Fix double filtering
+* [`04ea6c5`](https://github.com/HuidaeCho/projpicker/commit/04ea6c5)  Add user-friendly CRS info format
 * [`90dff78`](https://github.com/HuidaeCho/projpicker/commit/90dff78)  Do not reset All
+* [`d14baf9`](https://github.com/HuidaeCho/projpicker/commit/d14baf9)  Moved most of the GUI code to the core
 * [`81853a7`](https://github.com/HuidaeCho/projpicker/commit/81853a7)  Support easy install
 * [`bbf425f`](https://github.com/HuidaeCho/projpicker/commit/bbf425f)  chmod gui.py
 * [`22165e9`](https://github.com/HuidaeCho/projpicker/commit/22165e9)  Implement a tkinter GUI for CRS selection
@@ -142,6 +297,14 @@ Fri Jun 4 20:08:09 2021 -0400
 * [`0fd82a2`](https://github.com/HuidaeCho/projpicker/commit/0fd82a2)  indentation
 * [`c048437`](https://github.com/HuidaeCho/projpicker/commit/c048437)  Reorder args for projpicker
 * [`c881f92`](https://github.com/HuidaeCho/projpicker/commit/c881f92)  Use bbox\_columns for output formats
+* [`721fd6a`](https://github.com/HuidaeCho/projpicker/commit/721fd6a)  Add area to arcgispro list
+* [`7261c38`](https://github.com/HuidaeCho/projpicker/commit/7261c38)  Add a missing newline
+* [`7b61a9f`](https://github.com/HuidaeCho/projpicker/commit/7b61a9f)  Remove unused parameter; Use query\_bbox
+* [`a415fc5`](https://github.com/HuidaeCho/projpicker/commit/a415fc5)  WIP: Updates to interface, not quite the right layout
+* [`2f16b0a`](https://github.com/HuidaeCho/projpicker/commit/2f16b0a)  Updates to interface
+* [`031ec6d`](https://github.com/HuidaeCho/projpicker/commit/031ec6d)  Assign instead of append to sys.argv. More portable
+* [`f2eaa5d`](https://github.com/HuidaeCho/projpicker/commit/f2eaa5d)  only add to sys.argv only if not currently in sys path
+* [`1f2ce83`](https://github.com/HuidaeCho/projpicker/commit/1f2ce83)  WIP: Update for API changes, add filter methods *Dirty code*
 * [`607ab24`](https://github.com/HuidaeCho/projpicker/commit/607ab24)  Do not rely on len() for AND
 * [`de2aeab`](https://github.com/HuidaeCho/projpicker/commit/de2aeab)  Fix a call to calc\_area()
 * [`7c1b6bd`](https://github.com/HuidaeCho/projpicker/commit/7c1b6bd)  Rename gui to guis to be consistent with other plural directories
