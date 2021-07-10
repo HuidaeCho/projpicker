@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Sat Jul 10 11:14:59 2021 -0400
+Sat Jul 10 11:20:37 2021 -0400
 
+* [`ded7d64`](https://github.com/HuidaeCho/projpicker/commit/ded7d64)  Do not exclude any items from ChangeLog because sometimes tags happen to be attached to excluded items
 * [`f14c7d0`](https://github.com/HuidaeCho/projpicker/commit/f14c7d0)  ChangeLog
 * [`7c334b7`](https://github.com/HuidaeCho/projpicker/commit/7c334b7)  Use list bool returns instead of len(list) to checkout its emptiness
 * [`d76e9e4`](https://github.com/HuidaeCho/projpicker/commit/d76e9e4)  Add an exception for undefined geometry variable
@@ -11,7 +12,7 @@ Sat Jul 10 11:14:59 2021 -0400
 ## v0.1.6.post4
 Fri Jul 9 21:28:54 2021 -0400
 
-* [`da90594`](https://github.com/HuidaeCho/projpicker/commit/da90594)  (tag: refs/tags/v0.1.6.post4) Typos in the documentation
+* [`da90594`](https://github.com/HuidaeCho/projpicker/commit/da90594)  Typos in the documentation
 * [`7f9f666`](https://github.com/HuidaeCho/projpicker/commit/7f9f666)  More variable examples
 * [`5be501a`](https://github.com/HuidaeCho/projpicker/commit/5be501a)  Fix polygon variables
 * [`25b4889`](https://github.com/HuidaeCho/projpicker/commit/25b4889)  Support multi-constraints in one line
@@ -27,7 +28,7 @@ Fri Jul 9 21:28:54 2021 -0400
 ## v0.1.6.post3
 Fri Jul 9 14:50:06 2021 -0400
 
-* [`825910d`](https://github.com/HuidaeCho/projpicker/commit/825910d)  (tag: refs/tags/v0.1.6.post3) Remove guis from mkchangelog.sh
+* [`825910d`](https://github.com/HuidaeCho/projpicker/commit/825910d)  Remove guis from mkchangelog.sh
 * [`ec48022`](https://github.com/HuidaeCho/projpicker/commit/ec48022)  changelog
 * [`5e73d9c`](https://github.com/HuidaeCho/projpicker/commit/5e73d9c)  v0.1.6.post3
 * [`2da2cf4`](https://github.com/HuidaeCho/projpicker/commit/2da2cf4)  Support for multiple geometries per line
@@ -41,7 +42,7 @@ Fri Jul 9 14:50:06 2021 -0400
 * [`8084815`](https://github.com/HuidaeCho/projpicker/commit/8084815)  Update README.md
 * [`6614be4`](https://github.com/HuidaeCho/projpicker/commit/6614be4)  Update README.md
 * [`3b315ab`](https://github.com/HuidaeCho/projpicker/commit/3b315ab)  Remove the guis directory (moved to their own repos)
-* [`10d1760`](https://github.com/HuidaeCho/projpicker/commit/10d1760)  (refs/remotes/origin/archived\_gui) Add links to GUI repositories in README.md
+* [`10d1760`](https://github.com/HuidaeCho/projpicker/commit/10d1760)  (origin/archived\_gui) Add links to GUI repositories in README.md
 * [`62172ec`](https://github.com/HuidaeCho/projpicker/commit/62172ec)  core: Import order
 * [`be748bf`](https://github.com/HuidaeCho/projpicker/commit/be748bf)  desktop gui: Allow geometries input from command line
 * [`b75d441`](https://github.com/HuidaeCho/projpicker/commit/b75d441)  argparse to switch layouts. Temporary, would like to be able to switch from within application
@@ -80,7 +81,7 @@ Fri Jul 9 14:50:06 2021 -0400
 ## v0.1.6.post2
 Wed Jul 7 18:06:09 2021 -0400
 
-* [`6ccc69f`](https://github.com/HuidaeCho/projpicker/commit/6ccc69f)  (tag: refs/tags/v0.1.6.post2) Fix test\_or.out
+* [`6ccc69f`](https://github.com/HuidaeCho/projpicker/commit/6ccc69f)  Fix test\_or.out
 * [`0973846`](https://github.com/HuidaeCho/projpicker/commit/0973846)  0.1.6.post2
 * [`ebe9f5d`](https://github.com/HuidaeCho/projpicker/commit/ebe9f5d)  Fix #35
 * [`40c609c`](https://github.com/HuidaeCho/projpicker/commit/40c609c)  Oops! Revert add widgets order
@@ -130,7 +131,7 @@ Wed Jul 7 18:06:09 2021 -0400
 ## v0.1.6.post1
 Fri Jul 2 13:54:23 2021 -0400
 
-* [`c1aabdc`](https://github.com/HuidaeCho/projpicker/commit/c1aabdc)  (tag: refs/tags/v0.1.6.post1) Use self.crs to find selected\_crs and expose auth:code to be consistent with the core GUI
+* [`c1aabdc`](https://github.com/HuidaeCho/projpicker/commit/c1aabdc)  Use self.crs to find selected\_crs and expose auth:code to be consistent with the core GUI
 * [`6811dd3`](https://github.com/HuidaeCho/projpicker/commit/6811dd3)  v0.1.6.post1
 * [`b50809b`](https://github.com/HuidaeCho/projpicker/commit/b50809b)  tidy\_line() should not return anything as documented
 * [`46da756`](https://github.com/HuidaeCho/projpicker/commit/46da756)  Add max argument to avoid broken pipe errors when applying head
@@ -143,7 +144,7 @@ Fri Jul 2 13:54:23 2021 -0400
 ## v0.1.6
 Thu Jul 1 20:48:03 2021 -0400
 
-* [`d2dea0e`](https://github.com/HuidaeCho/projpicker/commit/d2dea0e)  (tag: refs/tags/v0.1.6) Core version 0.1.6
+* [`d2dea0e`](https://github.com/HuidaeCho/projpicker/commit/d2dea0e)  Core version 0.1.6
 * [`b157191`](https://github.com/HuidaeCho/projpicker/commit/b157191)  single only for has\_gui
 * [`20f24a2`](https://github.com/HuidaeCho/projpicker/commit/20f24a2)  Some embedded systems do not provide tkinter
 * [`3db855d`](https://github.com/HuidaeCho/projpicker/commit/3db855d)  reversed\_coors => latlon\_coors to be more specific
@@ -271,7 +272,7 @@ Thu Jul 1 20:48:03 2021 -0400
 ## v0.1.5.post7
 Mon Jun 14 17:52:52 2021 -0400
 
-* [`31e4d76`](https://github.com/HuidaeCho/projpicker/commit/31e4d76)  (tag: refs/tags/v0.1.5.post7) 0.1.5.post7
+* [`31e4d76`](https://github.com/HuidaeCho/projpicker/commit/31e4d76)  0.1.5.post7
 * [`f019e93`](https://github.com/HuidaeCho/projpicker/commit/f019e93)  Fix hidden buttons (default widget heights can push them outside the window)
 * [`3440bab`](https://github.com/HuidaeCho/projpicker/commit/3440bab)  submitted => available
 * [`eab7d6e`](https://github.com/HuidaeCho/projpicker/commit/eab7d6e)  Link to g.projpicker
@@ -290,7 +291,7 @@ Mon Jun 14 17:52:52 2021 -0400
 ## v0.1.5.post6
 Mon Jun 14 02:23:31 2021 -0400
 
-* [`9b3e8ea`](https://github.com/HuidaeCho/projpicker/commit/9b3e8ea)  (tag: refs/tags/v0.1.5.post6) 0.1.5.post6
+* [`9b3e8ea`](https://github.com/HuidaeCho/projpicker/commit/9b3e8ea)  0.1.5.post6
 * [`73e5330`](https://github.com/HuidaeCho/projpicker/commit/73e5330)  Split stack exception
 * [`2e93b2d`](https://github.com/HuidaeCho/projpicker/commit/2e93b2d)  Document match, match\_tol=, match\_max=
 * [`8a14927`](https://github.com/HuidaeCho/projpicker/commit/8a14927)  Add match operator
@@ -301,7 +302,7 @@ Mon Jun 14 02:23:31 2021 -0400
 ## v0.1.5.post5
 Sun Jun 13 15:27:02 2021 -0400
 
-* [`1393a01`](https://github.com/HuidaeCho/projpicker/commit/1393a01)  (tag: refs/tags/v0.1.5.post5) 0.1.5.post5
+* [`1393a01`](https://github.com/HuidaeCho/projpicker/commit/1393a01)  0.1.5.post5
 * [`e4e84fe`](https://github.com/HuidaeCho/projpicker/commit/e4e84fe)  Add support for SRID printing
 * [`e6b7714`](https://github.com/HuidaeCho/projpicker/commit/e6b7714)  If we want to use names, no fixed-width font
 * [`ee1b345`](https://github.com/HuidaeCho/projpicker/commit/ee1b345)  curl name: curl, wget name: Wget
@@ -309,7 +310,7 @@ Sun Jun 13 15:27:02 2021 -0400
 ## v0.1.5.post4
 Sat Jun 12 15:58:10 2021 -0400
 
-* [`0e22ee2`](https://github.com/HuidaeCho/projpicker/commit/0e22ee2)  (tag: refs/tags/v0.1.5.post4) 0.1.5.post4
+* [`0e22ee2`](https://github.com/HuidaeCho/projpicker/commit/0e22ee2)  0.1.5.post4
 * [`3d598e7`](https://github.com/HuidaeCho/projpicker/commit/3d598e7)  Fix an example
 * [`261db3e`](https://github.com/HuidaeCho/projpicker/commit/261db3e)  Some CRSs have no bottom, top, left, or right
 * [`27a5f08`](https://github.com/HuidaeCho/projpicker/commit/27a5f08)  Reorder sections
@@ -318,7 +319,7 @@ Sat Jun 12 15:58:10 2021 -0400
 ## v0.1.5.post3
 Sat Jun 12 14:08:40 2021 -0400
 
-* [`f5f696f`](https://github.com/HuidaeCho/projpicker/commit/f5f696f)  (tag: refs/tags/v0.1.5.post3) v0.1.5.post3
+* [`f5f696f`](https://github.com/HuidaeCho/projpicker/commit/f5f696f)  v0.1.5.post3
 * [`c880af5`](https://github.com/HuidaeCho/projpicker/commit/c880af5)  Fix selection on filtering
 * [`5aa165d`](https://github.com/HuidaeCho/projpicker/commit/5aa165d)  Clear selection on filtering because indices change
 * [`3f5c182`](https://github.com/HuidaeCho/projpicker/commit/3f5c182)  Fix proj\_table and unit filters
@@ -328,7 +329,7 @@ Sat Jun 12 14:08:40 2021 -0400
 ## v0.1.5.post2
 Sat Jun 12 11:19:27 2021 -0400
 
-* [`2958709`](https://github.com/HuidaeCho/projpicker/commit/2958709)  (tag: refs/tags/v0.1.5.post2) Support no output from projpicker()
+* [`2958709`](https://github.com/HuidaeCho/projpicker/commit/2958709)  Support no output from projpicker()
 * [`b7b7210`](https://github.com/HuidaeCho/projpicker/commit/b7b7210)  Return queries results from projpicker()
 * [`7578c89`](https://github.com/HuidaeCho/projpicker/commit/7578c89)  Case consistency; Out => Output
 * [`733c377`](https://github.com/HuidaeCho/projpicker/commit/733c377)  Lowercase section names in the middle of sentences
@@ -373,7 +374,7 @@ Sat Jun 12 11:19:27 2021 -0400
 ## v0.1.5.post1
 Fri Jun 11 14:50:16 2021 -0400
 
-* [`84abbed`](https://github.com/HuidaeCho/projpicker/commit/84abbed)  (tag: refs/tags/v0.1.5.post1) Fix a minor bug; Sort test results
+* [`84abbed`](https://github.com/HuidaeCho/projpicker/commit/84abbed)  Fix a minor bug; Sort test results
 * [`18d708d`](https://github.com/HuidaeCho/projpicker/commit/18d708d)  Document unit=
 * [`5eb6ef1`](https://github.com/HuidaeCho/projpicker/commit/5eb6ef1)  Add unit= syntax
 * [`e0794af`](https://github.com/HuidaeCho/projpicker/commit/e0794af)  Support sqlite output format
@@ -418,7 +419,7 @@ Fri Jun 11 14:50:16 2021 -0400
 ## v0.1.5
 Tue Jun 8 09:57:17 2021 -0400
 
-* [`4e2ea19`](https://github.com/HuidaeCho/projpicker/commit/4e2ea19)  (tag: refs/tags/v0.1.5) 0.1.5 for GUI
+* [`4e2ea19`](https://github.com/HuidaeCho/projpicker/commit/4e2ea19)  0.1.5 for GUI
 * [`05e5407`](https://github.com/HuidaeCho/projpicker/commit/05e5407)  Fix sort and duplicated BBoxes for "or"
 * [`0b96ae8`](https://github.com/HuidaeCho/projpicker/commit/0b96ae8)  Lowercase all; Fix double filtering
 * [`144ff6a`](https://github.com/HuidaeCho/projpicker/commit/144ff6a)  Minor update to package.sh
@@ -438,7 +439,7 @@ Tue Jun 8 09:57:17 2021 -0400
 ## v0.1.4.post2
 Mon Jun 7 02:39:42 2021 -0400
 
-* [`cb26c71`](https://github.com/HuidaeCho/projpicker/commit/cb26c71)  (tag: refs/tags/v0.1.4.post2) v0.1.4.post2
+* [`cb26c71`](https://github.com/HuidaeCho/projpicker/commit/cb26c71)  v0.1.4.post2
 * [`47e27d0`](https://github.com/HuidaeCho/projpicker/commit/47e27d0)  GitHub
 * [`857ea7a`](https://github.com/HuidaeCho/projpicker/commit/857ea7a)  Add dd:mm:ss formats
 * [`de01694`](https://github.com/HuidaeCho/projpicker/commit/de01694)  Make it clear that it is a Python module from the beginning
@@ -481,13 +482,13 @@ Mon Jun 7 02:39:42 2021 -0400
 ## v0.1.4.post1
 Fri Jun 4 20:08:09 2021 -0400
 
-* [`29454a9`](https://github.com/HuidaeCho/projpicker/commit/29454a9)  (tag: refs/tags/v0.1.4.post1) Restructure the root and add missing files to the package
+* [`29454a9`](https://github.com/HuidaeCho/projpicker/commit/29454a9)  Restructure the root and add missing files to the package
 * [`058cb29`](https://github.com/HuidaeCho/projpicker/commit/058cb29)  Remove -g option
 
 ## v0.1.4
 Fri Jun 4 19:49:21 2021 -0400
 
-* [`a9049be`](https://github.com/HuidaeCho/projpicker/commit/a9049be)  (tag: refs/tags/v0.1.4) Add pyproj as a requirement for recreating projpicker.db
+* [`a9049be`](https://github.com/HuidaeCho/projpicker/commit/a9049be)  Add pyproj as a requirement for recreating projpicker.db
 * [`a21b007`](https://github.com/HuidaeCho/projpicker/commit/a21b007)  Verion 0.1.4
 * [`c71175e`](https://github.com/HuidaeCho/projpicker/commit/c71175e)  Typo
 * [`7fb0280`](https://github.com/HuidaeCho/projpicker/commit/7fb0280)  Update README.md
@@ -543,7 +544,7 @@ Fri Jun 4 19:49:21 2021 -0400
 ## v0.1.4.dev4
 Wed Jun 2 20:26:26 2021 -0400
 
-* [`3205bdf`](https://github.com/HuidaeCho/projpicker/commit/3205bdf)  (tag: refs/tags/v0.1.4.dev4) Remove usage from README.md (annoying to update it frequently); Bump up the version
+* [`3205bdf`](https://github.com/HuidaeCho/projpicker/commit/3205bdf)  Remove usage from README.md (annoying to update it frequently); Bump up the version
 * [`8f64cc6`](https://github.com/HuidaeCho/projpicker/commit/8f64cc6)  Use BBox namedtuple instead of regular tuples; Change lat,lon to point and s,n,w,e to bbox; Add test scripts
 * [`beee950`](https://github.com/HuidaeCho/projpicker/commit/beee950)  Spelling, GUI win title
 * [`da79066`](https://github.com/HuidaeCho/projpicker/commit/da79066)  ESRI GUI Readme
@@ -553,7 +554,7 @@ Wed Jun 2 20:26:26 2021 -0400
 ## v0.1.4.dev3
 Wed Jun 2 10:57:18 2021 -0400
 
-* [`4d51b01`](https://github.com/HuidaeCho/projpicker/commit/4d51b01)  (tag: refs/tags/v0.1.4.dev3) v0.1.4.dev3
+* [`4d51b01`](https://github.com/HuidaeCho/projpicker/commit/4d51b01)  v0.1.4.dev3
 * [`b4eab84`](https://github.com/HuidaeCho/projpicker/commit/b4eab84)  80 columns
 * [`b61e331`](https://github.com/HuidaeCho/projpicker/commit/b61e331)  degree unit name
 * [`ddc04ed`](https://github.com/HuidaeCho/projpicker/commit/ddc04ed)  Update test\_pyproj.py to the current dev version
@@ -570,7 +571,7 @@ Wed Jun 2 10:57:18 2021 -0400
 ## v0.1.4.dev2
 Tue Jun 1 23:29:20 2021 -0400
 
-* [`f34b3de`](https://github.com/HuidaeCho/projpicker/commit/f34b3de)  (tag: refs/tags/v0.1.4.dev2) v0.1.4dev2
+* [`f34b3de`](https://github.com/HuidaeCho/projpicker/commit/f34b3de)  v0.1.4dev2
 * [`c82a630`](https://github.com/HuidaeCho/projpicker/commit/c82a630)  No extents whose west\_lon = east\_lon; Handle point bboxes
 * [`0e8a58c`](https://github.com/HuidaeCho/projpicker/commit/0e8a58c)  WIP: Not complete.
 * [`c237774`](https://github.com/HuidaeCho/projpicker/commit/c237774)  bbox entry => bbox row
@@ -619,7 +620,7 @@ Tue Jun 1 23:29:20 2021 -0400
 ## v0.1.4.dev1
 Mon May 31 13:24:55 2021 -0400
 
-* [`28b52a9`](https://github.com/HuidaeCho/projpicker/commit/28b52a9)  (tag: refs/tags/v0.1.4.dev1) docstrings updated
+* [`28b52a9`](https://github.com/HuidaeCho/projpicker/commit/28b52a9)  docstrings updated
 * [`4545f53`](https://github.com/HuidaeCho/projpicker/commit/4545f53)  a|b|rc|.dv|.post towards/away from the release
 * [`8d208e5`](https://github.com/HuidaeCho/projpicker/commit/8d208e5)  Fix example coordinates
 * [`355e847`](https://github.com/HuidaeCho/projpicker/commit/355e847)  Support for odms'' for DMS symbols
@@ -656,7 +657,7 @@ Mon May 31 13:24:55 2021 -0400
 ## v0.1.3.1.post1
 Sun May 30 13:58:42 2021 -0400
 
-* [`281afb4`](https://github.com/HuidaeCho/projpicker/commit/281afb4)  (tag: refs/tags/v0.1.3.1.post1) version 0.1.3.1.post1
+* [`281afb4`](https://github.com/HuidaeCho/projpicker/commit/281afb4)  version 0.1.3.1.post1
 * [`f0f81a0`](https://github.com/HuidaeCho/projpicker/commit/f0f81a0)  Update versioning in README.md following PEP 440
 * [`0110d19`](https://github.com/HuidaeCho/projpicker/commit/0110d19)  version 0.1.3.post2
 * [`ab50dd2`](https://github.com/HuidaeCho/projpicker/commit/ab50dd2)  version 0.1.4-1
@@ -667,7 +668,7 @@ Sun May 30 13:58:42 2021 -0400
 ## v0.1.3.1
 Sat May 29 21:32:42 2021 -0400
 
-* [`c4a1f22`](https://github.com/HuidaeCho/projpicker/commit/c4a1f22)  (tag: refs/tags/v0.1.3.1) Versioning
+* [`c4a1f22`](https://github.com/HuidaeCho/projpicker/commit/c4a1f22)  Versioning
 * [`eaf3930`](https://github.com/HuidaeCho/projpicker/commit/eaf3930)  Versioning
 * [`9cda4a7`](https://github.com/HuidaeCho/projpicker/commit/9cda4a7)  Build number rule
 * [`ff26d7b`](https://github.com/HuidaeCho/projpicker/commit/ff26d7b)  execute permission for deploy.sh
@@ -681,13 +682,13 @@ Sat May 29 21:32:42 2021 -0400
 ## v0.1.3
 Sat May 29 17:23:02 2021 -0400
 
-* [`49d5153`](https://github.com/HuidaeCho/projpicker/commit/49d5153)  (tag: refs/tags/v0.1.3) Add the pypi URL to README.md
+* [`49d5153`](https://github.com/HuidaeCho/projpicker/commit/49d5153)  Add the pypi URL to README.md
 * [`fc38fb6`](https://github.com/HuidaeCho/projpicker/commit/fc38fb6)  Add Installation
 
 ## v0.1.2
 Sat May 29 16:47:42 2021 -0400
 
-* [`5dbdfdf`](https://github.com/HuidaeCho/projpicker/commit/5dbdfdf)  (tag: refs/tags/v0.1.2) Add github URL to the source
+* [`5dbdfdf`](https://github.com/HuidaeCho/projpicker/commit/5dbdfdf)  Add github URL to the source
 * [`c3dba05`](https://github.com/HuidaeCho/projpicker/commit/c3dba05)  comma => and in copyright
 * [`a55e674`](https://github.com/HuidaeCho/projpicker/commit/a55e674)  80 cols
 * [`7cda00e`](https://github.com/HuidaeCho/projpicker/commit/7cda00e)  Pick up the default projpicker.db from the executable path

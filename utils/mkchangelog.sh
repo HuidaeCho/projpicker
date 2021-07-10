@@ -14,13 +14,13 @@ exclude=""
 (
 echo "# Change log"
 echo
-git log --pretty="* $hash %d %s %cd" --decorate=full $exclude |
+git log --pretty="* $hash %d %s %cd" $exclude |
 sed '
 /(HEAD/{
 	s/^\(.*\) (HEAD.*HEAD) \(.* \(\([^ ]\+ \)\{5\}[^ ]\+\)\)$/## HEAD\n\3\n\n\1 \2/
 }
-/(tag: refs\/tags/{
-	s/^\(.*(tag: refs\/tags\/\([^)]*\)).* \(\([^ ]\+ \)\{5\}[^ ]\+\)\)$/\n## \2\n\3\n\n\1/
+/(tag:/{
+	s/^\(.*\) (tag: \([^)]*\)) \(.*\) \(\([^ ]\+ \)\{5\}[^ ]\+\)$/\n## \2\n\4\n\n\1 \3 \4/
 }
 s/\( [^ ]\+\)\{6\}$//
 s/_/\\_/g
