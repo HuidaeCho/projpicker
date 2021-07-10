@@ -135,6 +135,22 @@ Read south,north,west,east from stdin:
     20 20 50 50
     EOT
 
+Using geometry variables:
+
+.. code-block:: shell
+
+    projpicker bbox <<EOT
+    # define geometries
+    region_1:
+    0 0 10 10
+
+    region_2:
+    20 20 50 50
+
+    # query
+    :region_1 :region_2
+    EOT
+
 Python
 ^^^^^^
 
