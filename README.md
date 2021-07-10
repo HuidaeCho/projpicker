@@ -34,7 +34,7 @@ that wraps around this project is available. It is a work in progress; join
 
 ## Change log
 
-See [here](https://github.com/HuidaeCho/projpicker/blob/main/projpicker/ChangeLog.md).
+See [here](https://github.com/HuidaeCho/projpicker/blob/main/ChangeLog.md).
 
 ## TODO
 
