@@ -134,8 +134,8 @@ ProjPicker supports ``point``, ``poly``, and ``bbox`` geometries.
 ^^^^^^^^^
 
 ``point`` geometries are a two-dimensional list consisting of a ``point`` word, optionally, followed by multiple one-dimensional lists of two floats in the ``xy`` or ``latlon`` coordinate systems.
-Since they do not have directionality, crossing the antimedian is not checked.
-For example, if there is one point just to the west of and another just to the east of the antimeridian, these two points do not retrict queries to the smaller CRSs that can be defined by the shorter distance between the two points and pass through the antimerdian.
+Since they do not have directionality, crossing the antimeridian is not checked.
+For example, if there is one point just to the west of and another just to the east of the antimeridian, these two points do not restrict queries to the smaller CRSs that can be defined by the shorter distance between the two points and pass through the antimeridian.
 This is the default geometry type when no geometry types are explicitly specified.
 
 Two examples are:
@@ -250,7 +250,7 @@ To find CRSs that contain only A, B, or C exclusively, the following query can b
 
     projpicker postfix A B xor C xor A B and C and not and
 
-The ``match`` operator compares two geometries in ``latlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be tranformed to the other ``latlon`` geometry.
+The ``match`` operator compares two geometries in ``latlon`` and ``xy``, but not in the same coordinate systems, and returns a subset of the CRSs that contain the ``xy`` geometry that can be transformed to the other ``latlon`` geometry.
 It uses two constraints including ``match_tol=`` and ``match_max=``.
 ``match_tol=`` defines the maximum tolerance in the ``xy`` unit for distance matching (default 1) and ``match_max=`` limits the maximum number of matches (default 0 for all).
 The following command returns the first matching CRS in ``xy`` that contains B whose equivalent ``latlon`` is A:
@@ -285,11 +285,11 @@ Note that ``unit=any not`` is used instead of ``not`` to filter out degree CRSs 
 Geometry variables
 ------------------
 
-A geometry can be saved as a geomery variable and used later.
+A geometry can be saved as a geometry variable and used later.
 The name of a variable can contain lowercase and uppercase letters, numbers, and underscores.
 This syntax uses colons to define and use variables.
 If the variable name is followed by a colon, but it does not start with another one (e.g., ``var_name:``), it saves the following geometry and is not used in place.
-If the variable name is enclosed by two colons (e.g., ``:var_name:``), it is defined ans used immediately.
+If the variable name is enclosed by two colons (e.g., ``:var_name:``), it is defined and used immediately.
 If the variable name starts with a colon, but it does not end with another one (e.g., ``:var_name``), its saved geometry is restored.
 
 .. code-block:: shell
