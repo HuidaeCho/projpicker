@@ -173,7 +173,7 @@ def tidy_lines(lines):
                     if m:
                         quote = "'" if '"' in m[2] else '"'
                         lines[i] = f"{m[1]}{quote}{m[2]}{quote}"
-    if len(lines) > 0 and lines[0] == "":
+    if lines and lines[0] == "":
         del lines[0]
 
     # protect empty lines as geometry separators
@@ -961,16 +961,16 @@ def parse_polys(polys):
                 # [ "lat,lon", ... ] or [ "x,y", ... ]
                 # [ [ lat, lon ], ... ] or [ [ x, y ], ... ]
                 p = parse_points(point)
-                if len(p) > 0:
+                if p:
                     outpolys.append(p)
         if c1 is not None and c2 is not None:
             poly.append([c1, c2])
-        elif len(poly) > 0:
+        elif poly:
             # use invalid coordinates as a flag for a new poly
             outpolys.append(poly)
             poly = []
 
-    if len(poly) > 0:
+    if poly:
         outpolys.append(poly)
 
     return outpolys
@@ -1212,7 +1212,7 @@ def parse_mixed_geoms(geoms):
                     g += 1
                 else:
                     ogeoms, g = parse_next_geoms(g)
-                    if len(ogeoms) > 0 and None not in ogeoms:
+                    if ogeoms and None not in ogeoms:
                         stack_size += len(ogeoms)
                         outgeoms.extend(ogeoms)
                 continue
@@ -1550,7 +1550,7 @@ def query_points(
         for point in points:
             if query_op in ("or", "xor") or first:
                 obbox = query_point_using_cursor(projpicker_cur, point, unit)
-                if len(obbox) > 0:
+                if obbox:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
                         sort = True
@@ -1819,7 +1819,7 @@ def query_bboxes(
         for bbox in bboxes:
             if query_op in ("or", "xor") or first:
                 obbox = query_bbox_using_cursor(projpicker_cur, bbox, unit)
-                if len(obbox) > 0:
+                if obbox:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
                         sort = True
@@ -2277,7 +2277,7 @@ def query_mixed_geoms(
                     obbox = bbox_all[unit]
                 else:
                     obbox = query_geom(geom, geom_type, unit, projpicker_db)
-                if len(obbox) > 0:
+                if obbox:
                     n = len(outbbox)
                     if query_op in ("or", "xor") and not sort and n > 0:
                         sort = True
@@ -2357,7 +2357,7 @@ def stringify_bbox(bbox, header=True, separator="|"):
     if type(bbox) == BBox:
         bbox = [bbox]
 
-    if header and len(bbox) > 0:
+    if header and bbox:
         outstr = separator.join(bbox_columns) + "\n"
     else:
         outstr = ""
