@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ "$1" = "-w" ]; then
-	file=../projpicker/ChangeLog.md
+	file=../ChangeLog.md
 	hash='[`%h`](https://github.com/HuidaeCho/projpicker/commit/%h)'
 else
 	file=/dev/stdout

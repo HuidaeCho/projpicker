@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Sat Jul 10 11:20:37 2021 -0400
+Sat Jul 10 11:40:46 2021 -0400
 
+* [`4b072ab`](https://github.com/HuidaeCho/projpicker/commit/4b072ab)  Improve mkchangelog.sh
 * [`ded7d64`](https://github.com/HuidaeCho/projpicker/commit/ded7d64)  Do not exclude any items from ChangeLog because sometimes tags happen to be attached to excluded items
 * [`f14c7d0`](https://github.com/HuidaeCho/projpicker/commit/f14c7d0)  ChangeLog
 * [`7c334b7`](https://github.com/HuidaeCho/projpicker/commit/7c334b7)  Use list bool returns instead of len(list) to checkout its emptiness
