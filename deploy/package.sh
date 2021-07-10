@@ -33,7 +33,7 @@ setuptools.setup(
     ],
     python_requires=">=3",
     package_data={"projpicker": ["VERSION", "projpicker.db"]},
-    entry_points={"console_scripts": ["projpicker=projpicker.projpicker:main"]},
+    entry_points={"console_scripts": ["projpicker=projpicker:main"]},
 )
 EOT
 
