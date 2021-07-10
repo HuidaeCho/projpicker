@@ -2181,6 +2181,9 @@ def query_mixed_geoms(
                         raise Exception(f"{name}: Undefined geometry variable")
                     nam = name
                     while True:
+                        if nam not in geom_vars:
+                            raise Exception(f"{nam}: Undefined geometry "
+                                            "variable")
                         geom = geom_vars[nam]
                         typ = type(geom.geom)
                         if not (typ == str and geom.geom.startswith(":")):
