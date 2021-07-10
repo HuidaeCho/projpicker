@@ -164,7 +164,7 @@ def parse_point(point):
     elif typ in (list, tuple) and len(point) == 2:
         lat = get_float(point[0])
         lon = get_float(point[1])
-    return lat, lon
+    return [lat, lon]
 
 
 def parse_bbox(bbox):
@@ -205,7 +205,7 @@ def parse_bbox(bbox):
         n = get_float(bbox[1])
         w = get_float(bbox[2])
         e = get_float(bbox[3])
-    return s, n, w, e
+    return [s, n, w, e]
 
 
 ################################################################################

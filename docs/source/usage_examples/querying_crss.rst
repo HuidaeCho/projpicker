@@ -25,6 +25,21 @@ Read latitude and longitude from stdin:
     33°44'56.4" -84.3880 # Atlanta
     EOT
 
+Using geometry variables:
+
+.. code-block:: shell
+
+    projpicker <<EOT
+    # define variables
+    ung:
+    34.2348 83°52'3.72"W
+
+    atlanta: 33°44'56.4",-84.3880 # use a comma in this line
+
+    # query
+    :ung :atlanta
+    EOT
+
 Python
 ^^^^^^
 
@@ -62,6 +77,26 @@ Read latitude,longitude from stdin:
     # north-west corner
     10 0
     poly 2 # "poly 2" is neither a comment nor a point, so we start a new poly
+    10 20
+    30 40
+    EOT
+
+Using geometry variables:
+
+.. code-block:: shell
+
+    projpicker poly <<EOT
+    :poly_1:
+    # south-west corner
+    10S,0
+    10,0 # north-west corner
+         # this comment-only line doesn't start a new poly
+    # north-east corner
+    10 10
+    # north-west corner
+    10 0
+
+    :poly_2:
     10 20
     30 40
     EOT

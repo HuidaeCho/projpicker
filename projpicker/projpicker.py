@@ -176,9 +176,11 @@ def tidy_lines(lines):
     if len(lines) > 0 and lines[0] == "":
         del lines[0]
 
-    text = " ".join(lines)
+    # protect empty lines as geometry separators
+    text = " ".join("\0" if line == "" else line for line in lines)
     lines.clear()
-    lines.extend(text.split())
+    # revert geometry separators back to empty lines
+    lines.extend("" if line == "\0" else line for line in text.split())
     normalize_lines(lines)
 
 
@@ -1092,6 +1094,36 @@ def parse_mixed_geoms(geoms):
     Raises:
         Exception: If the geometry stack size is not 1 after postfix parsing.
     """
+    def parse_next_geom(g):
+        if geom_type == "poly":
+            i = g
+            while (i < ngeoms and geoms[i] not in keywords and
+                   not (type(geoms[i]) == str and
+                        (geoms[i] == "" or None in parse_point(geoms[i]) or
+                        (("=" in geoms[i] and
+                          geoms[i].split("=")[0] in constraints) or
+                         geom_var_re.match(geoms[i]))))):
+                i += 1
+            geom = parse_geom(geoms[g:i], geom_type)
+            g = i - 1
+        else:
+            geom = parse_geom(geoms[g], geom_type)
+        return geom, g
+
+
+    def parse_next_geoms(g):
+        i = g
+        while (i < ngeoms and geoms[i] not in keywords and
+               not (type(geoms[i]) == str and
+                    (("=" in geoms[i] and
+                      geoms[i].split("=")[0] in constraints) or
+                     geom_var_re.match(geoms[i])))):
+            i += 1
+        ogeoms = parse_geoms(geoms[g:i], geom_type)
+        g = i
+        return ogeoms, g
+
+
     if type(geoms) == str:
         geoms = geoms.split()
         normalize_lines(geoms)
@@ -1168,7 +1200,7 @@ def parse_mixed_geoms(geoms):
                         typ = type(geom)
                         if (typ == str and not geom.startswith(":") and
                             geom not in spec_geoms):
-                            geom = parse_geom(geom, geom_type)
+                            geom, g = parse_next_geom(g)
                         outgeoms.append(geom)
                     if use:
                         if name not in geom_vars:
@@ -1179,15 +1211,7 @@ def parse_mixed_geoms(geoms):
                             outgeoms.append(geom)
                     g += 1
                 else:
-                    i = g
-                    while (i < ngeoms and geoms[i] not in keywords and
-                           not (type(geoms[i]) == str and
-                                (("=" in geoms[i] and
-                                  geoms[i].split("=")[0] in constraints) or
-                                 geom_var_re.match(geoms[i])))):
-                        i += 1
-                    ogeoms = parse_geoms(geoms[g:i], geom_type)
-                    g = i
+                    ogeoms, g = parse_next_geoms(g)
                     if len(ogeoms) > 0 and None not in ogeoms:
                         stack_size += len(ogeoms)
                         outgeoms.extend(ogeoms)

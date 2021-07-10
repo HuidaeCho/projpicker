@@ -26,8 +26,7 @@ Using geometry variables:
 
     projpicker <<EOT
     postfix
-    match_max=1
-    match_tol=200
+    match_max=1 match_tol=200
 
     A: 33.7490,-84.3880
     xy
