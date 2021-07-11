@@ -111,6 +111,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             curr_crs_item = None
 
         crs_text.delete("1.0", tk.END)
+        map_canvas.delete(tag_overlay)
+
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
             b = find_bbox(crs)

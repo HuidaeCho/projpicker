@@ -155,8 +155,9 @@ class OpenStreetMap:
         lat = self.lat + self.lat_dpp * dy
         lon = self.lon + self.lon_dpp * dx
         self.start_dragging(x, y)
+        old_lat = self.lat
         self.refresh_map(lat, lon, self.z)
-        return dx, dy
+        return dx, dy if abs(old_lat - self.lat) > sys.float_info.epsilon else 0
 
 
     def reset_zoom(self):
