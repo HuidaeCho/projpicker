@@ -1,8 +1,11 @@
 # Change log
 
-## HEAD
-Sun Jul 11 19:10:20 2021 -0400
+* [`39c4a2b`](https://github.com/HuidaeCho/projpicker/commit/39c4a2b)  (HEAD -> main) Support mouse wheel on Windows and macOS
 
+## v0.1.7.post2, origin/main, origin/HEAD
+Sun Jul 11 19:10:34 2021 -0400
+
+* [`f84ff3c`](https://github.com/HuidaeCho/projpicker/commit/f84ff3c)  Fix overlay refresh
 * [`14a7aa6`](https://github.com/HuidaeCho/projpicker/commit/14a7aa6)  Fix overlay refresh
 
 ## v0.1.7.post1
