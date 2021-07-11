@@ -1,8 +1,7 @@
 # Change log
 
-## HEAD
-Sun Jul 11 18:37:35 2021 -0400
-
+* [`84d5a6a`](https://github.com/HuidaeCho/projpicker/commit/84d5a6a)  (HEAD -> main) Add openstreetmap.py
+* [`1541574`](https://github.com/HuidaeCho/projpicker/commit/1541574)  (origin/main, origin/HEAD) v0.1.7: tkinter-native OpenStreetMap
 * [`411d193`](https://github.com/HuidaeCho/projpicker/commit/411d193)  v0.1.7: tkinter-native OpenStreetMap
 * [`e7310ee`](https://github.com/HuidaeCho/projpicker/commit/e7310ee)  Add OpenStreetMap (WIP)
 * [`20ba3e4`](https://github.com/HuidaeCho/projpicker/commit/20ba3e4)  gui: Fix variable naming
