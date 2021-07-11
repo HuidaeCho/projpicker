@@ -7,10 +7,10 @@ import re
 import sqlite3
 
 # https://stackoverflow.com/a/49480246/16079666
-if __package__ is None or __package__ == "":
-    from common import pos_float_pat, coor_sep_pat, get_float, BBox
-else:
+if __package__:
     from .common import pos_float_pat, coor_sep_pat, get_float, BBox
+else:
+    from common import pos_float_pat, coor_sep_pat, get_float, BBox
 
 # x,y
 xy_pat = f"([+-]?{pos_float_pat}){coor_sep_pat}([+-]?{pos_float_pat})"
@@ -19,6 +19,7 @@ xy_pat = f"([+-]?{pos_float_pat}){coor_sep_pat}([+-]?{pos_float_pat})"
 xy_re = re.compile(f"^{xy_pat}$")
 # xy bbox
 xy_bbox_re = re.compile(f"^{xy_pat}{coor_sep_pat}{xy_pat}$")
+
 
 ################################################################################
 # parsing

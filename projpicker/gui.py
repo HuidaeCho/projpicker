@@ -5,7 +5,12 @@ This module implements the GUI of ProjPicker.
 import re
 import tkinter as tk
 from tkinter import ttk
-from openstreetmap import OpenStreetMap
+
+# https://stackoverflow.com/a/49480246/16079666
+if __package__:
+    from .openstreetmap import OpenStreetMap
+else:
+    from openstreetmap import OpenStreetMap
 
 
 def select_bbox(bbox, single=False, crs_info_func=None):

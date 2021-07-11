@@ -54,6 +54,7 @@ bbox_columns = re.sub("^ +| +$", "",
 # BBox namedtuple class
 BBox = collections.namedtuple("BBox", bbox_columns)
 
+
 def get_float(x):
     """
     Typecast x into float; return None on failure.
