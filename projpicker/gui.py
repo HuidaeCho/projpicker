@@ -65,9 +65,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         if single:
             prev_crs_items.clear()
 
-        print("prev b", prev_crs_items)
-        print("curr b", curr_crs_items)
-
         if len(curr_crs_items) > len(prev_crs_items):
             # selected a new crs
             curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
@@ -87,10 +84,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
         else:
             curr_crs_item = None
-
-        print("prev", prev_crs_items)
-        print("curr", curr_crs_items)
-        print("last", curr_crs_item)
 
         crs_text.delete("1.0", tk.END)
         if curr_crs_item:
@@ -140,7 +133,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     # root window
     root = tk.Tk()
     root_width = 800
-    root_height = 800
+    root_height = root_width // 2
     root.geometry(f"{root_width}x{root_height}")
     root.resizable(False, False)
     root.title("ProjPicker GUI")
@@ -148,7 +141,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     ############
     # left frame
     left_frame_width = root_width // 2
-    left_frame = tk.Frame(bottom_frame, width=left_frame_width)
+    left_frame = tk.Frame(root, width=left_frame_width)
     left_frame.pack_propagate(False)
     left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -167,7 +160,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             show="headings", selectmode=tk.BROWSE if single else tk.EXTENDED)
 
     for name, width in crs_cols.items():
-        print(name)
         crs_treeview.heading(name, text=name)
         crs_treeview.column(name, width=width)
 
@@ -225,14 +217,14 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     #############
     # right frame
-    bottom_frame_width = root_width - left_frame_width
-    bottom_frame = tk.Frame(bottom_frame, width=bottom_frame_width)
-    bottom_frame.pack_propagate(False)
-    bottom_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    right_frame_width = root_width - left_frame_width
+    right_frame = tk.Frame(root, width=right_frame_width)
+    right_frame.pack_propagate(False)
+    right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #################
     # right-top frame
-    right_top_frame = tk.Frame(bottom_frame)
+    right_top_frame = tk.Frame(right_frame)
     right_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for CRS info
@@ -248,7 +240,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ####################
     # right-bottom frame
-    right_bottom_frame = tk.Frame(bottom_frame)
+    right_bottom_frame = tk.Frame(right_frame)
     right_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
