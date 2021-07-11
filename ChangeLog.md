@@ -1,8 +1,14 @@
 # Change log
 
 ## HEAD
-Sun Jul 11 19:00:19 2021 -0400
+Sun Jul 11 19:10:20 2021 -0400
 
+* [`14a7aa6`](https://github.com/HuidaeCho/projpicker/commit/14a7aa6)  Fix overlay refresh
+
+## v0.1.7.post1
+Sun Jul 11 19:00:31 2021 -0400
+
+* [`edb2e52`](https://github.com/HuidaeCho/projpicker/commit/edb2e52)  Fix openstreetmap import
 * [`37d57a7`](https://github.com/HuidaeCho/projpicker/commit/37d57a7)  Fix openstreetmap import
 
 ## v0.1.7
