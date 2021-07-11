@@ -23,7 +23,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         list: List of selected BBox instances.
     """
     sel_crs = []
-    prev_sel_crs_ls = []
+    prev_crs_items = []
 
     def create_crs_info(bbox):
         if crs_info_func is None:
@@ -50,40 +50,52 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         if crs is None:
             return None
 
-        auth, code = extract_crs_auth_code(crs).split(":")
+        auth, code = crs.split(":")
         b = list(filter(lambda b: b.crs_auth_name==auth and
                                   b.crs_code==code, bbox))[0]
         return b
 
 
     def on_select_crs(event):
-        nonlocal prev_sel_crs_ls
+        nonlocal prev_crs_items
 
         w = event.widget
-        last_crs_ls = w.curselection()
+        curr_crs_items = w.selection()
 
         if single:
-            prev_sel_crs_ls.clear()
+            prev_crs_items.clear()
 
-        if len(last_crs_ls) > len(prev_sel_crs_ls):
+        print("prev b", prev_crs_items)
+        print("curr b", curr_crs_items)
+
+        if len(curr_crs_items) > len(prev_crs_items):
             # selected a new crs
-            last_crs_ls = list(set(last_crs_ls) - set(prev_sel_crs_ls))[0]
-            prev_sel_crs_ls.append(last_crs_ls)
-        elif len(last_crs_ls) < len(prev_sel_crs_ls):
+            curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
+            prev_crs_items.append(curr_crs_item)
+        elif len(curr_crs_items) < len(prev_crs_items):
             # deselected an existing crs
-            last_crs_ls = list(set(prev_sel_crs_ls) - set(last_crs_ls))[0]
-            del prev_sel_crs_ls[prev_sel_crs_ls.index(last_crs_ls)]
-            l = len(prev_sel_crs_ls)
+            curr_crs_item = list(set(prev_crs_items) - set(curr_crs_items))[0]
+            del prev_crs_items[prev_crs_items.index(curr_crs_item)]
+            l = len(prev_crs_items)
             if l > 0:
-                last_crs_ls = prev_sel_crs_ls[l-1]
+                curr_crs_item = prev_crs_items[l-1]
             else:
-                last_crs_ls = None
+                curr_crs_item = None
+        elif curr_crs_items:
+            prev_crs_items.clear()
+            prev_crs_items.extend(curr_crs_items)
+            curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
         else:
-            last_crs_ls = None
+            curr_crs_item = None
+
+        print("prev", prev_crs_items)
+        print("curr", curr_crs_items)
+        print("last", curr_crs_item)
 
         crs_text.delete("1.0", tk.END)
-        if last_crs_ls is not None:
-            crs_info = create_crs_info(find_bbox(w.get(last_crs_ls)))
+        if curr_crs_item:
+            crs = w.item(curr_crs_item)["values"][1]
+            crs_info = create_crs_info(find_bbox(crs))
             crs_text.insert(tk.END, crs_info)
 
 
@@ -110,74 +122,89 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             filt_bbox = filter(lambda b: b.proj_table==proj_table and
                                          b.unit==unit, bbox)
 
-        crs_listbox.delete(0, tk.END)
+        crs_treeview.delete(0, tk.END)
         for b in filt_bbox:
-            crs_listbox.insert(tk.END, f"{b.crs_name} "
+            crs_treeview.insert(tk.END, f"{b.crs_name} "
                                        f"({b.crs_auth_name}:{b.crs_code})")
-        prev_sel_crs_ls.clear()
+        prev_crs_items.clear()
 
 
     def select():
         nonlocal sel_crs
 
-        for i in crs_listbox.curselection():
-            sel_crs.append(extract_crs_auth_code(crs_listbox.get(i)))
+        for i in crs_treeview.curselection():
+            sel_crs.append(extract_crs_auth_code(crs_treeview.get(i)))
         root.destroy()
 
 
     # root window
     root = tk.Tk()
-    root.geometry("800x400")
-    root.title("ProjPicker GUI")
+    root_width = 800
+    root_height = 800
+    root.geometry(f"{root_width}x{root_height}")
     root.resizable(False, False)
+    root.title("ProjPicker GUI")
 
     ############
     # left frame
-    left_frame = tk.Frame(root, width=500)
+    left_frame_width = root_width // 2
+    left_frame = tk.Frame(bottom_frame, width=left_frame_width)
     left_frame.pack_propagate(False)
     left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     ################
-    # top-left frame
-    topleft_frame = tk.Frame(left_frame)
-    topleft_frame.pack(fill=tk.BOTH, expand=True)
+    # left-top frame
+    left_top_frame = tk.Frame(left_frame)
+    left_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
-    crs_listbox = tk.Listbox(topleft_frame, height=1,
-                             selectmode=tk.SINGLE if single else tk.MULTIPLE)
+    code_width = 100
+    name_width = left_frame_width - code_width
+    crs_cols = {"Name": name_width, "Code": code_width}
+
+    crs_treeview = ttk.Treeview(
+            left_top_frame, columns=list(crs_cols.keys()),
+            show="headings", selectmode=tk.BROWSE if single else tk.EXTENDED)
+
+    for name, width in crs_cols.items():
+        print(name)
+        crs_treeview.heading(name, text=name)
+        crs_treeview.column(name, width=width)
+
     for b in bbox:
-        crs_listbox.insert(tk.END,
-                           f"{b.crs_name} ({b.crs_auth_name}:{b.crs_code})")
-    crs_listbox.bind("<<ListboxSelect>>", on_select_crs)
-    crs_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        crs_treeview.insert("", tk.END, values=(
+                            b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+    crs_treeview.bind("<<TreeviewSelect>>", on_select_crs)
+    crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    list_vscrollbar = tk.Scrollbar(topleft_frame)
-    list_vscrollbar.config(command=crs_listbox.yview)
+    list_vscrollbar = tk.Scrollbar(left_top_frame)
+    list_vscrollbar.config(command=crs_treeview.yview)
     list_vscrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
-    crs_listbox.config(yscrollcommand=list_vscrollbar.set)
+    crs_treeview.config(yscrollcommand=list_vscrollbar.set)
 
     ################
-    # middle-left frame
-    middleleft_frame = tk.Frame(left_frame)
-    middleleft_frame.pack(fill=tk.BOTH)
+    # left-middle frame
+    left_middle_frame = tk.Frame(left_frame)
+    left_middle_frame.pack(fill=tk.BOTH)
 
     # horizontal scroll bar for CRS list
-    list_hscrollbar = tk.Scrollbar(middleleft_frame, orient=tk.HORIZONTAL)
-    list_hscrollbar.config(command=crs_listbox.xview)
+    list_hscrollbar = tk.Scrollbar(left_middle_frame,
+                                   orient=tk.HORIZONTAL)
+    list_hscrollbar.config(command=crs_treeview.xview)
     list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
-    crs_listbox.config(xscrollcommand=list_hscrollbar.set)
+    crs_treeview.config(xscrollcommand=list_hscrollbar.set)
 
     ###################
-    # bottom-left frame
-    bottomleft_frame = tk.Frame(left_frame)
-    bottomleft_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
+    # left-bottom frame
+    left_bottom_frame = tk.Frame(left_frame)
+    left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list box for projection types
     projection_types = ["all"]
     projection_types.extend(sorted(set([b.proj_table for b in bbox])))
 
-    proj_table_combobox = ttk.Combobox(bottomleft_frame, width=10)
+    proj_table_combobox = ttk.Combobox(left_bottom_frame, width=10)
     proj_table_combobox["values"] = projection_types
     proj_table_combobox.set("proj_table filter")
     # bind selection event to run on select
@@ -189,7 +216,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     units = ["all"]
     units.extend(sorted(set([b.unit for b in bbox])))
 
-    unit_combobox = ttk.Combobox(bottomleft_frame, width=10)
+    unit_combobox = ttk.Combobox(left_bottom_frame, width=10)
     unit_combobox["values"] = units
     unit_combobox.set("unit filter")
     # bind selection event to run on select
@@ -198,35 +225,36 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     #############
     # right frame
-    right_frame = tk.Frame(root, width=300)
-    right_frame.pack_propagate(False)
-    right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    bottom_frame_width = root_width - left_frame_width
+    bottom_frame = tk.Frame(bottom_frame, width=bottom_frame_width)
+    bottom_frame.pack_propagate(False)
+    bottom_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #################
-    # top-right frame
-    topright_frame = tk.Frame(right_frame)
-    topright_frame.pack(fill=tk.BOTH, expand=True)
+    # right-top frame
+    right_top_frame = tk.Frame(bottom_frame)
+    right_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for CRS info
-    crs_text = tk.Text(topright_frame, width=20, height=1, wrap=tk.NONE)
+    crs_text = tk.Text(right_top_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    info_hscrollbar = tk.Scrollbar(topright_frame, orient=tk.HORIZONTAL)
+    info_hscrollbar = tk.Scrollbar(right_top_frame, orient=tk.HORIZONTAL)
     info_hscrollbar.config(command=crs_text.xview)
     info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
     crs_text.config(xscrollcommand=info_hscrollbar.set)
 
     ####################
-    # bottom-right frame
-    bottomright_frame = tk.Frame(right_frame)
-    bottomright_frame.pack(fill=tk.BOTH)
+    # right-bottom frame
+    right_bottom_frame = tk.Frame(bottom_frame)
+    right_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    select_button = tk.Button(bottomright_frame, text="Select", command=select)
+    select_button = tk.Button(right_bottom_frame, text="Select", command=select)
     select_button.pack(side=tk.LEFT, expand=True)
-    cancel_button = tk.Button(bottomright_frame, text="Cancel",
+    cancel_button = tk.Button(right_bottom_frame, text="Cancel",
                               command=root.destroy)
     cancel_button.pack(side=tk.LEFT, expand=True)
 
