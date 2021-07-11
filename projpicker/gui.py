@@ -5,6 +5,7 @@ This module implements the GUI of ProjPicker.
 import re
 import tkinter as tk
 from tkinter import ttk
+from openstreetmap import OpenStreetMap
 
 
 def select_bbox(bbox, single=False, crs_info_func=None):
@@ -24,6 +25,9 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     """
     sel_crs = []
     prev_crs_items = []
+    tag_map = "map"
+    tag_overlay = "overlay"
+
 
     def create_crs_info(bbox):
         if crs_info_func is None:
@@ -42,10 +46,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         return txt
 
 
-    def extract_crs_auth_code(sel):
-        return re.sub("^.*\((.*)\)$", r"\1", sel)
-
-
     def find_bbox(crs):
         if crs is None:
             return None
@@ -54,6 +54,26 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         b = list(filter(lambda b: b.crs_auth_name==auth and
                                   b.crs_code==code, bbox))[0]
         return b
+
+
+    def zoom_map(x, y, dz):
+        zoomed = osm.zoom(x, y, dz)
+        if zoomed:
+            scale = 2 if dz > 0 else 0.5
+            map_canvas.scale(tag_overlay, x, y, scale, scale)
+
+
+    def on_drag(event):
+        dx, dy = osm.drag(event.x, event.y)
+        map_canvas.move(tag_overlay, dx, dy)
+
+
+    def on_zoom_in(event):
+        zoom_map(event.x, event.y, 1)
+
+
+    def on_zoom_out(event):
+        zoom_map(event.x, event.y, -1)
 
 
     def on_select_crs(event):
@@ -88,8 +108,19 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         crs_text.delete("1.0", tk.END)
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
-            crs_info = create_crs_info(find_bbox(crs))
+            b = find_bbox(crs)
+            crs_info = create_crs_info(b)
             crs_text.insert(tk.END, crs_info)
+
+            osm.zoom_to_bbox([b.south_lat, b.north_lat, b.west_lon, b.east_lon])
+
+            s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
+            latlon = [[n, w], [s, e]]
+            xy = osm.get_xy(latlon)
+            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_overlay,
+                                                    outline="red", width=2,
+                                                    fill="red",
+                                                    stipple="gray12")
 
 
     def on_select_proj_table_or_unit(event):
@@ -125,40 +156,81 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     def select():
         nonlocal sel_crs
 
-        for i in crs_treeview.curselection():
-            sel_crs.append(extract_crs_auth_code(crs_treeview.get(i)))
+        for item in crs_treeview.selection():
+            sel_crs.append(crs_treeview.item(item)["values"][1])
         root.destroy()
 
+
+    # TODO: Hard-coded lat,lon for UNG Gainesville for testing
+    lat = 34.2347566
+    lon = -83.8676613
+    zoom = 0
+    # End of hard-coding
 
     # root window
     root = tk.Tk()
     root_width = 800
-    root_height = root_width // 2
+    root_height = root_width
     root.geometry(f"{root_width}x{root_height}")
     root.resizable(False, False)
     root.title("ProjPicker GUI")
 
     ############
-    # left frame
-    left_frame_width = root_width // 2
-    left_frame = tk.Frame(root, width=left_frame_width)
-    left_frame.pack_propagate(False)
-    left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    # top frame
+    top_frame_height = root_height // 2
+    top_frame = tk.Frame(root, height=top_frame_height)
+    top_frame.pack_propagate(False)
+    top_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    map_canvas = tk.Canvas(top_frame)
+    map_canvas.pack(fill=tk.BOTH, expand=True)
+
+    osm = OpenStreetMap(
+            lambda width, height: map_canvas.delete(tag_map),
+            lambda image: map_canvas.tag_raise(tag_overlay),
+            lambda data: tk.PhotoImage(data=data),
+            lambda image, tile, x, y:
+                map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
+                                        tag=tag_map))
+
+    map_width = root_width
+    map_height = top_frame_height
+    osm.set_map_size(map_width, map_height)
+    osm.refresh_map(lat, lon, zoom)
+
+    map_canvas.bind("<Button-1>", lambda e: osm.start_dragging(e.x, e.y))
+    map_canvas.bind("<B1-Motion>", on_drag)
+    map_canvas.bind("<Button-4>", on_zoom_in)
+    map_canvas.bind("<Button-5>", on_zoom_out)
+
+    ############
+    # bottom frame
+    bottom_frame_height = root_height - top_frame_height
+    bottom_frame = tk.Frame(root, height=400)
+    bottom_frame.pack_propagate(False)
+    bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+    ############
+    # bottom-left frame
+    bottom_left_frame_width = root_width // 2
+    bottom_left_frame = tk.Frame(bottom_frame, width=bottom_left_frame_width)
+    bottom_left_frame.pack_propagate(False)
+    bottom_left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     ################
-    # left-top frame
-    left_top_frame = tk.Frame(left_frame)
-    left_top_frame.pack(fill=tk.BOTH, expand=True)
+    # bottom-left-top frame
+    bottom_left_top_frame = tk.Frame(bottom_left_frame)
+    bottom_left_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
     code_width = 100
-    name_width = left_frame_width - code_width
+    name_width = bottom_left_frame_width - code_width - 15
     crs_cols = {"Name": name_width, "Code": code_width}
 
     crs_treeview = ttk.Treeview(
-            left_top_frame, columns=list(crs_cols.keys()),
-            show="headings", selectmode=tk.BROWSE if single else tk.EXTENDED)
-
+            bottom_left_top_frame, columns=list(crs_cols.keys()),
+            show="headings", selectmode=tk.BROWSE if single else
+                                        tk.EXTENDED)
     for name, width in crs_cols.items():
         crs_treeview.heading(name, text=name)
         crs_treeview.column(name, width=width)
@@ -170,33 +242,33 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    list_vscrollbar = tk.Scrollbar(left_top_frame)
+    list_vscrollbar = tk.Scrollbar(bottom_left_top_frame)
     list_vscrollbar.config(command=crs_treeview.yview)
     list_vscrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
     crs_treeview.config(yscrollcommand=list_vscrollbar.set)
 
     ################
-    # left-middle frame
-    left_middle_frame = tk.Frame(left_frame)
-    left_middle_frame.pack(fill=tk.BOTH)
+    # bottom-left-middle frame
+    bottom_left_middle_frame = tk.Frame(bottom_left_frame)
+    bottom_left_middle_frame.pack(fill=tk.BOTH)
 
     # horizontal scroll bar for CRS list
-    list_hscrollbar = tk.Scrollbar(left_middle_frame,
+    list_hscrollbar = tk.Scrollbar(bottom_left_middle_frame,
                                    orient=tk.HORIZONTAL)
     list_hscrollbar.config(command=crs_treeview.xview)
     list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
     crs_treeview.config(xscrollcommand=list_hscrollbar.set)
 
     ###################
-    # left-bottom frame
-    left_bottom_frame = tk.Frame(left_frame)
-    left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
+    # bottom-left-bottom frame
+    bottom_left_bottom_frame = tk.Frame(bottom_left_frame)
+    bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list box for projection types
     projection_types = ["all"]
     projection_types.extend(sorted(set([b.proj_table for b in bbox])))
 
-    proj_table_combobox = ttk.Combobox(left_bottom_frame, width=10)
+    proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
     proj_table_combobox["values"] = projection_types
     proj_table_combobox.set("proj_table filter")
     # bind selection event to run on select
@@ -208,7 +280,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     units = ["all"]
     units.extend(sorted(set([b.unit for b in bbox])))
 
-    unit_combobox = ttk.Combobox(left_bottom_frame, width=10)
+    unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
     unit_combobox["values"] = units
     unit_combobox.set("unit filter")
     # bind selection event to run on select
@@ -216,37 +288,38 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #############
-    # right frame
-    right_frame_width = root_width - left_frame_width
-    right_frame = tk.Frame(root, width=right_frame_width)
-    right_frame.pack_propagate(False)
-    right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    # bottom-right frame
+    bottom_right_frame_width = root_width - bottom_left_frame_width
+    bottom_right_frame = tk.Frame(bottom_frame, width=bottom_right_frame_width)
+    bottom_right_frame.pack_propagate(False)
+    bottom_right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #################
-    # right-top frame
-    right_top_frame = tk.Frame(right_frame)
-    right_top_frame.pack(fill=tk.BOTH, expand=True)
+    # bottom-right-top frame
+    bottom_right_top_frame = tk.Frame(bottom_right_frame)
+    bottom_right_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for CRS info
-    crs_text = tk.Text(right_top_frame, width=20, height=1, wrap=tk.NONE)
+    crs_text = tk.Text(bottom_right_top_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    info_hscrollbar = tk.Scrollbar(right_top_frame, orient=tk.HORIZONTAL)
+    info_hscrollbar = tk.Scrollbar(bottom_right_top_frame, orient=tk.HORIZONTAL)
     info_hscrollbar.config(command=crs_text.xview)
     info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
     crs_text.config(xscrollcommand=info_hscrollbar.set)
 
     ####################
-    # right-bottom frame
-    right_bottom_frame = tk.Frame(right_frame)
-    right_bottom_frame.pack(fill=tk.BOTH)
+    # bottom-right-bottom frame
+    bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
+    bottom_right_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    select_button = tk.Button(right_bottom_frame, text="Select", command=select)
+    select_button = tk.Button(bottom_right_bottom_frame, text="Select",
+                              command=select)
     select_button.pack(side=tk.LEFT, expand=True)
-    cancel_button = tk.Button(right_bottom_frame, text="Cancel",
+    cancel_button = tk.Button(bottom_right_bottom_frame, text="Cancel",
                               command=root.destroy)
     cancel_button.pack(side=tk.LEFT, expand=True)
 
