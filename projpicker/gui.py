@@ -81,6 +81,10 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         zoom_map(event.x, event.y, -1)
 
 
+    def on_zoom(event):
+        zoom_map(event.x, event.y, 1 if event.delta > 0 else -1)
+
+
     def on_select_crs(event):
         nonlocal prev_crs_items
 
@@ -207,8 +211,13 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     map_canvas.bind("<Button-1>", lambda e: osm.start_dragging(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)
+    # Linux
+    # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<Button-4>", on_zoom_in)
     map_canvas.bind("<Button-5>", on_zoom_out)
+    # Windows and macOS
+    # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
+    map_canvas.bind("<MouseWheel>", on_zoom)
 
     ############
     # bottom frame
