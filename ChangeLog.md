@@ -1,6 +1,16 @@
 # Change log
 
 ## HEAD
+Sun Jul 11 18:37:35 2021 -0400
+
+* [`411d193`](https://github.com/HuidaeCho/projpicker/commit/411d193)  v0.1.7: tkinter-native OpenStreetMap
+* [`e7310ee`](https://github.com/HuidaeCho/projpicker/commit/e7310ee)  Add OpenStreetMap (WIP)
+* [`20ba3e4`](https://github.com/HuidaeCho/projpicker/commit/20ba3e4)  gui: Fix variable naming
+* [`f8cf337`](https://github.com/HuidaeCho/projpicker/commit/f8cf337)  gui: Use Treeview for CRS list
+* [`8f29ee0`](https://github.com/HuidaeCho/projpicker/commit/8f29ee0)  Shorten console\_scripts (still works?)
+* [`67d3379`](https://github.com/HuidaeCho/projpicker/commit/67d3379)  v0.1.6.post6 (skipped v0.1.6.post5)
+
+## v0.1.6.post6
 Sat Jul 10 12:19:09 2021 -0400
 
 * [`b564895`](https://github.com/HuidaeCho/projpicker/commit/b564895)  Move ChangeLog.md to the root
