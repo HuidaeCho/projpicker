@@ -15,7 +15,7 @@ that wraps around this project is available. It is a work in progress; join
 [discussions](https://github.com/HuidaeCho/projpicker/wiki). See also
 [its documentation](https://projpicker.readthedocs.io/en/latest/).
 
-![image](https://user-images.githubusercontent.com/7456117/107286973-4c3ceb00-6a2f-11eb-8789-4fdc33a1ce5d.png)
+![image](https://user-images.githubusercontent.com/7456117/125213885-4bc8aa80-e282-11eb-848a-78d6d145ea01.png)
 
 ## Subprojects
 
