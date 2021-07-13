@@ -139,6 +139,9 @@ def is_point_within_bbox(point, bbox):
     t = bbox.top
     l = bbox.left
     r = bbox.right
+    if None in (b, t, l, r):
+        # XXX: might be incorrect, but we cannot do better
+        return False
     return l <= x <= r and b <= y <= t
 
 
