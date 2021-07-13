@@ -1,8 +1,19 @@
 # Change log
 
-* [`39c4a2b`](https://github.com/HuidaeCho/projpicker/commit/39c4a2b)  (HEAD -> main) Support mouse wheel on Windows and macOS
+## HEAD
+Tue Jul 13 16:07:47 2021 -0400
 
-## v0.1.7.post2, origin/main, origin/HEAD
+* [`da1b17b`](https://github.com/HuidaeCho/projpicker/commit/da1b17b)  v0.1.7.post4
+* [`b20c733`](https://github.com/HuidaeCho/projpicker/commit/b20c733)  Skip bbox whose btlr is undefined
+* [`c76c6c3`](https://github.com/HuidaeCho/projpicker/commit/c76c6c3)  New GUI screenshot in README.md
+
+## v0.1.7.post3
+Sun Jul 11 19:52:00 2021 -0400
+
+* [`a3afdd2`](https://github.com/HuidaeCho/projpicker/commit/a3afdd2)  v0.1.7.post3: Zoom on Windows and macOS
+* [`39c4a2b`](https://github.com/HuidaeCho/projpicker/commit/39c4a2b)  Support mouse wheel on Windows and macOS
+
+## v0.1.7.post2
 Sun Jul 11 19:10:34 2021 -0400
 
 * [`f84ff3c`](https://github.com/HuidaeCho/projpicker/commit/f84ff3c)  Fix overlay refresh
