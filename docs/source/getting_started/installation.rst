@@ -16,7 +16,7 @@ If installed with pip, ProjPicker uses the following standard modules:
 - `json <https://docs.python.org/3/library/json.html>`_
 - `pprint <https://docs.python.org/3/library/pprint.html>`_
 - `tkinter <https://docs.python.org/3/library/tkinter.html>`_
-- `textwrap <https://docs.python.org/3/library/textwrap.html>`_
+- `urllib.request <https://docs.python.org/3/library/urllib.request.html>`_
 
 The ProjPicker `SQLite <https://sqlite.org/>`_ database (``projpicker.db``) will come packaged when installed with pip.
 However, if any problems should arise and the ``projpicker.db`` should need to be recreated, the additional dependency of `pyproj <https://pypi.org/project/pyproj/>`_ will be needed.
