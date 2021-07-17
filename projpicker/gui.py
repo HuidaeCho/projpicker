@@ -33,6 +33,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     tag_map = "map"
     tag_overlay = "overlay"
     zoomer = None
+    bbox_latlon = []
 
 
     def create_crs_info(bbox):
@@ -62,12 +63,19 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         return b
 
 
+    def draw_bbox():
+        map_canvas.delete(tag_overlay)
+        for xy in osm.get_xy(bbox_latlon):
+            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_overlay,
+                                            outline="red", width=2, fill="red",
+                                            stipple="gray12")
+
+
     def zoom_map(x, y, dz):
         def zoom(x, y, dz):
             zoomed = osm.zoom(x, y, dz)
             if zoomed:
-                scale = 2 if dz > 0 else 0.5
-                map_canvas.scale(tag_overlay, x, y, scale, scale)
+                draw_bbox()
 
 
         # https://stackoverflow.com/a/63305873/16079666
@@ -86,7 +94,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     def on_drag(event):
         dx, dy = osm.drag(event.x, event.y)
-        map_canvas.move(tag_overlay, dx, dy)
+#        map_canvas.move(tag_overlay, dx, dy)
+        draw_bbox()
 
 
     def on_zoom_in(event):
@@ -139,15 +148,12 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             crs_info = create_crs_info(b)
             crs_text.insert(tk.END, crs_info)
 
-            osm.zoom_to_bbox([b.south_lat, b.north_lat, b.west_lon, b.east_lon])
-
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
-            latlon = [[n, w], [s, e]]
-            xy = osm.get_xy(latlon)
-            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_overlay,
-                                                    outline="red", width=2,
-                                                    fill="red",
-                                                    stipple="gray12")
+            osm.zoom_to_bbox([s, n, w, e])
+
+            bbox_latlon.clear()
+            bbox_latlon.extend([[n, w], [s, e]])
+            draw_bbox()
 
 
     def on_select_proj_table_or_unit(event):

@@ -17,8 +17,8 @@ class OpenStreetMap:
         self.verbose = verbose
         self.z_min = 0
         self.z_max = 18
-        self.lat_min = 0
-        self.lat_max = 0
+        self.lat_min = -85.0511
+        self.lat_max = 85.0511
         self.zoom_accum = 0
         # TODO: Tile caching mechanism
         self.tiles = {}
@@ -54,18 +54,37 @@ class OpenStreetMap:
 
 
     # Adapted from https://stackoverflow.com/a/62607111/16079666
+    # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+    # x from 0 at lon=-180 to 2**z-1 at lon=180
+    # y from 0 at lat=85.0511 to 2**z-1 at lat=-85.0511
+    # tilex, tiley = int(x), int(y)
     def latlon_to_tile(self, lat, lon, z):
+        lat = max(min(lat, self.lat_max), self.lat_min)
         lat = math.radians(lat)
         n = 2**z
-        x = int((lon+180)/360*n)
-        y = int((1-math.log(math.tan(lat)+(1/math.cos(lat)))/math.pi)/2*n)
+        x = (lon+180)/360*n
+        y = (1-math.log(math.tan(lat)+(1/math.cos(lat)))/math.pi)/2*n
         return x, y
 
 
-    def tile_to_nw_latlon(self, x, y, z):
+    def tile_to_latlon(self, x, y, z):
         n = 2**z
         lat = math.degrees(math.atan(math.sinh(math.pi*(1-2*y/n))))
         lon = x/n*360-180
+        return lat, lon
+
+
+    def latlon_to_canvas(self, lat, lon):
+        x, y = self.latlon_to_tile(lat, lon, self.z)
+        x = self.xoff + (x - self.x) * 256
+        y = self.yoff + (y - self.y) * 256
+        return x, y
+
+
+    def canvas_to_latlon(self, x, y):
+        x = self.x + (x - self.xoff) / 256
+        y = self.y + (y - self.yoff) / 256
+        lat, lon = self.tile_to_latlon(x, y, self.z)
         return lat, lon
 
 
@@ -83,38 +102,49 @@ class OpenStreetMap:
             lon -= 360
 
         # calculate x,y offsets to lat,lon within width,height
-        x, y = self.latlon_to_tile(lat, lon, z)
-        n, w = self.tile_to_nw_latlon(x, y, z)
-        s, e = self.tile_to_nw_latlon(x + 1, y + 1, z)
+        xc, yc = self.latlon_to_tile(lat, lon, z)
+        x, y = int(xc), int(yc)
+        n, w = self.tile_to_latlon(x, y, z)
+        s, e = self.tile_to_latlon(x + 1, y + 1, z)
+        xo, yo = self.latlon_to_tile(n, w, z)
 
-        self.lat_dpp = (n - s) / 256
-        self.lon_dpp = (w - e) / 256
+        xoff = self.width / 2 - (xc - xo) * 256
+        yoff = self.height / 2 - (yc - yo) * 256
 
-        xoff = int(self.width / 2 + (lon - w) / self.lon_dpp)
-        yoff = int(self.height / 2 + (lat - n) / self.lat_dpp)
-
-        if num_tiles * 256 >= self.height:
-            # restrict lat
-            if yoff - y * 256 > 0:
-                lat -= (yoff - y * 256) * self.lat_dpp
-
-            # XXX: supposed to be < height - 1, but lat += (height - 1...
-            # leaves a single-pixel border at the bottom; maybe, a rounding off
-            # error
-            elif yoff + (num_tiles - y) * 256 < self.height:
-                lat += (self.height - yoff
-                        - (num_tiles - y) * 256) * self.lat_dpp
-            yoff = int(self.height / 2 + (lat - n) / self.lat_dpp)
-
-        self.lat = lat
-        self.lon = lon
-        self.z = z
+#        if num_tiles * 256 >= self.height:
+#            # restrict lat
+#            if yoff - y * 256 > 0:
+#                lat, _ = self.tile_to_latlon(x, 0.5, z)
+#
+#            # XXX: supposed to be < height - 1, but lat += (height - 1...
+#            # leaves a single-pixel border at the bottom; maybe, a rounding off
+#            # error
+#            elif yoff + (num_tiles - y) * 256 < self.height:
+#                lat, _ = self.tile_to_latlon(x, num_tiles - 0.5, z)
+#            _, yc = self.latlon_to_tile(lat, lon, z)
+#            y = int(yc)
+#            n, w = self.tile_to_latlon(x, y, z)
+#            _, yo = self.latlon_to_tile(n, w, z)
+#            yoff = self.height / 2 - (yc - yo) * 256
 
         xmin = x - math.ceil(xoff / 256)
         ymin = max(y - math.ceil(yoff / 256), 0)
         xmax = x + math.ceil((self.width - xoff - 256) / 256)
         ymax = min(y + math.ceil((self.height - yoff - 256) / 256),
                    num_tiles - 1)
+
+        self.lat = lat
+        self.lon = lon
+        self.x = x
+        self.y = y
+        self.z = z
+        self.num_tiles = num_tiles
+        self.xmin = xmin
+        self.xmax = xmax
+        self.ymin = ymin
+        self.ymax = ymax
+        self.xoff = xoff
+        self.yoff = yoff
 
         image = self.new_image_func(self.width, self.height)
 
@@ -147,9 +177,10 @@ class OpenStreetMap:
     def drag(self, x, y):
         dx = x - self.drag_x
         dy = y - self.drag_y
-        lat = self.lat + self.lat_dpp * dy
-        lon = self.lon + self.lon_dpp * dx
         self.start_dragging(x, y)
+        x = self.width / 2 - dx
+        y = self.height / 2 - dy
+        lat, lon = self.canvas_to_latlon(x, y)
         old_lat = self.lat
         self.draw_map(lat, lon, self.z)
         return dx, dy if abs(old_lat - self.lat) > sys.float_info.epsilon else 0
@@ -164,22 +195,21 @@ class OpenStreetMap:
         self.zoom_accum += zoom_accum / 10
         if ((self.z < self.z_max and self.zoom_accum > 1) or
             (self.z > self.z_min and self.zoom_accum < -1)):
-            # pinned zoom at x,y
-            # lat,lon at x,y
-            lat = self.lat - self.lat_dpp * (y - self.height / 2)
-            lon = self.lon - self.lon_dpp * (x - self.width / 2)
             dz = 1 if self.zoom_accum > 0 else -1
             z = self.z + dz
             if dz > 0:
-                # each zoom up doubles
-                lat = (lat + self.lat) / 2
-                lon = (lon + self.lon) / 2
+                # each zoom in doubles
+                x = (x + self.width / 2) / 2
+                y = (y + self.height / 2) / 2
                 self.message(f"zoom in: {z}")
             else:
-                # each zoom down halves
-                lat += (self.lat - lat) * 2
-                lon += (self.lon - lon) * 2
+                # each zoom out halves
+                x = self.width - x
+                y = self.height - y
                 self.message(f"zoom out: {z}")
+            # pinned zoom at x,y
+            # lat,lon at x,y
+            lat, lon = self.canvas_to_latlon(x, y)
             self.draw_map(lat, lon, z)
             self.reset_zoom()
             zoomed = True
@@ -193,7 +223,6 @@ class OpenStreetMap:
         s, n, w, e = bbox
 
         lat = (s + n) / 2
-        lat_dps = (n - s) / self.height
 
         if w == e or (w == -180 and e == 180):
             dlon = 360
@@ -206,10 +235,12 @@ class OpenStreetMap:
             lon = (w + e) / 2
             lon = lon - 180 if lon >= 0 else lon + 180
 
-        lon_dps = dlon / self.width
+        xul, yul = self.latlon_to_tile(n, w, self.z)
+        xlr, ylr = self.latlon_to_tile(s, w + dlon, self.z)
+        lat, lon = self.tile_to_latlon((xul+xlr)/2, (yul+ylr)/2, self.z)
 
-        z_lat = math.log2(180 / 256 / lat_dps)
-        z_lon = math.log2(360 / 256 / lon_dps)
+        z_lat = math.log2(180 / (n - s))
+        z_lon = math.log2(360 / dlon)
         z = math.floor(min(z_lat, z_lon))
 
         self.draw_map(lat, lon, z)
@@ -217,28 +248,20 @@ class OpenStreetMap:
 
     def get_xy(self, latlon):
         xy = []
-        xc = self.width // 2
-        yc = self.height // 2
+        if not latlon:
+            return xy
+
+        c = []
         for coor in latlon:
-            lat, lon = coor
-            dlon = lon - self.lon
-            if dlon < -180:
-                dlon += 360
-            elif dlon > 180:
-                dlon -= 360
-            x = xc - dlon / self.lon_dpp
-            y = yc - (lat - self.lat) / self.lat_dpp
-            xy.append([x, y])
+            c.append(self.latlon_to_canvas(*coor))
+
+        n = self.width // (256 * self.num_tiles)
+        for i in range(-n//2-1, n//2+2):
+            dx = i * 256 * self.num_tiles
+            p = []
+            for coor in c:
+                x, y = coor
+                x += dx
+                p.append([x, y])
+            xy.append(p)
         return xy
-
-
-    def get_latlon(self, xy):
-        latlon = []
-        xc = self.width // 2
-        yc = self.height // 2
-        for coor in xy:
-            x, y = coor
-            lat = self.lat - (y - yc) * self.lat_dpp
-            lon = self.lon - (x - xc) * self.lon_dpp
-            latlon.append([lat, lon])
-        return latlon
