@@ -118,29 +118,25 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         if single:
             prev_crs_items.clear()
 
+        curr_crs_item = None
         if len(curr_crs_items) > len(prev_crs_items):
             # selected a new crs
             curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
             prev_crs_items.append(curr_crs_item)
         elif len(curr_crs_items) < len(prev_crs_items):
             # deselected an existing crs
-            curr_crs_item = list(set(prev_crs_items) - set(curr_crs_items))[0]
-            del prev_crs_items[prev_crs_items.index(curr_crs_item)]
+            item = list(set(prev_crs_items) - set(curr_crs_items))[0]
+            del prev_crs_items[prev_crs_items.index(item)]
             l = len(prev_crs_items)
             if l > 0:
                 curr_crs_item = prev_crs_items[l-1]
-            else:
-                curr_crs_item = None
         elif curr_crs_items:
             prev_crs_items.clear()
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
-        else:
-            curr_crs_item = None
 
-        crs_text.delete("1.0", tk.END)
-        map_canvas.delete(tag_overlay)
-
+        print(curr_crs_item)
+        bbox_latlon.clear()
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
             b = find_bbox(crs)
@@ -150,9 +146,10 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
 
-            bbox_latlon.clear()
             bbox_latlon.extend([[n, w], [s, e]])
-            draw_bbox()
+
+        crs_text.delete("1.0", tk.END)
+        draw_bbox()
 
 
     def on_select_proj_table_or_unit(event):
