@@ -159,3 +159,50 @@ Python
     import projpicker as ppik
     bbox = ppik.query_bboxes([[0, 0, 10, 10], [20, 20, 50, 50]])
     ppik.print_bbox(bbox)
+
+Postfix logical operations
+--------------------------
+
+Shell
+^^^^^
+
+Find CRSs that contain 34.2348,-83.8677, but not 33.7490,-84.3880, and show the GUI:
+
+.. code-block:: shell
+
+    projpicker -g postfix 34.2348,-83.8677 33.7490,-84.3880 not and
+
+Read geometries from stdin:
+
+.. code-block:: shell
+
+    projpicker -g <<EOT
+    postfix
+    34.2348,-83.8677
+    33.7490,-84.3880 not
+    and
+    EOT
+
+Using geometry variables:
+
+.. code-block:: shell
+
+    projpicker -g <<EOT
+    postfix
+    ung: 34.2348,-83.8677
+    atlanta: 33.7490,-84.3880
+
+    :ung :atlanta not and
+    EOT
+
+Python
+^^^^^^
+
+.. code-block:: python
+
+    import projpicker as ppik
+    bbox = ppik.query_mixed_geoms(["postfix",
+                                   [34.2348, -83.8677],
+                                   [33.7490, -84.3880], "not",
+                                   "and"])
+    ppik.gui.select_bbox(bbox)
