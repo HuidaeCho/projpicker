@@ -100,18 +100,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         draw_bbox()
 
 
-    def on_zoom_in(event):
-        zoom_map(event.x, event.y, 1)
-
-
-    def on_zoom_out(event):
-        zoom_map(event.x, event.y, -1)
-
-
-    def on_zoom(event):
-        zoom_map(event.x, event.y, 1 if event.delta > 0 else -1)
-
-
     def on_move(event):
         w = event.widget
         latlon = osm.canvas_to_latlon(event.x, event.y)
@@ -208,6 +196,9 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     root.geometry(f"{root_width}x{root_height}")
     root.resizable(False, False)
     root.title("ProjPicker GUI")
+    # https://stackoverflow.com/a/5871414/16079666
+    root.bind_class("Text", "<Control-a>",
+                    lambda e: e.widget.tag_add(tk.SEL, "1.0", tk.END))
 
     ###########
     # top frame
@@ -236,11 +227,12 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     map_canvas.bind("<B1-Motion>", on_drag)
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
-    map_canvas.bind("<Button-4>", on_zoom_in)
-    map_canvas.bind("<Button-5>", on_zoom_out)
+    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, 1))
+    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -1))
     # Windows and macOS
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
-    map_canvas.bind("<MouseWheel>", on_zoom)
+    map_canvas.bind("<MouseWheel>",
+                    lambda e: zoom_map(e.x, e.y, 1 if e.delta > 0 else -1))
     map_canvas.bind("<Motion>", on_move)
 
     ##############
@@ -342,6 +334,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     # text for CRS info
     crs_text = tk.Text(bottom_right_top_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
+    crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
