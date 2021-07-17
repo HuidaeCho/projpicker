@@ -202,7 +202,7 @@ Python
 
     import projpicker as ppik
     bbox = ppik.query_mixed_geoms(["postfix",
-                                   [34.2348, -83.8677],
-                                   [33.7490, -84.3880], "not",
-                                   "and"])
+                                   "ung:", [34.2348, -83.8677],
+                                   "atlanta:", [33.7490, -84.3880],
+                                   ":ung", ":atlanta", "not", "and"])
     ppik.gui.select_bbox(bbox)
