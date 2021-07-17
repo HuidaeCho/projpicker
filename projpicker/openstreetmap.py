@@ -87,6 +87,10 @@ class OpenStreetMap:
         x = self.x + (x - self.xoff) / 256
         y = self.y + (y - self.yoff) / 256
         lat, lon = self.tile_to_latlon(x, y, self.z)
+        while lon < -180:
+            lon += 360
+        while lon > 180:
+            lon -= 360
         return lat, lon
 
 

@@ -33,7 +33,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     all_proj_tables = "all proj_tables"
     all_units = "all units"
     tag_map = "map"
-    tag_overlay = "overlay"
+    tag_bbox = "bbox"
+    tag_coor = "coor"
     zoomer = None
     bbox_latlon = []
 
@@ -66,9 +67,9 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
 
     def draw_bbox():
-        map_canvas.delete(tag_overlay)
+        map_canvas.delete(tag_bbox)
         for xy in osm.get_xy(bbox_latlon):
-            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_overlay,
+            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_bbox,
                                                     outline="red", width=2,
                                                     fill="red",
                                                     stipple="gray12")
@@ -111,6 +112,18 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         zoom_map(event.x, event.y, 1 if event.delta > 0 else -1)
 
 
+    def on_move(event):
+        w = event.widget
+        latlon = osm.canvas_to_latlon(event.x, event.y)
+        w.delete(tag_coor)
+        t = w.create_text(w.winfo_width(), w.winfo_height(), anchor=tk.SE,
+                          text=f" {latlon[0]:.2f}, {latlon[1]:.2f} ",
+                          tag=tag_coor)
+        r = w.create_rectangle(w.bbox(t), outline="white", fill="white",
+                               tag=tag_coor)
+        w.tag_lower(r, t)
+
+
     def on_select_crs(event):
         nonlocal prev_crs_items
 
@@ -137,6 +150,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
+        crs_text.delete("1.0", tk.END)
         bbox_latlon.clear()
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
@@ -149,7 +163,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
             bbox_latlon.extend([[n, w], [s, e]])
 
-        crs_text.delete("1.0", tk.END)
         draw_bbox()
 
 
@@ -208,7 +221,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     osm = OpenStreetMap(
             lambda width, height: map_canvas.delete(tag_map),
-            lambda image: map_canvas.tag_raise(tag_overlay),
+            lambda image: map_canvas.tag_lower(tag_map),
             lambda data: tk.PhotoImage(data=data),
             lambda image, tile, x, y:
                 map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
@@ -228,6 +241,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     # Windows and macOS
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<MouseWheel>", on_zoom)
+    map_canvas.bind("<Motion>", on_move)
 
     ##############
     # bottom frame
