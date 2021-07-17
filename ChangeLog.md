@@ -1,8 +1,10 @@
 # Change log
 
 ## HEAD
-Sat Jul 17 13:23:44 2021 -0400
+Sat Jul 17 14:01:30 2021 -0400
 
+* [`87fd7e9`](https://github.com/HuidaeCho/projpicker/commit/87fd7e9)  Fix filters
+* [`606fa3f`](https://github.com/HuidaeCho/projpicker/commit/606fa3f)  ChangeLog
 * [`c5c53c3`](https://github.com/HuidaeCho/projpicker/commit/c5c53c3)  Minor refactoring
 * [`f1fdd37`](https://github.com/HuidaeCho/projpicker/commit/f1fdd37)  Minor refactoring
 * [`1db9d91`](https://github.com/HuidaeCho/projpicker/commit/1db9d91)  Cleanup
