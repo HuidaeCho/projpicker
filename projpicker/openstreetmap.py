@@ -234,9 +234,10 @@ class OpenStreetMap:
             dlon = 360 - w + e
             lon = (w + e) / 2
             lon = lon - 180 if lon >= 0 else lon + 180
+        e = w + dlon
 
         xul, yul = self.latlon_to_tile(n, w, self.z)
-        xlr, ylr = self.latlon_to_tile(s, w + dlon, self.z)
+        xlr, ylr = self.latlon_to_tile(s, e, self.z)
         lat, lon = self.tile_to_latlon((xul+xlr)/2, (yul+ylr)/2, self.z)
 
         z_lat = math.log2(180 / (n - s))
@@ -244,6 +245,8 @@ class OpenStreetMap:
         z = math.floor(min(z_lat, z_lon))
 
         self.draw_map(lat, lon, z)
+
+        return [s, n, w, e]
 
 
     def get_xy(self, latlon):

@@ -150,7 +150,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             crs_text.insert(tk.END, crs_info)
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
-            osm.zoom_to_bbox([s, n, w, e])
+            s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
 
             bbox_latlon.clear()
             bbox_latlon.extend([[n, w], [s, e]])
