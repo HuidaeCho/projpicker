@@ -30,6 +30,8 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     """
     sel_crs = []
     prev_crs_items = []
+    all_proj_tables = "all proj_tables"
+    all_units = "all units"
     tag_map = "map"
     tag_overlay = "overlay"
     zoomer = None
@@ -152,32 +154,23 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
 
     def on_select_proj_table_or_unit(event):
-        proj_table_sel = proj_table_combobox.current()
-        if proj_table_sel in (-1, 0):
-            proj_table = "all"
-        else:
-            proj_table = projection_types[proj_table_sel]
+        proj_table = projection_types[proj_table_combobox.current()]
+        unit = units[unit_combobox.current()]
 
-        unit_sel = unit_combobox.current()
-        if unit_sel in (-1, 0):
-            unit = "all"
-        else:
-            unit = units[unit_sel]
-
-        if proj_table == "all" and unit == "all":
+        if proj_table == all_proj_tables and unit == all_units:
             filt_bbox = bbox
-        elif proj_table == "all":
+        elif proj_table == all_proj_tables:
             filt_bbox = filter(lambda b: b.unit==unit, bbox)
-        elif unit == "all":
+        elif unit == all_units:
             filt_bbox = filter(lambda b: b.proj_table==proj_table, bbox)
         else:
             filt_bbox = filter(lambda b: b.proj_table==proj_table and
                                          b.unit==unit, bbox)
 
-        crs_treeview.delete(0, tk.END)
+        crs_treeview.delete(*crs_treeview.get_children())
         for b in filt_bbox:
-            crs_treeview.insert(tk.END, f"{b.crs_name} "
-                                        f"({b.crs_auth_name}:{b.crs_code})")
+            crs_treeview.insert("", tk.END, values=(
+                                b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
         prev_crs_items.clear()
 
 
@@ -298,24 +291,24 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list box for projection types
-    projection_types = ["all"]
+    projection_types = [all_proj_tables]
     projection_types.extend(sorted(set([b.proj_table for b in bbox])))
 
     proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
     proj_table_combobox["values"] = projection_types
-    proj_table_combobox.set("proj_table filter")
+    proj_table_combobox.set(all_proj_tables)
     # bind selection event to run on select
     proj_table_combobox.bind("<<ComboboxSelected>>",
                              on_select_proj_table_or_unit)
     proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     # list of units
-    units = ["all"]
+    units = [all_units]
     units.extend(sorted(set([b.unit for b in bbox])))
 
     unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
     unit_combobox["values"] = units
-    unit_combobox.set("unit filter")
+    unit_combobox.set(all_units)
     # bind selection event to run on select
     unit_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
     unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
