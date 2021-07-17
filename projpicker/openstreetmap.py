@@ -8,12 +8,14 @@ import urllib.request
 
 
 class OpenStreetMap:
-    def __init__(self, new_image_func, set_image_func, new_tile_func,
-                 set_tile_func, verbose=False):
-        self.new_image_func = new_image_func
-        self.set_image_func = set_image_func
-        self.new_tile_func = new_tile_func
-        self.set_tile_func = set_tile_func
+    def __init__(self,
+                 create_image_func, draw_image_func,
+                 create_tile_func, draw_tile_func,
+                 verbose=False):
+        self.create_image_func = create_image_func
+        self.draw_image_func = draw_image_func
+        self.create_tile_func = create_tile_func
+        self.draw_tile_func = draw_tile_func
         self.verbose = verbose
         self.z_min = 0
         self.z_max = 18
@@ -48,7 +50,7 @@ class OpenStreetMap:
                 "User-Agent": "urllib.request"
             })
             with urllib.request.urlopen(req) as f:
-                self.tiles[tile_key] = self.new_tile_func(f.read())
+                self.tiles[tile_key] = self.create_tile_func(f.read())
         tile_image = self.tiles[tile_key]
         return tile_image
 
@@ -111,22 +113,6 @@ class OpenStreetMap:
         xoff = self.width / 2 - (xc - xo) * 256
         yoff = self.height / 2 - (yc - yo) * 256
 
-#        if num_tiles * 256 >= self.height:
-#            # restrict lat
-#            if yoff - y * 256 > 0:
-#                lat, _ = self.tile_to_latlon(x, 0.5, z)
-#
-#            # XXX: supposed to be < height - 1, but lat += (height - 1...
-#            # leaves a single-pixel border at the bottom; maybe, a rounding off
-#            # error
-#            elif yoff + (num_tiles - y) * 256 < self.height:
-#                lat, _ = self.tile_to_latlon(x, num_tiles - 0.5, z)
-#            _, yc = self.latlon_to_tile(lat, lon, z)
-#            y = int(yc)
-#            n, w = self.tile_to_latlon(x, y, z)
-#            _, yo = self.latlon_to_tile(n, w, z)
-#            yoff = self.height / 2 - (yc - yo) * 256
-
         xmin = x - math.ceil(xoff / 256)
         ymin = max(y - math.ceil(yoff / 256), 0)
         xmax = x + math.ceil((self.width - xoff - 256) / 256)
@@ -146,7 +132,7 @@ class OpenStreetMap:
         self.xoff = xoff
         self.yoff = yoff
 
-        image = self.new_image_func(self.width, self.height)
+        image = self.create_image_func(self.width, self.height)
 
         self.message(f"image size: {self.width} {self.height}")
 
@@ -162,11 +148,11 @@ class OpenStreetMap:
                     while tile_x > self.width:
                         tile_x -= 256 * num_tiles
                     tile_y = yoff + (yi - y) * 256
-                    self.set_tile_func(image, tile_image, tile_x, tile_y)
+                    self.draw_tile_func(image, tile_image, tile_x, tile_y)
                     self.message(f"{tile_url} pasted at {tile_x},{tile_y}")
                 except Exception as e:
                     self.message(f"Failed to download {tile_url}: {e}")
-        self.set_image_func(image)
+        self.draw_image_func(image)
 
 
     def start_dragging(self, x, y):

@@ -74,8 +74,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     def zoom_map(x, y, dz):
         def zoom(x, y, dz):
-            zoomed = osm.zoom(x, y, dz)
-            if zoomed:
+            if osm.zoom(x, y, dz):
                 draw_bbox()
 
 
@@ -94,8 +93,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
 
     def on_drag(event):
-        dx, dy = osm.drag(event.x, event.y)
-#        map_canvas.move(tag_overlay, dx, dy)
+        osm.drag(event.x, event.y)
         draw_bbox()
 
 
@@ -183,7 +181,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         crs_treeview.delete(0, tk.END)
         for b in filt_bbox:
             crs_treeview.insert(tk.END, f"{b.crs_name} "
-                                       f"({b.crs_auth_name}:{b.crs_code})")
+                                        f"({b.crs_auth_name}:{b.crs_code})")
         prev_crs_items.clear()
 
 
