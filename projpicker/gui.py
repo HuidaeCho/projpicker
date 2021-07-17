@@ -67,8 +67,9 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         map_canvas.delete(tag_overlay)
         for xy in osm.get_xy(bbox_latlon):
             drawn_crs = map_canvas.create_rectangle(xy, tag=tag_overlay,
-                                            outline="red", width=2, fill="red",
-                                            stipple="gray12")
+                                                    outline="red", width=2,
+                                                    fill="red",
+                                                    stipple="gray12")
 
 
     def zoom_map(x, y, dz):

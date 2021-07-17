@@ -1,8 +1,17 @@
 # Change log
 
 ## HEAD
-Sat Jul 17 01:29:16 2021 -0400
+Sat Jul 17 08:14:11 2021 -0400
 
+* [`badaaf1`](https://github.com/HuidaeCho/projpicker/commit/badaaf1)  Repeat bbox when needed
+* [`4228c1f`](https://github.com/HuidaeCho/projpicker/commit/4228c1f)  Fix bbox drawing
+* [`8c43f32`](https://github.com/HuidaeCho/projpicker/commit/8c43f32)  Show that geometry variables are possible in Python
+* [`9797c3f`](https://github.com/HuidaeCho/projpicker/commit/9797c3f)  Update GUI screenshot; Add postfix examples
+
+## v0.1.7.post5
+Sat Jul 17 02:10:05 2021 -0400
+
+* [`724e311`](https://github.com/HuidaeCho/projpicker/commit/724e311)  v0.1.7.post5: Use after() and after\_cancel() to keep only one instance of zoom
 * [`9eced7c`](https://github.com/HuidaeCho/projpicker/commit/9eced7c)  Use after() and after\_cancel() to keep only one instance of zoom
 * [`16e3263`](https://github.com/HuidaeCho/projpicker/commit/16e3263)  docs: remove textwrap and add urllib.request in requirements
 
