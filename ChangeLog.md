@@ -1,8 +1,14 @@
 # Change log
 
 ## HEAD
-Sat Jul 17 08:14:11 2021 -0400
+Sat Jul 17 08:31:12 2021 -0400
 
+* [`cff11e5`](https://github.com/HuidaeCho/projpicker/commit/cff11e5)  v0.1.7.post7: Fix bbox drawing for w > e
+
+## v0.1.7.post6
+Sat Jul 17 08:16:22 2021 -0400
+
+* [`8745bc2`](https://github.com/HuidaeCho/projpicker/commit/8745bc2)  v0.1.7.post6: Fix bbox location
 * [`badaaf1`](https://github.com/HuidaeCho/projpicker/commit/badaaf1)  Repeat bbox when needed
 * [`4228c1f`](https://github.com/HuidaeCho/projpicker/commit/4228c1f)  Fix bbox drawing
 * [`8c43f32`](https://github.com/HuidaeCho/projpicker/commit/8c43f32)  Show that geometry variables are possible in Python
