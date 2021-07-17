@@ -1,8 +1,15 @@
 # Change log
 
 ## HEAD
-Tue Jul 13 16:07:47 2021 -0400
+Sat Jul 17 01:29:16 2021 -0400
 
+* [`9eced7c`](https://github.com/HuidaeCho/projpicker/commit/9eced7c)  Use after() and after\_cancel() to keep only one instance of zoom
+* [`16e3263`](https://github.com/HuidaeCho/projpicker/commit/16e3263)  docs: remove textwrap and add urllib.request in requirements
+
+## v0.1.7.post4
+Tue Jul 13 16:08:00 2021 -0400
+
+* [`804d0a3`](https://github.com/HuidaeCho/projpicker/commit/804d0a3)  v0.1.7.post4
 * [`da1b17b`](https://github.com/HuidaeCho/projpicker/commit/da1b17b)  v0.1.7.post4
 * [`b20c733`](https://github.com/HuidaeCho/projpicker/commit/b20c733)  Skip bbox whose btlr is undefined
 * [`c76c6c3`](https://github.com/HuidaeCho/projpicker/commit/c76c6c3)  New GUI screenshot in README.md
