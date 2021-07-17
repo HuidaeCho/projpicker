@@ -222,7 +222,9 @@ class OpenStreetMap:
         for coor in latlon:
             lat, lon = coor
             dlon = lon - self.lon
-            if dlon > 180:
+            if dlon < -180:
+                dlon += 360
+            elif dlon > 180:
                 dlon -= 360
             x = xc - dlon / self.lon_dpp
             y = yc - (lat - self.lat) / self.lat_dpp
