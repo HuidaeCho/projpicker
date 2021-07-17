@@ -135,7 +135,6 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
-        print(curr_crs_item)
         bbox_latlon.clear()
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
