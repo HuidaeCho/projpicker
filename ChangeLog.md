@@ -1,8 +1,12 @@
 # Change log
 
-## HEAD
-Sat Jul 17 14:01:30 2021 -0400
+* [`2042a28`](https://github.com/HuidaeCho/projpicker/commit/2042a28)  (HEAD -> main) v0.1.7.post9
+* [`4db9d93`](https://github.com/HuidaeCho/projpicker/commit/4db9d93)  (origin/main, origin/HEAD) Fix CRS Info; Display coordinates
 
+## v0.1.7.post8
+Sat Jul 17 14:02:04 2021 -0400
+
+* [`5ff3b57`](https://github.com/HuidaeCho/projpicker/commit/5ff3b57)  v0.1.7.post8: Fix filters
 * [`87fd7e9`](https://github.com/HuidaeCho/projpicker/commit/87fd7e9)  Fix filters
 * [`606fa3f`](https://github.com/HuidaeCho/projpicker/commit/606fa3f)  ChangeLog
 * [`c5c53c3`](https://github.com/HuidaeCho/projpicker/commit/c5c53c3)  Minor refactoring
