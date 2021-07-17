@@ -32,6 +32,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     prev_crs_items = []
     tag_map = "map"
     tag_overlay = "overlay"
+    zoomer = None
 
 
     def create_crs_info(bbox):
@@ -62,10 +63,25 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
 
     def zoom_map(x, y, dz):
-        zoomed = osm.zoom(x, y, dz)
-        if zoomed:
-            scale = 2 if dz > 0 else 0.5
-            map_canvas.scale(tag_overlay, x, y, scale, scale)
+        def zoom(x, y, dz):
+            zoomed = osm.zoom(x, y, dz)
+            if zoomed:
+                scale = 2 if dz > 0 else 0.5
+                map_canvas.scale(tag_overlay, x, y, scale, scale)
+
+
+        # https://stackoverflow.com/a/63305873/16079666
+        # https://stackoverflow.com/a/26703844/16079666
+        # https://wiki.tcl-lang.org/page/Tcl+event+loop
+        # XXX: I tried multi-threading in the OpenStreetMap class, but
+        # map_canvas flickered too much; according to the above references,
+        # tkinter doesn't like threading, so I decided to use its native
+        # after() and after_cancel() to keep only the last zooming event
+        nonlocal zoomer
+
+        if zoomer:
+            map_canvas.after_cancel(zoomer)
+        zoomer = map_canvas.after(0, zoom, x, y, dz)
 
 
     def on_drag(event):
@@ -186,7 +202,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     root.resizable(False, False)
     root.title("ProjPicker GUI")
 
-    ############
+    ###########
     # top frame
     top_frame_height = root_height // 2
     top_frame = tk.Frame(root, height=top_frame_height)
@@ -207,7 +223,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     map_width = root_width
     map_height = top_frame_height
     osm.set_map_size(map_width, map_height)
-    osm.refresh_map(lat, lon, zoom)
+    osm.draw_map(lat, lon, zoom)
 
     map_canvas.bind("<Button-1>", lambda e: osm.start_dragging(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)
@@ -219,21 +235,21 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<MouseWheel>", on_zoom)
 
-    ############
+    ##############
     # bottom frame
     bottom_frame_height = root_height - top_frame_height
     bottom_frame = tk.Frame(root, height=400)
     bottom_frame.pack_propagate(False)
     bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-    ############
+    ###################
     # bottom-left frame
     bottom_left_frame_width = root_width // 2
     bottom_left_frame = tk.Frame(bottom_frame, width=bottom_left_frame_width)
     bottom_left_frame.pack_propagate(False)
     bottom_left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    ################
+    #######################
     # bottom-left-top frame
     bottom_left_top_frame = tk.Frame(bottom_left_frame)
     bottom_left_top_frame.pack(fill=tk.BOTH, expand=True)
@@ -263,7 +279,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     list_vscrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
     crs_treeview.config(yscrollcommand=list_vscrollbar.set)
 
-    ################
+    ##########################
     # bottom-left-middle frame
     bottom_left_middle_frame = tk.Frame(bottom_left_frame)
     bottom_left_middle_frame.pack(fill=tk.BOTH)
@@ -275,7 +291,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
     crs_treeview.config(xscrollcommand=list_hscrollbar.set)
 
-    ###################
+    ##########################
     # bottom-left-bottom frame
     bottom_left_bottom_frame = tk.Frame(bottom_left_frame)
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
@@ -303,14 +319,14 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     unit_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
     unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    #############
+    ####################
     # bottom-right frame
     bottom_right_frame_width = root_width - bottom_left_frame_width
     bottom_right_frame = tk.Frame(bottom_frame, width=bottom_right_frame_width)
     bottom_right_frame.pack_propagate(False)
     bottom_right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    #################
+    ########################
     # bottom-right-top frame
     bottom_right_top_frame = tk.Frame(bottom_right_frame)
     bottom_right_top_frame.pack(fill=tk.BOTH, expand=True)
@@ -326,7 +342,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
     crs_text.config(xscrollcommand=info_hscrollbar.set)
 
-    ####################
+    ###########################
     # bottom-right-bottom frame
     bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
     bottom_right_bottom_frame.pack(fill=tk.BOTH)

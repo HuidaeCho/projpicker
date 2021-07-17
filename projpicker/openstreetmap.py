@@ -69,7 +69,7 @@ class OpenStreetMap:
         return lat, lon
 
 
-    def download_map(self, lat, lon, z):
+    def draw_map(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
         num_tiles = 2**z
 
@@ -136,11 +136,6 @@ class OpenStreetMap:
                     self.message(f"{tile_url} pasted at {tile_x},{tile_y}")
                 except Exception as e:
                     self.message(f"Failed to download {tile_url}: {e}")
-        return image
-
-
-    def refresh_map(self, lat, lon, z):
-        image = self.download_map(lat, lon, z)
         self.set_image_func(image)
 
 
@@ -156,7 +151,7 @@ class OpenStreetMap:
         lon = self.lon + self.lon_dpp * dx
         self.start_dragging(x, y)
         old_lat = self.lat
-        self.refresh_map(lat, lon, self.z)
+        self.draw_map(lat, lon, self.z)
         return dx, dy if abs(old_lat - self.lat) > sys.float_info.epsilon else 0
 
 
@@ -185,7 +180,7 @@ class OpenStreetMap:
                 lat += (self.lat - lat) * 2
                 lon += (self.lon - lon) * 2
                 self.message(f"zoom out: {z}")
-            self.refresh_map(lat, lon, z)
+            self.draw_map(lat, lon, z)
             self.reset_zoom()
             zoomed = True
         elif ((self.z == self.z_max and self.zoom_accum > 1) or
@@ -217,7 +212,7 @@ class OpenStreetMap:
         z_lon = math.log2(360 / 256 / lon_dps)
         z = math.floor(min(z_lat, z_lon))
 
-        self.refresh_map(lat, lon, z)
+        self.draw_map(lat, lon, z)
 
 
     def get_xy(self, latlon):
