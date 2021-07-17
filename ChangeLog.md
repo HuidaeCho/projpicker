@@ -1,8 +1,16 @@
 # Change log
 
 ## HEAD
-Sat Jul 17 08:31:12 2021 -0400
+Sat Jul 17 13:23:44 2021 -0400
 
+* [`c5c53c3`](https://github.com/HuidaeCho/projpicker/commit/c5c53c3)  Minor refactoring
+* [`f1fdd37`](https://github.com/HuidaeCho/projpicker/commit/f1fdd37)  Minor refactoring
+* [`1db9d91`](https://github.com/HuidaeCho/projpicker/commit/1db9d91)  Cleanup
+
+## v0.1.7.post7
+Sat Jul 17 08:31:22 2021 -0400
+
+* [`81ac0bb`](https://github.com/HuidaeCho/projpicker/commit/81ac0bb)  v0.1.7.post7: Fix bbox drawing for w > e
 * [`cff11e5`](https://github.com/HuidaeCho/projpicker/commit/cff11e5)  v0.1.7.post7: Fix bbox drawing for w > e
 
 ## v0.1.7.post6
