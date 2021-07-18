@@ -344,7 +344,6 @@ def start(bbox=[], single=False, crs_info_func=None):
 
     # text for CRS info
     crs_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
-    crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
     crs_text.pack(fill=tk.BOTH, expand=True)
 
