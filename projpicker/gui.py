@@ -9,8 +9,10 @@ from tkinter import ttk
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
     from .openstreetmap import OpenStreetMap
+    from . import projpicker as ppik
 else:
     from openstreetmap import OpenStreetMap
+    import projpicker as ppik
 
 
 def select_bbox(bbox, single=False, crs_info_func=None):
@@ -168,11 +170,15 @@ def select_bbox(bbox, single=False, crs_info_func=None):
             filt_bbox = filter(lambda b: b.proj_table==proj_table and
                                          b.unit==unit, bbox)
 
+        populate_crs_list(filt_bbox)
+        prev_crs_items.clear()
+
+
+    def populate_crs_list(bbox):
         crs_treeview.delete(*crs_treeview.get_children())
-        for b in filt_bbox:
+        for b in bbox:
             crs_treeview.insert("", tk.END, values=(
                                 b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
-        prev_crs_items.clear()
 
 
     def select():
@@ -183,11 +189,17 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         root.destroy()
 
 
-    # TODO: Hard-coded lat,lon for UNG Gainesville for testing
-    lat = 34.2347566
-    lon = -83.8676613
+    def query():
+        nonlocal bbox
+
+        geoms = query_text.get("1.0", tk.END)
+        bbox = ppik.query_mixed_geoms(geoms)
+        populate_crs_list(bbox)
+
+
+    lat = 0
+    lon = 0
     zoom = 0
-    # End of hard-coding
 
     # root window
     root = tk.Tk()
@@ -262,27 +274,26 @@ def select_bbox(bbox, single=False, crs_info_func=None):
         crs_treeview.heading(name, text=name)
         crs_treeview.column(name, width=width)
 
-    for b in bbox:
-        crs_treeview.insert("", tk.END, values=(
-                            b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+    populate_crs_list(bbox)
+
     crs_treeview.bind("<<TreeviewSelect>>", on_select_crs)
     crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    list_vscrollbar = tk.Scrollbar(bottom_left_top_frame)
-    list_vscrollbar.config(command=crs_treeview.yview)
-    list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
-    crs_treeview.config(yscrollcommand=list_vscrollbar.set)
+    crs_list_vscrollbar = tk.Scrollbar(bottom_left_top_frame)
+    crs_list_vscrollbar.config(command=crs_treeview.yview)
+    crs_list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    crs_treeview.config(yscrollcommand=crs_list_vscrollbar.set)
 
     ##########################
     # bottom-left-middle frame
 
     # horizontal scroll bar for CRS list
-    list_hscrollbar = tk.Scrollbar(bottom_left_frame,
+    crs_list_hscrollbar = tk.Scrollbar(bottom_left_frame,
                                    orient=tk.HORIZONTAL)
-    list_hscrollbar.config(command=crs_treeview.xview)
-    list_hscrollbar.pack(fill=tk.X)#fill=tk.BOTH)
-    crs_treeview.config(xscrollcommand=list_hscrollbar.set)
+    crs_list_hscrollbar.config(command=crs_treeview.xview)
+    crs_list_hscrollbar.pack(fill=tk.X)
+    crs_treeview.config(xscrollcommand=crs_list_hscrollbar.set)
 
     ##########################
     # bottom-left-bottom frame
@@ -314,38 +325,72 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ####################
     # bottom-right frame
-    bottom_right_frame_width = root_width - bottom_left_frame_width
-    bottom_right_frame = tk.Frame(bottom_frame, width=bottom_right_frame_width)
-    bottom_right_frame.pack_propagate(False)
-    bottom_right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    bottom_right_notebook_width = root_width - bottom_left_frame_width
+    bottom_right_notebook = ttk.Notebook(bottom_frame,
+                                         width=bottom_right_notebook_width)
+    bottom_right_notebook.pack_propagate(False)
 
-    ########################
-    # bottom-right-top frame
+    crs_info_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(crs_info_frame, text="CRS Info")
+
+    query_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(query_frame, text="Query")
+
+    bottom_right_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    ################
+    # CRS info frame
 
     # text for CRS info
-    crs_text = tk.Text(bottom_right_frame, width=20, height=1, wrap=tk.NONE)
+    crs_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    info_hscrollbar = tk.Scrollbar(bottom_right_frame, orient=tk.HORIZONTAL)
-    info_hscrollbar.config(command=crs_text.xview)
-    info_hscrollbar.pack(fill=tk.X)
-    crs_text.config(xscrollcommand=info_hscrollbar.set)
+    crs_info_hscrollbar = tk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
+    crs_info_hscrollbar.config(command=crs_text.xview)
+    crs_info_hscrollbar.pack(fill=tk.X)
+    crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
 
-    ###########################
-    # bottom-right-bottom frame
-    bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
-    bottom_right_bottom_frame.pack(fill=tk.BOTH)
+    crs_info_buttons_frame = tk.Frame(crs_info_frame)
+    crs_info_buttons_frame.pack(fill=tk.BOTH)
 
     # buttons
-    select_button = tk.Button(bottom_right_bottom_frame, text="Select",
-                              command=select)
-    select_button.pack(side=tk.LEFT, expand=True)
-    cancel_button = tk.Button(bottom_right_bottom_frame, text="Cancel",
-                              command=root.destroy)
-    cancel_button.pack(side=tk.LEFT, expand=True)
+    tk.Button(crs_info_buttons_frame, text="Select", command=select).pack(
+            side=tk.LEFT, expand=True)
+    tk.Button(crs_info_buttons_frame, text="Cancel", command=root.destroy).pack(
+            side=tk.LEFT, expand=True)
+
+    #############
+    # query frame
+    query_top_frame = tk.Frame(query_frame)
+    query_top_frame.pack(fill=tk.BOTH, expand=True)
+
+    # text for query
+    query_text = tk.Text(query_top_frame, width=20, height=1, wrap=tk.NONE)
+    query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    # vertical scroll bar for query
+    query_vscrollbar = tk.Scrollbar(query_top_frame)
+    query_vscrollbar.config(command=query_text.yview)
+    query_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    query_text.config(yscrollcommand=query_vscrollbar.set)
+
+    # horizontal scroll bar for query
+    query_hscrollbar = tk.Scrollbar(query_frame, orient=tk.HORIZONTAL)
+    query_hscrollbar.config(command=query_text.xview)
+    query_hscrollbar.pack(fill=tk.X)
+    query_text.config(xscrollcommand=query_hscrollbar.set)
+
+    query_buttons_frame = tk.Frame(query_frame)
+    query_buttons_frame.pack(fill=tk.BOTH)
+
+    # buttons
+    tk.Button(query_buttons_frame, text="Query", command=query).pack(
+            side=tk.LEFT, expand=True)
+    tk.Button(query_buttons_frame, text="Cancel", command=root.destroy).pack(
+            side=tk.LEFT, expand=True)
 
     #########
     # run GUI
