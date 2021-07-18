@@ -96,9 +96,9 @@ class OpenStreetMap:
 
     def draw_map(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
-        num_tiles = 2**z
+        ntiles = 2**z
 
-        if num_tiles * 256 < self.height:
+        if ntiles * 256 < self.height:
             lat = 0
 
         # cross the antimeridian
@@ -120,15 +120,14 @@ class OpenStreetMap:
         xmin = x - math.ceil(xoff / 256)
         ymin = max(y - math.ceil(yoff / 256), 0)
         xmax = x + math.ceil((self.width - xoff - 256) / 256)
-        ymax = min(y + math.ceil((self.height - yoff - 256) / 256),
-                   num_tiles - 1)
+        ymax = min(y + math.ceil((self.height - yoff - 256) / 256), ntiles - 1)
 
         self.lat = lat
         self.lon = lon
         self.x = x
         self.y = y
         self.z = z
-        self.num_tiles = num_tiles
+        self.ntiles = ntiles
         self.xmin = xmin
         self.xmax = xmax
         self.ymin = ymin
@@ -141,16 +140,16 @@ class OpenStreetMap:
         self.message(f"image size: {self.width} {self.height}")
 
         for xi in range(xmin, xmax + 1):
-            xt = xi % num_tiles
+            xt = xi % ntiles
             for yi in range(ymin, ymax + 1):
                 try:
                     tile_url = self.get_tile_url(xt, yi, z)
                     tile_image = self.download_tile(xt, yi, z)
                     tile_x = xoff + (xi - x) * 256
                     while tile_x <= -256:
-                        tile_x += 256 * num_tiles
+                        tile_x += 256 * ntiles
                     while tile_x > self.width:
-                        tile_x -= 256 * num_tiles
+                        tile_x -= 256 * ntiles
                     tile_y = yoff + (yi - y) * 256
                     self.draw_tile_func(image, tile_image, tile_x, tile_y)
                     self.message(f"{tile_url} pasted at {tile_x},{tile_y}")
@@ -239,22 +238,39 @@ class OpenStreetMap:
         return [s, n, w, e]
 
 
-    def get_xy(self, latlon):
-        xy = []
-        if not latlon:
-            return xy
+    def repeat_xy(self, xy):
+        outxy = []
 
-        c = []
-        for coor in latlon:
-            c.append(self.latlon_to_canvas(*coor))
-
-        n = self.width // (256 * self.num_tiles)
+        n = self.width // (256 * self.ntiles)
         for i in range(-n//2-1, n//2+2):
-            dx = i * 256 * self.num_tiles
+            dx = i * 256 * self.ntiles
             p = []
-            for coor in c:
+            for coor in xy:
                 x, y = coor
                 x += dx
                 p.append([x, y])
-            xy.append(p)
-        return xy
+            outxy.append(p)
+        return outxy
+
+
+    def get_xy(self, latlon):
+        outxy = []
+        if latlon:
+            xy = []
+            for coor in latlon:
+                xy.append(self.latlon_to_canvas(*coor))
+            outxy.extend(self.repeat_xy(xy))
+        return outxy
+
+
+    def get_bbox_xy(self, bbox):
+        outxy = []
+        if bbox:
+            s, n, w, e = bbox
+            l, t = self.latlon_to_canvas(n, w)
+            r, b = self.latlon_to_canvas(s, e)
+            if w > e:
+                l -= 256 * self.ntiles
+            xy = [[l, t], [r, b]]
+            outxy.extend(self.repeat_xy(xy))
+        return outxy

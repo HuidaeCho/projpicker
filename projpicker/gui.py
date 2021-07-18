@@ -37,8 +37,15 @@ def start(bbox=[], single=False, crs_info_func=None):
     tag_map = "map"
     tag_bbox = "bbox"
     tag_coor = "coor"
+    tag_geoms = "geoms"
     zoomer = None
-    bbox_latlon = []
+    dragged = False
+    drawing_bbox = False
+    complete_drawing = False
+    sel_bbox = []
+    geoms = []
+    prev_xy = []
+    curr_geom = []
 
 
     def create_crs_info(bbox):
@@ -70,26 +77,106 @@ def start(bbox=[], single=False, crs_info_func=None):
 
     def draw_bbox():
         map_canvas.delete(tag_bbox)
-        for xy in osm.get_xy(bbox_latlon):
-            drawn_crs = map_canvas.create_rectangle(xy, tag=tag_bbox,
-                                                    outline="red", width=2,
-                                                    fill="red",
-                                                    stipple="gray12")
-        map_canvas.tag_raise(tag_coor)
+        for xy in osm.get_bbox_xy(sel_bbox):
+            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
+                                        stipple="gray12", tag=tag_bbox)
+
+
+    def adjust_lon(prev_x, x, prev_lon, lon):
+        dlon = lon - prev_lon
+        if x - prev_x > 0:
+            if dlon < 0:
+                lon += 360
+            elif dlon > 360:
+                lon -= 360
+        elif dlon > 0:
+            lon -= 360
+        elif dlon < -360:
+            lon += 360
+        return lon
+
+
+    def draw_geoms(x=None, y=None):
+        point_size = 4
+        point_half_size = point_size // 2
+        outline = "blue"
+        width = 2
+        fill = "blue"
+        stipple = "gray12"
+
+        map_canvas.delete(tag_geoms)
+
+        if curr_geom and x and y:
+            latlon = list(osm.canvas_to_latlon(x, y))
+
+            all_geoms = geoms.copy()
+            g = curr_geom.copy()
+            g.append(latlon)
+
+            if drawing_bbox:
+                ng = len(g)
+                if ng > 0:
+                    s = g[ng-1][0]
+                    n = g[0][0]
+                    w = g[0][1]
+                    e = g[ng-1][1]
+                    all_geoms.extend(["bbox", [s, n, w, e]])
+            elif g:
+                if prev_xy:
+                    latlon[1] = adjust_lon(prev_xy[0], x,
+                                           curr_geom[len(curr_geom)-1][1],
+                                           latlon[1])
+                g.append(latlon)
+                all_geoms.extend(["poly", g])
+        else:
+            all_geoms = geoms.copy()
+
+        geom_type = "point"
+        g = 0
+        ngeoms = len(all_geoms)
+        while g < ngeoms:
+            geom = all_geoms[g]
+            if geom in ("point", "poly", "bbox"):
+                geom_type = geom
+                g += 1
+                geom = all_geoms[g]
+            if type(geom) == list:
+                if geom_type == "point":
+                    for xy in osm.get_xy([geom]):
+                        x, y = xy[0]
+                        oval = (x - point_half_size, y - point_half_size,
+                                x + point_half_size, y + point_half_size)
+                        map_canvas.create_oval(oval, outline=outline,
+                                               width=width, fill=fill,
+                                               stipple=stipple, tag=tag_geoms)
+                elif geom_type == "poly":
+                    for xy in osm.get_xy(geom):
+                        map_canvas.create_polygon(xy, outline=outline,
+                                                  width=width, fill=fill,
+                                                  stipple=stipple,
+                                                  tag=tag_geoms)
+                else:
+                    for xy in osm.get_bbox_xy(geom):
+                        map_canvas.create_rectangle(xy, outline=outline,
+                                                    width=width, fill=fill,
+                                                    stipple=stipple,
+                                                    tag=tag_geoms)
+            g += 1
 
 
     def zoom_map(x, y, dz):
         def zoom(x, y, dz):
             if osm.zoom(x, y, dz):
+                draw_geoms(x, y)
                 draw_bbox()
 
 
         # https://stackoverflow.com/a/63305873/16079666
         # https://stackoverflow.com/a/26703844/16079666
         # https://wiki.tcl-lang.org/page/Tcl+event+loop
-        # XXX: I tried multi-threading in the OpenStreetMap class, but
+        # XXX: Cho tried multi-threading in the OpenStreetMap class, but
         # map_canvas flickered too much; according to the above references,
-        # tkinter doesn't like threading, so I decided to use its native
+        # tkinter doesn't like threading, so he decided to use its native
         # after() and after_cancel() to keep only the last zooming event
         nonlocal zoomer
 
@@ -99,11 +186,17 @@ def start(bbox=[], single=False, crs_info_func=None):
 
 
     def on_drag(event):
+        nonlocal dragged
+
         osm.drag(event.x, event.y)
+        draw_geoms(event.x, event.y)
         draw_bbox()
+        dragged = True
 
 
     def on_move(event):
+        nonlocal dragged
+
         w = event.widget
         latlon = osm.canvas_to_latlon(event.x, event.y)
         w.delete(tag_coor)
@@ -113,6 +206,87 @@ def start(bbox=[], single=False, crs_info_func=None):
         r = w.create_rectangle(w.bbox(t), outline="white", fill="white",
                                tag=tag_coor)
         w.tag_lower(r, t)
+
+        draw_geoms(event.x, event.y)
+
+
+    def on_draw(event):
+        nonlocal dragged, drawing_bbox, complete_drawing
+
+        if complete_drawing:
+            query = ""
+            geom = []
+            if drawing_bbox:
+                if len(curr_geom) == 2:
+                    s = curr_geom[1][0]
+                    n = curr_geom[0][0]
+                    w = curr_geom[0][1]
+                    e = curr_geom[1][1]
+                    geom.extend(["bbox", [s, n, w, e]])
+                    query = f"bbox {s:.4f},{n:.4f},{w:.4f},{e:.4f}"
+                drawing_bbox = False
+            elif len(curr_geom) == 1:
+                lat, lon = curr_geom[0]
+                geom.extend(["point", [lat, lon]])
+                query = f"point {lat:.4f},{lon:.4f}"
+            elif curr_geom:
+                geom.extend(["poly", curr_geom.copy()])
+                query = "poly"
+                for g in curr_geom:
+                    lat, lon = g
+                    query += f" {lat:.4f},{lon:.4f}"
+            geoms.extend(geom)
+            curr_geom.clear()
+            prev_xy.clear()
+            if query:
+                draw_geoms()
+                query_text.insert(tk.INSERT, f"{query}\n")
+        elif not dragged:
+            # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
+            if event.state & 0x4:
+                # Control + ButtonRelease-1
+                drawing_bbox = True
+                curr_geom.clear()
+            elif drawing_bbox and len(curr_geom) == 2:
+                del curr_geom[1]
+            latlon = list(osm.canvas_to_latlon(event.x, event.y))
+            if not drawing_bbox:
+                if prev_xy:
+                    latlon[1] = adjust_lon(prev_xy[0], event.x,
+                                           curr_geom[len(curr_geom)-1][1],
+                                           latlon[1])
+                prev_xy.clear()
+                prev_xy.extend([event.x, event.y])
+            curr_geom.append(latlon)
+
+        dragged = False
+        complete_drawing = False
+        crs_info_query_notebook.select(query_frame)
+
+
+    def on_complete_drawing(event):
+        nonlocal complete_drawing
+
+        # XXX: sometimes, double-click events occur for both clicks and there
+        # is no reliable way to register the first click only using
+        # complete_drawing; a hacky way to handle such cases
+        if not curr_geom:
+            curr_geom.append(osm.canvas_to_latlon(event.x, event.y))
+            prev_xy = [event.x, event.y]
+        complete_drawing = True
+
+
+    def on_cancel_drawing(event):
+        nonlocal drawing_bbox
+
+        drawing_bbox = False
+        curr_geom.clear()
+        prev_xy.clear()
+        draw_geoms()
+
+
+    def on_clear_drawing(event):
+        geoms.clear()
 
 
     def on_select_crs(event):
@@ -142,7 +316,7 @@ def start(bbox=[], single=False, crs_info_func=None):
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
         crs_text.delete("1.0", tk.END)
-        bbox_latlon.clear()
+        sel_bbox.clear()
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
             b = find_bbox(crs)
@@ -151,10 +325,11 @@ def start(bbox=[], single=False, crs_info_func=None):
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
-            bbox_latlon.extend([[n, w], [s, e]])
+            sel_bbox.extend([s, n, w, e])
 
             crs_info_query_notebook.select(crs_info_frame)
 
+        draw_geoms()
         draw_bbox()
 
 
@@ -181,6 +356,8 @@ def start(bbox=[], single=False, crs_info_func=None):
         for b in bbox:
             crs_treeview.insert("", tk.END, values=(
                                 b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+        sel_bbox.clear()
+        draw_bbox()
 
 
     def select():
@@ -194,9 +371,12 @@ def start(bbox=[], single=False, crs_info_func=None):
     def query():
         nonlocal bbox
 
-        geoms = query_text.get("1.0", tk.END)
+        query = query_text.get("1.0", tk.END)
+        geoms.clear()
+        geoms.extend(ppik.parse_mixed_geoms(query))
         bbox = ppik.query_mixed_geoms(geoms)
         populate_crs_list(bbox)
+        draw_geoms()
 
 
     lat = 0
@@ -233,8 +413,12 @@ def start(bbox=[], single=False, crs_info_func=None):
     osm.set_map_size(map_canvas_width, map_canvas_height)
     osm.draw_map(lat, lon, zoom)
 
-    map_canvas.bind("<Button-1>", lambda e: osm.start_dragging(e.x, e.y))
+    map_canvas.bind("<ButtonPress-1>", lambda e: osm.start_dragging(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)
+    map_canvas.bind("<ButtonRelease-1>", on_draw)
+    map_canvas.bind("<Double-Button-1>", on_complete_drawing)
+    map_canvas.bind("<ButtonRelease-3>", on_cancel_drawing)
+    map_canvas.bind("<Double-Button-3>", on_clear_drawing)
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, 1))
