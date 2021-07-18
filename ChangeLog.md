@@ -1,7 +1,10 @@
 # Change log
 
-* [`99d8366`](https://github.com/HuidaeCho/projpicker/commit/99d8366)  (HEAD -> main) changelog
-* [`9ed1feb`](https://github.com/HuidaeCho/projpicker/commit/9ed1feb)  (origin/main, origin/HEAD) Coordinates at top
+* [`2062690`](https://github.com/HuidaeCho/projpicker/commit/2062690)  (HEAD -> main) Refine insert behaviors; Add the Help tab
+* [`9ed26bd`](https://github.com/HuidaeCho/projpicker/commit/9ed26bd)  (origin/main, origin/HEAD) Implement drawing geometries and query
+* [`daf865c`](https://github.com/HuidaeCho/projpicker/commit/daf865c)  changelog
+* [`99d8366`](https://github.com/HuidaeCho/projpicker/commit/99d8366)  changelog
+* [`9ed1feb`](https://github.com/HuidaeCho/projpicker/commit/9ed1feb)  Coordinates at top
 * [`30c3a85`](https://github.com/HuidaeCho/projpicker/commit/30c3a85)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
 * [`2f91a0b`](https://github.com/HuidaeCho/projpicker/commit/2f91a0b)  Update screenshot in docs
 * [`16234dc`](https://github.com/HuidaeCho/projpicker/commit/16234dc)  Update screenshot in README.md
