@@ -75,6 +75,7 @@ def start(bbox=[], single=False, crs_info_func=None):
                                                     outline="red", width=2,
                                                     fill="red",
                                                     stipple="gray12")
+        map_canvas.tag_raise(tag_coor)
 
 
     def zoom_map(x, y, dz):
