@@ -2484,7 +2484,7 @@ def projpicker(
         print_geoms=False,
         overwrite=False,
         append=False,
-        start_gui=False,
+        start_gui=None,
         single=False,
         projpicker_db=None,
         proj_db=None,
@@ -2536,8 +2536,9 @@ def projpicker(
             False.
         append (bool): Whether or not to append output to file. Defaults to
             False.
-        start_gui (bool): Whether or not to start a GUI for selecting part of queries
-            BBox instances. Defaults to False.
+        start_gui (str): "select" to start the GUI for selecting queried BBox
+            instances. "gui" to ignore input geometries and start the GUI
+            immediatenly. None to not start the GUI. Defaults to None.
         single (bool): Whether or not to allow only one selection in the GUI.
             Defaults to False.
         projpicker_db (str): projpicker.db path. Defaults to None.
@@ -2557,6 +2558,9 @@ def projpicker(
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
+
+    if not has_gui:
+        start_gui = None
 
     if fmt not in ("plain", "json", "pretty", "sqlite", "srid"):
         raise Exception(f"{fmt}: Unsupported output format")
@@ -2579,24 +2583,27 @@ def projpicker(
     if append and (not outfile or outfile == "-"):
         raise Exception("Cannot append output to None or stdout")
 
-    if ((create and (infile != "-" or not sys.stdin.isatty())) or
-        (not create and (len(geoms) == 0 or infile != "-" or
-                         not sys.stdin.isatty()))):
-        geoms.extend(read_file(infile))
+    if start_gui == "gui":
+        bbox = gui.start(single=single)
+    else:
+        if ((create and (infile != "-" or not sys.stdin.isatty())) or
+            (not create and (len(geoms) == 0 or infile != "-" or
+                             not sys.stdin.isatty()))):
+            geoms.extend(read_file(infile))
 
-    tidy_lines(geoms)
+        tidy_lines(geoms)
 
-    if print_geoms:
-        pprint.pprint(parse_mixed_geoms(geoms))
-        return []
+        if print_geoms:
+            pprint.pprint(parse_mixed_geoms(geoms))
+            return []
 
-    if len(geoms) == 0:
-        return []
+        if len(geoms) == 0:
+            return []
 
-    bbox = query_mixed_geoms(geoms, projpicker_db)
+        bbox = query_mixed_geoms(geoms, projpicker_db)
 
-    if has_gui and start_gui:
-        bbox = gui.select_bbox(bbox, single)
+        if start_gui == "select":
+            bbox = gui.start(bbox, single)
 
     if max_bbox > 0:
         bbox = bbox[:max_bbox]
@@ -2752,10 +2759,15 @@ def parse():
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
     if has_gui:
-        parser.add_argument(
-                "-g", "--gui",
+        gui_exclusive = parser.add_mutually_exclusive_group()
+        gui_exclusive.add_argument(
+                "-g", "--select-gui",
                 action="store_true",
-                help="start GUI for selecting CRSs")
+                help="start GUI for selecting queried CRSs")
+        gui_exclusive.add_argument(
+                "-G", "--gui",
+                action="store_true",
+                help="ignore input geometries and start GUI immediately")
         parser.add_argument(
                 "-1", "--single",
                 action="store_true",
@@ -2791,10 +2803,15 @@ def main():
     infile = args.input
     outfile = args.output
     if has_gui:
-        start_gui = args.gui
+        if args.select_gui:
+            start_gui = "select"
+        elif args.gui:
+            start_gui = "gui"
+        else:
+            start_gui = None
         single = args.single
     else:
-        start_gui = False
+        start_gui = None
         single = False
     geoms = args.geometry
 

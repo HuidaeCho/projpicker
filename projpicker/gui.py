@@ -15,13 +15,13 @@ else:
     import projpicker as ppik
 
 
-def select_bbox(bbox, single=False, crs_info_func=None):
+def start(bbox=[], single=False, crs_info_func=None):
     """
     Return selected BBox instances. If single is True, it returns a single BBox
     instance in a list.
 
     Args:
-        bbox (list): Queried BBox instances.
+        bbox (list): Queried BBox instances. Defaults to [].
         single (bool): Whether or not a single BBox instance is returned.
             Defaults to False.
         crs_info_func (function): User function used for formatting CRS info.
@@ -150,8 +150,9 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
-
             bbox_latlon.extend([[n, w], [s, e]])
+
+            crs_info_query_notebook.select(crs_info_frame)
 
         draw_bbox()
 
@@ -325,18 +326,18 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ####################
     # bottom-right frame
-    bottom_right_notebook_width = root_width - bottom_left_frame_width
-    bottom_right_notebook = ttk.Notebook(bottom_frame,
-                                         width=bottom_right_notebook_width)
-    bottom_right_notebook.pack_propagate(False)
+    crs_info_query_notebook_width = root_width - bottom_left_frame_width
+    crs_info_query_notebook = ttk.Notebook(bottom_frame,
+                                         width=crs_info_query_notebook_width)
+    crs_info_query_notebook.pack_propagate(False)
 
-    crs_info_frame = tk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(crs_info_frame, text="CRS Info")
+    crs_info_frame = tk.Frame(crs_info_query_notebook)
+    crs_info_query_notebook.add(crs_info_frame, text="CRS Info")
 
-    query_frame = tk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(query_frame, text="Query")
+    query_frame = tk.Frame(crs_info_query_notebook)
+    crs_info_query_notebook.add(query_frame, text="Query")
 
-    bottom_right_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    crs_info_query_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     ################
     # CRS info frame
