@@ -202,13 +202,11 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ###########
     # top frame
-    top_frame_height = root_height // 2
-    top_frame = tk.Frame(root, height=top_frame_height)
-    top_frame.pack_propagate(False)
-    top_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    map_canvas_width = root_width
+    map_canvas_height = root_height // 2
 
-    map_canvas = tk.Canvas(top_frame)
-    map_canvas.pack(fill=tk.BOTH, expand=True)
+    map_canvas = tk.Canvas(root, height=map_canvas_height)
+    map_canvas.pack(fill=tk.BOTH)
 
     osm = OpenStreetMap(
             lambda width, height: map_canvas.delete(tag_map),
@@ -218,9 +216,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
                 map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
                                         tag=tag_map))
 
-    map_width = root_width
-    map_height = top_frame_height
-    osm.set_map_size(map_width, map_height)
+    osm.set_map_size(map_canvas_width, map_canvas_height)
     osm.draw_map(lat, lon, zoom)
 
     map_canvas.bind("<Button-1>", lambda e: osm.start_dragging(e.x, e.y))
@@ -237,7 +233,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ##############
     # bottom frame
-    bottom_frame_height = root_height - top_frame_height
+    bottom_frame_height = root_height - map_canvas_height
     bottom_frame = tk.Frame(root, height=400)
     bottom_frame.pack_propagate(False)
     bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
@@ -261,8 +257,7 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     crs_treeview = ttk.Treeview(
             bottom_left_top_frame, columns=list(crs_cols.keys()),
-            show="headings", selectmode=tk.BROWSE if single else
-                                        tk.EXTENDED)
+            show="headings", selectmode=tk.BROWSE if single else tk.EXTENDED)
     for name, width in crs_cols.items():
         crs_treeview.heading(name, text=name)
         crs_treeview.column(name, width=width)
@@ -276,19 +271,17 @@ def select_bbox(bbox, single=False, crs_info_func=None):
     # vertical scroll bar for CRS list
     list_vscrollbar = tk.Scrollbar(bottom_left_top_frame)
     list_vscrollbar.config(command=crs_treeview.yview)
-    list_vscrollbar.pack(side=tk.LEFT, fill=tk.BOTH)
+    list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     crs_treeview.config(yscrollcommand=list_vscrollbar.set)
 
     ##########################
     # bottom-left-middle frame
-    bottom_left_middle_frame = tk.Frame(bottom_left_frame)
-    bottom_left_middle_frame.pack(fill=tk.BOTH)
 
     # horizontal scroll bar for CRS list
-    list_hscrollbar = tk.Scrollbar(bottom_left_middle_frame,
+    list_hscrollbar = tk.Scrollbar(bottom_left_frame,
                                    orient=tk.HORIZONTAL)
     list_hscrollbar.config(command=crs_treeview.xview)
-    list_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
+    list_hscrollbar.pack(fill=tk.X)#fill=tk.BOTH)
     crs_treeview.config(xscrollcommand=list_hscrollbar.set)
 
     ##########################
@@ -328,19 +321,17 @@ def select_bbox(bbox, single=False, crs_info_func=None):
 
     ########################
     # bottom-right-top frame
-    bottom_right_top_frame = tk.Frame(bottom_right_frame)
-    bottom_right_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for CRS info
-    crs_text = tk.Text(bottom_right_top_frame, width=20, height=1, wrap=tk.NONE)
+    crs_text = tk.Text(bottom_right_frame, width=20, height=1, wrap=tk.NONE)
     crs_text.insert(tk.END, "Select a CRS from the left pane.")
     crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    info_hscrollbar = tk.Scrollbar(bottom_right_top_frame, orient=tk.HORIZONTAL)
+    info_hscrollbar = tk.Scrollbar(bottom_right_frame, orient=tk.HORIZONTAL)
     info_hscrollbar.config(command=crs_text.xview)
-    info_hscrollbar.pack(side=tk.BOTTOM, fill=tk.BOTH)
+    info_hscrollbar.pack(fill=tk.X)
     crs_text.config(xscrollcommand=info_hscrollbar.set)
 
     ###########################
