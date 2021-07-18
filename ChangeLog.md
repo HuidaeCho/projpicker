@@ -1,7 +1,20 @@
 # Change log
 
-* [`2042a28`](https://github.com/HuidaeCho/projpicker/commit/2042a28)  (HEAD -> main) v0.1.7.post9
-* [`4db9d93`](https://github.com/HuidaeCho/projpicker/commit/4db9d93)  (origin/main, origin/HEAD) Fix CRS Info; Display coordinates
+## HEAD
+Sat Jul 17 21:57:21 2021 -0400
+
+* [`1d538cc`](https://github.com/HuidaeCho/projpicker/commit/1d538cc)  Update docs
+* [`7864001`](https://github.com/HuidaeCho/projpicker/commit/7864001)  Rename --gui to --select-gui and add new --gui (-G); Auto-switch to CRS info on select; Rename gui.select\_bbox() to gui.start()
+* [`a2ac27b`](https://github.com/HuidaeCho/projpicker/commit/a2ac27b)  Add Query tab
+* [`52537f2`](https://github.com/HuidaeCho/projpicker/commit/52537f2)  Remove redundant frames
+* [`e925820`](https://github.com/HuidaeCho/projpicker/commit/e925820)  Implement Ctrl+A for select all; Make CRS Info readonly
+
+## v0.1.7.post9
+Sat Jul 17 18:54:50 2021 -0400
+
+* [`1f74e41`](https://github.com/HuidaeCho/projpicker/commit/1f74e41)  changelog
+* [`2042a28`](https://github.com/HuidaeCho/projpicker/commit/2042a28)  v0.1.7.post9
+* [`4db9d93`](https://github.com/HuidaeCho/projpicker/commit/4db9d93)  Fix CRS Info; Display coordinates
 
 ## v0.1.7.post8
 Sat Jul 17 14:02:04 2021 -0400
