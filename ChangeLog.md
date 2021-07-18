@@ -1,8 +1,18 @@
 # Change log
 
 ## HEAD
-Sat Jul 17 21:57:21 2021 -0400
+Sun Jul 18 06:49:32 2021 -0400
 
+* [`9ed1feb`](https://github.com/HuidaeCho/projpicker/commit/9ed1feb)  Coordinates at top
+* [`30c3a85`](https://github.com/HuidaeCho/projpicker/commit/30c3a85)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`2f91a0b`](https://github.com/HuidaeCho/projpicker/commit/2f91a0b)  Update screenshot in docs
+* [`16234dc`](https://github.com/HuidaeCho/projpicker/commit/16234dc)  Update screenshot in README.md
+* [`3b25f0f`](https://github.com/HuidaeCho/projpicker/commit/3b25f0f)  Delete "Select a CRS from the left pane." message; No hint for now
+
+## v0.1.8
+Sat Jul 17 21:58:19 2021 -0400
+
+* [`aa2b2f7`](https://github.com/HuidaeCho/projpicker/commit/aa2b2f7)  changelog
 * [`1d538cc`](https://github.com/HuidaeCho/projpicker/commit/1d538cc)  Update docs
 * [`7864001`](https://github.com/HuidaeCho/projpicker/commit/7864001)  Rename --gui to --select-gui and add new --gui (-G); Auto-switch to CRS info on select; Rename gui.select\_bbox() to gui.start()
 * [`a2ac27b`](https://github.com/HuidaeCho/projpicker/commit/a2ac27b)  Add Query tab
