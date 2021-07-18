@@ -2,9 +2,10 @@
 This module implements the GUI of ProjPicker.
 """
 
-import re
 import tkinter as tk
 from tkinter import ttk
+import textwrap
+import webbrowser
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -36,8 +37,9 @@ def start(bbox=[], single=False, crs_info_func=None):
     all_units = "all units"
     tag_map = "map"
     tag_bbox = "bbox"
-    tag_coor = "coor"
     tag_geoms = "geoms"
+    tag_doc = "doc"
+    doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     dragged = False
     drawing_bbox = False
@@ -148,7 +150,7 @@ def start(bbox=[], single=False, crs_info_func=None):
                                 x + point_half_size, y + point_half_size)
                         map_canvas.create_oval(oval, outline=outline,
                                                width=width, fill=fill,
-                                               stipple=stipple, tag=tag_geoms)
+                                               tag=tag_geoms)
                 elif geom_type == "poly":
                     for xy in osm.get_xy(geom):
                         map_canvas.create_polygon(xy, outline=outline,
@@ -195,18 +197,8 @@ def start(bbox=[], single=False, crs_info_func=None):
 
 
     def on_move(event):
-        nonlocal dragged
-
-        w = event.widget
         latlon = osm.canvas_to_latlon(event.x, event.y)
-        w.delete(tag_coor)
-        t = w.create_text(w.winfo_width(), w.winfo_height(), anchor=tk.SE,
-                          text=f" {latlon[0]:.2f}, {latlon[1]:.2f} ",
-                          tag=tag_coor)
-        r = w.create_rectangle(w.bbox(t), outline="white", fill="white",
-                               tag=tag_coor)
-        w.tag_lower(r, t)
-
+        coor_label.config(text=f" {latlon[0]:.4f}, {latlon[1]:.4f} ")
         draw_geoms(event.x, event.y)
 
 
@@ -239,8 +231,33 @@ def start(bbox=[], single=False, crs_info_func=None):
             curr_geom.clear()
             prev_xy.clear()
             if query:
+                query += "\n"
+                # https://stackoverflow.com/a/35855352/16079666
+                # don't use .selection_get()
+                ranges = query_text.tag_ranges(tk.SEL)
+                if ranges:
+                    name = query_text.get(*ranges).strip()
+                    if not name.endswith(":"):
+                        if not name.startswith(":"):
+                            name = f":{name}:"
+                        else:
+                            name = ""
+                    if name and ppik.geom_var_re.match(name):
+                        query = query.replace(" ", f" {name} ")
+                    index = ranges[0].string
+                else:
+                    index = query_text.index(tk.INSERT)
+                line, col = list(map(lambda x: int(x), index.split(".")))
+                if col > 0:
+                    query = "\n" + query
+                    line += 1
+                if ranges:
+                    query_text.replace(*ranges, query)
+                else:
+                    query_text.insert(tk.INSERT, query)
+                query_text.mark_set(tk.INSERT, f"{line+1}.0")
+                bottom_right_notebook.select(query_frame)
                 draw_geoms()
-                query_text.insert(tk.INSERT, f"{query}\n")
         elif not dragged:
             # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
             if event.state & 0x4:
@@ -261,7 +278,6 @@ def start(bbox=[], single=False, crs_info_func=None):
 
         dragged = False
         complete_drawing = False
-        crs_info_query_notebook.select(query_frame)
 
 
     def on_complete_drawing(event):
@@ -327,7 +343,7 @@ def start(bbox=[], single=False, crs_info_func=None):
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            crs_info_query_notebook.select(crs_info_frame)
+            bottom_right_notebook.select(crs_info_frame)
 
         draw_geoms()
         draw_bbox()
@@ -373,8 +389,14 @@ def start(bbox=[], single=False, crs_info_func=None):
 
         query = query_text.get("1.0", tk.END)
         geoms.clear()
-        geoms.extend(ppik.parse_mixed_geoms(query))
-        bbox = ppik.query_mixed_geoms(geoms)
+        log_text.delete("1.0", tk.END)
+        try:
+            geoms.extend(ppik.parse_mixed_geoms(query))
+            bbox = ppik.query_mixed_geoms(geoms)
+        except Exception as e:
+            log_text.insert(tk.END, e)
+            bottom_right_notebook.select(log_frame)
+
         populate_crs_list(bbox)
         draw_geoms()
 
@@ -511,41 +533,24 @@ def start(bbox=[], single=False, crs_info_func=None):
 
     ####################
     # bottom-right frame
-    crs_info_query_notebook_width = root_width - bottom_left_frame_width
-    crs_info_query_notebook = ttk.Notebook(bottom_frame,
-                                         width=crs_info_query_notebook_width)
-    crs_info_query_notebook.pack_propagate(False)
+    bottom_right_notebook_width = root_width - bottom_left_frame_width
+    bottom_right_notebook = ttk.Notebook(bottom_frame,
+                                         width=bottom_right_notebook_width)
+    bottom_right_notebook.pack_propagate(False)
 
-    crs_info_frame = tk.Frame(crs_info_query_notebook)
-    crs_info_query_notebook.add(crs_info_frame, text="CRS Info")
+    query_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(query_frame, text="Query")
 
-    query_frame = tk.Frame(crs_info_query_notebook)
-    crs_info_query_notebook.add(query_frame, text="Query")
+    crs_info_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(crs_info_frame, text="CRS Info")
 
-    crs_info_query_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    log_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(log_frame, text="Log")
 
-    ################
-    # CRS info frame
+    help_frame = tk.Frame(bottom_right_notebook)
+    bottom_right_notebook.add(help_frame, text="Help")
 
-    # text for CRS info
-    crs_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
-    crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
-    crs_text.pack(fill=tk.BOTH, expand=True)
-
-    # horizontal scroll bar for CRS info
-    crs_info_hscrollbar = tk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
-    crs_info_hscrollbar.config(command=crs_text.xview)
-    crs_info_hscrollbar.pack(fill=tk.X)
-    crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
-
-    crs_info_buttons_frame = tk.Frame(crs_info_frame)
-    crs_info_buttons_frame.pack(fill=tk.BOTH)
-
-    # buttons
-    tk.Button(crs_info_buttons_frame, text="Select", command=select).pack(
-            side=tk.LEFT, expand=True)
-    tk.Button(crs_info_buttons_frame, text="Cancel", command=root.destroy).pack(
-            side=tk.LEFT, expand=True)
+    bottom_right_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #############
     # query frame
@@ -576,6 +581,91 @@ def start(bbox=[], single=False, crs_info_func=None):
             side=tk.LEFT, expand=True)
     tk.Button(query_buttons_frame, text="Cancel", command=root.destroy).pack(
             side=tk.LEFT, expand=True)
+
+    ################
+    # CRS info frame
+
+    # text for CRS info
+    crs_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
+    crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
+    crs_text.pack(fill=tk.BOTH, expand=True)
+
+    # horizontal scroll bar for CRS info
+    crs_info_hscrollbar = tk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
+    crs_info_hscrollbar.config(command=crs_text.xview)
+    crs_info_hscrollbar.pack(fill=tk.X)
+    crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
+
+    crs_info_buttons_frame = tk.Frame(crs_info_frame)
+    crs_info_buttons_frame.pack(fill=tk.BOTH)
+
+    # buttons
+    tk.Button(crs_info_buttons_frame, text="Select", command=select).pack(
+            side=tk.LEFT, expand=True)
+    tk.Button(crs_info_buttons_frame, text="Cancel", command=root.destroy).pack(
+            side=tk.LEFT, expand=True)
+
+    ###########
+    # log frame
+    log_top_frame = tk.Frame(log_frame)
+    log_top_frame.pack(fill=tk.BOTH, expand=True)
+
+    # text for log
+    log_text = tk.Text(log_top_frame, width=20, height=1, wrap=tk.NONE)
+    log_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
+    log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    # vertical scroll bar for log
+    log_vscrollbar = tk.Scrollbar(log_top_frame)
+    log_vscrollbar.config(command=log_text.yview)
+    log_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    log_text.config(yscrollcommand=log_vscrollbar.set)
+
+    # horizontal scroll bar for log
+    log_hscrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    log_hscrollbar.config(command=log_text.xview)
+    log_hscrollbar.pack(fill=tk.X)
+    log_text.config(xscrollcommand=log_hscrollbar.set)
+
+    ############
+    # help frame
+
+    # text for help
+    help_text = tk.Text(help_frame, width=20, height=1, wrap=tk.NONE)
+    help_text.insert(tk.END, textwrap.dedent(f"""\
+            Map operations
+            ==============
+            Pan:                        Drag using left button
+            Zoom:                       Scroll
+            Draw point:                 Double left click
+            Start drawing poly:         Left click
+            Start drawing bbox:         Control + left click
+            Complete drawing poly/bbox: Double left click
+            Cancel drawing poly/bbox:   Right click
+            Clear geometries:           Double right click
+
+            Geometry variables
+            ==================
+            To define a geometry variable, type and highlight
+            a name, then create a geometry.
+
+            Documentation
+            =============
+            {doc_url}"""))
+    help_text.tag_add(tag_doc, "end - 1 line", "end")
+    help_text.tag_config(tag_doc, foreground="blue", underline=True)
+    help_text.tag_bind(tag_doc, "<Enter>",
+                       lambda e: help_text.config(cursor="hand2"))
+    help_text.tag_bind(tag_doc, "<Leave>",
+                       lambda e: help_text.config(cursor=""))
+    help_text.tag_bind(tag_doc, "<Button-1>",
+                       lambda e: webbrowser.open(doc_url))
+    help_text.config(state=tk.DISABLED)
+    help_text.pack(fill=tk.BOTH, expand=True)
+
+    # label for coordinates
+    coor_label = tk.Label(bottom_right_notebook)
+    coor_label.place(relx=1, rely=0, anchor=tk.NE)
 
     #########
     # run GUI
