@@ -16,20 +16,30 @@ else:
     import projpicker as ppik
 
 
-def start(bbox=[], single=False, crs_info_func=None):
+def start(
+        geoms=None,
+        bbox=[],
+        single=False,
+        crs_info_func=None,
+        projpicker_db=None):
     """
-    Return selected BBox instances. If single is True, it returns a single BBox
-    instance in a list.
+    Start the GUI. Parsable geometries by geoms or queried BBox instances by
+    bbox can be specified optionally. If both are given, bbox is ignored and
+    only geoms is used. If single is True, it returns a single BBox instance in
+    a list.
 
     Args:
+        geoms (list or str): Parsable geometries. Defaults to None.
         bbox (list): Queried BBox instances. Defaults to [].
         single (bool): Whether or not a single BBox instance is returned.
             Defaults to False.
         crs_info_func (function): User function used for formatting CRS info.
             Defaults to None in which case the default function is provided.
+        projpicker_db (str): projpicker.db path. Defaults to None.
 
     Returns:
-        list: List of selected BBox instances.
+        list, list, list: Lists of selected BBox instances, queried BBox
+        instances sorted by area, and parsed geometries.
     """
     sel_crs = []
     prev_crs_items = []
@@ -45,7 +55,6 @@ def start(bbox=[], single=False, crs_info_func=None):
     drawing_bbox = False
     complete_drawing = False
     sel_bbox = []
-    geoms = []
     prev_xy = []
     curr_geom = []
 
@@ -392,7 +401,7 @@ def start(bbox=[], single=False, crs_info_func=None):
         log_text.delete("1.0", tk.END)
         try:
             geoms.extend(ppik.parse_mixed_geoms(query))
-            bbox = ppik.query_mixed_geoms(geoms)
+            bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
         except Exception as e:
             log_text.insert(tk.END, e)
             bottom_right_notebook.select(log_frame)
@@ -404,6 +413,32 @@ def start(bbox=[], single=False, crs_info_func=None):
     lat = 0
     lon = 0
     zoom = 0
+
+    # parse geometries if given
+    query_string = ""
+    if geoms:
+        geoms = ppik.parse_mixed_geoms(geoms)
+        geom_type = "point"
+        for geom in geoms:
+            if geom in ("point", "poly", "bbox"):
+                line = geom_type = geom
+            elif type(geom) == str:
+                line = geom
+            else:
+                line = ""
+                if geom_type == "poly":
+                    for coor in geom:
+                        line += ("," if line else "") + f"{coor[0]},{coor[1]}"
+                else:
+                    for coor in geom:
+                        line += ("," if line else "") + f"{coor}"
+            query_string += line + "\n"
+        bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
+    else:
+        geoms = []
+
+    #####
+    # GUI
 
     # root window
     root = tk.Tk()
@@ -450,6 +485,10 @@ def start(bbox=[], single=False, crs_info_func=None):
     map_canvas.bind("<MouseWheel>",
                     lambda e: zoom_map(e.x, e.y, 1 if e.delta > 0 else -1))
     map_canvas.bind("<Motion>", on_move)
+
+    # draw geometries if given
+    if geoms:
+        draw_geoms()
 
     ##############
     # bottom frame
@@ -559,6 +598,7 @@ def start(bbox=[], single=False, crs_info_func=None):
 
     # text for query
     query_text = tk.Text(query_top_frame, width=20, height=1, wrap=tk.NONE)
+    query_text.insert(tk.INSERT, query_string)
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for query
@@ -671,4 +711,4 @@ def start(bbox=[], single=False, crs_info_func=None):
     # run GUI
     root.mainloop()
 
-    return [find_bbox(crs) for crs in sel_crs]
+    return [find_bbox(crs) for crs in sel_crs], bbox, geoms

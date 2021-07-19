@@ -2584,7 +2584,7 @@ def projpicker(
         raise Exception("Cannot append output to None or stdout")
 
     if start_gui == "gui":
-        bbox = gui.start(single=single)
+        bbox, _, _ = gui.start(single=single)
     else:
         if ((create and (infile != "-" or not sys.stdin.isatty())) or
             (not create and (len(geoms) == 0 or infile != "-" or
@@ -2600,10 +2600,10 @@ def projpicker(
         if len(geoms) == 0:
             return []
 
-        bbox = query_mixed_geoms(geoms, projpicker_db)
-
         if start_gui == "select":
-            bbox = gui.start(bbox, single)
+            bbox, _, _ = gui.start(geoms, single=single)
+        else:
+            bbox = query_mixed_geoms(geoms, projpicker_db)
 
     if max_bbox > 0:
         bbox = bbox[:max_bbox]
