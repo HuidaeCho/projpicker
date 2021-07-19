@@ -87,15 +87,15 @@ Geom = collections.namedtuple("Geom", "is_latlon type geom")
 ################################################################################
 # generic
 
-def message(msg="", end=None):
+def message(*args, end=None):
     """
-    Print msg to stderr immediately.
+    Print args to stderr immediately.
 
     Args:
-        msg (str): Message to print. Defaults to "".
+        args (str): Arguments to print. Passed to print().
         end (str): Passed to print(). Defaults to None.
     """
-    print(msg, end=end, file=sys.stderr, flush=True)
+    print(*args, end=end, file=sys.stderr, flush=True)
 
 
 def read_file(infile="-"):
@@ -687,7 +687,7 @@ def create_projpicker_db(
             proj_cur.execute(sql)
             nrow = 1
             for row in proj_cur.fetchall():
-                message("\b"*80+f"{nrow}/{nrows}", "")
+                message("\b"*80+f"{nrow}/{nrows}", end="")
                 (proj_table, crs_name,
                  crs_auth, crs_code,
                  usg_auth, usg_code,
@@ -751,7 +751,7 @@ def write_bbox_db(
         nrows = len(bbox)
         nrow = 1
         for row in bbox:
-            message("\b"*80+f"{nrow}/{nrows}", "")
+            message("\b"*80+f"{nrow}/{nrows}", end="")
             sql = """INSERT INTO bbox
                      VALUES (?, ?,
                              ?, ?, ?, ?, ?, ?,
@@ -1389,7 +1389,7 @@ def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
         nrows = len(bbox)
         nrow = 1
         for b in bbox:
-            message("\b"*80+f"Matching... {nrow}/{nrows}", "")
+            message("\b"*80+f"Matching... {nrow}/{nrows}", end="")
             crs = f"{b.crs_auth_name}:{b.crs_code}"
             if len(geom) == 2:
                 x2, y2 = transform_latlon_point(geom_latlon, crs)

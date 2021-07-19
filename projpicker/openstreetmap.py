@@ -24,11 +24,12 @@ class OpenStreetMap:
         self.zoom_accum = 0
         # TODO: Tile caching mechanism
         self.tiles = {}
+        self.verbose=True
 
 
-    def message(self, msg="", end=None):
+    def message(self, *args, end=None):
         if self.verbose:
-            print(msg, end=end, file=sys.stderr, flush=True)
+            print(*args, end=end, file=sys.stderr, flush=True)
 
 
     def set_map_size(self, width, height):
@@ -114,8 +115,8 @@ class OpenStreetMap:
         s, e = self.tile_to_latlon(x + 1, y + 1, z)
         xo, yo = self.latlon_to_tile(n, w, z)
 
-        xoff = self.width / 2 - (xc - xo) * 256
-        yoff = self.height / 2 - (yc - yo) * 256
+        xoff = int(self.width / 2 - (xc - xo) * 256)
+        yoff = int(self.height / 2 - (yc - yo) * 256)
 
         xmin = x - math.ceil(xoff / 256)
         ymin = max(y - math.ceil(yoff / 256), 0)
@@ -137,7 +138,7 @@ class OpenStreetMap:
 
         image = self.create_image_func(self.width, self.height)
 
-        self.message(f"image size: {self.width} {self.height}")
+        self.message("image size:", self.width, self.height)
 
         for xi in range(xmin, xmax + 1):
             xt = xi % ntiles
@@ -190,12 +191,12 @@ class OpenStreetMap:
                 # each zoom in doubles
                 x = (x + self.width / 2) / 2
                 y = (y + self.height / 2) / 2
-                self.message(f"zoom in: {z}")
+                self.message("zoom in:", z)
             else:
                 # each zoom out halves
                 x = self.width - x
                 y = self.height - y
-                self.message(f"zoom out: {z}")
+                self.message("zoom out:", z)
             # pinned zoom at x,y
             # lat,lon at x,y
             lat, lon = self.canvas_to_latlon(x, y)
