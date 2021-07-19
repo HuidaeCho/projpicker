@@ -564,7 +564,7 @@ def start(
     bottom_left_bottom_frame = tk.Frame(bottom_left_frame)
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
-    # list of projection types
+    # list of proj_tables
     proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10,
                                        state="readonly")
     proj_table_combobox.bind("<<ComboboxSelected>>",
