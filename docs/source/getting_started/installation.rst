@@ -16,6 +16,7 @@ If installed with pip, ProjPicker uses the following standard modules:
 - `json <https://docs.python.org/3/library/json.html>`_
 - `pprint <https://docs.python.org/3/library/pprint.html>`_
 - `tkinter <https://docs.python.org/3/library/tkinter.html>`_
+- `tkinter.ttk <https://docs.python.org/3/library/tkinter.ttk.html>`_
 - `urllib.request <https://docs.python.org/3/library/urllib.request.html>`_
 - `textwrap <https://docs.python.org/3/library/textwrap.html>`_
 - `webbrowser <https://docs.python.org/3/library/webbrowser.html>`_
