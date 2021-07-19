@@ -240,7 +240,6 @@ class OpenStreetMap:
 
     def repeat_xy(self, xy):
         outxy = []
-
         n = self.width // (256 * self.ntiles)
         for i in range(-n//2-1, n//2+2):
             dx = i * 256 * self.ntiles
