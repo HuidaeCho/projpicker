@@ -57,6 +57,8 @@ def start(
     sel_bbox = []
     prev_xy = []
     curr_geom = []
+    proj_tables = []
+    units = []
 
 
     def create_crs_info(bbox):
@@ -359,7 +361,7 @@ def start(
 
 
     def on_select_proj_table_or_unit(event):
-        proj_table = projection_types[proj_table_combobox.current()]
+        proj_table = proj_tables[proj_table_combobox.current()]
         unit = units[unit_combobox.current()]
 
         if proj_table == all_proj_tables and unit == all_units:
@@ -386,12 +388,14 @@ def start(
 
 
     def populate_filters(bbox):
-        projection_types = [all_proj_tables]
-        projection_types.extend(sorted(set([b.proj_table for b in bbox])))
-        proj_table_combobox["values"] = projection_types
+        proj_tables.clear()
+        proj_tables.append(all_proj_tables)
+        proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
+        proj_table_combobox["values"] = proj_tables
         proj_table_combobox.set(all_proj_tables)
 
-        units = [all_units]
+        units.clear()
+        units.append(all_units)
         units.extend(sorted(set([b.unit for b in bbox])))
         unit_combobox["values"] = units
         unit_combobox.set(all_units)
