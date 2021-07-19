@@ -24,7 +24,6 @@ class OpenStreetMap:
         self.zoom_accum = 0
         # TODO: Tile caching mechanism
         self.tiles = {}
-        self.verbose=True
 
 
     def message(self, *args, end=None):
