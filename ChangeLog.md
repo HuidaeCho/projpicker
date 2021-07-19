@@ -1,7 +1,13 @@
 # Change log
 
-* [`2062690`](https://github.com/HuidaeCho/projpicker/commit/2062690)  (HEAD -> main) Refine insert behaviors; Add the Help tab
-* [`9ed26bd`](https://github.com/HuidaeCho/projpicker/commit/9ed26bd)  (origin/main, origin/HEAD) Implement drawing geometries and query
+## HEAD
+Sun Jul 18 20:12:08 2021 -0400
+
+* [`cb7ed61`](https://github.com/HuidaeCho/projpicker/commit/cb7ed61)  Update docs
+* [`c3efe93`](https://github.com/HuidaeCho/projpicker/commit/c3efe93)  GUI now accepts input geometries and returns queried bbox and parsed geometries
+* [`c3760e9`](https://github.com/HuidaeCho/projpicker/commit/c3760e9)  Refine insert behaviors; Add the Help tab
+* [`2062690`](https://github.com/HuidaeCho/projpicker/commit/2062690)  Refine insert behaviors; Add the Help tab
+* [`9ed26bd`](https://github.com/HuidaeCho/projpicker/commit/9ed26bd)  Implement drawing geometries and query
 * [`daf865c`](https://github.com/HuidaeCho/projpicker/commit/daf865c)  changelog
 * [`99d8366`](https://github.com/HuidaeCho/projpicker/commit/99d8366)  changelog
 * [`9ed1feb`](https://github.com/HuidaeCho/projpicker/commit/9ed1feb)  Coordinates at top
