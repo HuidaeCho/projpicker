@@ -565,13 +565,15 @@ def start(
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list of projection types
-    proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
+    proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10,
+                                       state="readonly")
     proj_table_combobox.bind("<<ComboboxSelected>>",
                              on_select_proj_table_or_unit)
     proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     # list of units
-    unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
+    unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10,
+                                 state="readonly")
     unit_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
     unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
