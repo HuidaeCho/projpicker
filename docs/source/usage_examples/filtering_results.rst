@@ -60,4 +60,4 @@ Python
     bbox = ppik.query_points([[34.2348, -83.8677], [33.7490, -84.3880]])
 
     # start GUI
-    bbox, _, _ = ppik.gui.start(bbox)
+    bbox, *_ = ppik.gui.start(bbox)
