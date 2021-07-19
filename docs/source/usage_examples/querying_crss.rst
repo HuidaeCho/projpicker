@@ -163,6 +163,12 @@ Python
 Postfix logical operations
 --------------------------
 
+.. figure:: gui_postfix.png
+   :align: center
+   :alt: GUI for querying CRSs using postfix logical operations
+
+   GUI for querying CRSs using postfix logical operations
+
 Shell
 ^^^^^
 

@@ -33,7 +33,7 @@ Python
 GUI
 ---
 
-.. figure:: projpicker_gui.png
+.. figure:: gui_filtering.png
    :align: center
    :alt: GUI for selecting a subset of queried results
 
