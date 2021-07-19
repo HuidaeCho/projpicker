@@ -8,9 +8,11 @@ import sqlite3
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .common import pos_float_pat, coor_sep_pat, get_float, BBox
+    from .common import (pos_float_pat, coor_sep_pat, get_float,
+                         query_using_cursor)
 else:
-    from common import pos_float_pat, coor_sep_pat, get_float, BBox
+    from common import (pos_float_pat, coor_sep_pat, get_float,
+                        query_using_cursor)
 
 # symbols for degrees, minutes, and seconds (DMS)
 # degree: [°od] (alt+0 in xterm for °)
@@ -319,32 +321,31 @@ def query_point_using_cursor(
         projpicker_cur,
         point,
         unit="any",
+        proj_table="any",
         negate=False):
     """
-    Return a list of BBox instances in unit that completely contain an input
-    point geometry defined by latitude and longitude in decimal degrees. Use
-    the negate argument to return non-containing BBox instances. Each BBox
-    instance is a named tuple with all the columns from the bbox table in
-    projpicker.db. This function is used to perform a union operation on BBox
-    instances consecutively. Results are sorted by area from the smallest to
-    largest.
+    Return a list of BBox instances in unit in proj_table that completely
+    contain an input point geometry defined by latitude and longitude in
+    decimal degrees. Use the negate argument to return non-containing BBox
+    instances. Each BBox instance is a named tuple with all the columns from
+    the bbox table in projpicker.db. This function is used to perform a union
+    operation on BBox instances consecutively. Results are sorted by area from
+    the smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         point (list or str): List of latitude and longitude floats in decimal
             degrees or parsable str of latitude and longitude. See
             parse_point().
-        unit (str): "any", unit values from projpicker.db.
+        unit (str): Unit values from projpicker.db. Defaults to "any".
+        proj_table (str): Proj table values from projpicker.db. Defaults to
+            "any".
         negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    point = parse_point(point)
-    outbbox = []
-
-    lat, lon = point
-
+    lat, lon = parse_point(point)
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
@@ -356,53 +357,45 @@ def query_point_using_cursor(
                        {lon} BETWEEN west_lon AND east_lon) OR
                       (west_lon > east_lon AND
                        ({lon} BETWEEN -180 AND east_lon OR
-                        {lon} BETWEEN west_lon AND 180))) AND_UNIT)
+                        {lon} BETWEEN west_lon AND 180)))
+                     AND_UNIT AND_PROJ_TABLE)
               ORDER BY area_sqkm,
                        proj_table,
                        crs_auth_name, crs_code,
                        usage_auth_name, usage_code,
                        extent_auth_name, extent_code"""
-    if unit == "any":
-        sql = sql.replace("AND_UNIT", "")
-        projpicker_cur.execute(sql)
-    else:
-        sql = sql.replace("AND_UNIT", "AND unit = ?")
-        projpicker_cur.execute(sql, (unit,))
-    for row in map(BBox._make, projpicker_cur.fetchall()):
-        outbbox.append(row)
-    return outbbox
+    return query_using_cursor(projpicker_cur, sql, unit, proj_table)
 
 
 def query_bbox_using_cursor(
         projpicker_cur,
         bbox,
         unit="any",
+        proj_table="any",
         negate=False):
     """
-    Return a list of BBox instances in unit that completely contain an input
-    bbox geometry defined by sout, north, west, and east using a database
-    cursor. Use the negate argument to return non-containing BBox instances.
-    Each BBox instance is a named tuple with all the columns from the bbox
-    table in projpicker.db. This function is used to perform a union operation
-    on bbox rows consecutively. Results are sorted by area from the smallest to
-    largest.
+    Return a list of BBox instances in unit in proj_table that completely
+    contain an input bbox geometry defined by sout, north, west, and east using
+    a database cursor. Use the negate argument to return non-containing BBox
+    instances. Each BBox instance is a named tuple with all the columns from
+    the bbox table in projpicker.db. This function is used to perform a union
+    operation on bbox rows consecutively. Results are sorted by area from the
+    smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         bbox (list or str): List of south, north, west, and east floats in
             decimal degrees or parsable str of south, north, west, and east.
             See parse_bbox().
-        unit (str): "any", unit values from projpicker.db.
+        unit (str): Unit values from projpicker.db. Defaults to "any".
+        proj_table (str): Proj table values from projpicker.db. Defaults to
+            "any".
         negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    bbox = parse_bbox(bbox)
-    outbbox = []
-
-    s, n, w, e = bbox
-
+    s, n, w, e = parse_bbox(bbox)
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
@@ -423,18 +416,11 @@ def query_bbox_using_cursor(
                            {e} BETWEEN west_lon AND 180))) OR
                         ({w} > {e} AND
                          {e} BETWEEN -180 AND east_lon AND
-                         {w} BETWEEN west_lon AND 180)))) AND_UNIT)
+                         {w} BETWEEN west_lon AND 180))))
+                     AND_UNIT AND_PROJ_TABLE)
               ORDER BY area_sqkm,
                        proj_table,
                        crs_auth_name, crs_code,
                        usage_auth_name, usage_code,
                        extent_auth_name, extent_code"""
-    if unit == "any":
-        sql = sql.replace("AND_UNIT", "")
-        projpicker_cur.execute(sql)
-    else:
-        sql = sql.replace("AND_UNIT", "AND unit = ?")
-        projpicker_cur.execute(sql, (unit,))
-    for row in map(BBox._make, projpicker_cur.fetchall()):
-        outbbox.append(row)
-    return outbbox
+    return query_using_cursor(projpicker_cur, sql, unit, proj_table)

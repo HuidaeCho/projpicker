@@ -125,6 +125,20 @@ Currently, the following units are supported:
 
 Commonly used units are ``degree``, ``meter``, and ``US foot``.
 
+CRS types
+---------
+
+The PROJ database defines separate tables for different CRS types and these table names are copied to the ``proj_table`` column in projpicker.db.
+A ``proj_table=any`` or ``proj_table=`` followed by a CRS table name restricts queries to that CRS type.
+Currently, the following PROJ table names are supported:
+
+- ``compound_crs``
+- ``geodetic_crs``
+- ``projected_crs``
+- ``vertical_crs``
+
+Commonly used CRS types are ``projected_crs`` and ``geodetic_crs``.
+
 Geometry types
 --------------
 

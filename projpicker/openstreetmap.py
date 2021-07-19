@@ -172,7 +172,9 @@ class OpenStreetMap:
         lat, lon = self.canvas_to_latlon(x, y)
         old_lat = self.lat
         self.draw_map(lat, lon, self.z)
-        return dx, dy if abs(old_lat - self.lat) > sys.float_info.epsilon else 0
+        if abs(old_lat - self.lat) <= sys.float_info.epsilon:
+            dy = 0
+        return dx, dy
 
 
     def reset_zoom(self):

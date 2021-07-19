@@ -71,3 +71,49 @@ def get_float(x):
         except:
             x = None
     return x
+
+
+def query_using_cursor(
+        projpicker_cur,
+        sql,
+        unit="any",
+        proj_table="any"):
+    """
+    Return a list of BBox instances in unit in proj_table using a SQL
+    statement.
+
+    Args:
+        projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
+        sql (str): SQL statement with optional AND_UNIT and AND_PROJ_TABLE.
+        unit (str): Unit values from projpicker.db. Defaults to "any".
+        proj_table (str): Proj table values from projpicker.db. Defaults to
+            "any".
+
+    Returns:
+        list: List of queried BBox instances sorted by area.
+    """
+    outbbox = []
+    params = []
+    if unit == "any" and proj_table == "any":
+        sql = sql.replace(
+                "AND_UNIT", "").replace(
+                "AND_PROJ_TABLE", "")
+    elif unit == "any":
+        sql = sql.replace(
+                "AND_UNIT", "").replace(
+                "AND_PROJ_TABLE", "AND proj_table = ?")
+        params.append(proj_table)
+    elif proj_table == "any":
+        sql = sql.replace(
+                "AND_PROJ_TABLE", "").replace(
+                "AND_UNIT", "AND unit = ?")
+        params.append(unit)
+    else:
+        sql = sql.replace(
+                "AND_UNIT", "AND unit = ?").replace(
+                "AND_PROJ_TABLE", "AND proj_table = ?")
+        params.extend([unit, proj_table])
+    projpicker_cur.execute(sql, params)
+    for row in map(BBox._make, projpicker_cur.fetchall()):
+        outbbox.append(row)
+    return outbbox

@@ -8,9 +8,11 @@ import sqlite3
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .common import pos_float_pat, coor_sep_pat, get_float, BBox
+    from .common import (pos_float_pat, coor_sep_pat, get_float,
+                         query_using_cursor)
 else:
-    from common import pos_float_pat, coor_sep_pat, get_float, BBox
+    from common import (pos_float_pat, coor_sep_pat, get_float,
+                        query_using_cursor)
 
 # x,y
 xy_pat = f"([+-]?{pos_float_pat}){coor_sep_pat}([+-]?{pos_float_pat})"
@@ -174,30 +176,29 @@ def query_point_using_cursor(
         projpicker_cur,
         point,
         unit="any",
+        proj_table="any",
         negate=False):
     """
-    Return a list of BBox instances in unit that completely contain an input
-    point geometry defined by x and y. Use the negate argument to return
-    non-containing BBox instances. Each BBox instance is a named tuple with all
-    the columns from the bbox table in projpicker.db. This function is used to
-    perform a union operation on BBox instances consecutively. Results are
-    sorted by area from the smallest to largest.
+    Return a list of BBox instances in unit in proj_table that completely
+    contain an input point geometry defined by x and y. Use the negate argument
+    to return non-containing BBox instances. Each BBox instance is a named
+    tuple with all the columns from the bbox table in projpicker.db. This
+    function is used to perform a union operation on BBox instances
+    consecutively. Results are sorted by area from the smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         point (list or str): List of x and y floats or parsable str of x and y.
             See parse_point().
         unit (str): "any", unit values from projpicker.db.
+        proj_table (str): Proj table values from projpicker.db. Defaults to
+            "any".
         negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    point = parse_point(point)
-    outbbox = []
-
-    x, y = point
-
+    x, y = parse_point(point)
     # if west_lon >= east_lon, bbox crosses the antimeridian
     sql = f"""SELECT *
               FROM bbox
@@ -209,46 +210,37 @@ def query_point_using_cursor(
                        crs_auth_name, crs_code,
                        usage_auth_name, usage_code,
                        extent_auth_name, extent_code"""
-    if unit == "any":
-        sql = sql.replace("AND_UNIT", "")
-        projpicker_cur.execute(sql)
-    else:
-        sql = sql.replace("AND_UNIT", "AND unit = ?")
-        projpicker_cur.execute(sql, (unit,))
-    for row in map(BBox._make, projpicker_cur.fetchall()):
-        outbbox.append(row)
-    return outbbox
+    return query_using_cursor(projpicker_cur, sql, unit, proj_table)
 
 
 def query_bbox_using_cursor(
         projpicker_cur,
         bbox,
         unit="any",
+        proj_table="any",
         negate=False):
     """
-    Return a list of BBox instances in unit that completely contain an input
-    bbox geometry defined by bottom, top, left, and right floats using a
-    database cursor. Use the negate argument to return non-containing BBox
-    instances. Each BBox instance is a named tuple with all the columns from
-    the bbox table in projpicker.db. This function is used to perform a union
-    operation on bbox rows consecutively. Results are sorted by area from the
-    smallest to largest.
+    Return a list of BBox instances in unit in proj_table that completely
+    contain an input bbox geometry defined by bottom, top, left, and right
+    floats using a database cursor. Use the negate argument to return
+    non-containing BBox instances. Each BBox instance is a named tuple with all
+    the columns from the bbox table in projpicker.db. This function is used to
+    perform a union operation on bbox rows consecutively. Results are sorted by
+    area from the smallest to largest.
 
     Args:
         projpicker_cur (sqlite3.Cursor): projpicker.db cursor.
         bbox (list or str): List of bottom, top, left, and right floats or
             parsable str of bottom, top, left, and right. See parse_bbox().
         unit (str): "any", unit values from projpicker.db.
+        proj_table (str): Proj table values from projpicker.db. Defaults to
+            "any".
         negate (bool): Whether or not to negate query. Defaults to False.
 
     Returns:
         list: List of queried BBox instances sorted by area.
     """
-    bbox = parse_bbox(bbox)
-    outbbox = []
-
-    b, t, l, r = bbox
-
+    b, t, l, r = parse_bbox(bbox)
     sql = f"""SELECT *
               FROM bbox
               WHERE {"NOT" if negate else ""}
@@ -261,12 +253,4 @@ def query_bbox_using_cursor(
                        crs_auth_name, crs_code,
                        usage_auth_name, usage_code,
                        extent_auth_name, extent_code"""
-    if unit == "any":
-        sql = sql.replace("AND_UNIT", "")
-        projpicker_cur.execute(sql)
-    else:
-        sql = sql.replace("AND_UNIT", "AND unit = ?")
-        projpicker_cur.execute(sql, (unit,))
-    for row in map(BBox._make, projpicker_cur.fetchall()):
-        outbbox.append(row)
-    return outbbox
+    return query_using_cursor(projpicker_cur, sql, unit, proj_table)
