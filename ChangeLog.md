@@ -1,8 +1,22 @@
 # Change log
 
 ## HEAD
-Sun Jul 18 20:12:08 2021 -0400
+Sun Jul 18 22:16:52 2021 -0400
 
+* [`f7429c5`](https://github.com/HuidaeCho/projpicker/commit/f7429c5)  Remove verbose=True from OSM
+* [`5f81a67`](https://github.com/HuidaeCho/projpicker/commit/5f81a67)  Improve message() functions
+* [`88023c7`](https://github.com/HuidaeCho/projpicker/commit/88023c7)  Use *\_ instead of \_, \_ to skip return values
+* [`15ec4d4`](https://github.com/HuidaeCho/projpicker/commit/15ec4d4)  Add tkinter.ttk as a required module
+* [`c5533fb`](https://github.com/HuidaeCho/projpicker/commit/c5533fb)  Add required standard modules to docs
+* [`96a0ed3`](https://github.com/HuidaeCho/projpicker/commit/96a0ed3)  Remove a blank line
+* [`deee3ed`](https://github.com/HuidaeCho/projpicker/commit/deee3ed)  Update docs for v0.1.9
+* [`ae89b19`](https://github.com/HuidaeCho/projpicker/commit/ae89b19)  Update docs for v0.1.9
+* [`fe152fd`](https://github.com/HuidaeCho/projpicker/commit/fe152fd)  Update screenshot in README
+
+## v0.1.9
+Sun Jul 18 20:12:43 2021 -0400
+
+* [`3c4570a`](https://github.com/HuidaeCho/projpicker/commit/3c4570a)  changelog
 * [`cb7ed61`](https://github.com/HuidaeCho/projpicker/commit/cb7ed61)  Update docs
 * [`c3efe93`](https://github.com/HuidaeCho/projpicker/commit/c3efe93)  GUI now accepts input geometries and returns queried bbox and parsed geometries
 * [`c3760e9`](https://github.com/HuidaeCho/projpicker/commit/c3760e9)  Refine insert behaviors; Add the Help tab
