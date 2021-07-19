@@ -1,8 +1,12 @@
 # Change log
 
 ## HEAD
-Sun Jul 18 22:16:52 2021 -0400
+Mon Jul 19 01:06:29 2021 -0400
 
+* [`d231249`](https://github.com/HuidaeCho/projpicker/commit/d231249)  Implement proj\_table=
+* [`d4f6414`](https://github.com/HuidaeCho/projpicker/commit/d4f6414)  Fix filtering after query
+* [`81c9cdf`](https://github.com/HuidaeCho/projpicker/commit/81c9cdf)  Fix filtering after query
+* [`f18b5f0`](https://github.com/HuidaeCho/projpicker/commit/f18b5f0)  changelog
 * [`f7429c5`](https://github.com/HuidaeCho/projpicker/commit/f7429c5)  Remove verbose=True from OSM
 * [`5f81a67`](https://github.com/HuidaeCho/projpicker/commit/5f81a67)  Improve message() functions
 * [`88023c7`](https://github.com/HuidaeCho/projpicker/commit/88023c7)  Use *\_ instead of \_, \_ to skip return values
