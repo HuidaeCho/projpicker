@@ -385,6 +385,18 @@ def start(
         draw_bbox()
 
 
+    def populate_filters(bbox):
+        projection_types = [all_proj_tables]
+        projection_types.extend(sorted(set([b.proj_table for b in bbox])))
+        proj_table_combobox["values"] = projection_types
+        proj_table_combobox.set(all_proj_tables)
+
+        units = [all_units]
+        units.extend(sorted(set([b.unit for b in bbox])))
+        unit_combobox["values"] = units
+        unit_combobox.set(all_units)
+
+
     def select():
         nonlocal sel_crs
 
@@ -407,6 +419,7 @@ def start(
             bottom_right_notebook.select(log_frame)
 
         populate_crs_list(bbox)
+        populate_filters(bbox)
         draw_geoms()
 
 
@@ -547,28 +560,18 @@ def start(
     bottom_left_bottom_frame = tk.Frame(bottom_left_frame)
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
-    # list box for projection types
-    projection_types = [all_proj_tables]
-    projection_types.extend(sorted(set([b.proj_table for b in bbox])))
-
+    # list of projection types
     proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
-    proj_table_combobox["values"] = projection_types
-    proj_table_combobox.set(all_proj_tables)
-    # bind selection event to run on select
     proj_table_combobox.bind("<<ComboboxSelected>>",
                              on_select_proj_table_or_unit)
     proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     # list of units
-    units = [all_units]
-    units.extend(sorted(set([b.unit for b in bbox])))
-
     unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10)
-    unit_combobox["values"] = units
-    unit_combobox.set(all_units)
-    # bind selection event to run on select
     unit_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
     unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    populate_filters(bbox)
 
     ####################
     # bottom-right frame
