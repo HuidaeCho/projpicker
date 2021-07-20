@@ -9,10 +9,10 @@ import webbrowser
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .openstreetmap import OpenStreetMap
+    from .getosm import OpenStreetMap
     from . import projpicker as ppik
 else:
-    from openstreetmap import OpenStreetMap
+    from getosm import OpenStreetMap
     import projpicker as ppik
 
 

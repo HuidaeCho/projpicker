@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ################################################################################
-# Project:  OpenStreetMapPy <https://github.com/HuidaeCho/openstreetmappy>
+# Project:  GetOSM <https://github.com/HuidaeCho/getosm>
 # Authors:  Huidae Cho
 # Since:    July 11, 2021
 #
@@ -20,7 +20,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ################################################################################
 """
-This module provides OpenStreetMap functions.
+This module provides an OpenStreetMap downloader.
 """
 
 import sys
