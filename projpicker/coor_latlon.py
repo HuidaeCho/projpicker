@@ -161,7 +161,8 @@ def parse_point(point):
             x = parse_lon(m, 1)
             if y is not None and -90 <= y <= 90:
                 lat = y
-            if x is not None and -180 <= x <= 180:
+            if x is not None: # don't check if -180 <= x <= 180 to support
+                              # antimeridian crossing
                 lon = x
     elif typ in (list, tuple) and len(point) == 2:
         lat = get_float(point[0])
@@ -226,7 +227,6 @@ def calc_poly_bbox(poly):
         degrees.
     """
     s = n = w = e = None
-    plat = plon = None
 
     for point in poly:
         lat, lon = point
@@ -239,25 +239,16 @@ def calc_poly_bbox(poly):
                 s = lat
             elif lat > n:
                 n = lat
-            if plon is None or plon*lon >= 0:
-                # if not crossing the antimeridian, w < e
-                if lon < w:
-                    w = lon
-                elif lon > e:
-                    e = lon
-            elif plon is not None and plon*lon < 0:
-                # if crossing the antimeridian, w > e
-                # XXX: tricky to handle geometries crossing the
-                # antimeridian; need more testing
-                if lon < 0 and (e > 0 or lon > e):
-                    # +lon to -lon
-                    e = lon
-                elif lon > 0 and (w < 0 or lon < w):
-                    # -lon to +lon
-                    w = lon
-        if plat is None:
-            plat = lat
-            plon = lon
+            if lon < w:
+                w = lon
+            elif lon > e:
+                e = lon
+
+    # if crossing the antimeridian
+    if w < -180:
+        w -= w // 360 * 360
+    elif w > 180:
+        w += -w // 360 * 360
 
     return s, n, w, e
 

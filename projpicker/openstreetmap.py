@@ -87,10 +87,10 @@ class OpenStreetMap:
         x = self.x + (x - self.xoff) / 256
         y = self.y + (y - self.yoff) / 256
         lat, lon = self.tile_to_latlon(x, y, self.z)
-        while lon < -180:
-            lon += 360
-        while lon > 180:
-            lon -= 360
+        if lon < -180:
+            lon -= lon // 360 * 360
+        elif lon > 180:
+            lon += -lon // 360 * 360
         return lat, lon
 
 
@@ -146,10 +146,10 @@ class OpenStreetMap:
                     tile_url = self.get_tile_url(xt, yi, z)
                     tile_image = self.download_tile(xt, yi, z)
                     tile_x = xoff + (xi - x) * 256
-                    while tile_x <= -256:
-                        tile_x += 256 * ntiles
-                    while tile_x > self.width:
-                        tile_x -= 256 * ntiles
+                    if tile_x <= -256:
+                        tile_x -= tile_x // (256 * ntiles) * 256 * ntiles
+                    if tile_x > self.width:
+                        tile_x += -tile_x // (256 * ntiles) * 256 * ntiles
                     tile_y = yoff + (yi - y) * 256
                     self.draw_tile_func(image, tile_image, tile_x, tile_y)
                     self.message(f"{tile_url} pasted at {tile_x},{tile_y}")
