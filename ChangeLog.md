@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Tue Jul 20 00:58:36 2021 -0400
+Tue Jul 20 02:41:52 2021 -0400
 
+* [`02db982`](https://github.com/HuidaeCho/projpicker/commit/02db982)  Update openstreetmap.py
 * [`298b7a4`](https://github.com/HuidaeCho/projpicker/commit/298b7a4)  PEP8 blank lines (double only for top-level functions); Copy openstreetmap.py from its own project
 * [`a2c19ae`](https://github.com/HuidaeCho/projpicker/commit/a2c19ae)  Rename *\_buttons\_frame to *\_bottom\_frame
 * [`fe8ad38`](https://github.com/HuidaeCho/projpicker/commit/fe8ad38)  Remove unnecessary code
