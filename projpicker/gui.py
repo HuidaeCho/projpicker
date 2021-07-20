@@ -622,13 +622,13 @@ def start(
     query_hscrollbar.pack(fill=tk.X)
     query_text.config(xscrollcommand=query_hscrollbar.set)
 
-    query_buttons_frame = tk.Frame(query_frame)
-    query_buttons_frame.pack(fill=tk.BOTH)
+    query_bottom_frame = tk.Frame(query_frame)
+    query_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    tk.Button(query_buttons_frame, text="Query", command=query).pack(
+    tk.Button(query_bottom_frame, text="Query", command=query).pack(
             side=tk.LEFT, expand=True)
-    tk.Button(query_buttons_frame, text="Cancel", command=root.destroy).pack(
+    tk.Button(query_bottom_frame, text="Cancel", command=root.destroy).pack(
             side=tk.LEFT, expand=True)
 
     ################
@@ -645,13 +645,13 @@ def start(
     crs_info_hscrollbar.pack(fill=tk.X)
     crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
 
-    crs_info_buttons_frame = tk.Frame(crs_info_frame)
-    crs_info_buttons_frame.pack(fill=tk.BOTH)
+    crs_info_bottom_frame = tk.Frame(crs_info_frame)
+    crs_info_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    tk.Button(crs_info_buttons_frame, text="Select", command=select).pack(
+    tk.Button(crs_info_bottom_frame, text="Select", command=select).pack(
             side=tk.LEFT, expand=True)
-    tk.Button(crs_info_buttons_frame, text="Cancel", command=root.destroy).pack(
+    tk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
             side=tk.LEFT, expand=True)
 
     ###########
