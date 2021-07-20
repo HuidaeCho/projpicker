@@ -1,8 +1,15 @@
 # Change log
 
 ## HEAD
-Tue Jul 20 03:27:56 2021 -0400
+Tue Jul 20 19:57:46 2021 -0400
 
+* [`aed5bca`](https://github.com/HuidaeCho/projpicker/commit/aed5bca)  Update getosm to 0.1.0.post5
+* [`b2e1174`](https://github.com/HuidaeCho/projpicker/commit/b2e1174)  Remove shebang from non-executable py
+
+## v0.1.11.post1
+Tue Jul 20 03:29:14 2021 -0400
+
+* [`bf6ee57`](https://github.com/HuidaeCho/projpicker/commit/bf6ee57)  v0.1.11.post1: openstreetmap.py => getosm.py
 * [`8e4989a`](https://github.com/HuidaeCho/projpicker/commit/8e4989a)  Rename openstreetmap.py to getosm.py
 
 ## v0.1.11
