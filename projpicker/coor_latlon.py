@@ -245,10 +245,10 @@ def calc_poly_bbox(poly):
                 e = lon
 
     # if crossing the antimeridian
-    if w < -180:
-        w -= w // 360 * 360
-    elif w > 180:
-        w += -w // 360 * 360
+    while w < -180:
+        w += 360
+    while e > 180:
+        e -= 360
 
     return s, n, w, e
 
