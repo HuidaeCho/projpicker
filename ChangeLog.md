@@ -1,8 +1,14 @@
 # Change log
 
 ## HEAD
-Tue Jul 20 02:41:52 2021 -0400
+Tue Jul 20 03:27:56 2021 -0400
 
+* [`8e4989a`](https://github.com/HuidaeCho/projpicker/commit/8e4989a)  Rename openstreetmap.py to getosm.py
+
+## v0.1.11
+Tue Jul 20 02:43:05 2021 -0400
+
+* [`48d8379`](https://github.com/HuidaeCho/projpicker/commit/48d8379)  v0.1.11
 * [`02db982`](https://github.com/HuidaeCho/projpicker/commit/02db982)  Update openstreetmap.py
 * [`298b7a4`](https://github.com/HuidaeCho/projpicker/commit/298b7a4)  PEP8 blank lines (double only for top-level functions); Copy openstreetmap.py from its own project
 * [`a2c19ae`](https://github.com/HuidaeCho/projpicker/commit/a2c19ae)  Rename *\_buttons\_frame to *\_bottom\_frame
