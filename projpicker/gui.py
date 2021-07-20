@@ -51,6 +51,7 @@ def start(
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
+    dzoom = 0.1
     dragged = False
     drawing_bbox = False
     complete_drawing = False
@@ -474,12 +475,13 @@ def start(
     map_canvas.bind("<Double-Button-3>", on_clear_drawing)
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
-    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, 1))
-    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -1))
+    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom))
+    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -dzoom))
     # Windows and macOS
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<MouseWheel>",
-                    lambda e: zoom_map(e.x, e.y, 1 if e.delta > 0 else -1))
+                    lambda e: zoom_map(e.x, e.y,
+                                       dzoom if e.delta > 0 else -dzoom))
     map_canvas.bind("<Motion>", on_move)
 
     # draw geometries if given

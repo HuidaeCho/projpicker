@@ -49,7 +49,7 @@ class OpenStreetMap:
         self.z_max = 18
         self.lat_min = -85.0511
         self.lat_max = 85.0511
-        self.zoom_accum = 0
+        self.dz = 0
         # TODO: Tile caching mechanism
         self.tiles = {}
 
@@ -194,14 +194,14 @@ class OpenStreetMap:
         return dx, dy
 
     def reset_zoom(self):
-        self.zoom_accum = 0
+        self.dz = 0
 
-    def zoom(self, x, y, zoom_accum):
+    def zoom(self, x, y, dz):
         zoomed = False
-        self.zoom_accum += zoom_accum / 10
-        if ((self.z < self.z_max and self.zoom_accum > 1) or
-            (self.z > self.z_min and self.zoom_accum < -1)):
-            dz = 1 if self.zoom_accum > 0 else -1
+        self.dz += dz
+        if ((self.z < self.z_max and self.dz > 1) or
+            (self.z > self.z_min and self.dz < -1)):
+            dz = 1 if self.dz > 0 else -1
             z = self.z + dz
             if dz > 0:
                 # each zoom in doubles
@@ -219,8 +219,8 @@ class OpenStreetMap:
             self.draw_map(lat, lon, z)
             self.reset_zoom()
             zoomed = True
-        elif ((self.z == self.z_max and self.zoom_accum > 1) or
-              (self.z == self.z_min and self.zoom_accum < -1)):
+        elif ((self.z == self.z_max and self.dz > 1) or
+              (self.z == self.z_min and self.dz < -1)):
             self.reset_zoom()
         return zoomed
 
