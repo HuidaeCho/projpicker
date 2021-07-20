@@ -101,12 +101,6 @@ class OpenStreetMap:
         if ntiles * 256 < self.height:
             lat = 0
 
-        # cross the antimeridian
-        if lon < -180:
-            lon = 360 - lon
-        elif lon > 180:
-            lon -= 360
-
         # calculate x,y offsets to lat,lon within width,height
         xc, yc = self.latlon_to_tile(lat, lon, z)
         x, y = int(xc), int(yc)
