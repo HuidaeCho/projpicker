@@ -1138,8 +1138,8 @@ def parse_mixed_geoms(geoms):
 
 
     if type(geoms) == str:
-        geoms = geoms.split()
-        normalize_lines(geoms)
+        geoms = geoms.split("\n")
+        tidy_lines(geoms)
 
     outgeoms = []
 

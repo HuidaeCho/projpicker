@@ -445,7 +445,7 @@ def start(
                 line = ""
                 if geom_type == "poly":
                     for coor in geom:
-                        line += ("," if line else "") + f"{coor[0]},{coor[1]}"
+                        line += (" " if line else "") + f"{coor[0]},{coor[1]}"
                 else:
                     for coor in geom:
                         line += ("," if line else "") + f"{coor}"
