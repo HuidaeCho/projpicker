@@ -1123,7 +1123,6 @@ def parse_mixed_geoms(geoms):
             geom = parse_geom(geoms[g], geom_type)
         return geom, g
 
-
     def parse_next_geoms(g):
         i = g
         while (i < ngeoms and geoms[i] not in keywords and
@@ -1135,7 +1134,6 @@ def parse_mixed_geoms(geoms):
         ogeoms = parse_geoms(geoms[g:i], geom_type)
         g = i
         return ogeoms, g
-
 
     if type(geoms) == str:
         geoms = geoms.split("\n")

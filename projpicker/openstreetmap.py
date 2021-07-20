@@ -1,3 +1,24 @@
+#!/usr/bin/env python3
+################################################################################
+# Project:  OpenStreetMapPy <https://github.com/HuidaeCho/openstreetmappy>
+# Authors:  Huidae Cho
+# Since:    July 11, 2021
+#
+# Copyright (C) 2021 Huidae Cho <https://idea.isnew.info/>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+################################################################################
 """
 This module provides OpenStreetMap functions.
 """
@@ -25,21 +46,17 @@ class OpenStreetMap:
         # TODO: Tile caching mechanism
         self.tiles = {}
 
-
     def message(self, *args, end=None):
         if self.verbose:
             print(*args, end=end, file=sys.stderr, flush=True)
-
 
     def set_map_size(self, width, height):
         self.width = width
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
 
-
     def get_tile_url(self, x, y, z):
         return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
 
     def download_tile(self, x, y, z):
         tile_url = self.get_tile_url(x, y, z)
@@ -54,7 +71,6 @@ class OpenStreetMap:
         tile_image = self.tiles[tile_key]
         return tile_image
 
-
     # Adapted from https://stackoverflow.com/a/62607111/16079666
     # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     # x from 0 at lon=-180 to 2**z-1 at lon=180
@@ -68,20 +84,17 @@ class OpenStreetMap:
         y = (1-math.log(math.tan(lat)+(1/math.cos(lat)))/math.pi)/2*n
         return x, y
 
-
     def tile_to_latlon(self, x, y, z):
         n = 2**z
         lat = math.degrees(math.atan(math.sinh(math.pi*(1-2*y/n))))
         lon = x/n*360-180
         return lat, lon
 
-
     def latlon_to_canvas(self, lat, lon):
         x, y = self.latlon_to_tile(lat, lon, self.z)
         x = self.xoff + (x - self.x) * 256
         y = self.yoff + (y - self.y) * 256
         return x, y
-
 
     def canvas_to_latlon(self, x, y):
         x = self.x + (x - self.xoff) / 256
@@ -92,7 +105,6 @@ class OpenStreetMap:
         while lon > 180:
             lon -= 360
         return lat, lon
-
 
     def draw_map(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
@@ -151,11 +163,9 @@ class OpenStreetMap:
                     self.message(f"Failed to download {tile_url}: {e}")
         self.draw_image_func(image)
 
-
     def start_dragging(self, x, y):
         self.drag_x = x
         self.drag_y = y
-
 
     def drag(self, x, y):
         dx = x - self.drag_x
@@ -170,10 +180,8 @@ class OpenStreetMap:
             dy = 0
         return dx, dy
 
-
     def reset_zoom(self):
         self.zoom_accum = 0
-
 
     def zoom(self, x, y, zoom_accum):
         zoomed = False
@@ -202,7 +210,6 @@ class OpenStreetMap:
               (self.z == self.z_min and self.zoom_accum < -1)):
             self.reset_zoom()
         return zoomed
-
 
     def zoom_to_bbox(self, bbox):
         s, n, w, e = bbox
@@ -233,7 +240,6 @@ class OpenStreetMap:
 
         return [s, n, w, e]
 
-
     def repeat_xy(self, xy):
         outxy = []
         n = self.width // (256 * self.ntiles)
@@ -247,7 +253,6 @@ class OpenStreetMap:
             outxy.append(p)
         return outxy
 
-
     def get_xy(self, latlon):
         outxy = []
         if latlon:
@@ -256,7 +261,6 @@ class OpenStreetMap:
                 xy.append(self.latlon_to_canvas(*coor))
             outxy.extend(self.repeat_xy(xy))
         return outxy
-
 
     def get_bbox_xy(self, bbox):
         outxy = []

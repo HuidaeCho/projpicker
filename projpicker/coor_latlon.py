@@ -52,6 +52,7 @@ latlon_re = re.compile(f"^{latlon_pat}$")
 latlon_bbox_re = re.compile(f"^{lat_pat}{coor_sep_pat}{lat_pat}{coor_sep_pat}"
                             f"{lon_pat}{coor_sep_pat}{lon_pat}$")
 
+
 ################################################################################
 # parsing
 

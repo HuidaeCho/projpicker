@@ -60,7 +60,6 @@ def start(
     proj_tables = []
     units = []
 
-
     def create_crs_info(bbox):
         if crs_info_func is None:
             dic = bbox._asdict()
@@ -77,7 +76,6 @@ def start(
             txt = crs_info_func(bbox)
         return txt
 
-
     def find_bbox(crs):
         if crs is None:
             return None
@@ -87,13 +85,11 @@ def start(
                                   b.crs_code==code, bbox))[0]
         return b
 
-
     def draw_bbox():
         map_canvas.delete(tag_bbox)
         for xy in osm.get_bbox_xy(sel_bbox):
             map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
                                         stipple="gray12", tag=tag_bbox)
-
 
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
@@ -107,7 +103,6 @@ def start(
         elif dlon < -360:
             lon += 360
         return lon
-
 
     def draw_geoms(x=None, y=None):
         point_size = 4
@@ -176,13 +171,11 @@ def start(
                                                     tag=tag_geoms)
             g += 1
 
-
     def zoom_map(x, y, dz):
         def zoom(x, y, dz):
             if osm.zoom(x, y, dz):
                 draw_geoms(x, y)
                 draw_bbox()
-
 
         # https://stackoverflow.com/a/63305873/16079666
         # https://stackoverflow.com/a/26703844/16079666
@@ -197,7 +190,6 @@ def start(
             map_canvas.after_cancel(zoomer)
         zoomer = map_canvas.after(0, zoom, x, y, dz)
 
-
     def on_drag(event):
         nonlocal dragged
 
@@ -206,12 +198,10 @@ def start(
         draw_bbox()
         dragged = True
 
-
     def on_move(event):
         latlon = osm.canvas_to_latlon(event.x, event.y)
         coor_label.config(text=f" {latlon[0]:.4f}, {latlon[1]:.4f} ")
         draw_geoms(event.x, event.y)
-
 
     def on_draw(event):
         nonlocal dragged, drawing_bbox, complete_drawing
@@ -290,7 +280,6 @@ def start(
         dragged = False
         complete_drawing = False
 
-
     def on_complete_drawing(event):
         nonlocal complete_drawing
 
@@ -302,7 +291,6 @@ def start(
             prev_xy = [event.x, event.y]
         complete_drawing = True
 
-
     def on_cancel_drawing(event):
         nonlocal drawing_bbox
 
@@ -311,10 +299,8 @@ def start(
         prev_xy.clear()
         draw_geoms()
 
-
     def on_clear_drawing(event):
         geoms.clear()
-
 
     def on_select_crs(event):
         nonlocal prev_crs_items
@@ -359,7 +345,6 @@ def start(
         draw_geoms()
         draw_bbox()
 
-
     def on_select_proj_table_or_unit(event):
         proj_table = proj_tables[proj_table_combobox.current()]
         unit = units[unit_combobox.current()]
@@ -377,7 +362,6 @@ def start(
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
-
     def populate_crs_list(bbox):
         crs_treeview.delete(*crs_treeview.get_children())
         for b in bbox:
@@ -385,7 +369,6 @@ def start(
                                 b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
         sel_bbox.clear()
         draw_bbox()
-
 
     def populate_filters(bbox):
         proj_tables.clear()
@@ -400,14 +383,12 @@ def start(
         unit_combobox["values"] = units
         unit_combobox.set(all_units)
 
-
     def select():
         nonlocal sel_crs
 
         for item in crs_treeview.selection():
             sel_crs.append(crs_treeview.item(item)["values"][1])
         root.destroy()
-
 
     def query():
         nonlocal bbox
@@ -425,7 +406,6 @@ def start(
         populate_crs_list(bbox)
         populate_filters(bbox)
         draw_geoms()
-
 
     lat = 0
     lon = 0
