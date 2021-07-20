@@ -32,12 +32,20 @@ class OpenStreetMap:
     def __init__(self,
                  create_image_func, draw_image_func,
                  create_tile_func, draw_tile_func,
+                 width=256, height=256,
+                 lat=0, lon=0, z=0,
                  verbose=False):
         self.create_image_func = create_image_func
         self.draw_image_func = draw_image_func
         self.create_tile_func = create_tile_func
         self.draw_tile_func = draw_tile_func
+        self.width = width
+        self.height = height
+        self.lat = lat
+        self.lon = lon
+        self.z = z
         self.verbose = verbose
+
         self.z_min = 0
         self.z_max = 18
         self.lat_min = -85.0511
@@ -46,14 +54,17 @@ class OpenStreetMap:
         # TODO: Tile caching mechanism
         self.tiles = {}
 
+        self.redraw_map()
+
     def message(self, *args, end=None):
         if self.verbose:
             print(*args, end=end, file=sys.stderr, flush=True)
 
-    def set_map_size(self, width, height):
+    def resize_map(self, width, height):
         self.width = width
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
+        self.redraw_map()
 
     def get_tile_url(self, x, y, z):
         return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -162,6 +173,9 @@ class OpenStreetMap:
                 except Exception as e:
                     self.message(f"Failed to download {tile_url}: {e}")
         self.draw_image_func(image)
+
+    def redraw_map(self):
+        self.draw_map(self.lat, self.lon, self.z)
 
     def start_dragging(self, x, y):
         self.drag_x = x

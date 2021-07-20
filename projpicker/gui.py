@@ -462,10 +462,9 @@ def start(
             lambda data: tk.PhotoImage(data=data),
             lambda image, tile, x, y:
                 map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
-                                        tag=tag_map))
-
-    osm.set_map_size(map_canvas_width, map_canvas_height)
-    osm.draw_map(lat, lon, zoom)
+                                        tag=tag_map),
+            map_canvas_width, map_canvas_height,
+            lat, lon, zoom)
 
     map_canvas.bind("<ButtonPress-1>", lambda e: osm.start_dragging(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)

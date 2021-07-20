@@ -1,8 +1,21 @@
 # Change log
 
 ## HEAD
-Mon Jul 19 01:06:29 2021 -0400
+Tue Jul 20 00:58:36 2021 -0400
 
+* [`298b7a4`](https://github.com/HuidaeCho/projpicker/commit/298b7a4)  PEP8 blank lines (double only for top-level functions); Copy openstreetmap.py from its own project
+* [`a2c19ae`](https://github.com/HuidaeCho/projpicker/commit/a2c19ae)  Rename *\_buttons\_frame to *\_bottom\_frame
+* [`fe8ad38`](https://github.com/HuidaeCho/projpicker/commit/fe8ad38)  Remove unnecessary code
+* [`b267dd6`](https://github.com/HuidaeCho/projpicker/commit/b267dd6)  Revert lon and tile\_x adjustment in openstreetmap; Fix calc\_poly\_bbox
+* [`757497c`](https://github.com/HuidaeCho/projpicker/commit/757497c)  Support polygons crossing the antimeridian
+* [`4e7d297`](https://github.com/HuidaeCho/projpicker/commit/4e7d297)  Fix geometry string parsing
+* [`7e543ee`](https://github.com/HuidaeCho/projpicker/commit/7e543ee)  comment
+* [`2c11eae`](https://github.com/HuidaeCho/projpicker/commit/2c11eae)  Make filters readonly
+
+## v0.1.10
+Mon Jul 19 01:09:52 2021 -0400
+
+* [`5f836d8`](https://github.com/HuidaeCho/projpicker/commit/5f836d8)  v0.1.10
 * [`d231249`](https://github.com/HuidaeCho/projpicker/commit/d231249)  Implement proj\_table=
 * [`d4f6414`](https://github.com/HuidaeCho/projpicker/commit/d4f6414)  Fix filtering after query
 * [`81c9cdf`](https://github.com/HuidaeCho/projpicker/commit/81c9cdf)  Fix filtering after query
