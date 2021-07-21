@@ -1,8 +1,16 @@
 # Change log
 
 ## HEAD
-Tue Jul 20 19:57:46 2021 -0400
+Wed Jul 21 01:01:07 2021 -0400
 
+* [`6b0586a`](https://github.com/HuidaeCho/projpicker/commit/6b0586a)  Improve zoom\_to\_bbox() Zoom to geoms on startup Sort GUI functions
+* [`b908640`](https://github.com/HuidaeCho/projpicker/commit/b908640)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`3bca78f`](https://github.com/HuidaeCho/projpicker/commit/3bca78f)  Show geometry variables in the screenshot
+
+## v0.1.11.post2
+Tue Jul 20 19:58:08 2021 -0400
+
+* [`d6d47ab`](https://github.com/HuidaeCho/projpicker/commit/d6d47ab)  changelog
 * [`aed5bca`](https://github.com/HuidaeCho/projpicker/commit/aed5bca)  Update getosm to 0.1.0.post5
 * [`b2e1174`](https://github.com/HuidaeCho/projpicker/commit/b2e1174)  Remove shebang from non-executable py
 
