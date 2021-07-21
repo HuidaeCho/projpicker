@@ -241,13 +241,28 @@ class OpenStreetMap:
             lon = lon - 180 if lon >= 0 else lon + 180
         e = w + dlon
 
-        xul, yul = self.latlon_to_tile(n, w, self.z)
-        xlr, ylr = self.latlon_to_tile(s, e, self.z)
-        lat, lon = self.tile_to_latlon((xul+xlr)/2, (yul+ylr)/2, self.z)
+        # find the center
+        l, t = self.latlon_to_tile(n, w, self.z)
+        r, b = self.latlon_to_tile(s, e, self.z)
+        lat, lon = self.tile_to_latlon((l + r) / 2, (t + b) / 2, self.z)
 
-        z_lat = math.log2(180 / (n - s))
+        # estimate z
+        z_lat = math.log2((self.lat_max - self.lat_min) / (n - s))
         z_lon = math.log2(360 / dlon)
-        z = math.floor(min(z_lat, z_lon))
+        z = math.ceil(min(z_lat, z_lon))
+
+        # check if z covers the entire bbox
+        l, t = self.latlon_to_tile(n, w, z)
+        r, b = self.latlon_to_tile(s, e, z)
+        width = (r - l) * 256
+        height = (b - t) * 256
+
+        if 2 * width <= self.width and 2 * height <= self.height:
+            # if z is too loose, tighten it
+            z += 1
+        elif width > self.width or height > self.height:
+            # if z is too tight, loosen it
+            z -= 1
 
         self.draw_map(lat, lon, z)
 

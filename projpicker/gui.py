@@ -51,7 +51,7 @@ def start(
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
-    dzoom = 0.1
+    dzoom = 1
     dragged = False
     drawing_bbox = False
     complete_drawing = False
@@ -60,37 +60,6 @@ def start(
     curr_geom = []
     proj_tables = []
     units = []
-
-    def create_crs_info(bbox):
-        if crs_info_func is None:
-            dic = bbox._asdict()
-            l = 0
-            for key in dic.keys():
-                if len(key) > l:
-                    l = len(key)
-            l += 1
-            txt = ""
-            for key in dic.keys():
-                k = key + ":"
-                txt += f"{k:{l}} {dic[key]}\n"
-        else:
-            txt = crs_info_func(bbox)
-        return txt
-
-    def find_bbox(crs):
-        if crs is None:
-            return None
-
-        auth, code = crs.split(":")
-        b = list(filter(lambda b: b.crs_auth_name==auth and
-                                  b.crs_code==code, bbox))[0]
-        return b
-
-    def draw_bbox():
-        map_canvas.delete(tag_bbox)
-        for xy in osm.get_bbox_xy(sel_bbox):
-            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
-                                        stipple="gray12", tag=tag_bbox)
 
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
@@ -104,6 +73,72 @@ def start(
         elif dlon < -360:
             lon += 360
         return lon
+
+    def calc_geoms_bbox():
+        s = n = w = e = None
+        geom_type = "point"
+        g = 0
+        ngeoms = len(geoms)
+        while g < ngeoms:
+            geom = geoms[g]
+            if geom in ("point", "poly", "bbox"):
+                geom_type = geom
+                g += 1
+                geom = geoms[g]
+            if type(geom) == list:
+                if geom_type == "point":
+                    lat, lon = geom
+                    if s is None:
+                        s = n = lat
+                        w = e = lon
+                    else:
+                        if lat < s:
+                            s = lat
+                        elif lat > n:
+                            n = lat
+                        if lon < w:
+                            w = lon
+                        elif lon > e:
+                            e = lon
+                elif geom_type == "poly":
+                    for coor in geom:
+                        lat, lon = coor
+                        if s is None:
+                            s = n = lat
+                            w = e = lon
+                        else:
+                            if lat < s:
+                                s = lat
+                            elif lat > n:
+                                n = lat
+                            if lon < w:
+                                w = lon
+                            elif lon > e:
+                                e = lon
+                else:
+                    b, t, l, r = geom
+                    if s is None:
+                        s = b
+                        n = t
+                        w = l
+                        e = r
+                    else:
+                        if b < s:
+                            s = b
+                        if t > n:
+                            n = t
+                        if l < w:
+                            w = l
+                        if r > e:
+                            e = r
+            g += 1
+        if s == n:
+            s -= 0.0001
+            n += 0.0001
+        if w == e:
+            w -= 0.0001
+            e += 0.0001
+        return s, n, w, e
 
     def draw_geoms(x=None, y=None):
         point_size = 4
@@ -172,6 +207,12 @@ def start(
                                                     tag=tag_geoms)
             g += 1
 
+    def draw_bbox():
+        map_canvas.delete(tag_bbox)
+        for xy in osm.get_bbox_xy(sel_bbox):
+            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
+                                        stipple="gray12", tag=tag_bbox)
+
     def zoom_map(x, y, dz):
         def zoom(x, y, dz):
             if osm.zoom(x, y, dz):
@@ -190,6 +231,76 @@ def start(
         if zoomer:
             map_canvas.after_cancel(zoomer)
         zoomer = map_canvas.after(0, zoom, x, y, dz)
+
+    def query():
+        nonlocal bbox
+
+        query = query_text.get("1.0", tk.END)
+        geoms.clear()
+        log_text.delete("1.0", tk.END)
+        try:
+            geoms.extend(ppik.parse_mixed_geoms(query))
+            bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
+        except Exception as e:
+            log_text.insert(tk.END, e)
+            bottom_right_notebook.select(log_frame)
+
+        populate_crs_list(bbox)
+        populate_filters(bbox)
+        draw_geoms()
+
+    def populate_crs_list(bbox):
+        crs_treeview.delete(*crs_treeview.get_children())
+        for b in bbox:
+            crs_treeview.insert("", tk.END, values=(
+                                b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+        sel_bbox.clear()
+        draw_bbox()
+
+    def populate_filters(bbox):
+        proj_tables.clear()
+        proj_tables.append(all_proj_tables)
+        proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
+        proj_table_combobox["values"] = proj_tables
+        proj_table_combobox.set(all_proj_tables)
+
+        units.clear()
+        units.append(all_units)
+        units.extend(sorted(set([b.unit for b in bbox])))
+        unit_combobox["values"] = units
+        unit_combobox.set(all_units)
+
+    def create_crs_info(bbox):
+        if crs_info_func is None:
+            dic = bbox._asdict()
+            l = 0
+            for key in dic.keys():
+                if len(key) > l:
+                    l = len(key)
+            l += 1
+            txt = ""
+            for key in dic.keys():
+                k = key + ":"
+                txt += f"{k:{l}} {dic[key]}\n"
+        else:
+            txt = crs_info_func(bbox)
+        return txt
+
+    def find_bbox(crs):
+        if crs is None:
+            return None
+
+        auth, code = crs.split(":")
+        b = list(filter(lambda b: b.crs_auth_name==auth and
+                                  b.crs_code==code, bbox))[0]
+        return b
+
+    def select():
+        nonlocal sel_crs
+
+        for item in crs_treeview.selection():
+            sel_crs.append(crs_treeview.item(item)["values"][1])
+        root.destroy()
 
     def on_drag(event):
         nonlocal dragged
@@ -300,9 +411,6 @@ def start(
         prev_xy.clear()
         draw_geoms()
 
-    def on_clear_drawing(event):
-        geoms.clear()
-
     def on_select_crs(event):
         nonlocal prev_crs_items
 
@@ -362,51 +470,6 @@ def start(
 
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
-
-    def populate_crs_list(bbox):
-        crs_treeview.delete(*crs_treeview.get_children())
-        for b in bbox:
-            crs_treeview.insert("", tk.END, values=(
-                                b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
-        sel_bbox.clear()
-        draw_bbox()
-
-    def populate_filters(bbox):
-        proj_tables.clear()
-        proj_tables.append(all_proj_tables)
-        proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
-        proj_table_combobox["values"] = proj_tables
-        proj_table_combobox.set(all_proj_tables)
-
-        units.clear()
-        units.append(all_units)
-        units.extend(sorted(set([b.unit for b in bbox])))
-        unit_combobox["values"] = units
-        unit_combobox.set(all_units)
-
-    def select():
-        nonlocal sel_crs
-
-        for item in crs_treeview.selection():
-            sel_crs.append(crs_treeview.item(item)["values"][1])
-        root.destroy()
-
-    def query():
-        nonlocal bbox
-
-        query = query_text.get("1.0", tk.END)
-        geoms.clear()
-        log_text.delete("1.0", tk.END)
-        try:
-            geoms.extend(ppik.parse_mixed_geoms(query))
-            bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
-        except Exception as e:
-            log_text.insert(tk.END, e)
-            bottom_right_notebook.select(log_frame)
-
-        populate_crs_list(bbox)
-        populate_filters(bbox)
-        draw_geoms()
 
     lat = 0
     lon = 0
@@ -472,7 +535,7 @@ def start(
     map_canvas.bind("<ButtonRelease-1>", on_draw)
     map_canvas.bind("<Double-Button-1>", on_complete_drawing)
     map_canvas.bind("<ButtonRelease-3>", on_cancel_drawing)
-    map_canvas.bind("<Double-Button-3>", on_clear_drawing)
+    map_canvas.bind("<Double-Button-3>", lambda e: geoms.clear())
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom))
@@ -486,6 +549,7 @@ def start(
 
     # draw geometries if given
     if geoms:
+        osm.zoom_to_bbox(calc_geoms_bbox())
         draw_geoms()
 
     ##############
