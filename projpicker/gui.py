@@ -61,6 +61,10 @@ def start(
     proj_tables = []
     units = []
 
+    lat = 0
+    lon = 0
+    zoom = 0
+
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
         if x - prev_x > 0:
@@ -471,10 +475,6 @@ def start(
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
-    lat = 0
-    lon = 0
-    zoom = 0
-
     # parse geometries if given
     query_string = ""
     if geoms:
@@ -530,12 +530,8 @@ def start(
             map_canvas_width, map_canvas_height,
             lat, lon, zoom)
 
-    map_canvas.bind("<ButtonPress-1>", lambda e: osm.start_dragging(e.x, e.y))
+    map_canvas.bind("<ButtonPress-1>", lambda e: osm.grab(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)
-    map_canvas.bind("<ButtonRelease-1>", on_draw)
-    map_canvas.bind("<Double-Button-1>", on_complete_drawing)
-    map_canvas.bind("<ButtonRelease-3>", on_cancel_drawing)
-    map_canvas.bind("<Double-Button-3>", lambda e: geoms.clear())
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom))
@@ -546,6 +542,10 @@ def start(
                     lambda e: zoom_map(e.x, e.y,
                                        dzoom if e.delta > 0 else -dzoom))
     map_canvas.bind("<Motion>", on_move)
+    map_canvas.bind("<ButtonRelease-1>", on_draw)
+    map_canvas.bind("<Double-Button-1>", on_complete_drawing)
+    map_canvas.bind("<ButtonRelease-3>", on_cancel_drawing)
+    map_canvas.bind("<Double-Button-3>", lambda e: geoms.clear())
 
     # draw geometries if given
     if geoms:

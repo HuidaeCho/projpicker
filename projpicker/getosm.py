@@ -176,14 +176,14 @@ class OpenStreetMap:
     def redraw_map(self):
         self.draw_map(self.lat, self.lon, self.z)
 
-    def start_dragging(self, x, y):
-        self.drag_x = x
-        self.drag_y = y
+    def grab(self, x, y):
+        self.grab_x = x
+        self.grab_y = y
 
     def drag(self, x, y):
-        dx = x - self.drag_x
-        dy = y - self.drag_y
-        self.start_dragging(x, y)
+        dx = x - self.grab_x
+        dy = y - self.grab_y
+        self.grab(x, y)
         x = self.width / 2 - dx
         y = self.height / 2 - dy
         lat, lon = self.canvas_to_latlon(x, y)
@@ -199,28 +199,28 @@ class OpenStreetMap:
     def zoom(self, x, y, dz):
         zoomed = False
         self.dz += dz
-        if ((self.z < self.z_max and self.dz > 1) or
-            (self.z > self.z_min and self.dz < -1)):
+        if ((self.z < self.z_max and self.dz >= 1) or
+            (self.z > self.z_min and self.dz <= -1)):
             dz = 1 if self.dz > 0 else -1
             z = self.z + dz
+            # pinned zoom at x,y
             if dz > 0:
-                # each zoom in doubles
-                x = (x + self.width / 2) / 2
-                y = (y + self.height / 2) / 2
+                # each zoom-in doubles
+                xc = (x + self.width / 2) / 2
+                yc = (y + self.height / 2) / 2
                 self.message("zoom in:", z)
             else:
-                # each zoom out halves
-                x = self.width - x
-                y = self.height - y
+                # each zoom-out halves
+                xc = self.width - x
+                yc = self.height - y
                 self.message("zoom out:", z)
-            # pinned zoom at x,y
-            # lat,lon at x,y
-            lat, lon = self.canvas_to_latlon(x, y)
+            # lat,lon at xc,yc
+            lat, lon = self.canvas_to_latlon(xc, yc)
             self.draw_map(lat, lon, z)
             self.reset_zoom()
             zoomed = True
-        elif ((self.z == self.z_max and self.dz > 1) or
-              (self.z == self.z_min and self.dz < -1)):
+        elif ((self.z == self.z_max and self.dz >= 1) or
+              (self.z == self.z_min and self.dz <= -1)):
             self.reset_zoom()
         return zoomed
 
