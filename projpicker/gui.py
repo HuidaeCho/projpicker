@@ -53,7 +53,6 @@ def start(
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
-    zoomer_checker = None
     zoomer_queue = queue.Queue()
     dzoom = 1
     dragged = False
@@ -226,6 +225,10 @@ def start(
             e += 0.0001
         return s, n, w, e
 
+    # XXX: EXPERIMENTAL! works only in a single-threaded mode without draw()
+    def zoom_map(x, y, dz):
+        osm.rescale(x, y, dz)
+
     def zoom_map(x, y, dz):
         def zoom(x, y, dz, cancel_event):
             if (not cancel_event.wait(0.01) and
@@ -247,14 +250,14 @@ def start(
                 zoomer_queue.put((draw_map, x, y))
 
         def check_zoomer():
-            nonlocal zoomer_checker
+            nonlocal zoomer
 
             try:
-                map_drawer, x, y = zoomer_queue.get_nowait()
+                draw_map, x, y = zoomer_queue.get_nowait()
             except:
-                zoomer_checker = map_canvas.after_idle(check_zoomer)
+                zoomer.checker = map_canvas.after_idle(check_zoomer)
             else:
-                map_drawer(x, y)
+                draw_map(x, y)
 
         # https://stackoverflow.com/a/63305873/16079666
         # https://stackoverflow.com/a/26703844/16079666
@@ -267,9 +270,12 @@ def start(
         # downloading, so I separated GUI code from download code in the
         # OpenStreetMap class and split the draw_map() function into
         # download_map() and draw_map()
-        nonlocal zoomer, zoomer_checker
+        nonlocal zoomer
 
         if zoomer:
+            # XXX: doesn't work
+            # osm.rescale(x, y, osm.z - zoomer.z)
+
             # cancel the previous zoomer thread
             zoomer.cancel_event.set()
 
@@ -285,7 +291,7 @@ def start(
             osm.cancel = True
             zoomer.join()
             osm.cancel = False
-            map_canvas.after_cancel(zoomer_checker)
+            map_canvas.after_cancel(zoomer.checker)
 
             cancel_event = zoomer.cancel_event
             # need to clear to reuse it
@@ -295,8 +301,9 @@ def start(
 
         zoomer = threading.Thread(target=zoom, args=(x, y, dz, cancel_event))
         zoomer.cancel_event = cancel_event
+        zoomer.checker = map_canvas.after_idle(check_zoomer)
+        zoomer.z = osm.z
         zoomer.start()
-        zoomer_checker = map_canvas.after_idle(check_zoomer)
 
     def query():
         nonlocal bbox

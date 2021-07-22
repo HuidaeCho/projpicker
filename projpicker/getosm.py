@@ -27,7 +27,14 @@ import sys
 import math
 import urllib.request
 
-Tile = collections.namedtuple("Tile", "key x y")
+
+class Tile:
+    def __init__(self, key, x, y, z):
+        self.key = key
+        self.x = x
+        self.y = y
+        self.z = z
+        self.rescaled_image = None
 
 
 class CachedTile:
@@ -55,9 +62,9 @@ class OpenStreetMap:
         self.lat_min = -85.0511
         self.lat_max = 85.0511
         self.dz = 0
+        self.tiles = []
         # TODO: Tile caching mechanism
         self.cached_tiles = {}
-        self.tiles = []
         self.cancel = False
 
         self.redownload()
@@ -181,11 +188,9 @@ class OpenStreetMap:
                 while tile_x > self.width:
                     tile_x -= 256 * ntiles
                 tile_y = yoff + (yi - y) * 256
-                self.tiles.append(Tile(tile_key, tile_x, tile_y))
+                self.tiles.append(Tile(tile_key, tile_x, tile_y, z))
             if self.cancel:
                 break
-        if self.cancel:
-            self.tiles.clear()
 
     def redownload(self):
         self.download(self.lat, self.lon, self.z)
@@ -219,6 +224,65 @@ class OpenStreetMap:
         if draw:
             self.draw()
         return dx, dy
+
+    # XXX: EXPERIMENTAL! works only in a single-threaded mode without draw(); a
+    # race condition with download_map() in the background thread? self.tiles
+    # can get cleared by download_map(); tight zoom can cause
+    # _tkinter.TclError: not enough free memory for image buffer
+    def rescale(self, x, y, dz):
+        z = min(max(self.z + dz, self.z_min), self.z_max)
+        dz = z - self.z
+        if dz != 0:
+            self.z = z
+            xc, yc = self.width / 2, self.height / 2
+            for i in range(0, abs(dz)):
+                if dz > 0:
+                    # each zoom-in doubles
+                    xc = (x + xc) / 2
+                    yc = (y + yc) / 2
+                else:
+                    # each zoom-out halves
+                    xc = 2 * xc - x
+                    yc = 2 * yc - y
+
+            samp_fac = 2**abs(dz)
+            fac = 2**dz
+
+            idx = []
+            image = self.create_image(self.width, self.height)
+            for i in range(len(self.tiles)):
+                tile = self.tiles[i]
+                if tile.key not in self.cached_tiles:
+                    continue
+
+                tile.x = self.width / 2 - fac * (xc - tile.x)
+                tile.y = self.height / 2 - fac * (yc - tile.y)
+                tile_size = 2**(z - tile.z) * 256
+
+                if (tile.x + tile_size < 0 or tile.y + tile_size < 0 or
+                    tile.x >= self.width or tile.y >= self.height):
+                    idx.append(i)
+                    continue
+
+                if tile.rescaled_image:
+                    tile_image = tile.rescaled_image
+                else:
+                    cached_tile = self.cached_tiles[tile.key]
+                    if cached_tile.raw:
+                        cached_tile.image = self.create_tile(cached_tile.image)
+                        cached_tile.raw = False
+                    tile_image = cached_tile.image
+                if dz > 0:
+                    # XXX: tkinter .zoom()
+                    tile.rescaled_image = tile_image.zoom(samp_fac)
+                else:
+                    # XXX: tkinter .subsample()
+                    tile.rescaled_image = tile_image.subsample(samp_fac)
+                self.draw_tile(image, tile.rescaled_image, tile.x, tile.y)
+            self.draw_image(image)
+
+            for i in reversed(idx):
+                del self.tiles[i]
 
     def reset_zoom(self):
         self.dz = 0
