@@ -63,6 +63,7 @@ class OpenStreetMap:
         self.lat_max = 85.0511
         self.dz = 0
         self.tiles = []
+        self.rescaled_tiles = []
         # TODO: Tile caching mechanism
         self.cached_tiles = {}
         self.cancel = False
@@ -79,25 +80,6 @@ class OpenStreetMap:
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
         self.redownload()
-
-    def get_tile_url(self, x, y, z):
-        return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
-    def download_tile(self, x, y, z):
-        tile_url = self.get_tile_url(x, y, z)
-        tile_key = f"{z}/{x}/{y}"
-        if tile_key not in self.cached_tiles:
-            # need this header to successfully download tiles from the server
-            req = urllib.request.Request(tile_url, headers={
-                "User-Agent": "urllib.request"
-            })
-            try:
-                with urllib.request.urlopen(req) as f:
-                    self.cached_tiles[tile_key] = CachedTile(f.read(), True)
-                    self.message(f"{tile_url} downloaded")
-            except Exception as e:
-                self.message(f"{tile_url}: Failed to download")
-        return tile_key
 
     # Adapted from https://stackoverflow.com/a/62607111/16079666
     # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -134,6 +116,25 @@ class OpenStreetMap:
             lon -= 360
         return lat, lon
 
+    def get_tile_url(self, x, y, z):
+        return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+
+    def download_tile(self, x, y, z):
+        tile_url = self.get_tile_url(x, y, z)
+        tile_key = f"{z}/{x}/{y}"
+        if tile_key not in self.cached_tiles:
+            # need this header to successfully download tiles from the server
+            req = urllib.request.Request(tile_url, headers={
+                "User-Agent": "urllib.request"
+            })
+            try:
+                with urllib.request.urlopen(req) as f:
+                    self.cached_tiles[tile_key] = CachedTile(f.read(), True)
+                    self.message(f"{tile_url} downloaded")
+            except Exception as e:
+                self.message(f"{tile_url}: Failed to download")
+        return tile_key
+
     def download(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
@@ -169,11 +170,12 @@ class OpenStreetMap:
         self.xoff = xoff
         self.yoff = yoff
 
+        # try to not clear self.rescaled_tiles to keep rescale() safer
+        self.rescaled_tiles = self.tiles.copy()
         self.tiles.clear()
 
         self.message("image size:", self.width, self.height)
 
-        cancel = False
         for xi in range(xmin, xmax + 1):
             xt = xi % ntiles
             for yi in range(ymin, ymax + 1):
@@ -233,7 +235,6 @@ class OpenStreetMap:
         z = min(max(self.z + dz, self.z_min), self.z_max)
         dz = z - self.z
         if dz != 0:
-            self.z = z
             xc, yc = self.width / 2, self.height / 2
             for i in range(0, abs(dz)):
                 if dz > 0:
@@ -245,13 +246,27 @@ class OpenStreetMap:
                     xc = 2 * xc - x
                     yc = 2 * yc - y
 
+            # recalculate xoff,yoff
+            lat, lon = self.canvas_to_latlon(xc, yc)
+            xt, yt = self.latlon_to_tile(lat, lon, z)
+            xi, yi = int(xt), int(yt)
+            n, w = self.tile_to_latlon(xi, yi, z)
+            s, e = self.tile_to_latlon(xi + 1, yi + 1, z)
+            xo, yo = self.latlon_to_tile(n, w, z)
+
+            self.lat = lat
+            self.lon = lon
+            self.x = xi
+            self.y = yi
+            self.z = z
+            self.xoff = int(self.width / 2 - (xt - xo) * 256)
+            self.yoff = int(self.height / 2 - (yt - yo) * 256)
+
             samp_fac = 2**abs(dz)
             fac = 2**dz
 
-            idx = []
             image = self.create_image(self.width, self.height)
-            for i in range(len(self.tiles)):
-                tile = self.tiles[i]
+            for tile in self.rescaled_tiles:
                 if tile.key not in self.cached_tiles:
                     continue
 
@@ -261,7 +276,6 @@ class OpenStreetMap:
 
                 if (tile.x + tile_size < 0 or tile.y + tile_size < 0 or
                     tile.x >= self.width or tile.y >= self.height):
-                    idx.append(i)
                     continue
 
                 if tile.rescaled_image:
@@ -280,9 +294,6 @@ class OpenStreetMap:
                     tile.rescaled_image = tile_image.subsample(samp_fac)
                 self.draw_tile(image, tile.rescaled_image, tile.x, tile.y)
             self.draw_image(image)
-
-            for i in reversed(idx):
-                del self.tiles[i]
 
     def reset_zoom(self):
         self.dz = 0
