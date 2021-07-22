@@ -170,8 +170,6 @@ class OpenStreetMap:
         self.xoff = xoff
         self.yoff = yoff
 
-        # try to not clear self.rescaled_tiles to keep rescale() safer
-        self.rescaled_tiles = self.tiles.copy()
         self.tiles.clear()
 
         self.message("image size:", self.width, self.height)
@@ -193,6 +191,7 @@ class OpenStreetMap:
                 self.tiles.append(Tile(tile_key, tile_x, tile_y, z))
             if self.cancel:
                 break
+        self.rescaled_tiles = self.tiles.copy()
 
     def redownload(self):
         self.download(self.lat, self.lon, self.z)
@@ -266,8 +265,11 @@ class OpenStreetMap:
             fac = 2**dz
 
             image = self.create_image(self.width, self.height)
-            for tile in self.rescaled_tiles:
+            idx = []
+            for i in range(len(self.rescaled_tiles)):
+                tile = self.rescaled_tiles[i]
                 if tile.key not in self.cached_tiles:
+                    idx.append(i)
                     continue
 
                 tile.x = self.width / 2 - fac * (xc - tile.x)
@@ -276,6 +278,7 @@ class OpenStreetMap:
 
                 if (tile.x + tile_size < 0 or tile.y + tile_size < 0 or
                     tile.x >= self.width or tile.y >= self.height):
+                    idx.append(i)
                     continue
 
                 if tile.rescaled_image:
@@ -294,6 +297,9 @@ class OpenStreetMap:
                     tile.rescaled_image = tile_image.subsample(samp_fac)
                 self.draw_tile(image, tile.rescaled_image, tile.x, tile.y)
             self.draw_image(image)
+
+            for i in reversed(idx):
+                del self.rescaled_tiles[i]
 
     def reset_zoom(self):
         self.dz = 0
