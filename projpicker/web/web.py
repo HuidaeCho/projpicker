@@ -129,12 +129,12 @@ def run(server_class=http.server.HTTPServer, handler_class=HttpRequestHandler, a
     server_address = (addr, port)
     if addr == "localhost":
         addr += ":"
-    print(server_address)
     httpd = server_class(server_address, handler_class)
 
     try:
         print(f"{colors.OKGREEN}Starting httpd server on {addr}{port}{colors.ENDC}")
-        webbrowser.open_new(f"{addr}{port}")
+        if open_in_browser is True:
+            webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
