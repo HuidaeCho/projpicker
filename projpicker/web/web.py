@@ -31,7 +31,7 @@ class Geometry:
 # Utility Functions
 def create_parsable_geoms(geojson):
     # TODO: Logical operator buttons
-    geoms = geojson['logicalOperator']
+    geoms = geojson["logicalOperator"]
     for feature in geojson["features"]:
         json_geom = feature["geometry"]
         coors = json_geom["coordinates"]
@@ -45,16 +45,18 @@ def create_parsable_geoms(geojson):
 
     return geoms
 
+
 class colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
 
 def bbox_to_json(bbox_list):
     crs_json = {}
@@ -84,33 +86,30 @@ def query(geoms):
     return crs
 
 
-
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     global projpicker_query
 
     def do_GET(self):
-        if self.path == '/':
-            self.path = 'index.html'
+        if self.path == "/":
+            self.path = "index.html"
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-        elif self.path == '/projdata':
+        elif self.path == "/projdata":
             self.send_response(200)
-            self.send_header('Content-type','text/html')
+            self.send_header("Content-type", "text/html")
             self.end_headers()
-            with open('projdata', 'r') as f:
+            with open("projdata", "r") as f:
                 self.wfile.write(bytes(f.read(), "utf8"))
-            #print(projpicker_query)
-
-
+            # print(projpicker_query)
 
     def do_POST(self):
-        if self.path == '/data':
+        if self.path == "/data":
             # http.client.HTTPResponse stores headers and implements
             # email.message.Message class'
             # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
             header = self.headers
 
-            content_len = int(header.get('content-length'))
+            content_len = int(header.get("content-length"))
             content_charset = header.get_content_charset(failobj="utf-8")
             content_bytes = self.rfile.read(content_len)
             content_body = content_bytes.decode(content_charset)
@@ -120,12 +119,18 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             crs_list = query(geoms)
             projpicker_query = bbox_to_json(crs_list)
 
-            f = open("projdata", "w")
-            f.write(json.dumps(projpicker_query))
-            f.close()
+            projpicker_output_json = open("projdata", "w")
+            projpicker_output_json.write(json.dumps(projpicker_query))
+            projpicker_output_json.close()
 
 
-def run(server_class=http.server.HTTPServer, handler_class=HttpRequestHandler, addr="localhost", port=8000, open_in_browser=False):
+def run(
+    server_class=http.server.HTTPServer,
+    handler_class=HttpRequestHandler,
+    addr="localhost",
+    port=8000,
+    open_in_browser=False,
+):
     server_address = (addr, port)
     if addr == "localhost":
         addr += ":"
@@ -163,4 +168,3 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     run(addr=args.listen, port=args.port, open_in_browser=args.o)
-
