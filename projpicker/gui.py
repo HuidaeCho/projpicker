@@ -74,6 +74,79 @@ def start(
         draw_geoms(x, y)
         draw_bbox()
 
+    def draw_geoms(x=None, y=None):
+        point_size = 4
+        point_half_size = point_size // 2
+        outline = "blue"
+        width = 2
+        fill = "blue"
+        stipple = "gray12"
+
+        map_canvas.delete(tag_geoms)
+
+        if curr_geom and x and y:
+            latlon = list(osm.canvas_to_latlon(x, y))
+
+            all_geoms = geoms.copy()
+            g = curr_geom.copy()
+            g.append(latlon)
+
+            if drawing_bbox:
+                ng = len(g)
+                if ng > 0:
+                    s = g[ng-1][0]
+                    n = g[0][0]
+                    w = g[0][1]
+                    e = g[ng-1][1]
+                    all_geoms.extend(["bbox", [s, n, w, e]])
+            elif g:
+                if prev_xy:
+                    latlon[1] = adjust_lon(prev_xy[0], x,
+                                           curr_geom[len(curr_geom)-1][1],
+                                           latlon[1])
+                g.append(latlon)
+                all_geoms.extend(["poly", g])
+        else:
+            all_geoms = geoms.copy()
+
+        geom_type = "point"
+        g = 0
+        ngeoms = len(all_geoms)
+        while g < ngeoms:
+            geom = all_geoms[g]
+            if geom in ("point", "poly", "bbox"):
+                geom_type = geom
+                g += 1
+                geom = all_geoms[g]
+            if type(geom) == list:
+                if geom_type == "point":
+                    for xy in osm.get_xy([geom]):
+                        x, y = xy[0]
+                        oval = (x - point_half_size, y - point_half_size,
+                                x + point_half_size, y + point_half_size)
+                        map_canvas.create_oval(oval, outline=outline,
+                                               width=width, fill=fill,
+                                               tag=tag_geoms)
+                elif geom_type == "poly":
+                    for xy in osm.get_xy(geom):
+                        map_canvas.create_polygon(xy, outline=outline,
+                                                  width=width, fill=fill,
+                                                  stipple=stipple,
+                                                  tag=tag_geoms)
+                else:
+                    for xy in osm.get_bbox_xy(geom):
+                        map_canvas.create_rectangle(xy, outline=outline,
+                                                    width=width, fill=fill,
+                                                    stipple=stipple,
+                                                    tag=tag_geoms)
+            g += 1
+
+    def draw_bbox():
+        map_canvas.delete(tag_bbox)
+        for xy in osm.get_bbox_xy(sel_bbox):
+            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
+                                        stipple="gray12", tag=tag_bbox)
+
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
         if x - prev_x > 0:
@@ -153,101 +226,29 @@ def start(
             e += 0.0001
         return s, n, w, e
 
-    def draw_geoms(x=None, y=None):
-        point_size = 4
-        point_half_size = point_size // 2
-        outline = "blue"
-        width = 2
-        fill = "blue"
-        stipple = "gray12"
-
-        map_canvas.delete(tag_geoms)
-
-        if curr_geom and x and y:
-            latlon = list(osm.canvas_to_latlon(x, y))
-
-            all_geoms = geoms.copy()
-            g = curr_geom.copy()
-            g.append(latlon)
-
-            if drawing_bbox:
-                ng = len(g)
-                if ng > 0:
-                    s = g[ng-1][0]
-                    n = g[0][0]
-                    w = g[0][1]
-                    e = g[ng-1][1]
-                    all_geoms.extend(["bbox", [s, n, w, e]])
-            elif g:
-                if prev_xy:
-                    latlon[1] = adjust_lon(prev_xy[0], x,
-                                           curr_geom[len(curr_geom)-1][1],
-                                           latlon[1])
-                g.append(latlon)
-                all_geoms.extend(["poly", g])
-        else:
-            all_geoms = geoms.copy()
-
-        geom_type = "point"
-        g = 0
-        ngeoms = len(all_geoms)
-        while g < ngeoms:
-            geom = all_geoms[g]
-            if geom in ("point", "poly", "bbox"):
-                geom_type = geom
-                g += 1
-                geom = all_geoms[g]
-            if type(geom) == list:
-                if geom_type == "point":
-                    for xy in osm.get_xy([geom]):
-                        x, y = xy[0]
-                        oval = (x - point_half_size, y - point_half_size,
-                                x + point_half_size, y + point_half_size)
-                        map_canvas.create_oval(oval, outline=outline,
-                                               width=width, fill=fill,
-                                               tag=tag_geoms)
-                elif geom_type == "poly":
-                    for xy in osm.get_xy(geom):
-                        map_canvas.create_polygon(xy, outline=outline,
-                                                  width=width, fill=fill,
-                                                  stipple=stipple,
-                                                  tag=tag_geoms)
-                else:
-                    for xy in osm.get_bbox_xy(geom):
-                        map_canvas.create_rectangle(xy, outline=outline,
-                                                    width=width, fill=fill,
-                                                    stipple=stipple,
-                                                    tag=tag_geoms)
-            g += 1
-
-    def draw_bbox():
-        map_canvas.delete(tag_bbox)
-        for xy in osm.get_bbox_xy(sel_bbox):
-            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
-                                        stipple="gray12", tag=tag_bbox)
-
     def zoom_map(x, y, dz):
         def zoom(x, y, dz, cancel_event):
-            if not cancel_event.wait(0.01):
-                if osm.zoom(x, y, dz, False) and not osm.cancel:
-                    # ready to draw map; how? event_generate()? maybe...
-                    # https://www.tcl.tk/man/tcl8.7/TkCmd/event.html#M7
-                    # https://mail.python.org/pipermail/python-list/2003-December/197985.html
-                    # https://bytes.com/topic/python/answers/735362-tkinter-threads-communication
-                    # however...
-                    # http://stupidpythonideas.blogspot.com/2013/10/why-your-gui-app-freezes.html?view=classic
-                    # https://bugs.python.org/issue33412
-                    # when cancel_event is set after cancel_event.wait() but
-                    # before event_generate(), event_generate() hangs and
-                    # zoomer.join() never returns; I tried cancel_event.wait()
-                    # here again, but it still hung sometimes with when=tail
-                    # map_canvas.event_generate("<<Zoomed>>", when="tail")
+            if (not cancel_event.wait(0.01) and
+                osm.zoom(x, y, dz, False) and not osm.cancel):
+                # ready to draw map; how? event_generate()? maybe...
+                # https://www.tcl.tk/man/tcl8.7/TkCmd/event.html#M7
+                # https://mail.python.org/pipermail/python-list/2003-December/197985.html
+                # https://bytes.com/topic/python/answers/735362-tkinter-threads-communication
+                # however...
+                # http://stupidpythonideas.blogspot.com/2013/10/why-your-gui-app-freezes.html?view=classic
+                # https://bugs.python.org/issue33412
+                # when cancel_event is set after cancel_event.wait() but before
+                # event_generate(), event_generate() hangs and zoomer.join()
+                # never returns; I tried cancel_event.wait() here again, but it
+                # still hung sometimes with when=tail
+                # map_canvas.event_generate("<<Zoomed>>", when="tail")
 
-                    # let's use queue and after_idle()
-                    zoomer_queue.put((draw_map, x, y))
+                # let's use queue and after_idle()
+                zoomer_queue.put((draw_map, x, y))
 
         def check_zoomer():
             nonlocal zoomer_checker
+
             try:
                 map_drawer, x, y = zoomer_queue.get_nowait()
             except:
