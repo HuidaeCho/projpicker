@@ -54,6 +54,7 @@ else:
                         get_float, BBox)
     import coor_latlon
     import coor_xy
+    import web
     try:
         import gui
     except:
@@ -2862,6 +2863,10 @@ def parse():
             "-o", "--output",
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
+    parser.add_argument(
+            "-w", "--web",
+            action="store_true",
+            help="open projpicker web app in new browser window")
     if has_gui:
         gui_exclusive = parser.add_mutually_exclusive_group()
         gui_exclusive.add_argument(
@@ -2906,6 +2911,10 @@ def main():
     max_bbox = args.max
     infile = args.input
     outfile = args.output
+    webapp = args.web
+    if args.web is True:
+        web.run()
+
     if has_gui:
         if args.select_gui:
             start_gui = "select"
