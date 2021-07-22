@@ -3,7 +3,7 @@ import http.server
 import json
 import argparse
 import projpicker as ppik
-
+import webbrowser
 
 VERBOSE = True
 
@@ -125,12 +125,16 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             f.close()
 
 
-def run(server_class=http.server.HTTPServer, handler_class=HttpRequestHandler, addr="localhost", port=8000):
+def run(server_class=http.server.HTTPServer, handler_class=HttpRequestHandler, addr="localhost", port=8000, open_in_browser=False):
     server_address = (addr, port)
+    if addr == "localhost":
+        addr += ":"
+    print(server_address)
     httpd = server_class(server_address, handler_class)
 
     try:
-        print(f"{colors.OKGREEN}Starting httpd server on {addr}:{port}{colors.ENDC}")
+        print(f"{colors.OKGREEN}Starting httpd server on {addr}{port}{colors.ENDC}")
+        webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
@@ -138,8 +142,7 @@ def run(server_class=http.server.HTTPServer, handler_class=HttpRequestHandler, a
 
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description="Run a simple HTTP server")
+    parser = argparse.ArgumentParser(description="ProjPicker webview")
     parser.add_argument(
         "-l",
         "--listen",
@@ -153,5 +156,11 @@ if __name__ == "__main__":
         default=8000,
         help="Specify the port on which the server listens",
     )
+    parser.add_argument(
+        "-o",
+        action="store_true",
+        help="Open in new tab within users default browser",
+    )
     args = parser.parse_args()
-    run(addr=args.listen, port=args.port)
+    run(addr=args.listen, port=args.port, open_in_browser=args.o)
+
