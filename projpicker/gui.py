@@ -4,6 +4,8 @@ This module implements the GUI of ProjPicker.
 
 import tkinter as tk
 from tkinter import ttk
+import threading
+import queue
 import textwrap
 import webbrowser
 
@@ -51,6 +53,8 @@ def start(
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
+    zoomer_checker = None
+    zoomer_queue = queue.Queue()
     dzoom = 1
     dragged = False
     drawing_bbox = False
@@ -64,6 +68,11 @@ def start(
     lat = 0
     lon = 0
     zoom = 0
+
+    def draw_map(x, y):
+        osm.draw_map()
+        draw_geoms(x, y)
+        draw_bbox()
 
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
@@ -218,23 +227,75 @@ def start(
                                         stipple="gray12", tag=tag_bbox)
 
     def zoom_map(x, y, dz):
-        def zoom(x, y, dz):
-            if osm.zoom(x, y, dz):
-                draw_geoms(x, y)
-                draw_bbox()
+        def zoom(x, y, dz, cancel_event):
+            if not cancel_event.wait(0.01):
+                if osm.zoom(x, y, dz, False) and not osm.cancel:
+                    # ready to draw map; how? event_generate()? maybe...
+                    # https://www.tcl.tk/man/tcl8.7/TkCmd/event.html#M7
+                    # https://mail.python.org/pipermail/python-list/2003-December/197985.html
+                    # https://bytes.com/topic/python/answers/735362-tkinter-threads-communication
+                    # however...
+                    # http://stupidpythonideas.blogspot.com/2013/10/why-your-gui-app-freezes.html?view=classic
+                    # https://bugs.python.org/issue33412
+                    # when cancel_event is set after cancel_event.wait() but
+                    # before event_generate(), event_generate() hangs and
+                    # zoomer.join() never returns; I tried cancel_event.wait()
+                    # here again, but it still hung sometimes with when=tail
+                    # map_canvas.event_generate("<<Zoomed>>", when="tail")
+
+                    # let's use queue and after_idle()
+                    zoomer_queue.put((draw_map, x, y))
+
+        def check_zoomer():
+            nonlocal zoomer_checker
+            try:
+                map_drawer, x, y = zoomer_queue.get_nowait()
+            except:
+                zoomer_checker = map_canvas.after_idle(check_zoomer)
+            else:
+                map_drawer(x, y)
 
         # https://stackoverflow.com/a/63305873/16079666
         # https://stackoverflow.com/a/26703844/16079666
         # https://wiki.tcl-lang.org/page/Tcl+event+loop
-        # XXX: Cho tried multi-threading in the OpenStreetMap class, but
+        # first, I tried multi-threading in the OpenStreetMap class, but
         # map_canvas flickered too much; according to the above references,
-        # tkinter doesn't like threading, so he decided to use its native
-        # after() and after_cancel() to keep only the last zooming event
-        nonlocal zoomer
+        # tkinter doesn't like threading, so I decided to use its native
+        # after() and after_cancel() to keep only the last zooming event;
+        # however, once osm.zoom() started, there was no way to cancel
+        # downloading, so I separated GUI code from download code in the
+        # OpenStreetMap class and split the draw_map() function into
+        # download_map() and draw_map()
+        nonlocal zoomer, zoomer_checker
 
         if zoomer:
-            map_canvas.after_cancel(zoomer)
-        zoomer = map_canvas.after(0, zoom, x, y, dz)
+            # cancel the previous zoomer thread
+            zoomer.cancel_event.set()
+
+            # cancel the previous map download; why do I set it here instead of
+            # inside the zoommer like "if cancel_event, osm.cancel = True else
+            # osm.zoom"? if it's inside the zoomer, unless timeout is long
+            # enough to wait until another consecutive zoom event occurs,
+            # osm.zoom() in the else block will start and once it started,
+            # osm.cancel = True in the if block will never happen because the
+            # zoomer runs only once; in other words, osm.zoom() that already
+            # started will never see osm.cancel = True; to avoid this problem,
+            # osm.cancel is set outside the zoomer
+            osm.cancel = True
+            zoomer.join()
+            osm.cancel = False
+            map_canvas.after_cancel(zoomer_checker)
+
+            cancel_event = zoomer.cancel_event
+            # need to clear to reuse it
+            cancel_event.clear()
+        else:
+            cancel_event = threading.Event()
+
+        zoomer = threading.Thread(target=zoom, args=(x, y, dz, cancel_event))
+        zoomer.cancel_event = cancel_event
+        zoomer.start()
+        zoomer_checker = map_canvas.after_idle(check_zoomer)
 
     def query():
         nonlocal bbox
@@ -313,6 +374,11 @@ def start(
         draw_geoms(event.x, event.y)
         draw_bbox()
         dragged = True
+
+    def on_zoom(event):
+        osm.draw_map()
+        draw_geoms(event.x, event.y)
+        draw_bbox()
 
     def on_move(event):
         latlon = osm.canvas_to_latlon(event.x, event.y)
