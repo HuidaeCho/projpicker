@@ -60,18 +60,18 @@ class OpenStreetMap:
         self.tiles = []
         self.cancel = False
 
-        self.redownload_map()
-        self.draw_map()
+        self.redownload()
+        self.draw()
 
     def message(self, *args, end=None):
         if self.verbose:
             print(*args, end=end, file=sys.stderr, flush=True)
 
-    def resize_map(self, width, height):
+    def resize(self, width, height):
         self.width = width
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
-        self.redownload_map()
+        self.redownload()
 
     def get_tile_url(self, x, y, z):
         return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -127,7 +127,7 @@ class OpenStreetMap:
             lon -= 360
         return lat, lon
 
-    def download_map(self, lat, lon, z):
+    def download(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
 
@@ -187,10 +187,10 @@ class OpenStreetMap:
         if self.cancel:
             self.tiles.clear()
 
-    def redownload_map(self):
-        self.download_map(self.lat, self.lon, self.z)
+    def redownload(self):
+        self.download(self.lat, self.lon, self.z)
 
-    def draw_map(self):
+    def draw(self):
         image = self.create_image(self.width, self.height)
         for tile in self.tiles:
             if tile.key in self.cached_tiles:
@@ -213,11 +213,11 @@ class OpenStreetMap:
         y = self.height / 2 - dy
         lat, lon = self.canvas_to_latlon(x, y)
         old_lat = self.lat
-        self.download_map(lat, lon, self.z)
+        self.download(lat, lon, self.z)
         if abs(old_lat - self.lat) <= sys.float_info.epsilon:
             dy = 0
         if draw:
-            self.draw_map()
+            self.draw()
         return dx, dy
 
     def reset_zoom(self):
@@ -252,10 +252,10 @@ class OpenStreetMap:
         else:
             zoomed = False
         if zoomed:
-            self.download_map(lat, lon, z)
+            self.download(lat, lon, z)
             self.reset_zoom()
             if draw:
-                self.draw_map()
+                self.draw()
         return zoomed
 
     def zoom_to_bbox(self, bbox, draw=True):
@@ -298,9 +298,9 @@ class OpenStreetMap:
             # if z is too tight, loosen it
             z -= 1
 
-        self.download_map(lat, lon, z)
+        self.download(lat, lon, z)
         if draw:
-            self.draw_map()
+            self.draw()
 
         return [s, n, w, e]
 

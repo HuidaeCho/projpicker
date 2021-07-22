@@ -70,7 +70,7 @@ def start(
     zoom = 0
 
     def draw_map(x, y):
-        osm.draw_map()
+        osm.draw()
         draw_geoms(x, y)
         draw_bbox()
 
@@ -377,7 +377,7 @@ def start(
         dragged = True
 
     def on_zoom(event):
-        osm.draw_map()
+        osm.draw()
         draw_geoms(event.x, event.y)
         draw_bbox()
 
