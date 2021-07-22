@@ -22,22 +22,27 @@
 This module provides an OpenStreetMap downloader.
 """
 
+import collections
 import sys
 import math
 import urllib.request
 
+Tile = collections.namedtuple("Tile", "key x y")
+
+
+class CachedTile:
+    def __init__(self, image, raw):
+        self.image = image
+        self.raw = raw
+
 
 class OpenStreetMap:
-    def __init__(self,
-                 create_image_func, draw_image_func,
-                 create_tile_func, draw_tile_func,
-                 width=256, height=256,
-                 lat=0, lon=0, z=0,
-                 verbose=False):
-        self.create_image_func = create_image_func
-        self.draw_image_func = draw_image_func
-        self.create_tile_func = create_tile_func
-        self.draw_tile_func = draw_tile_func
+    def __init__(self, create_image, draw_image, create_tile, draw_tile,
+                 width=256, height=256, lat=0, lon=0, z=0, verbose=False):
+        self.create_image = create_image
+        self.draw_image = draw_image
+        self.create_tile = create_tile
+        self.draw_tile = draw_tile
         self.width = width
         self.height = height
         self.lat = lat
@@ -51,9 +56,12 @@ class OpenStreetMap:
         self.lat_max = 85.0511
         self.dz = 0
         # TODO: Tile caching mechanism
-        self.tiles = {}
+        self.cached_tiles = {}
+        self.tiles = []
+        self.cancel = False
 
-        self.redraw_map()
+        self.redownload_map()
+        self.draw_map()
 
     def message(self, *args, end=None):
         if self.verbose:
@@ -63,7 +71,7 @@ class OpenStreetMap:
         self.width = width
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
-        self.redraw_map()
+        self.redownload_map()
 
     def get_tile_url(self, x, y, z):
         return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -71,15 +79,18 @@ class OpenStreetMap:
     def download_tile(self, x, y, z):
         tile_url = self.get_tile_url(x, y, z)
         tile_key = f"{z}/{x}/{y}"
-        if tile_key not in self.tiles:
+        if tile_key not in self.cached_tiles:
             # need this header to successfully download tiles from the server
             req = urllib.request.Request(tile_url, headers={
                 "User-Agent": "urllib.request"
             })
-            with urllib.request.urlopen(req) as f:
-                self.tiles[tile_key] = self.create_tile_func(f.read())
-        tile_image = self.tiles[tile_key]
-        return tile_image
+            try:
+                with urllib.request.urlopen(req) as f:
+                    self.cached_tiles[tile_key] = CachedTile(f.read(), True)
+                    self.message(f"{tile_url} downloaded")
+            except Exception as e:
+                self.message(f"{tile_url}: Failed to download")
+        return tile_key
 
     # Adapted from https://stackoverflow.com/a/62607111/16079666
     # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -116,7 +127,7 @@ class OpenStreetMap:
             lon -= 360
         return lat, lon
 
-    def draw_map(self, lat, lon, z):
+    def download_map(self, lat, lon, z):
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
 
@@ -151,36 +162,50 @@ class OpenStreetMap:
         self.xoff = xoff
         self.yoff = yoff
 
-        image = self.create_image_func(self.width, self.height)
+        self.tiles.clear()
 
         self.message("image size:", self.width, self.height)
 
+        cancel = False
         for xi in range(xmin, xmax + 1):
             xt = xi % ntiles
             for yi in range(ymin, ymax + 1):
-                try:
-                    tile_url = self.get_tile_url(xt, yi, z)
-                    tile_image = self.download_tile(xt, yi, z)
-                    tile_x = xoff + (xi - x) * 256
-                    while tile_x <= -256:
-                        tile_x += 256 * ntiles
-                    while tile_x > self.width:
-                        tile_x -= 256 * ntiles
-                    tile_y = yoff + (yi - y) * 256
-                    self.draw_tile_func(image, tile_image, tile_x, tile_y)
-                    self.message(f"{tile_url} pasted at {tile_x},{tile_y}")
-                except Exception as e:
-                    self.message(f"Failed to download {tile_url}: {e}")
-        self.draw_image_func(image)
+                if self.cancel:
+                    self.message("download_map cancelled")
+                    break
+                tile_url = self.get_tile_url(xt, yi, z)
+                tile_key = self.download_tile(xt, yi, z)
+                tile_x = xoff + (xi - x) * 256
+                while tile_x <= -256:
+                    tile_x += 256 * ntiles
+                while tile_x > self.width:
+                    tile_x -= 256 * ntiles
+                tile_y = yoff + (yi - y) * 256
+                self.tiles.append(Tile(tile_key, tile_x, tile_y))
+            if self.cancel:
+                break
+        if self.cancel:
+            self.tiles.clear()
 
-    def redraw_map(self):
-        self.draw_map(self.lat, self.lon, self.z)
+    def redownload_map(self):
+        self.download_map(self.lat, self.lon, self.z)
+
+    def draw_map(self):
+        image = self.create_image(self.width, self.height)
+        for tile in self.tiles:
+            if tile.key in self.cached_tiles:
+                cached_tile = self.cached_tiles[tile.key]
+                if cached_tile.raw:
+                    cached_tile.image = self.create_tile(cached_tile.image)
+                    cached_tile.raw = False
+                self.draw_tile(image, cached_tile.image, tile.x, tile.y)
+        self.draw_image(image)
 
     def grab(self, x, y):
         self.grab_x = x
         self.grab_y = y
 
-    def drag(self, x, y):
+    def drag(self, x, y, draw=True):
         dx = x - self.grab_x
         dy = y - self.grab_y
         self.grab(x, y)
@@ -188,16 +213,18 @@ class OpenStreetMap:
         y = self.height / 2 - dy
         lat, lon = self.canvas_to_latlon(x, y)
         old_lat = self.lat
-        self.draw_map(lat, lon, self.z)
+        self.download_map(lat, lon, self.z)
         if abs(old_lat - self.lat) <= sys.float_info.epsilon:
             dy = 0
+        if draw:
+            self.draw_map()
         return dx, dy
 
     def reset_zoom(self):
         self.dz = 0
 
-    def zoom(self, x, y, dz):
-        zoomed = False
+    def zoom(self, x, y, dz, draw=True):
+        zoomed = True
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
             (self.z > self.z_min and self.dz <= -1)):
@@ -216,15 +243,22 @@ class OpenStreetMap:
                 self.message("zoom out:", z)
             # lat,lon at xc,yc
             lat, lon = self.canvas_to_latlon(xc, yc)
-            self.draw_map(lat, lon, z)
-            self.reset_zoom()
-            zoomed = True
         elif ((self.z == self.z_max and self.dz >= 1) or
               (self.z == self.z_min and self.dz <= -1)):
+            # need to download map for z_max or z_min because when the first
+            # event of either zoom level was canceled, there are no cached
+            # tiles
+            lat, lon, z = self.lat, self.lon, self.z
+        else:
+            zoomed = False
+        if zoomed:
+            self.download_map(lat, lon, z)
             self.reset_zoom()
+            if draw:
+                self.draw_map()
         return zoomed
 
-    def zoom_to_bbox(self, bbox):
+    def zoom_to_bbox(self, bbox, draw=True):
         s, n, w, e = bbox
 
         lat = (s + n) / 2
@@ -264,7 +298,9 @@ class OpenStreetMap:
             # if z is too tight, loosen it
             z -= 1
 
-        self.draw_map(lat, lon, z)
+        self.download_map(lat, lon, z)
+        if draw:
+            self.draw_map()
 
         return [s, n, w, e]
 
