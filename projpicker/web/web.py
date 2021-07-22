@@ -1,10 +1,8 @@
 #!/bin/env python3
-from urllib import request, parse
 import http.server
 import json
 import argparse
 import projpicker as ppik
-import time
 
 
 VERBOSE = True
