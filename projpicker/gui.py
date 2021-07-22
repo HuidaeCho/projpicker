@@ -54,7 +54,7 @@ def start(
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     zoomer_queue = queue.Queue()
-    dzoom = 1
+    dzoom = 0.1
     dragged = False
     drawing_bbox = False
     complete_drawing = False
@@ -225,14 +225,9 @@ def start(
             e += 0.0001
         return s, n, w, e
 
-    # XXX: EXPERIMENTAL! works only in a single-threaded mode without draw()
-    def zoom_map(x, y, dz):
-        osm.rescale(x, y, dz)
-
     def zoom_map(x, y, dz):
         def zoom(x, y, dz, cancel_event):
-            if (not cancel_event.wait(0.01) and
-                osm.zoom(x, y, dz, False) and not osm.cancel):
+            if not cancel_event.wait(0.01) and osm.redownload():
                 # ready to draw map; how? event_generate()? maybe...
                 # https://www.tcl.tk/man/tcl8.7/TkCmd/event.html#M7
                 # https://mail.python.org/pipermail/python-list/2003-December/197985.html
@@ -273,9 +268,6 @@ def start(
         nonlocal zoomer
 
         if zoomer:
-            # XXX: doesn't work
-            # osm.rescale(x, y, osm.z - zoomer.z)
-
             # cancel the previous zoomer thread
             zoomer.cancel_event.set()
 
@@ -299,10 +291,10 @@ def start(
         else:
             cancel_event = threading.Event()
 
+        osm.rescale(x, y, dz)
         zoomer = threading.Thread(target=zoom, args=(x, y, dz, cancel_event))
         zoomer.cancel_event = cancel_event
         zoomer.checker = map_canvas.after_idle(check_zoomer)
-        zoomer.z = osm.z
         zoomer.start()
 
     def query():
@@ -601,6 +593,8 @@ def start(
             lambda image, tile, x, y:
                 map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
                                         tag=tag_map),
+            lambda tile, dz: tile.zoom(2**abs(dz)) if dz > 0 else
+                             tile.subsample(2**abs(dz)),
             map_canvas_width, map_canvas_height,
             lat, lon, zoom)
 

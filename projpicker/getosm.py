@@ -34,6 +34,7 @@ class Tile:
         self.x = x
         self.y = y
         self.z = z
+        self.dz = 0
         self.rescaled_image = None
 
 
@@ -45,11 +46,13 @@ class CachedTile:
 
 class OpenStreetMap:
     def __init__(self, create_image, draw_image, create_tile, draw_tile,
-                 width=256, height=256, lat=0, lon=0, z=0, verbose=False):
+                 resample_tile, width=256, height=256, lat=0, lon=0, z=0,
+                 verbose=False):
         self.create_image = create_image
         self.draw_image = draw_image
         self.create_tile = create_tile
         self.draw_tile = draw_tile
+        self.resample_tile = resample_tile
         self.width = width
         self.height = height
         self.lat = lat
@@ -170,9 +173,8 @@ class OpenStreetMap:
         self.xoff = xoff
         self.yoff = yoff
 
-        self.tiles.clear()
-
         self.message("image size:", self.width, self.height)
+        self.tiles.clear()
 
         for xi in range(xmin, xmax + 1):
             xt = xi % ntiles
@@ -191,10 +193,10 @@ class OpenStreetMap:
                 self.tiles.append(Tile(tile_key, tile_x, tile_y, z))
             if self.cancel:
                 break
-        self.rescaled_tiles = self.tiles.copy()
+        return not self.cancel
 
     def redownload(self):
-        self.download(self.lat, self.lon, self.z)
+        return self.download(self.lat, self.lon, self.z)
 
     def draw(self):
         image = self.create_image(self.width, self.height)
@@ -205,6 +207,24 @@ class OpenStreetMap:
                     cached_tile.image = self.create_tile(cached_tile.image)
                     cached_tile.raw = False
                 self.draw_tile(image, cached_tile.image, tile.x, tile.y)
+        self.draw_image(image)
+        # try to not clear self.rescaled_tiles to keep rescale() safer
+        self.rescaled_tiles = self.tiles.copy()
+
+    def draw_rescaled(self):
+        image = self.create_image(self.width, self.height)
+        for tile in self.rescaled_tiles:
+            if tile.rescaled_image:
+                tile_image = tile.rescaled_image
+            else:
+                cached_tile = self.cached_tiles[tile.key]
+                if cached_tile.raw:
+                    cached_tile.image = self.create_tile(cached_tile.image)
+                    cached_tile.raw = False
+                tile_image = cached_tile.image
+
+            tile.rescaled_image = self.resample_tile(tile_image, tile.dz)
+            self.draw_tile(image, tile.rescaled_image, tile.x, tile.y)
         self.draw_image(image)
 
     def grab(self, x, y):
@@ -226,86 +246,11 @@ class OpenStreetMap:
             self.draw()
         return dx, dy
 
-    # XXX: EXPERIMENTAL! works only in a single-threaded mode without draw(); a
-    # race condition with download_map() in the background thread? self.tiles
-    # can get cleared by download_map(); tight zoom can cause
-    # _tkinter.TclError: not enough free memory for image buffer
-    def rescale(self, x, y, dz):
-        z = min(max(self.z + dz, self.z_min), self.z_max)
-        dz = z - self.z
-        if dz != 0:
-            xc, yc = self.width / 2, self.height / 2
-            for i in range(0, abs(dz)):
-                if dz > 0:
-                    # each zoom-in doubles
-                    xc = (x + xc) / 2
-                    yc = (y + yc) / 2
-                else:
-                    # each zoom-out halves
-                    xc = 2 * xc - x
-                    yc = 2 * yc - y
-
-            # recalculate xoff,yoff
-            lat, lon = self.canvas_to_latlon(xc, yc)
-            xt, yt = self.latlon_to_tile(lat, lon, z)
-            xi, yi = int(xt), int(yt)
-            n, w = self.tile_to_latlon(xi, yi, z)
-            s, e = self.tile_to_latlon(xi + 1, yi + 1, z)
-            xo, yo = self.latlon_to_tile(n, w, z)
-
-            self.lat = lat
-            self.lon = lon
-            self.x = xi
-            self.y = yi
-            self.z = z
-            self.xoff = int(self.width / 2 - (xt - xo) * 256)
-            self.yoff = int(self.height / 2 - (yt - yo) * 256)
-
-            samp_fac = 2**abs(dz)
-            fac = 2**dz
-
-            image = self.create_image(self.width, self.height)
-            idx = []
-            for i in range(len(self.rescaled_tiles)):
-                tile = self.rescaled_tiles[i]
-                if tile.key not in self.cached_tiles:
-                    idx.append(i)
-                    continue
-
-                tile.x = self.width / 2 - fac * (xc - tile.x)
-                tile.y = self.height / 2 - fac * (yc - tile.y)
-                tile_size = 2**(z - tile.z) * 256
-
-                if (tile.x + tile_size < 0 or tile.y + tile_size < 0 or
-                    tile.x >= self.width or tile.y >= self.height):
-                    idx.append(i)
-                    continue
-
-                if tile.rescaled_image:
-                    tile_image = tile.rescaled_image
-                else:
-                    cached_tile = self.cached_tiles[tile.key]
-                    if cached_tile.raw:
-                        cached_tile.image = self.create_tile(cached_tile.image)
-                        cached_tile.raw = False
-                    tile_image = cached_tile.image
-                if dz > 0:
-                    # XXX: tkinter .zoom()
-                    tile.rescaled_image = tile_image.zoom(samp_fac)
-                else:
-                    # XXX: tkinter .subsample()
-                    tile.rescaled_image = tile_image.subsample(samp_fac)
-                self.draw_tile(image, tile.rescaled_image, tile.x, tile.y)
-            self.draw_image(image)
-
-            for i in reversed(idx):
-                del self.rescaled_tiles[i]
-
     def reset_zoom(self):
         self.dz = 0
 
     def zoom(self, x, y, dz, draw=True):
-        zoomed = True
+        zoomed = False
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
             (self.z > self.z_min and self.dz <= -1)):
@@ -324,14 +269,15 @@ class OpenStreetMap:
                 self.message("zoom out:", z)
             # lat,lon at xc,yc
             lat, lon = self.canvas_to_latlon(xc, yc)
+            zoomed = True
         elif ((self.z == self.z_max and self.dz >= 1) or
               (self.z == self.z_min and self.dz <= -1)):
             # need to download map for z_max or z_min because when the first
             # event of either zoom level was canceled, there are no cached
             # tiles
             lat, lon, z = self.lat, self.lon, self.z
-        else:
-            zoomed = False
+            zoomed = True
+
         if zoomed:
             self.download(lat, lon, z)
             self.reset_zoom()
@@ -384,6 +330,67 @@ class OpenStreetMap:
             self.draw()
 
         return [s, n, w, e]
+
+    def rescale(self, x, y, dz, draw=True):
+        rescaled = False
+        self.dz += dz
+        if ((self.z < self.z_max and self.dz >= 1) or
+            (self.z > self.z_min and self.dz <= -1)):
+            dz = 1 if self.dz > 0 else -1
+            z = self.z + dz
+            xc, yc = self.width / 2, self.height / 2
+            for i in range(0, abs(dz)):
+                if dz > 0:
+                    # each zoom-in doubles
+                    xc = (x + xc) / 2
+                    yc = (y + yc) / 2
+                else:
+                    # each zoom-out halves
+                    xc = 2 * xc - x
+                    yc = 2 * yc - y
+
+            for i in reversed(range(len(self.rescaled_tiles))):
+                tile = self.rescaled_tiles[i]
+                if tile.key not in self.cached_tiles:
+                    del self.rescaled_tiles[i]
+                    continue
+
+                tile.x = self.width / 2 - 2**dz * (xc - tile.x)
+                tile.y = self.height / 2 - 2**dz * (yc - tile.y)
+                tile.dz = dz
+                tile_size = 2**(z - tile.z) * 256
+
+                if (tile.x + tile_size < 0 or tile.y + tile_size < 0 or
+                    tile.x >= self.width or tile.y >= self.height or
+                    # rescaling too fast can raise a memory exception:
+                    # _tkinter.TclError: not enough free memory for image
+                    # buffer; avoid rescaling more than 2**6 = 64 times; this
+                    # number is experimental
+                    z > tile.z + 6):
+                    del self.rescaled_tiles[i]
+
+            lat, lon = self.canvas_to_latlon(xc, yc)
+            xt, yt = self.latlon_to_tile(lat, lon, z)
+            xi, yi = int(xt), int(yt)
+            n, w = self.tile_to_latlon(xi, yi, z)
+            s, e = self.tile_to_latlon(xi + 1, yi + 1, z)
+            xo, yo = self.latlon_to_tile(n, w, z)
+
+            self.lat = lat
+            self.lon = lon
+            self.x = xi
+            self.y = yi
+            self.z = z
+            self.xoff = int(self.width / 2 - (xt - xo) * 256)
+            self.yoff = int(self.height / 2 - (yt - yo) * 256)
+
+            rescaled = True
+
+        if rescaled:
+            self.reset_zoom()
+            if draw:
+                self.draw_rescaled()
+        return rescaled
 
     def repeat_xy(self, xy):
         outxy = []
