@@ -142,8 +142,9 @@ class OpenStreetMap:
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
 
-        if ntiles * 256 < self.height:
-            lat = 0
+        # do we need it?
+        # if ntiles * 256 < self.height:
+        #     lat = 0
 
         # calculate x,y offsets to lat,lon within width,height
         xc, yc = self.latlon_to_tile(lat, lon, z)
