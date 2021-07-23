@@ -53,12 +53,15 @@ def start(
     tag_map = "map"
     tag_bbox = "bbox"
     tag_geoms = "geoms"
+    tag_dragged_bbox = "dragged_bbox"
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     zoomer_queue = queue.Queue()
     dzoom = 0.1
     dragged = False
+    dragging_bbox = False
+    dragged_bbox = []
     drawing_bbox = False
     complete_drawing = False
     sel_bbox = []
@@ -81,7 +84,7 @@ def start(
         point_half_size = point_size // 2
         outline = "blue"
         width = 2
-        fill = "blue"
+        fill = outline
         stipple = "gray12"
 
         map_canvas.delete(tag_geoms)
@@ -96,10 +99,14 @@ def start(
             if drawing_bbox:
                 ng = len(g)
                 if ng > 0:
-                    s = g[ng-1][0]
-                    n = g[0][0]
+                    s = min(g[0][0], g[ng-1][0])
+                    n = max(g[0][0], g[ng-1][0])
                     w = g[0][1]
                     e = g[ng-1][1]
+                    if s == n:
+                        n += 0.0001
+                    if w == e:
+                        e += 0.0001
                     all_geoms.extend(["bbox", [s, n, w, e]])
             elif g:
                 if prev_xy:
@@ -383,11 +390,39 @@ def start(
         root.destroy()
 
     def on_drag(event):
-        nonlocal dragged
+        nonlocal dragged, dragging_bbox, dragged_bbox
 
-        osm.drag(event.x, event.y)
-        draw_geoms(event.x, event.y)
-        draw_bbox()
+        if event.state & 0x4:
+            # Control + B1-Motion
+            outline = "green"
+            width = 2
+            fill = outline
+            stipple = "gray12"
+
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            if not dragging_bbox:
+                dragging_bbox = True
+                dragged_bbox.append(latlon)
+            else:
+                if len(dragged_bbox) == 2:
+                    del dragged_bbox[1]
+                dragged_bbox.append(latlon)
+
+                ng = len(dragged_bbox)
+                s = dragged_bbox[ng-1][0]
+                n = dragged_bbox[0][0]
+                w = dragged_bbox[0][1]
+                e = dragged_bbox[ng-1][1]
+
+                map_canvas.delete(tag_dragged_bbox)
+                for xy in osm.get_bbox_xy((s, n, w, e)):
+                    map_canvas.create_rectangle(xy, outline=outline,
+                                                width=width, fill=fill,
+                                                stipple=stipple,
+                                                tag=tag_dragged_bbox)
+        else:
+            osm.drag(event.x, event.y, False)
+            draw_map(event.x, event.y)
         dragged = True
 
     def on_move(event):
@@ -396,9 +431,25 @@ def start(
         draw_geoms(event.x, event.y)
 
     def on_draw(event):
-        nonlocal dragged, drawing_bbox, complete_drawing
+        nonlocal dragged, dragging_bbox, dragged_bbox, drawing_bbox
+        nonlocal complete_drawing
 
-        if complete_drawing:
+        if dragging_bbox:
+            ng = len(dragged_bbox)
+            s = min(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            n = max(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            w = dragged_bbox[0][1]
+            e = dragged_bbox[ng-1][1]
+            if s == n:
+                n += 0.0001
+            if w == e:
+                e += 0.0001
+            osm.zoom_to_bbox([s, n, w, e], False)
+            dragged_bbox.clear()
+            dragging_bbox = False
+            map_canvas.delete(tag_dragged_bbox)
+            draw_map(event.x, event.y)
+        elif complete_drawing:
             query = ""
             geom = []
             if drawing_bbox:
@@ -812,16 +863,17 @@ def start(
     help_text.insert(tk.END, textwrap.dedent(f"""\
             Map operations
             ==============
-            Pan:                          Drag using left button
-            Zoom:                         Scroll
-            Zoom to geometries:           Control + scroll up
-            Zoom to the world:            Control + scroll down
-            Draw a point:                 Double left click
-            Start drawing a poly:         Left click
-            Start drawing a bbox:         Control + left click
-            Complete drawing a poly/bbox: Double left click
-            Cancel drawing a poly/bbox:   Right click
-            Clear geometries:             Double right click
+            Pan:                        Left drag
+            Zoom:                       Scroll
+            Zoom to geometries:         Ctrl + scroll up
+            Zoom to the world:          Ctrl + scroll down
+            Draw/zoom to a bbox:        Ctrl + left drag
+            Draw a point:               Double left click
+            Start drawing a poly:       Left click
+            Start drawing a bbox:       Ctrl + left click
+            Complete a poly/bbox:       Double left click
+            Cancel drawing a poly/bbox: Right click
+            Clear geometries:           Double right click
 
             Geometry variables
             ==================
