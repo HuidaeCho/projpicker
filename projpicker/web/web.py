@@ -73,10 +73,11 @@ def query(geoms):
     crs_list = []
     crs = []
     if geoms is not None:
-        ppik.message(f"{colors.BOLD}ProjPicker query{colors.ENDC}")
-        ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
-        ppik.message(geoms)
-        ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
+        if VERBOSE:
+            ppik.message(f"{colors.BOLD}ProjPicker query{colors.ENDC}")
+            ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
+            ppik.message(geoms)
+            ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
         parsed_geoms = ppik.parse_mixed_geoms(geoms)
         crs.extend(ppik.query_mixed_geoms(parsed_geoms))
         if VERBOSE:
@@ -165,5 +166,13 @@ if __name__ == "__main__":
         action="store_true",
         help="Open in new tab within users default browser",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Open in new tab within users default browser",
+    )
     args = parser.parse_args()
+    if args.verbose is True:
+        VERBOSE = True
     run(addr=args.listen, port=args.port, open_in_browser=args.o)
