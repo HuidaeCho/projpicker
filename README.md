@@ -10,10 +10,13 @@ bounding boxes using set-theoretic logical operators in a postfix notation. The
 goal is to make it easy and visual to select a desired projection by location.
 This project was motivated by
 [a GRASS GIS feature request](https://github.com/OSGeo/grass/issues/1253).
-A new GRASS GIS module [g.projpicker](https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html)
-that wraps around this project is available. It is a work in progress; join
-[discussions](https://github.com/HuidaeCho/projpicker/wiki). See also
-[its documentation](https://projpicker.readthedocs.io/en/latest/).
+See [its documentation](https://projpicker.readthedocs.io/en/latest/).
+The project uses a copy of [GetOSM](https://github.com/HuidaeCho/getosm) to
+download OpenStreetMap tiles.
+
+For [GRASS GIS](https://grass.osgeo.org/), a new module
+[g.projpicker](https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html)
+that wraps around this project is available.
 
 ![image](https://user-images.githubusercontent.com/7456117/126412749-f15a8da9-da87-4cc2-abdc-8eebc1572768.png)
 
