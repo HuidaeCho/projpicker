@@ -482,7 +482,7 @@ class OpenStreetMap:
                 the right by 1 for each pixel.
             y (float): Canvas y starting from the top at y=0 growing towards
                 the bottom by 1 for each pixel.
-            draw (bool): Whether or not to draw the map.
+            draw (bool): Whether or not to draw the map. Defaults to True.
 
         Returns:
             float, float: Drag amounts in x and y in pixels.
@@ -523,7 +523,7 @@ class OpenStreetMap:
             y (float): Canvas y starting from the top at y=0 growing towards
                 the bottom by 1 for each pixel.
             dz (float): Delta zoom level.
-            draw (bool): Whether or not to draw the map.
+            draw (bool): Whether or not to draw the map. Defaults to True.
 
         Returns:
             bool: Whether or now the map was zoomed.
@@ -583,7 +583,7 @@ class OpenStreetMap:
         Args:
             bbox (list): List of south, north, west, and east floats in decimal
                 degrees.
-            draw (bool): Whether or not to draw the map.
+            draw (bool): Whether or not to draw the map. Defaults to True.
 
         Returns:
             float, float, float, float: South, north, west, and west plus the
@@ -652,7 +652,7 @@ class OpenStreetMap:
             y (float): Canvas y starting from the top at y=0 growing towards
                 the bottom by 1 for each pixel.
             dz (float): Delta zoom level.
-            draw (bool): Whether or not to draw the map.
+            draw (bool): Whether or not to draw the map. Defaults to True.
 
         Returns:
             bool: Whether or now the map was rescaled.
