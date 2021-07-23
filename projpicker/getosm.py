@@ -22,7 +22,6 @@
 This module provides an OpenStreetMap downloader.
 """
 
-import collections
 import sys
 import math
 import urllib.request
