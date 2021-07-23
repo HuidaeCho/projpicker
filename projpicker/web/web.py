@@ -6,7 +6,7 @@ import argparse
 
 import projpicker as ppik
 
-VERBOSE = True
+VERBOSE = False
 
 #################################
 # Geometry
@@ -73,10 +73,10 @@ def query(geoms):
     crs_list = []
     crs = []
     if geoms is not None:
-        print(f"{colors.BOLD}ProjPicker query{colors.ENDC}")
-        print(f"{colors.BOLD}-----------------------------{colors.ENDC}")
-        print(geoms)
-        print(f"{colors.BOLD}-----------------------------{colors.ENDC}")
+        ppik.message(f"{colors.BOLD}ProjPicker query{colors.ENDC}")
+        ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
+        ppik.message(geoms)
+        ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
         parsed_geoms = ppik.parse_mixed_geoms(geoms)
         crs.extend(ppik.query_mixed_geoms(parsed_geoms))
         if VERBOSE:
@@ -100,7 +100,6 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             with open("projdata", "r") as f:
                 self.wfile.write(bytes(f.read(), "utf8"))
-            # print(projpicker_query)
 
     def do_POST(self):
         if self.path == "/data":
@@ -137,13 +136,13 @@ def run(
     httpd = server_class(server_address, handler_class)
 
     try:
-        print(f"{colors.OKGREEN}Starting httpd server on {addr}{port}{colors.ENDC}")
+        ppik.message(f"{colors.OKGREEN}Starting httpd server on {addr}{port}{colors.ENDC}")
         if open_in_browser is True:
             webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        print(f"\n{colors.FAIL}Closed httpd server on {addr}:{port}{colors.ENDC}")
+        ppik.message(f"\n{colors.FAIL}Closed httpd server on {addr}:{port}{colors.ENDC}")
 
 
 if __name__ == "__main__":
