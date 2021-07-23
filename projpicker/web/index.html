@@ -14,41 +14,68 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js" integrity="sha512-Grx+plkced1H9wNDvyEhO4EVPMgWmkCAlicKaCyu6rtLUr002kZj543DqBB1NULXSg0dFYur+UHwRc25FCeD+g==" crossorigin=""></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <style>
-html, body {
+html {
     width: 100%;
     height: 100%;
-    margin: 0;
+    margin-left: 0.5%;
+    margin-right: 1%;
     padding: 0;
+    background:   #EDEDEE
+}
+
+body {
+    width: 98%;
+    height: 98%;
+    padding: 0;
+    margin-left: 0.5%;
+    margin-bottom: 0.5%;
     font-family: 'IBM Plex Sans Condensed', sans-serif;
 }
 
 .parent {
-display: grid;
-grid-template-columns: repeat(6, 1fr);
-grid-template-rows: repeat(10, 1fr);
-grid-column-gap: 3px;
-grid-row-gap: 3px;
-height: 100%
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
 }
-
 
 .map {
     grid-area: 1 / 1 / 11 / 5;
-    border: 4px solid rgba(34.0 12 64 / 60%);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    background: #FDFDFD
 }
+
 .crs-info {
     display: flex;
-    justify-content: space-between;
-    flex-direction: column;
     grid-area: 1 / 5 / 4 / 7;
-    border: 4px solid rgba(34.0 12 64 / 60%);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     line-height: 0.2em;
     font-size: 15px;
+    border-radius: 5px;
+    background: #FDFDFD
 }
+
+table {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin-left: 20px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 20px;
+    border-radius: 5px;
+    background: #FDFDFD
+}
+
 .crs-list {
     grid-area: 4 / 5 / 10 / 7;
-    border: 4px solid rgba(34.0 12 64 / 60%);
-    overflow: auto
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    overflow: auto;
+    border-radius: 5px;
+    background: #FDFDFD
 }
 
 .logic-buttons {
@@ -56,6 +83,17 @@ height: 100%
     display: flex;
     justify-content: space-around;
     align-items: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    background: #FDFDFD
+}
+
+.info-block {
+    grid-area: 11 / 1 / 13 / 7;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    padding-left: 20px;
+    background: #FDFDFD;
 }
 
 fieldset {
@@ -105,13 +143,10 @@ li:focus {
     <div class="parent">
         <div id="map" class="map"> </div>
         <div class="crs-info">
-            <p id="crs-info" >CRS Info</p>
+            <table id="crs-info" ></table>
         </div>
         <div class="crs-list">
-            <h2>CRS List</h2>
-            <ul id="crslist">
-
-            </ul>
+            <ul id="crslist"></ul>
         </div>
         <form class="logic-buttons" method="POST">
             <!-- fieldset to group label and button -->
@@ -131,6 +166,18 @@ li:focus {
                 <label for="xor">XOR</label>
             </fieldset>
         </form>
+        <div class="info-block">
+            <h3>ProjPicker Web</h3>
+            <p>
+            This web application uses the <a href="http://projpicker.rtfd.io/">
+            ProjPicker Python API</a> and provides an interactive user interface
+            to perform reverse querying of Coordinate Reference Systems (CRS).
+            It's development was kindly funded by the <a href="https://ung.edu/
+            institute-environmental-spatial-analysis/index.php">Institute of
+            Environmental and Spatial Analysis</a> (IESA) at the University of
+            North Georgia.
+            </p>
+        </div>
     </div>
 </body>
 <script>
@@ -219,14 +266,16 @@ li:focus {
 
         var crsInfo = document.getElementById('crs-info')
         var crsInfoList = [];
-        crsInfoList.push(`<p>CRS Type: &ensp; ${selectedCRS.proj_table}</p>`)
-        crsInfoList.push(`<p>CRS Code: &ensp; ${selectedCRS.crs_code}</p>`)
-        crsInfoList.push(`<p>Unit: &ensp; ${selectedCRS.unit}</p>`)
-        crsInfoList.push(`<p>South: &ensp; ${selectedCRS.south_lat}</p>`)
-        crsInfoList.push(`<p>North: &ensp; ${selectedCRS.north_lat}</p>`)
-        crsInfoList.push(`<p>West: &ensp; ${selectedCRS.west_lon}</p>`)
-        crsInfoList.push(`<p>East: &ensp; ${selectedCRS.east_lon}</p>`)
-        crsInfoList.push(`<p>Area: &ensp; ${selectedCRS.area}</p>`)
+            crsInfoList.push(`<tr><td>Name</td><td>Value</td></tr>`)
+        crsInfoList.push(`<tr><td>CRS Authority: </td><td>${selectedCRS.crs_auth_name}</td></tr>`)
+        crsInfoList.push(`<tr><td>CRS Code: </td><td>${selectedCRS.crs_code}</td></tr>`)
+        crsInfoList.push(`<tr><td>CRS Type: </td><td>${selectedCRS.proj_table}</td></tr>`)
+        crsInfoList.push(`<tr><td>Unit: </td><td>${selectedCRS.unit}</td></tr>`)
+        crsInfoList.push(`<tr><td>South: </td><td>${selectedCRS.south_lat}</td></tr>`)
+        crsInfoList.push(`<tr><td>North: </td><td>${selectedCRS.north_lat}</td></tr>`)
+        crsInfoList.push(`<tr><td>West: </td><td>${selectedCRS.west_lon}</td></tr>`)
+        crsInfoList.push(`<tr><td>East: </td><td>${selectedCRS.east_lon}</td></tr>`)
+        crsInfoList.push(`<tr><td>Area: </td><td>${Math.round(selectedCRS.area_sqkm)}</td></tr>`)
         crsInfo.innerHTML = crsInfoList.join('');
 
         console.log(coors)
