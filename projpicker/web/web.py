@@ -6,7 +6,7 @@ import argparse
 
 import projpicker as ppik
 
-VERBOSE = False
+verbose = False
 
 #################################
 # Geometry
@@ -175,5 +175,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     if args.verbose is True:
-        VERBOSE = True
+        verbose = True
     run(addr=args.listen, port=args.port, open_in_browser=args.o)
