@@ -1,8 +1,22 @@
 # Change log
 
 ## HEAD
-Wed Jul 21 01:01:07 2021 -0400
+Thu Jul 22 19:42:57 2021 -0400
 
+* [`2265f4b`](https://github.com/HuidaeCho/projpicker/commit/2265f4b)  Do not reset lat
+* [`f48e1fd`](https://github.com/HuidaeCho/projpicker/commit/f48e1fd)  Complete rescaling code
+* [`239a758`](https://github.com/HuidaeCho/projpicker/commit/239a758)  Fix rescaling
+* [`d52ae31`](https://github.com/HuidaeCho/projpicker/commit/d52ae31)  Crop on rescaling
+* [`db847f7`](https://github.com/HuidaeCho/projpicker/commit/db847f7)  Add experimental code for tile rescaling
+* [`4bdb6f4`](https://github.com/HuidaeCho/projpicker/commit/4bdb6f4)  Drop \_map() from the osm class for consistency
+* [`571247e`](https://github.com/HuidaeCho/projpicker/commit/571247e)  Minor refactoring
+* [`833da7d`](https://github.com/HuidaeCho/projpicker/commit/833da7d)  Multithreaded getosm
+* [`72a5b5e`](https://github.com/HuidaeCho/projpicker/commit/72a5b5e)  Rename start\_dragging() to grab()
+
+## v0.1.11.post3
+Wed Jul 21 01:08:22 2021 -0400
+
+* [`8eaf2f1`](https://github.com/HuidaeCho/projpicker/commit/8eaf2f1)  v0.1.11.post3
 * [`6b0586a`](https://github.com/HuidaeCho/projpicker/commit/6b0586a)  Improve zoom\_to\_bbox() Zoom to geoms on startup Sort GUI functions
 * [`b908640`](https://github.com/HuidaeCho/projpicker/commit/b908640)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
 * [`3bca78f`](https://github.com/HuidaeCho/projpicker/commit/3bca78f)  Show geometry variables in the screenshot
