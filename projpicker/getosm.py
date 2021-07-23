@@ -249,19 +249,22 @@ class OpenStreetMap:
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
             (self.z > self.z_min and self.dz <= -1)):
-            dz = 1 if self.dz > 0 else -1
+            dz = int(self.dz)
+            self.message("rescale:", self.z, dz)
             z = self.z + dz
+
             # pinned zoom at x,y
-            if dz > 0:
-                # each zoom-in doubles
-                xc = (x + self.width / 2) / 2
-                yc = (y + self.height / 2) / 2
-                self.message("zoom in:", z)
-            else:
-                # each zoom-out halves
-                xc = self.width - x
-                yc = self.height - y
-                self.message("zoom out:", z)
+            xc, yc = self.width / 2, self.height / 2
+            for i in range(0, abs(dz)):
+                if dz > 0:
+                    # each zoom-in doubles
+                    xc = (x + xc) / 2
+                    yc = (y + yc) / 2
+                else:
+                    # each zoom-out halves
+                    xc = 2 * xc - x
+                    yc = 2 * yc - y
+
             # lat,lon at xc,yc
             lat, lon = self.canvas_to_latlon(xc, yc)
             zoomed = True
@@ -332,7 +335,10 @@ class OpenStreetMap:
         if ((self.z < self.z_max and self.dz >= 1) or
             (self.z > self.z_min and self.dz <= -1)):
             dz = int(self.dz)
+            self.message("rescale:", self.z, dz)
             z = self.z + dz
+
+            # pinned rescale at x,y
             xc, yc = self.width / 2, self.height / 2
             for i in range(0, abs(dz)):
                 if dz > 0:
