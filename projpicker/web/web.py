@@ -96,7 +96,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.path = "index.html"
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-        elif self.path == "/projdata":
+        elif self.path == "/ppikdata":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -120,7 +120,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             crs_list = query(geoms)
             projpicker_query = bbox_to_json(crs_list)
 
-            projpicker_output_json = open("projdata", "w")
+            projpicker_output_json = open("ppikdata", "w")
             projpicker_output_json.write(json.dumps(projpicker_query))
             projpicker_output_json.close()
 

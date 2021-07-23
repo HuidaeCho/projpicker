@@ -254,7 +254,7 @@ li:focus {
     async function onClick(logicalOp) {
         await sendQuery();
 
-        await getData('/projdata')
+        await getData('/ppikdata')
             .then(data => populateCRSList(Object.keys(data)));
 
     }
