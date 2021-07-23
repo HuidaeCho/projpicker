@@ -454,8 +454,8 @@ def start(
             geom = []
             if drawing_bbox:
                 if len(curr_geom) == 2:
-                    s = curr_geom[1][0]
-                    n = curr_geom[0][0]
+                    s = min(curr_geom[0][0], curr_geom[1][0])
+                    n = max(curr_geom[0][0], curr_geom[1][0])
                     w = curr_geom[0][1]
                     e = curr_geom[1][1]
                     geom.extend(["bbox", [s, n, w, e]])
