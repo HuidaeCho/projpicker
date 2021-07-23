@@ -74,14 +74,14 @@ def query(geoms):
     crs_list = []
     crs = []
     if geoms is not None:
-        if VERBOSE:
+        if verbose:
             ppik.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
             ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
             ppik.message(geoms)
             ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
         parsed_geoms = ppik.parse_mixed_geoms(geoms)
         crs.extend(ppik.query_mixed_geoms(parsed_geoms))
-        if VERBOSE:
+        if verbose:
             ppik.message(f"Query geometries: {parsed_geoms}")
             ppik.message(f"Number of queried CRSs: {len(crs)}")
 
