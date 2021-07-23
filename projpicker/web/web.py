@@ -29,7 +29,7 @@ class Geometry:
             self.coors = list(latlon_coors)
 
 
-class Colors:
+class Color:
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -75,10 +75,10 @@ def query(geoms):
     crs = []
     if geoms is not None:
         if VERBOSE:
-            ppik.message(f"{Colors.BOLD}ProjPicker query{Colors.ENDC}")
-            ppik.message(f"{Colors.BOLD}{'-'*79}{Colors.ENDC}")
+            ppik.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
+            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
             ppik.message(geoms)
-            ppik.message(f"{Colors.BOLD}{'-'*79}{Colors.ENDC}")
+            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
         parsed_geoms = ppik.parse_mixed_geoms(geoms)
         crs.extend(ppik.query_mixed_geoms(parsed_geoms))
         if VERBOSE:
@@ -138,13 +138,13 @@ def run(
     httpd = server_class(server_address, handler_class)
 
     try:
-        ppik.message(f"{Colors.OKGREEN}Starting httpd server on {addr}{port}{Colors.ENDC}")
+        ppik.message(f"{Color.OKGREEN}Starting httpd server on {addr}{port}{Color.ENDC}")
         if open_in_browser is True:
             webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        ppik.message(f"\n{Colors.FAIL}Closed httpd server on {addr}:{port}{Colors.ENDC}")
+        ppik.message(f"\n{Color.FAIL}Closed httpd server on {addr}:{port}{Color.ENDC}")
 
 
 if __name__ == "__main__":
