@@ -217,12 +217,13 @@ def start(
                         if r > e:
                             e = r
             g += 1
-        if s == n:
-            s -= 0.0001
-            n += 0.0001
-        if w == e:
-            w -= 0.0001
-            e += 0.0001
+        if None not in (s, n, w, e):
+            if s == n:
+                s -= 0.0001
+                n += 0.0001
+            if w == e:
+                w -= 0.0001
+                e += 0.0001
         return s, n, w, e
 
     def zoom_map(x, y, dz):
@@ -617,7 +618,9 @@ def start(
 
     # draw geometries if given
     if geoms:
-        osm.zoom_to_bbox(calc_geoms_bbox())
+        geoms_bbox = calc_geoms_bbox()
+        if None not in geoms_bbox:
+            osm.zoom_to_bbox(geoms_bbox)
         draw_geoms()
 
     ##############

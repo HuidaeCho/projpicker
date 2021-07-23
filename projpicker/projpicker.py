@@ -2701,9 +2701,6 @@ def projpicker(
             pprint.pprint(parse_mixed_geoms(geoms))
             return []
 
-        if len(geoms) == 0:
-            return []
-
         if start_gui == "select":
             bbox, *_ = gui.start(geoms, single=single)
         else:
