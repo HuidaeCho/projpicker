@@ -28,6 +28,23 @@ import urllib.request
 
 
 class Tile:
+    """
+    Provide the referencing data structure for tiles. The key attribute is used
+    to find cached raw tile data in OpenStreetMap.cached_tiles, a dictionary of
+    keys to CachedTile objects. The x and y attributes store the location of
+    the tile in pixels relative to the upper-left corner of the canvas. These
+    and z attributes are known when a new tile is first downloaded and its
+    location is computed by OpenStreetMap.download(). However, x and y can
+    change when the tile's rescaling parameters are precomputed by
+    OpenStreetMap.rescale(). One of the rescaling parameters is the delta zoom
+    level dz which indicates how many zoom levels the tile should be rescaled
+    from its original zoom level z. OpenStreetMap.draw_rescaled() actually
+    rescales the tile and stores its image in the rescaled_image attribute.
+    Only key and z never change once they are set. Initially, dz is set to 0
+    and rescaled_image to None, meaning that the original raw tile is not
+    rescaled. Once the tile is rescaled x, y, dz, and rescaled_image are
+    updated.
+    """
     def __init__(self, key, x, y, z):
         self.key = key
         self.x = x
@@ -38,15 +55,72 @@ class Tile:
 
 
 class CachedTile:
+    """
+    Provide the data structure for cached tiles. Initially, when a tile is
+    first downloaded in OpenStreetMap.download_tile(), its raw data is stored
+    in the image attribute and the raw flag is set to True. Later, when the GUI
+    framework needs to draw the tile on the canvas in OpenStreetMap.draw(), it
+    needs to convert the raw data to its own native image object. This
+    converted image object is stored back to the image attribute and the raw
+    flag is now set to False. There is no way to go back to the original raw
+    data.
+    """
     def __init__(self, image, raw):
         self.image = image
         self.raw = raw
 
 
 class OpenStreetMap:
+    """
+    Provide the public-facing API for downloading, dragging, zooming, and
+    coordinate conversions.
+    """
     def __init__(self, create_image, draw_image, create_tile, draw_tile,
                  resample_tile, width=256, height=256, lat=0, lon=0, z=0,
                  verbose=False):
+        """
+        Instantiate a new instance of the OpenStreetMap class.
+
+        Args:
+            create_image (function): Function(width, height) for creating a
+                new image for the entire map. This function should take the
+                width and height of the image. Since GetOSM is an OpenStreetMap
+                downloader and drawing helper, it does not draw anything by
+                itself. Instead, it takes drawing functions that are specific
+                to a GUI framework as callback functions, and calls them. In
+                this way, tile downloading can take place in a separate thread
+                from the main GUI thread, and GetOSM does not have to worry
+                about how to draw the map.
+            draw_image (function): Function(image) for actually drawing the
+                created map image onto the canvas. It should take the output
+                image returned by the create_image() function.
+            create_tile (function): Function(data) for creating a tile image
+                using raw data stored in self.cached_tiles[].image with its raw
+                flag set to True (see the CachedTile clsas). It should take the
+                data argument that is raw from the OpenStreetMap server.
+            draw_tile (function): Function(image, tile, x, y) for patching a
+                tile on the image at x and y. This function should not crop the
+                tile image and should only place it at the given location. It
+                should take the image from create_image(), a tile from
+                create_tile(), and the x and y of the tile (see the Tile
+                class).
+            resample_tile (function): Function(tile, dz) for rescaling a tile
+                image by resampling its pixel values. It should scale up (zoom
+                in) or down (zoom out) if dz is posiive or negative,
+                respectively. The dz argument is always an int which can be
+                converted to a float scaling factor of 2**dz. This funciton
+                should take a tile from create_tile() stored in
+                self.cached_tiles[].image with the raw flag set to False (see
+                the CachedTile class) and a delta zoom level dz (see the Tile
+                class).
+            width (int): Canvas width in pixels. Defaults to 256.
+            height (int): Canvas height in pixels. Defaults to 256.
+            lat (float): Center latitude in decimal degrees. Defaults to 0.
+            lon (float): Center longitude in decimal degrees. Defaults to 0.
+            z (int): Zoom level. Defaults to 0.
+            verbose (bool): Whether or not to print debugging messages.
+                Defaults to False.
+        """
         self.create_image = create_image
         self.draw_image = draw_image
         self.create_tile = create_tile
@@ -74,10 +148,25 @@ class OpenStreetMap:
         self.draw()
 
     def message(self, *args, end=None):
+        """
+        Print args to stderr immediately if self.verbose is True.
+
+        Args:
+            args (str): Arguments to print. Passed to print().
+            end (str): Passed to print(). Defaults to None.
+        """
         if self.verbose:
             print(*args, end=end, file=sys.stderr, flush=True)
 
     def resize(self, width, height):
+        """
+        Resize the canvas and redownload tiles at the same location and zoom
+        level.
+
+        Args:
+            width (int): New canvas width in pixels.
+            height (int): New canvas height in pixels.
+        """
         self.width = width
         self.height = height
         self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
@@ -89,6 +178,26 @@ class OpenStreetMap:
     # y from 0 at lat=85.0511 to 2**z-1 at lat=-85.0511
     # tilex, tiley = int(x), int(y)
     def latlon_to_tile(self, lat, lon, z):
+        """
+        Convert latitude and lonngitude to tile x and y at the zoom level z.
+        Tile x and y are not ints, but they are floats to be able to tell
+        locations within a tile. To convert them to x and y for downloading the
+        tile, type cast them to int. These int x and y would correspond to the
+        upper-left cornder of the tile. Both x and y increase by 1 when we move
+        from one tile to the next. In other words, x and y are not pixel
+        coordinates, but they are rather the number or fractional number of
+        tiles starting from latitude 85.0511 and longitude -180 at the given
+        zoom level.
+
+        Args:
+            lat (float): Latitude in decimal degrees.
+            lon (float): Longitude in decimal degrees.
+            z (int): Zoom level.
+
+        Returns:
+            float, float: Tile x, y starting from lon,lon=-180,85.0511 growing
+            towards the east and south by 1 for each tile.
+        """
         lat = max(min(lat, self.lat_max), self.lat_min)
         lat = math.radians(lat)
         n = 2**z
@@ -97,18 +206,66 @@ class OpenStreetMap:
         return x, y
 
     def tile_to_latlon(self, x, y, z):
+        """
+        Convert tile x,y to latitude and longitude at the zoom level z. Tile x
+        and y don't have to be ints (see latlon_to_tile()) and are not pixel
+        coordinates. The are the number or fractional number of tiles starting
+        from latitude 85.0511 and longitude -180 at the given zoom level.
+
+        Args:
+            x (float): Tile x starting from lon=-180 growing towards the east
+                by 1 for every tile.
+            y (float): Tile y starting from lat=85.0511 growing towards the
+                south by 1 for each tile.
+            z (int): Zoom level.
+
+        Returns:
+            float, float: Latitude and longitude in decimal degrees.
+        """
         n = 2**z
         lat = math.degrees(math.atan(math.sinh(math.pi*(1-2*y/n))))
         lon = x/n*360-180
         return lat, lon
 
     def latlon_to_canvas(self, lat, lon):
+        """
+        Convert latitude and lonngitude to canvas x and y in pixels in the
+        current map centered at self.lat,self.lon at the zoom level self.z.
+        These x and y are pixel coordinates on the canvas starting from the
+        upper-left corner at 0,0. For now, these are floats to keep their
+        precision, but it can change in the future.
+
+        Args:
+            lat (float): Latitude in decimal degrees.
+            lon (float): Longitude in decimal degrees.
+
+        Returns:
+            float, float: Canvas x and y in pixels starting from the upper-left
+            corner at x,y=0,0 growing towards the right and bottom by 1 for
+            each pixel.
+        """
         x, y = self.latlon_to_tile(lat, lon, self.z)
         x = self.xoff + (x - self.x) * 256
         y = self.yoff + (y - self.y) * 256
         return x, y
 
     def canvas_to_latlon(self, x, y):
+        """
+        Convert canvas x and y in pixels to latitude and longitude in decimal
+        degrees in the current map centered at self.lat,self.lon at the zoom
+        level self.z. Input x and y don't need to be ints (see
+        latlon_to_canvas()). They start from the upper-left corner at 0,0 on
+        the canvas.
+
+        Args:
+            x (float): Canvas x starting from the left at x=0 growing towards
+                the right by 1 for each pixel.
+            y (float): Canvas y starting from the top at y=0 growing towards
+                the bottom by 1 for each pixel.
+
+        Returns:
+            float, float: Latitude and longitude in decimal degrees.
+        """
         x = self.x + (x - self.xoff) / 256
         y = self.y + (y - self.yoff) / 256
         lat, lon = self.tile_to_latlon(x, y, self.z)
@@ -119,9 +276,41 @@ class OpenStreetMap:
         return lat, lon
 
     def get_tile_url(self, x, y, z):
+        """
+        Get the URL for the tile at tile x,y (see latlon_to_tile()) at the zoom
+        level z. These x and y must be ints because they are used to construct
+        a URL for tile downloading.
+
+        Args:
+            x (int): Tile x starting from lon=-180 growing towards the east by
+                1 for every tile.
+            y (int): Tile y starting from lat=85.0511 growing towards the south
+                by 1 for each tile.
+            z (int): Zoom level.
+
+        Returns:
+            str: URL for the tile at tile x,y at the zoom level z.
+        """
         return f"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
     def download_tile(self, x, y, z):
+        """
+        Download the tile at tile x,y (see latlon_to_tile()) at the zoom level
+        z and return its key in z/x/y. These x and y must be ints because they
+        are used to construct a URL for tile downloading. The raw data of the
+        tile is stored in self.cached_tiles with its key z/x/y (see the
+        CachedTile class). The function returns the tile key.
+
+        Args:
+            x (int): Tile x starting from lon=-180 growing towards the east by
+                1 for every tile.
+            y (int): Tile y starting from lat=85.0511 growing towards the south
+                by 1 for each tile.
+            z (int): Zoom level.
+
+        Returns:
+            str: URL for the tile at tile x,y at the zoom level z.
+        """
         tile_url = self.get_tile_url(x, y, z)
         tile_key = f"{z}/{x}/{y}"
         if tile_key not in self.cached_tiles:
@@ -138,6 +327,26 @@ class OpenStreetMap:
         return tile_key
 
     def download(self, lat, lon, z):
+        """
+        Download all tiles needed to cover the entire canvas centered at
+        latitude and lonitude at the zoom level z. Downloaded tiles are saved
+        in self.cached_tiles (see download_tile()). The function returns
+        whether or not the download session was canceled by the main thread by
+        setting self.cancel to True.
+
+        Args:
+            lat (float): Latitude in decimal degrees.
+            lon (float): Longitude in decimal degrees.
+            z (int): Zoom level.
+
+        Returns:
+            bool: Whether or not the download session was canceled externally
+            by the main thread by setting the cancel attribute to True. It's
+            the responsibility of the main thread to reset the cancel attribute
+            to False. When the user scrolls the mouse wheel continuously to
+            zoom faster, the main thread needs to cancel any previous download
+            sessions to save data traffic and CPU time.
+        """
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
 
@@ -176,7 +385,7 @@ class OpenStreetMap:
             xt = xi % ntiles
             for yi in range(ymin, ymax + 1):
                 if self.cancel:
-                    self.message("download_map cancelled")
+                    self.message("download_map canceled")
                     break
                 tile_url = self.get_tile_url(xt, yi, z)
                 tile_key = self.download_tile(xt, yi, z)
@@ -192,9 +401,22 @@ class OpenStreetMap:
         return not self.cancel
 
     def redownload(self):
+        """
+        Provide a shortcut for self.download(self.lat, self.lon, self.z). This
+        function can be used to redownload already downloaded tiles as its name
+        suggests or to download tiles for the first time when self.lat,
+        self.lon, and self.z are already set.
+        """
         return self.download(self.lat, self.lon, self.z)
 
     def draw(self):
+        """
+        Draw cached tiles stored in tiles on the canvas by calling callback
+        functions including self.create_image(), self.create_tile(),
+        self.draw_tile(), and self.draw_image() (see the constructor). This
+        function converts raw tile data to the GUI framework's native image
+        format and sets its raw flag to False.
+        """
         image = self.create_image(self.width, self.height)
         for tile in self.tiles:
             if tile.key in self.cached_tiles:
@@ -207,6 +429,14 @@ class OpenStreetMap:
         self.rescaled_tiles = self.tiles.copy()
 
     def draw_rescaled(self):
+        """
+        Draw rescaled tiles stored in self.rescaled_tiles on the canvas by
+        calling callback functions including self.create_image(),
+        self.create_tile(), self.draw_tile(), self.resample_tile(), and
+        self.draw_image() (see the constructor). This function may convert raw
+        tile data to the GUI framework's native image format using
+        self.create_tile() and sets its raw flag to False.
+        """
         image = self.create_image(self.width, self.height)
         for tile in self.rescaled_tiles:
             if tile.rescaled_image:
@@ -223,10 +453,40 @@ class OpenStreetMap:
         self.draw_image(image)
 
     def grab(self, x, y):
+        """
+        Set self.grab_x and self.grab_y to x and y, respectively. This function
+        is used to signal the start of dragging events. self.drag() uses these
+        two attributes to calculate the x and y deltas of a dragging event.
+        Both x and y are mostly ints because they are canvas coordinates in
+        pixels, but they can also be floats.
+
+        Args:
+            x (float): Canvas x starting from the left at x=0 growing towards
+                the right by 1 for each pixel.
+            y (float): Canvas y starting from the top at y=0 growing towards
+                the bottom by 1 for each pixel.
+        """
         self.grab_x = x
         self.grab_y = y
 
     def drag(self, x, y, draw=True):
+        """
+        Drag the map by x-self.drag_x and y-self.drag_y, and download necessary
+        tiles using self.download(). The location at x,y follows the mouse
+        cursor. By default, it draws the map using self.draw(). However, if
+        draw is False, it only downloads tiles and doesn't draw the map. It
+        returns x-self.drag_x and y-self.drag_y.
+
+        Args:
+            x (float): Canvas x starting from the left at x=0 growing towards
+                the right by 1 for each pixel.
+            y (float): Canvas y starting from the top at y=0 growing towards
+                the bottom by 1 for each pixel.
+            draw (bool): Whether or not to draw the map.
+
+        Returns:
+            float, float: Drag amounts in x and y in pixels.
+        """
         dx = x - self.grab_x
         dy = y - self.grab_y
         self.grab(x, y)
@@ -242,9 +502,32 @@ class OpenStreetMap:
         return dx, dy
 
     def reset_zoom(self):
+        """
+        Reset the delta zoom level self.dz to restart a zooming event.
+        """
         self.dz = 0
 
     def zoom(self, x, y, dz, draw=True):
+        """
+        Zoom the map by the delta zoom level dz relative to x,y and download
+        necessary tiles using self.download() if the map is zoomed. The delta
+        zoom level dz is a float that is accumulated in self.dz. Once self.dz
+        reaches 1 or -1, zooming starts. The location at x,y stays at the same
+        location x,y. By default, it draws the map using self.draw(). However,
+        if draw is False, it only downloads tiles and doesn't draw the map. It
+        returns whether or not the map was zoomed.
+
+        Args:
+            x (float): Canvas x starting from the left at x=0 growing towards
+                the right by 1 for each pixel.
+            y (float): Canvas y starting from the top at y=0 growing towards
+                the bottom by 1 for each pixel.
+            dz (float): Delta zoom level.
+            draw (bool): Whether or not to draw the map.
+
+        Returns:
+            bool: Whether or now the map was zoomed.
+        """
         zoomed = False
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
@@ -284,6 +567,28 @@ class OpenStreetMap:
         return zoomed
 
     def zoom_to_bbox(self, bbox, draw=True):
+        """
+        Zoom the map to the given bounding box bbox in south, north, west, and
+        east in decimal degrees. South must be less than north, but west may
+        not be less than east if the end point of the bbox is located to the
+        west of the start point. In this reversed west and east case, the bbox
+        becomes the NOT of the bbox that would be formed if west and east were
+        switched. By default, it draws the map using self.draw(). However, if
+        draw is False, it only downloads tiles and doesn't draw the map. In
+        either case, it does not draw the bbox. It returns whether or not the
+        map was zoomed. The function returns south, north, and west as is, and
+        west plus the delta longitude as east so that east is always greater
+        than west. In this case, east can be greater than 180.
+
+        Args:
+            bbox (list): List of south, north, west, and east floats in decimal
+                degrees.
+            draw (bool): Whether or not to draw the map.
+
+        Returns:
+            float, float, float, float: South, north, west, and west plus the
+            delta longitude in decimal degrees.
+        """
         s, n, w, e = bbox
 
         lat = (s + n) / 2
@@ -327,9 +632,31 @@ class OpenStreetMap:
         if draw:
             self.draw()
 
-        return [s, n, w, e]
+        return s, n, w, e
 
     def rescale(self, x, y, dz, draw=True):
+        """
+        Rescale the map by the delta zoom level dz relative to x,y and download
+        necessary tiles using self.download() if the map is rescaled. The delta
+        zoom level dz is a float that is accumulated in self.dz. Once self.dz
+        reaches 1 or -1, rescaling starts. The location at x,y stays at the
+        same location x,y. By default, it draws the map using self.draw().
+        However, if draw is False, it only computes necessary parameters and
+        downloads tiles without drawing the map. In this case,
+        self.draw_rescaled() needs to be called to actually rescale and draw
+        the tiles. It returns whether or not the map was rescaled.
+
+        Args:
+            x (float): Canvas x starting from the left at x=0 growing towards
+                the right by 1 for each pixel.
+            y (float): Canvas y starting from the top at y=0 growing towards
+                the bottom by 1 for each pixel.
+            dz (float): Delta zoom level.
+            draw (bool): Whether or not to draw the map.
+
+        Returns:
+            bool: Whether or now the map was rescaled.
+        """
         rescaled = False
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
@@ -394,6 +721,22 @@ class OpenStreetMap:
         return rescaled
 
     def repeat_xy(self, xy):
+        """
+        Repeat canvas xy points in pixels across the antimeridian. Unlike the
+        latitude axis, the longitude axis crosses the antimeridian from west to
+        east or from east to west. When the map repeats itself more than once
+        horizontally, geometries also need to be repeated. This function is
+        used to repeat xy points just enough times to cover the entire canvas.
+        The xy points must be in [[x, y], [x, y], ...]. The return list is in
+        [[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...].
+        same list format.
+
+        Args:
+            xy (list): List of lists of canvas x and y in pixels.
+
+        Returns:
+            list: List of lists of lists of canvas x and y in pixels.
+        """
         outxy = []
         n = self.width // (256 * self.ntiles)
         for i in range(-n // 2 - 1, n // 2 + 2):
@@ -407,6 +750,19 @@ class OpenStreetMap:
         return outxy
 
     def get_xy(self, latlon):
+        """
+        Converts a list of lists of latitude and longitude in decimal degrees
+        to a list of lists of canvas x and y in pixels. The input latlon must
+        be in [[lat, lon], [lat, lon], ...].
+
+        Args:
+            latlon (list): List of lists of latitude and longitude in decimal
+                degrees.
+
+        Returns:
+            list: List of lists of canvas x and y floats (see
+            latlon_to_canvas()) in pixels.
+        """
         outxy = []
         if latlon:
             xy = []
@@ -416,6 +772,19 @@ class OpenStreetMap:
         return outxy
 
     def get_bbox_xy(self, bbox):
+        """
+        Converts a list of south, north, west, and east in decimal degrees to a
+        list of canvas upper-left and lower-right corner points in pixels. The
+        output is in [[left, top], [right, bottom]].
+
+        Args:
+            bbox (list): List of south, north, west, and east in decimal
+                degrees.
+
+        Returns:
+            list: List of canvas upper-left and lower-right corner points in
+            pixels in [[left, top], [right, bottom]].
+        """
         outxy = []
         if bbox:
             s, n, w, e = bbox
