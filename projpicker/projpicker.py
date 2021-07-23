@@ -2701,9 +2701,10 @@ def projpicker(
             pprint.pprint(parse_mixed_geoms(geoms))
             return []
 
-        bbox = query_mixed_geoms(geoms, projpicker_db)
-        if bbox and start_gui == "select":
-            bbox, *_ = gui.start(bbox=bbox, single=single)
+        if start_gui == "select":
+            bbox, *_ = gui.start(geoms, bbox_or_quit=True, single=single)
+        else:
+            bbox = query_mixed_geoms(geoms, projpicker_db)
 
     if max_bbox > 0:
         bbox = bbox[:max_bbox]
@@ -2861,13 +2862,14 @@ def parse():
     if has_gui:
         gui_exclusive = parser.add_mutually_exclusive_group()
         gui_exclusive.add_argument(
-                "-g", "--select-gui",
-                action="store_true",
-                help="start GUI for selecting queried CRSs")
-        gui_exclusive.add_argument(
-                "-G", "--gui",
+                "-g", "--gui",
                 action="store_true",
                 help="ignore input geometries and start GUI immediately")
+        gui_exclusive.add_argument(
+                "-u", "--select-gui",
+                action="store_true",
+                help="start GUI for selecting queried CRSs; GUI will not "
+                    "start if no CRSs are queried")
         parser.add_argument(
                 "-1", "--single",
                 action="store_true",

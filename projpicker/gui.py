@@ -21,6 +21,7 @@ else:
 def start(
         geoms=None,
         bbox=[],
+        bbox_or_quit=False,
         single=False,
         crs_info_func=None,
         projpicker_db=None):
@@ -33,6 +34,8 @@ def start(
     Args:
         geoms (list or str): Parsable geometries. Defaults to None.
         bbox (list): Queried BBox instances. Defaults to [].
+        bbox_or_quit (bool): Whether or not to quit when bbox queried using
+            input geoms or input bbox is empty. Defaults to False.
         single (bool): Whether or not a single BBox instance is returned.
             Defaults to False.
         crs_info_func (function): User function used for formatting CRS info.
@@ -564,6 +567,8 @@ def start(
         bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
     else:
         geoms = []
+    if bbox_or_quit and not bbox:
+        return [], bbox, geoms
 
     #####
     # GUI
