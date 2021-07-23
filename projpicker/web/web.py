@@ -1,9 +1,10 @@
 #!/bin/env python3
-import http.server
 import json
-import argparse
-import projpicker as ppik
+import http.server
 import webbrowser
+import argparse
+
+import projpicker as ppik
 
 VERBOSE = True
 
@@ -28,7 +29,6 @@ class Geometry:
             self.coors = list(latlon_coors)
 
 
-# Utility Functions
 def create_parsable_geoms(geojson):
     # TODO: Logical operator buttons
     geoms = geojson["logicalOperator"]
