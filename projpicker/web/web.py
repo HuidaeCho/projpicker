@@ -148,7 +148,7 @@ def run(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ProjPicker webview")
+    parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
         "-l",
         "--listen",
