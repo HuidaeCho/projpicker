@@ -187,12 +187,12 @@ li:focus {
             .then(data => populateCRSList(Object.keys(data)))
     });
 
-    function populateCRSList(crs_keys) {
+    function populateCRSList(crsKeys) {
         const list = document.getElementById('crslist');
         while (list.firstChild) {
             list.removeChild(list.firstChild);
         }
-        const listItems = crs_keys.map( function(element) {
+        const listItems = crsKeys.map( function(element) {
                 return `<li tabindex='1' id='${element}' onclick='onCRSSelect()'>${element}</li>` });
 
         list.innerHTML = listItems.join('');
@@ -239,8 +239,8 @@ li:focus {
     // Use main logic function to query on events.
     async function sendQuery() {
         var data = geomsLayer.toGeoJSON()
-        var logicalop = document.querySelector('input[name="logical_op"]:checked').value
-        data.logicalOperator = logicalop
+        var logicalOp = document.querySelector('input[name="logical_op"]:checked').value
+        data.logicalOperator = logicalOp
         console.log(typeof data)
         $.ajax({
                 url: '/data',
@@ -251,7 +251,7 @@ li:focus {
             })
     };
 
-    async function onClick(logical_op) {
+    async function onClick(logicalOp) {
         await sendQuery();
 
         await getData('/projdata')
