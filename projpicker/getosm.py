@@ -331,7 +331,7 @@ class OpenStreetMap:
         self.dz += dz
         if ((self.z < self.z_max and self.dz >= 1) or
             (self.z > self.z_min and self.dz <= -1)):
-            dz = 1 if self.dz > 0 else -1
+            dz = int(self.dz)
             z = self.z + dz
             xc, yc = self.width / 2, self.height / 2
             for i in range(0, abs(dz)):

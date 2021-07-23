@@ -229,7 +229,7 @@ def start(
                 e += 0.0001
         return s, n, w, e
 
-    def zoom_map(x, y, dz):
+    def zoom_map(x, y, dz, state):
         def zoom(x, y, dz, cancel_event):
             if not cancel_event.wait(0.01) and osm.redownload():
                 # ready to draw map; how? event_generate()? maybe...
@@ -270,6 +270,17 @@ def start(
         # OpenStreetMap class and split the draw_map() function into
         # download_map() and draw_map()
         nonlocal zoomer
+
+        if state & 0x4:
+            # Control + MouseWheel
+            if dz > 0:
+                geoms_bbox = calc_geoms_bbox()
+                if None not in geoms_bbox:
+                    osm.zoom_to_bbox(geoms_bbox, False)
+            else:
+                osm.zoom(x, y, osm.z_min - osm.z, False)
+            draw_map(x, y)
+            return
 
         if zoomer:
             # cancel the previous zoomer thread
@@ -378,11 +389,6 @@ def start(
         draw_geoms(event.x, event.y)
         draw_bbox()
         dragged = True
-
-    def on_zoom(event):
-        osm.draw()
-        draw_geoms(event.x, event.y)
-        draw_bbox()
 
     def on_move(event):
         latlon = osm.canvas_to_latlon(event.x, event.y)
@@ -524,7 +530,6 @@ def start(
             sel_bbox.extend([s, n, w, e])
 
             bottom_right_notebook.select(crs_info_frame)
-
         draw_geoms()
         draw_bbox()
 
@@ -608,13 +613,15 @@ def start(
     map_canvas.bind("<B1-Motion>", on_drag)
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
-    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom))
-    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -dzoom))
+    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom, e.state))
+    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -dzoom,
+                                                     e.state))
     # Windows and macOS
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<MouseWheel>",
                     lambda e: zoom_map(e.x, e.y,
-                                       dzoom if e.delta > 0 else -dzoom))
+                                       dzoom if e.delta > 0 else -dzoom,
+                                       e.state))
     map_canvas.bind("<Motion>", on_move)
     map_canvas.bind("<ButtonRelease-1>", on_draw)
     map_canvas.bind("<Double-Button-1>", on_complete_drawing)
@@ -805,14 +812,16 @@ def start(
     help_text.insert(tk.END, textwrap.dedent(f"""\
             Map operations
             ==============
-            Pan:                        Drag using left button
-            Zoom:                       Scroll
-            Draw point:                 Double left click
-            Start drawing poly:         Left click
-            Start drawing bbox:         Control + left click
-            Complete drawing poly/bbox: Double left click
-            Cancel drawing poly/bbox:   Right click
-            Clear geometries:           Double right click
+            Pan:                          Drag using left button
+            Zoom:                         Scroll
+            Zoom to geometries:           Control + scroll up
+            Zoom to the world:            Control + scroll down
+            Draw a point:                 Double left click
+            Start drawing a poly:         Left click
+            Start drawing a bbox:         Control + left click
+            Complete drawing a poly/bbox: Double left click
+            Cancel drawing a poly/bbox:   Right click
+            Clear geometries:             Double right click
 
             Geometry variables
             ==================
