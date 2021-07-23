@@ -29,6 +29,18 @@ class Geometry:
             self.coors = list(latlon_coors)
 
 
+class Colors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
 def create_parsable_geoms(geojson):
     # TODO: Logical operator buttons
     geoms = geojson["logicalOperator"]
@@ -45,17 +57,6 @@ def create_parsable_geoms(geojson):
 
     return geoms
 
-
-class colors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKCYAN = "\033[96m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
 
 
 def bbox_to_json(bbox_list):
@@ -74,10 +75,10 @@ def query(geoms):
     crs = []
     if geoms is not None:
         if VERBOSE:
-            ppik.message(f"{colors.BOLD}ProjPicker query{colors.ENDC}")
-            ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
+            ppik.message(f"{Colors.BOLD}ProjPicker query{Colors.ENDC}")
+            ppik.message(f"{Colors.BOLD}{'-'*79}{Colors.ENDC}")
             ppik.message(geoms)
-            ppik.message(f"{colors.BOLD}{'-'*79}{colors.ENDC}")
+            ppik.message(f"{Colors.BOLD}{'-'*79}{Colors.ENDC}")
         parsed_geoms = ppik.parse_mixed_geoms(geoms)
         crs.extend(ppik.query_mixed_geoms(parsed_geoms))
         if VERBOSE:
@@ -137,13 +138,13 @@ def run(
     httpd = server_class(server_address, handler_class)
 
     try:
-        ppik.message(f"{colors.OKGREEN}Starting httpd server on {addr}{port}{colors.ENDC}")
+        ppik.message(f"{Colors.OKGREEN}Starting httpd server on {addr}{port}{Colors.ENDC}")
         if open_in_browser is True:
             webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        ppik.message(f"\n{colors.FAIL}Closed httpd server on {addr}:{port}{colors.ENDC}")
+        ppik.message(f"\n{Colors.FAIL}Closed httpd server on {addr}:{port}{Colors.ENDC}")
 
 
 if __name__ == "__main__":
