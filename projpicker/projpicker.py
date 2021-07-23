@@ -2701,10 +2701,9 @@ def projpicker(
             pprint.pprint(parse_mixed_geoms(geoms))
             return []
 
-        if start_gui == "select":
-            bbox, *_ = gui.start(geoms, single=single)
-        else:
-            bbox = query_mixed_geoms(geoms, projpicker_db)
+        bbox = query_mixed_geoms(geoms, projpicker_db)
+        if bbox and start_gui == "select":
+            bbox, *_ = gui.start(bbox=bbox, single=single)
 
     if max_bbox > 0:
         bbox = bbox[:max_bbox]
