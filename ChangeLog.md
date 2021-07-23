@@ -1,8 +1,23 @@
 # Change log
 
 ## HEAD
-Thu Jul 22 19:42:57 2021 -0400
+Fri Jul 23 03:13:05 2021 -0400
 
+* [`a155f11`](https://github.com/HuidaeCho/projpicker/commit/a155f11)  Support multiple delta zoom levels
+* [`a7e381c`](https://github.com/HuidaeCho/projpicker/commit/a7e381c)  Bbox query string fixed
+* [`ecb6122`](https://github.com/HuidaeCho/projpicker/commit/ecb6122)  Implement draw/zoom to bbox
+* [`78ed22a`](https://github.com/HuidaeCho/projpicker/commit/78ed22a)  Implement Zoom to geometries/world
+* [`9d13e35`](https://github.com/HuidaeCho/projpicker/commit/9d13e35)  Arguments: -g => -u; -G => -g for easier typing; do not start GUI when queried CRSs are empty
+* [`c13f544`](https://github.com/HuidaeCho/projpicker/commit/c13f544)  Do not start select GUI when no bboxes are returned
+* [`c4bb81c`](https://github.com/HuidaeCho/projpicker/commit/c4bb81c)  Allow none and empty input geometries for GUI startup
+* [`0db216d`](https://github.com/HuidaeCho/projpicker/commit/0db216d)  Minor OSM refactoring
+* [`8accd9b`](https://github.com/HuidaeCho/projpicker/commit/8accd9b)  Add missing modules to the installation document
+* [`b6b0962`](https://github.com/HuidaeCho/projpicker/commit/b6b0962)  Remove unused collections import
+
+## v0.1.12
+Thu Jul 22 20:05:22 2021 -0400
+
+* [`4f9fa8a`](https://github.com/HuidaeCho/projpicker/commit/4f9fa8a)  v0.1.12: Rescaling tiles
 * [`2265f4b`](https://github.com/HuidaeCho/projpicker/commit/2265f4b)  Do not reset lat
 * [`f48e1fd`](https://github.com/HuidaeCho/projpicker/commit/f48e1fd)  Complete rescaling code
 * [`239a758`](https://github.com/HuidaeCho/projpicker/commit/239a758)  Fix rescaling
