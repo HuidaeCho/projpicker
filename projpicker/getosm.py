@@ -141,10 +141,6 @@ class OpenStreetMap:
         z = min(max(z, self.z_min), self.z_max)
         ntiles = 2**z
 
-        # do we need it?
-        # if ntiles * 256 < self.height:
-        #     lat = 0
-
         # calculate x,y offsets to lat,lon within width,height
         xc, yc = self.latlon_to_tile(lat, lon, z)
         x, y = int(xc), int(yc)
@@ -208,7 +204,6 @@ class OpenStreetMap:
                     cached_tile.raw = False
                 self.draw_tile(image, cached_tile.image, tile.x, tile.y)
         self.draw_image(image)
-        # try to not clear self.rescaled_tiles to keep rescale() safer
         self.rescaled_tiles = self.tiles.copy()
 
     def draw_rescaled(self):
@@ -395,7 +390,7 @@ class OpenStreetMap:
     def repeat_xy(self, xy):
         outxy = []
         n = self.width // (256 * self.ntiles)
-        for i in range(-n//2-1, n//2+2):
+        for i in range(-n // 2 - 1, n // 2 + 2):
             dx = i * 256 * self.ntiles
             p = []
             for coor in xy:
