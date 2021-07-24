@@ -6,8 +6,6 @@ import argparse
 
 import projpicker as ppik
 
-verbose = False
-
 
 class Color:
     HEADER = "\033[95m"
@@ -43,6 +41,12 @@ class Geometry:
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     global projpicker_query
 
+    def message(self, *args):
+        if hasattr(self.server, "message"):
+            self.server.message(*args)
+        else:
+            print(*args)
+
     def do_GET(self):
         if self.path == "/":
             self.path = "index.html"
@@ -69,7 +73,18 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             projpicker_query = content_body
 
             geoms = create_parsable_geoms(json.loads(content_body))
-            crs_list = query(geoms)
+
+            self.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
+            self.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+            self.message(geoms)
+            self.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+
+            geoms = ppik.parse_mixed_geoms(geoms)
+            self.message(f"Query geometries: {geoms}")
+
+            crs_list = ppik.query_mixed_geoms(geoms)
+            self.message(f"Number of queried CRSs: {len(crs_list)}")
+
             projpicker_query = bbox_to_json(crs_list)
 
             projpicker_output_json = open("ppikdata", "w")
@@ -105,33 +120,17 @@ def bbox_to_json(bbox_list):
     return crs_json
 
 
-def query(geoms):
-    crs_list = []
-    crs = []
-    if geoms is not None:
-        if verbose:
-            ppik.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
-            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-            ppik.message(geoms)
-            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-        parsed_geoms = ppik.parse_mixed_geoms(geoms)
-        crs.extend(ppik.query_mixed_geoms(parsed_geoms))
-        if verbose:
-            ppik.message(f"Query geometries: {parsed_geoms}")
-            ppik.message(f"Number of queried CRSs: {len(crs)}")
-
-    return crs
-
-
 def run(server_class=http.server.HTTPServer,
         handler_class=HTTPRequestHandler,
         address="localhost",
         port=8000,
-        start_client=False):
+        start_client=False,
+        verbose=False):
     server_address = (address, port)
     if address == "localhost":
         address += ":"
     httpd = server_class(server_address, handler_class)
+    httpd.message = lambda *args: ppik.message(*args) if verbose else None
 
     try:
         ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}{port}{Color.ENDC}")
@@ -171,6 +170,8 @@ if __name__ == "__main__":
         help="print debugging messages verbosely",
     )
     args = parser.parse_args()
-    if args.verbose is True:
-        verbose = True
-    run(address=args.listen, port=args.port, start_client=args.client)
+
+    run(address=args.listen,
+        port=args.port,
+        start_client=args.client,
+        verbose=args.verbose)
