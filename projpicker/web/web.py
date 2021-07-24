@@ -22,8 +22,8 @@ class Color:
 
 
 class Geometry:
-    def __init__(self, type, coors):
-        self.type = "poly" if type == "Polygon" else "point"
+    def __init__(self, typ, coors):
+        self.type = "poly" if typ == "Polygon" else "point"
 
         # Reverse coordinates as leaflet returns opposite order of what
         # ProjPicker takes
