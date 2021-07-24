@@ -288,6 +288,12 @@ li:focus {
                 data: JSON.stringify(data),
                 type: 'POST',
                 dataType : 'json',
+                // XML Parsing Error: not well-formed Location: http://localhost:8000/query Line Number 1, Column 1:
+                // https://stackoverflow.com/a/4234006/16079666
+                beforeSend: function(xhr) {
+                    if (xhr.overrideMimeType)
+                        xhr.overrideMimeType("application/json");
+                },
         }).done(data => {
             queryResults = data;
             populateCRSList(Object.keys(queryResults));
