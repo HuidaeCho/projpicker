@@ -123,13 +123,11 @@ def query(geoms):
     return crs
 
 
-def run(
-    server_class=http.server.HTTPServer,
-    handler_class=HTTPRequestHandler,
-    addr="localhost",
-    port=8000,
-    open_in_browser=False,
-):
+def run(server_class=http.server.HTTPServer,
+        handler_class=HTTPRequestHandler,
+        addr="localhost",
+        port=8000,
+        open_in_browser=False):
     server_address = (addr, port)
     if addr == "localhost":
         addr += ":"
