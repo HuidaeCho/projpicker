@@ -125,22 +125,22 @@ def query(geoms):
 
 def run(server_class=http.server.HTTPServer,
         handler_class=HTTPRequestHandler,
-        addr="localhost",
+        address="localhost",
         port=8000,
         start_client=False):
-    server_address = (addr, port)
-    if addr == "localhost":
-        addr += ":"
+    server_address = (address, port)
+    if address == "localhost":
+        address += ":"
     httpd = server_class(server_address, handler_class)
 
     try:
-        ppik.message(f"{Color.OKGREEN}Starting httpd server on {addr}{port}{Color.ENDC}")
+        ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}{port}{Color.ENDC}")
         if start_client is True:
-            webbrowser.open_new(f"{addr}{port}")
+            webbrowser.open_new(f"{address}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        ppik.message(f"\n{Color.FAIL}Closed httpd server on {addr}:{port}{Color.ENDC}")
+        ppik.message(f"\n{Color.FAIL}Closed httpd server on {address}:{port}{Color.ENDC}")
 
 
 if __name__ == "__main__":
@@ -173,4 +173,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.verbose is True:
         verbose = True
-    run(addr=args.listen, port=args.port, start_client=args.client)
+    run(address=args.listen, port=args.port, start_client=args.client)
