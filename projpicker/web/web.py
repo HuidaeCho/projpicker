@@ -40,53 +40,6 @@ class Geometry:
             self.coors = list(latlon_coors)
 
 
-def create_parsable_geoms(geojson):
-    # TODO: Logical operator buttons
-    geoms = geojson["logicalOperator"]
-    for feature in geojson["features"]:
-        json_geom = feature["geometry"]
-        coors = json_geom["coordinates"]
-        geom = Geometry(json_geom["type"], json_geom["coordinates"])
-        geoms += f"\n{geom.type}"
-        if geom.type == "point":
-            geoms += f"\n{geom.coors[0]},{geom.coors[1]}"
-        else:
-            for coors in geom.coors:
-                geoms += f"\n{coors[0]},{coors[1]}"
-
-    return geoms
-
-
-
-def bbox_to_json(bbox_list):
-    crs_json = {}
-    for crs in bbox_list:
-        entry = {}
-        crs_dict = crs._asdict()
-        for key in list(crs_dict.keys()):
-            entry[key] = crs_dict[key]
-        crs_json[f"{crs.crs_auth_name}:{crs.crs_code}"] = entry
-    return crs_json
-
-
-def query(geoms):
-    crs_list = []
-    crs = []
-    if geoms is not None:
-        if verbose:
-            ppik.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
-            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-            ppik.message(geoms)
-            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-        parsed_geoms = ppik.parse_mixed_geoms(geoms)
-        crs.extend(ppik.query_mixed_geoms(parsed_geoms))
-        if verbose:
-            ppik.message(f"Query geometries: {parsed_geoms}")
-            ppik.message(f"Number of queried CRSs: {len(crs)}")
-
-    return crs
-
-
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     global projpicker_query
 
@@ -122,6 +75,52 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             projpicker_output_json = open("ppikdata", "w")
             projpicker_output_json.write(json.dumps(projpicker_query))
             projpicker_output_json.close()
+
+
+def create_parsable_geoms(geojson):
+    # TODO: Logical operator buttons
+    geoms = geojson["logicalOperator"]
+    for feature in geojson["features"]:
+        json_geom = feature["geometry"]
+        coors = json_geom["coordinates"]
+        geom = Geometry(json_geom["type"], json_geom["coordinates"])
+        geoms += f"\n{geom.type}"
+        if geom.type == "point":
+            geoms += f"\n{geom.coors[0]},{geom.coors[1]}"
+        else:
+            for coors in geom.coors:
+                geoms += f"\n{coors[0]},{coors[1]}"
+
+    return geoms
+
+
+def bbox_to_json(bbox_list):
+    crs_json = {}
+    for crs in bbox_list:
+        entry = {}
+        crs_dict = crs._asdict()
+        for key in list(crs_dict.keys()):
+            entry[key] = crs_dict[key]
+        crs_json[f"{crs.crs_auth_name}:{crs.crs_code}"] = entry
+    return crs_json
+
+
+def query(geoms):
+    crs_list = []
+    crs = []
+    if geoms is not None:
+        if verbose:
+            ppik.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
+            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+            ppik.message(geoms)
+            ppik.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+        parsed_geoms = ppik.parse_mixed_geoms(geoms)
+        crs.extend(ppik.query_mixed_geoms(parsed_geoms))
+        if verbose:
+            ppik.message(f"Query geometries: {parsed_geoms}")
+            ppik.message(f"Number of queried CRSs: {len(crs)}")
+
+    return crs
 
 
 def run(
