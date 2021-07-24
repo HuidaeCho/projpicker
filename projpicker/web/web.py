@@ -87,7 +87,7 @@ def query(geoms):
     return crs
 
 
-class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     global projpicker_query
 
     def do_GET(self):
@@ -126,7 +126,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 def run(
     server_class=http.server.HTTPServer,
-    handler_class=HttpRequestHandler,
+    handler_class=HTTPRequestHandler,
     addr="localhost",
     port=8000,
     open_in_browser=False,
