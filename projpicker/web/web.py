@@ -127,7 +127,7 @@ def run(server_class=http.server.HTTPServer,
         handler_class=HTTPRequestHandler,
         addr="localhost",
         port=8000,
-        open_in_browser=False):
+        start_client=False):
     server_address = (addr, port)
     if addr == "localhost":
         addr += ":"
@@ -135,7 +135,7 @@ def run(server_class=http.server.HTTPServer,
 
     try:
         ppik.message(f"{Color.OKGREEN}Starting httpd server on {addr}{port}{Color.ENDC}")
-        if open_in_browser is True:
+        if start_client is True:
             webbrowser.open_new(f"{addr}{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -149,27 +149,28 @@ if __name__ == "__main__":
         "-l",
         "--listen",
         default="localhost",
-        help="Specify the IP address on which the server listens",
+        help="specify the IP address on which the server listens",
     )
     parser.add_argument(
         "-p",
         "--port",
         type=int,
         default=8000,
-        help="Specify the port on which the server listens",
+        help="specify the port on which the server listens",
     )
     parser.add_argument(
-        "-o",
+        "-c",
+        "--client",
         action="store_true",
-        help="Open in new tab within users default browser",
+        help="start a new client in the user's default browser",
     )
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
-        help="Open in new tab within users default browser",
+        help="print debugging messages verbosely",
     )
     args = parser.parse_args()
     if args.verbose is True:
         verbose = True
-    run(addr=args.listen, port=args.port, open_in_browser=args.o)
+    run(addr=args.listen, port=args.port, start_client=args.client)
