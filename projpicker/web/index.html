@@ -226,12 +226,9 @@ li:focus {
         },
     }).addTo(map);
 
-    map.on(L.Draw.Event.CREATED, async function (e) {
+    map.on(L.Draw.Event.CREATED, function (e) {
         geomsLayer.addLayer(e.layer);
-        await sendQuery();
-
-        await getData('/projdata')
-            .then(data => populateCRSList(Object.keys(data)))
+        sendQuery();
     });
 
     function populateCRSList(crsKeys) {
@@ -245,17 +242,9 @@ li:focus {
         list.innerHTML = listItems.join('');
     }
 
-    async function getData(url) {
-      var response = await fetch(url);
-      return response.json();
-    }
-
-    async function onCRSSelect() {
+    function onCRSSelect() {
         var selectedId = document.activeElement.id;
-        console.log(selectedId);
-        var data = await getData('/projdata');
-        console.log(data)
-        selectedCRS = data[selectedId];
+        selectedCRS = queryResults[selectedId];
 
         var s = selectedCRS.south_lat
         var n = selectedCRS.north_lat
@@ -285,27 +274,28 @@ li:focus {
     }
 
 
+    var queryResults = null;
+
     // Use main logic function to query on events.
-    async function sendQuery() {
+    function sendQuery() {
         var data = geomsLayer.toGeoJSON()
         var logicalOp = document.querySelector('input[name="logical_op"]:checked').value
         data.logicalOperator = logicalOp
         console.log(typeof data)
         $.ajax({
-                url: '/data',
+                url: 'http://localhost:8000/query',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 type: 'POST',
                 dataType : 'json',
-            })
+        }).done(data => {
+            queryResults = data;
+            populateCRSList(Object.keys(queryResults));
+        });
     };
 
-    async function onClick(logicalOp) {
-        await sendQuery();
-
-        await getData('/ppikdata')
-            .then(data => populateCRSList(Object.keys(data)));
-
+    function onClick(logicalOp) {
+        sendQuery();
     }
 
     // Intial empty bbox geometry; Seperate layer group from geomsLayer so as to not

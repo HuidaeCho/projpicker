@@ -1,8 +1,8 @@
 #!/bin/env python3
-import json
+import argparse
 import http.server
 import webbrowser
-import argparse
+import json
 
 import projpicker as ppik
 
@@ -39,8 +39,6 @@ class Geometry:
 
 
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-    global projpicker_query
-
     def message(self, *args):
         if hasattr(self.server, "message"):
             self.server.message(*args)
@@ -52,15 +50,8 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.path = "index.html"
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-        elif self.path == "/ppikdata":
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            with open("projdata", "r") as f:
-                self.wfile.write(bytes(f.read(), "utf8"))
-
     def do_POST(self):
-        if self.path == "/data":
+        if self.path == "/query":
             # http.client.HTTPResponse stores headers and implements
             # email.message.Message class'
             # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
@@ -69,11 +60,9 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             content_len = int(header.get("content-length"))
             content_charset = header.get_content_charset(failobj="utf-8")
             content_bytes = self.rfile.read(content_len)
-            content_body = content_bytes.decode(content_charset)
-            projpicker_query = content_body
+            query = content_bytes.decode(content_charset)
 
-            geoms = create_parsable_geoms(json.loads(content_body))
-
+            geoms = create_parsable_geoms(json.loads(query))
             self.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
             self.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
             self.message(geoms)
@@ -85,11 +74,8 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             crs_list = ppik.query_mixed_geoms(geoms)
             self.message(f"Number of queried CRSs: {len(crs_list)}")
 
-            projpicker_query = bbox_to_json(crs_list)
-
-            projpicker_output_json = open("ppikdata", "w")
-            projpicker_output_json.write(json.dumps(projpicker_query))
-            projpicker_output_json.close()
+            outjson = bbox_to_json(crs_list)
+            self.wfile.write(json.dumps(outjson).encode())
 
 
 def create_parsable_geoms(geojson):
@@ -105,7 +91,6 @@ def create_parsable_geoms(geojson):
         else:
             for coors in geom.coors:
                 geoms += f"\n{coors[0]},{coors[1]}"
-
     return geoms
 
 
