@@ -8,8 +8,19 @@ import projpicker as ppik
 
 verbose = False
 
-#################################
-# Geometry
+
+class Color:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
 class Geometry:
     def __init__(self, type, coors):
         self.type = "poly" if type == "Polygon" else "point"
@@ -27,18 +38,6 @@ class Geometry:
             for lonlat in coors[0]:
                 latlon_coors.append(lonlat[::-1])
             self.coors = list(latlon_coors)
-
-
-class Color:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKCYAN = "\033[96m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
 
 
 def create_parsable_geoms(geojson):
