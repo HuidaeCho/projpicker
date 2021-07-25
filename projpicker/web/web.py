@@ -232,14 +232,15 @@ if __name__ == "__main__":
         "-l",
         "--listen",
         default="localhost",
-        help="specify the IP address on which the server listens",
+        help="specify the IP address on which the server listens (default: "
+            "localhost)",
     )
     parser.add_argument(
         "-p",
         "--port",
         type=int,
         default=8000,
-        help="specify the port on which the server listens",
+        help="specify the port on which the server listens (port: 8000)",
     )
     parser.add_argument(
         "-c",
