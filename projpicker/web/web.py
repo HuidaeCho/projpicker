@@ -177,7 +177,7 @@ def application(environ, start_response):
                 response = f.read()
     elif request_method == "POST" and path_info == "/query":
         content_length = int(environ["CONTENT_LENGTH"])
-        geoms = environ["wsgi.input"].read(content_length)#.decode()
+        geoms = environ["wsgi.input"].read(content_length)
 
         geoms = create_parsable_geoms(json.loads(geoms))
         message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
