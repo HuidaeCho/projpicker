@@ -116,7 +116,8 @@ let queryResults = null;
 // Use main logic function to query on events.
 function sendQuery() {
     let data = geomsLayer.toGeoJSON()
-    let logicalOp = document.querySelector('input[name="logical_op"]:checked').value
+    let logicalOp = document.querySelector(
+                        'input[name="logical_op"]:checked').value
     data.logicalOperator = logicalOp
     ajaxRequest('/query', JSON.stringify(data), xhr => {
         queryResults = JSON.parse(xhr.response);
@@ -124,8 +125,8 @@ function sendQuery() {
     });
 };
 
-// Intial empty bbox geometry; Seperate layer group from geomsLayer so as to not
-// interfere with ProjPicker query.
+// Intial empty bbox geometry; Seperate layer group from geomsLayer so as to
+// not interfere with ProjPicker query.
 let bboxLayer = L.geoJSON(null, {
     style: {
         color: 'red',
