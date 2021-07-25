@@ -2,9 +2,9 @@
 import argparse
 import os
 import sys
-import http.server
-import webbrowser
 import json
+import webbrowser
+import http.server
 
 import projpicker as ppik
 
