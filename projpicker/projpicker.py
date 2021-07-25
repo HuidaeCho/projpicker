@@ -116,7 +116,7 @@ def read_file(infile="-"):
 
     if infile == "-":
         f = sys.stdin
-    elif not os.path.exists(infile):
+    elif not os.path.isfile(infile):
         raise Exception(f"{infile}: No such file found")
     else:
         f = open(infile)
@@ -645,7 +645,7 @@ def create_projpicker_db(
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
 
-    if os.path.exists(projpicker_db):
+    if os.path.isfile(projpicker_db):
         if overwrite:
             os.remove(projpicker_db)
         else:
@@ -738,7 +738,7 @@ def write_bbox_db(
         Exception: If bbox_db file already exists when overwriting is not
         requested.
     """
-    if os.path.exists(bbox_db):
+    if os.path.isfile(bbox_db):
         if overwrite:
             os.remove(bbox_db)
         else:
@@ -2673,15 +2673,15 @@ def projpicker(
         raise Exception("Both overwrite and append requested")
 
     if create:
-        if not overwrite and os.path.exists(projpicker_db):
+        if not overwrite and os.path.isfile(projpicker_db):
             raise Exception(f"{projpicker_db}: File already exists")
-        if not os.path.exists(proj_db):
+        if not os.path.isfile(proj_db):
             raise Exception(f"{proj_db}: No such file found")
         create_projpicker_db(overwrite, projpicker_db, proj_db)
-    elif not os.path.exists(projpicker_db):
+    elif not os.path.isfile(projpicker_db):
         raise Exception(f"{projpicker_db}: No such file found")
 
-    if not overwrite and not append and outfile and os.path.exists(outfile):
+    if not overwrite and not append and outfile and os.path.isfile(outfile):
         raise Exception(f"{outfile}: File already exists")
 
     if append and (not outfile or outfile == "-"):
@@ -2714,7 +2714,7 @@ def projpicker(
 
     mode = "w"
     header = not no_header
-    if append and outfile != "-" and os.path.exists(outfile):
+    if append and outfile != "-" and os.path.isfile(outfile):
         if fmt == "plain":
             mode = "a"
             header = False
