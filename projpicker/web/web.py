@@ -153,7 +153,7 @@ def application(environ, start_response):
 
     status = "404 Not Found"
     content_type = "text/plain"
-    response = b"Invalid request"
+    response = "Invalid request"
 
     if request_method == "GET":
         filename = None
@@ -174,7 +174,7 @@ def application(environ, start_response):
             else:
                 content_type = "text/javascript"
             with open(filename) as f:
-                response = f.read().encode()
+                response = f.read()
     elif request_method == "POST" and path_info == "/query":
         content_length = int(environ["CONTENT_LENGTH"])
         geoms = environ["wsgi.input"].read(content_length)#.decode()
@@ -191,14 +191,14 @@ def application(environ, start_response):
         bbox = ppik.query_mixed_geoms(geoms)
         message(f"Number of queried CRSs: {len(bbox)}")
 
-        response = json.dumps(bbox_to_json(bbox)).encode()
+        response = json.dumps(bbox_to_json(bbox))
 
         status = "200 OK"
         content_type = "application/json"
 
     response_headers = [("Content-type", content_type)]
     start_response(status, response_headers)
-    return [response]
+    return [response.encode()]
 
 
 def start(
