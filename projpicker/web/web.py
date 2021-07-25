@@ -1,10 +1,14 @@
 #!/bin/env python3
 import argparse
+import os
+import sys
 import http.server
 import webbrowser
 import json
 
 import projpicker as ppik
+
+is_verbose = False
 
 
 class Color:
@@ -40,34 +44,79 @@ class Geometry:
 
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
-        def message(*args):
-            if hasattr(self.server, "verbose") and self.server.verbose:
-                ppik.message(*args)
-
         if self.path == "/query":
             # http.client.HTTPResponse stores headers and implements
             # email.message.Message class
             # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
-            headers = self.headers
-            length = int(headers.get("content-length"))
-            charset = headers.get_content_charset(failobj="utf-8")
-            geoms = self.rfile.read(length).decode(charset)
 
-            geoms = create_parsable_geoms(json.loads(geoms))
-            message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
-            message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-            message(geoms)
-            message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+            application = projpicker_web
 
-            geoms = ppik.parse_mixed_geoms(geoms)
-            message(f"Query geometries: {geoms}")
+            # https://www.python.org/dev/peps/pep-0333/#the-server-gateway-side
+            environ = {}
+            environ["REMOTE_ADDR"]       = self.client_address
+            environ["REQUEST_METHOD"]    = self.command
+            environ["PATH_INFO"]         = self.path
+            environ["CONTENT_LENGTH"]    = self.headers.get("content-length")
 
-            bbox = ppik.query_mixed_geoms(geoms)
-            message(f"Number of queried CRSs: {len(bbox)}")
+            environ["wsgi.input"]        = self.rfile
+            environ["wsgi.errors"]       = sys.stderr
+            environ["wsgi.version"]      = (1, 0)
+            environ["wsgi.multithread"]  = False
+            environ["wsgi.multiprocess"] = True
+            environ["wsgi.run_once"]     = True
+            environ["wsgi.url_scheme"]   = "http"
 
-            outjson = bbox_to_json(bbox)
+            headers_set = []
+            headers_sent = []
 
-            self.wfile.write(json.dumps(outjson).encode())
+            def write(data):
+                if not headers_set:
+                    raise AssertionError("write() before start_response()")
+
+                elif not headers_sent:
+                    # Before the first output, send the stored headers
+                    status, response_headers = headers_sent[:] = headers_set
+                    s = status.split()
+                    code = int(s[0])
+                    message = " ".join(s[1:])
+                    self.send_response(code, message)
+                    for header in response_headers:
+                        self.send_header(*header)
+                    self.end_headers()
+                self.wfile.write(data)
+
+            def start_response(status, response_headers, exc_info=None):
+                if exc_info:
+                    try:
+                        if headers_sent:
+                            # Re-raise original exception if headers sent
+                            # https://www.python.org/dev/peps/pep-3109/#compatibility-issues
+                            e = exc_info[0](exc_info[1])
+                            e.__traceback__ = exc_info[2]
+                            raise e
+                    finally:
+                        exc_info = None     # avoid dangling circular ref
+                elif headers_set:
+                    raise AssertionError("Headers already set!")
+
+                headers_set[:] = [status, response_headers]
+                return write
+
+            result = application(environ, start_response)
+            try:
+                for data in result:
+                    if data:    # don't send headers until body appears
+                        write(data)
+                if not headers_sent:
+                    write("")   # send headers now if body was empty
+            finally:
+                if hasattr(result, "close"):
+                    result.close()
+
+
+def message(*args):
+    if is_verbose:
+        ppik.message(*args)
 
 
 def create_parsable_geoms(geojson):
@@ -97,25 +146,86 @@ def bbox_to_json(bbox_list):
     return crs_json
 
 
+# Python Web Server Gateway Interface (WSGI)
+# https://www.python.org/dev/peps/pep-0333/#the-application-framework-side
+def projpicker_web(environ, start_response):
+    remote_addr = environ["REMOTE_ADDR"]
+    request_method = environ["REQUEST_METHOD"]
+    path_info = environ["PATH_INFO"]
+
+    status = "404 Not Found"
+    content_type = "text/plain"
+    response = b"Invalid request"
+
+    if request_method == "GET":
+        filename = None
+        if path_info == "/":
+            filename = "index.html"
+        elif path_info in ("/index.html",
+                           "/projpicker.css",
+                           "/utils.js",
+                           "/projpicker.js"):
+            filename = path_info[1:]
+
+        if filename and os.path.isfile(filename):
+            status = "200 OK"
+            if filename.endswith(".html"):
+                content_type = "text/html"
+            elif filename.endswith(".css"):
+                content_type = "text/css"
+            else:
+                content_type = "text/javascript"
+            with open(filename) as f:
+                response = f.read().encode()
+    elif request_method == "POST" and path_info == "/query":
+        content_length = int(environ["CONTENT_LENGTH"])
+        geoms = environ["wsgi.input"].read(content_length)#.decode()
+
+        geoms = create_parsable_geoms(json.loads(geoms))
+        message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
+        message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+        message(geoms)
+        message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+
+        geoms = ppik.parse_mixed_geoms(geoms)
+        message(f"Query geometries: {geoms}")
+
+        bbox = ppik.query_mixed_geoms(geoms)
+        message(f"Number of queried CRSs: {len(bbox)}")
+
+        response = json.dumps(bbox_to_json(bbox)).encode()
+
+        status = "200 OK"
+        content_type = "application/json"
+
+    response_headers = [("Content-type", content_type)]
+    start_response(status, response_headers)
+    return [response]
+
+
 def start(
-        server_class=http.server.HTTPServer,
-        handler_class=HTTPRequestHandler,
         address="localhost",
         port=8000,
         start_client=False,
         verbose=False):
+    global is_verbose
+
+    is_verbose = verbose
+
     server_address = (address, port)
-    httpd = server_class(server_address, handler_class)
-    httpd.verbose = verbose
+    httpd = http.server.HTTPServer(server_address, HTTPRequestHandler)
+
+    if start_client is True:
+        webbrowser.open_new(f"{address}:{port}")
 
     try:
-        ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}:{port}{Color.ENDC}")
-        if start_client is True:
-            webbrowser.open_new(f"{address}:{port}")
+        ppik.message(f"{Color.OKGREEN}Starting httpd server on "
+                     f"{address}:{port}{Color.ENDC}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        ppik.message(f"\n{Color.FAIL}Closed httpd server on {address}:{port}{Color.ENDC}")
+        ppik.message(f"\n{Color.FAIL}Closed httpd server on "
+                     f"{address}:{port}{Color.ENDC}")
 
 
 if __name__ == "__main__":
