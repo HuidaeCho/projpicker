@@ -1,6 +1,6 @@
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 
-var map = L.map(
+let map = L.map(
     'map', {
         center: [34.2347566, -83.8676613],
         crs: L.CRS.EPSG3857,
@@ -10,7 +10,7 @@ var map = L.map(
     }
 );
 
-var tileLayer = L.tileLayer(
+let tileLayer = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         'attribution': 'Data by \u0026copy; \u003ca href="http://openstreetmap.org"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href="http://www.openstreetmap.org/copyright"\u003eODbL\u003c/a\u003e.',
         'detectRetina': false,
@@ -25,7 +25,7 @@ var tileLayer = L.tileLayer(
 ).addTo(map);
 
 // FeatureGroup is to store editable layers.
-var geomsLayer = new L.geoJSON().addTo(map);
+let geomsLayer = new L.geoJSON().addTo(map);
 
 new L.Control.Draw({
     position: 'topleft',
@@ -50,30 +50,36 @@ map.on(L.Draw.Event.CREATED, function (e) {
     sendQuery();
 });
 
-function populateCRSList(crsKeys) {
-    const list = document.getElementById('crs-list');
-    while (list.firstChild)
-        list.removeChild(list.firstChild);
-    const listItems = crsKeys.map( function(element) {
-        return `<li tabindex="1" id="${element}" onclick="onSelectCRS('${element}')">${element}</li>` });
+function populateCRSList(crsIds) {
+    let crsList = document.getElementById('crs-list');
 
-    list.innerHTML = listItems.join('');
+    while (crsList.firstChild)
+        crsList.removeChild(crsList.firstChild);
+
+    crsIds.forEach(crsId => {
+        let li = document.createElement('li');
+        li.appendChild(document.createTextNode(crsId));
+        li.onclick = function(){
+            selectCRS(crsId);
+        };
+        crsList.appendChild(li);
+    });
 }
 
-function onSelectCRS(id) {
-    var crs = queryResults[id];
+function selectCRS(crsId) {
+    let crs = queryResults[crsId];
 
-    var s = crs.south_lat
-    var n = crs.north_lat
-    var w = crs.west_lon
-    var e = crs.east_lon
+    let s = crs.south_lat
+    let n = crs.north_lat
+    let w = crs.west_lon
+    let e = crs.east_lon
 
-    var coors = [[[w, n], [e, n], [e, s], [w, s]]]
+    let coors = [[[w, n], [e, n], [e, s], [w, s]]]
 
-    var crsInfo = document.getElementById('crs-info')
+    let crsInfo = document.getElementById('crs-info')
 
-    var crsItems = {
-        'CRS ID': id,
+    let crsItems = {
+        'CRS ID': crsId,
         'CRS Authority': crs.crs_auth_name,
         'CRS Code': crs.crs_code,
         'CRS Type': crs.proj_table,
@@ -88,11 +94,10 @@ function onSelectCRS(id) {
     while (crsInfo.firstChild)
         crsInfo.removeChild(crsInfo.firstChild);
 
-    for (var key in crsItems) {
-        console.log(key, crsItems[key]);
-        var row = crsInfo.insertRow();
+    for (let key in crsItems) {
+        let row = crsInfo.insertRow();
 
-        var cell = row.insertCell()
+        let cell = row.insertCell()
         cell.appendChild(document.createTextNode(key));
 
         cell = row.insertCell()
@@ -106,12 +111,12 @@ function onSelectCRS(id) {
 }
 
 
-var queryResults = null;
+let queryResults = null;
 
 // Use main logic function to query on events.
 function sendQuery() {
-    var data = geomsLayer.toGeoJSON()
-    var logicalOp = document.querySelector('input[name="logical_op"]:checked').value
+    let data = geomsLayer.toGeoJSON()
+    let logicalOp = document.querySelector('input[name="logical_op"]:checked').value
     data.logicalOperator = logicalOp
     ajaxRequest('/query', JSON.stringify(data), xhr => {
         queryResults = JSON.parse(xhr.response);
@@ -119,13 +124,9 @@ function sendQuery() {
     });
 };
 
-function onClick(logicalOp) {
-    sendQuery();
-}
-
 // Intial empty bbox geometry; Seperate layer group from geomsLayer so as to not
 // interfere with ProjPicker query.
-var bboxLayer = L.geoJSON(null, {
+let bboxLayer = L.geoJSON(null, {
     style: {
         color: 'red',
         opacity: 0.3
