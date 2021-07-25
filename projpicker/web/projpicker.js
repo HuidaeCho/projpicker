@@ -130,8 +130,8 @@ function drawGeometries(geoms, push=false) {
 function drawCRSBBox(geom) {
     bboxLayer.clearLayers();
     bboxLayer.addData({
-        "type": "Polygon",
-        "coordinates": geom
+        'type': 'Polygon',
+        'coordinates': geom
     });
     map.fitBounds(bboxLayer.getBounds());
 }
