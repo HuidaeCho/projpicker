@@ -2,142 +2,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>ProjPicker Desktop GUI Map</title>
+<title>ProjPicker Web Client</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.css" integrity="sha512-gc3xjCmIy673V6MyOAZhIW93xhM9ei1I+gLbmFjUHIjocENRsLX/QUE1htk5q1XV2D/iie/VQ8DXI6Vu8bexvQ==" crossorigin="" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap">
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js" integrity="sha512-Grx+plkced1H9wNDvyEhO4EVPMgWmkCAlicKaCyu6rtLUr002kZj543DqBB1NULXSg0dFYur+UHwRc25FCeD+g==" crossorigin=""></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<style>
-html {
-    width: 100%;
-    height: 100%;
-    margin-left: 0.5%;
-    margin-right: 1%;
-    padding: 0;
-    background:   #EDEDEE
-}
 
-body {
-    width: 98%;
-    height: 98%;
-    padding: 0;
-    margin-left: 0.5%;
-    margin-bottom: 0.5%;
-    font-family: 'IBM Plex Sans Condensed', sans-serif;
-}
-
-.parent {
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(11, 1fr);
-    grid-column-gap: 10px;
-    grid-row-gap: 10px;
-}
-
-.map {
-    grid-area: 1 / 1 / 11 / 5;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    background: #FDFDFD
-}
-
-.crs-info {
-    display: flex;
-    grid-area: 1 / 5 / 4 / 7;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    line-height: 0.2em;
-    font-size: 15px;
-    border-radius: 5px;
-    background: #FDFDFD
-}
-
-table {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    margin-left: 20px;
-    table-layout: fixed;
-    border-collapse: collapse;
-    font-size: 20px;
-    border-radius: 5px;
-    background: #FDFDFD
-}
-
-.crs-list {
-    grid-area: 4 / 5 / 10 / 7;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    overflow: auto;
-    border-radius: 5px;
-    background: #FDFDFD
-}
-
-.logic-buttons {
-    grid-area: 10 / 5 / 11 / 7;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    background: #FDFDFD
-}
-
-.info-block {
-    grid-area: 11 / 1 / 13 / 7;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    padding-left: 20px;
-    background: #FDFDFD;
-}
-
-fieldset {
-    border: 0;
-}
-
-
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-li {
-    font-size: 20px;
-    padding-left: 20px;
-}
-
-li:last-child {
-  border: none;
-}
-
-li {
-  text-decoration: none;
-  color: #000;
-  display: block;
-  width: 100%;
-
-  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
-  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
-  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
-  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
-  transition: font-size 0.3s ease, background-color 0.3s ease;
-}
-
-li:hover {
-  font-size: 30px;
-  background: #f6f6f6;
-}
-li:focus {
-  background: #ACACAC;
-}
-
-</style>
+<script src="utils.js"></script>
+<link rel="stylesheet" href="projpicker.css">
 </head>
 <body>
     <div class="parent">
@@ -146,7 +26,7 @@ li:focus {
             <table id="crs-info" ></table>
         </div>
         <div class="crs-list">
-            <ul id="crslist"></ul>
+            <ul id="crs-list"></ul>
         </div>
         <form class="logic-buttons" method="POST">
             <!-- fieldset to group label and button -->
@@ -168,166 +48,15 @@ li:focus {
         </form>
         <div class="info-block">
             <h3>ProjPicker Web</h3>
-            <p>
-            This web application uses the <a href="http://projpicker.rtfd.io/">
-            ProjPicker Python API</a> and provides an interactive user interface
-            to perform reverse querying of Coordinate Reference Systems (CRS).
-            Its development was kindly funded by the <a href="https://ung.edu/
-            institute-environmental-spatial-analysis/index.php">Institute of
-            Environmental and Spatial Analysis</a> (IESA) at the University of
-            North Georgia.
-            </p>
+            <p>This web application uses
+            <a href="http://projpicker.rtfd.io/">the ProjPicker Python API</a>
+            and provides an interactive user interface to perform spatial
+            querying of Coordinate Reference Systems (CRS). Its development was
+            kindly funded by <a href="https://ung.edu/iesa/">the Institute of
+            Environmental and Spatial Analysis</a> (IESA) at
+            <a href="https://ung.edu/">the University of North Georgia</a>.</p>
         </div>
     </div>
+    <script src="projpicker.js"></script>
 </body>
-<script>
-    var map = L.map(
-        'map', {
-            center: [34.2347566, -83.8676613],
-            crs: L.CRS.EPSG3857,
-            zoom: 5,
-            zoomControl: true,
-            preferCanvas: false,
-        }
-    );
-
-    var tileLayer = L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            'attribution': 'Data by \u0026copy; \u003ca href="http://openstreetmap.org"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href="http://www.openstreetmap.org/copyright"\u003eODbL\u003c/a\u003e.',
-            'detectRetina': false,
-            'maxNativeZoom': 18,
-            'maxZoom': 18,
-            'minZoom': 0,
-            'noWrap': true,
-            'opacity': 1,
-            'subdomains': 'abc',
-            'tms': false
-        }
-    ).addTo(map);
-
-    // FeatureGroup is to store editable layers.
-    var geomsLayer = new L.geoJSON().addTo(map);
-
-    new L.Control.Draw({
-        position: 'topleft',
-        draw: {
-            'polyline': {
-                'allowIntersection': false
-            },
-            circle: false,
-            circlemarker: false,
-            polyline: false
-        },
-        edit: {
-            'poly': {
-                'allowIntersection': false
-            },
-            'featureGroup': geomsLayer
-        },
-    }).addTo(map);
-
-    map.on(L.Draw.Event.CREATED, function (e) {
-        geomsLayer.addLayer(e.layer);
-        sendQuery();
-    });
-
-    function populateCRSList(crsKeys) {
-        const list = document.getElementById('crslist');
-        while (list.firstChild) {
-            list.removeChild(list.firstChild);
-        }
-        const listItems = crsKeys.map( function(element) {
-                return `<li tabindex='1' id='${element}' onclick='onCRSSelect()'>${element}</li>` });
-
-        list.innerHTML = listItems.join('');
-    }
-
-    function onCRSSelect() {
-        var selectedId = document.activeElement.id;
-        selectedCRS = queryResults[selectedId];
-
-        var s = selectedCRS.south_lat
-        var n = selectedCRS.north_lat
-        var w = selectedCRS.west_lon
-        var e = selectedCRS.east_lon
-
-        var coors = [[[w, n], [e, n], [e, s], [w, s]]]
-
-        var crsInfo = document.getElementById('crs-info')
-        var crsInfoList = [];
-            crsInfoList.push(`<tr><td>Name</td><td>Value</td></tr>`)
-        crsInfoList.push(`<tr><td>CRS Authority: </td><td>${selectedCRS.crs_auth_name}</td></tr>`)
-        crsInfoList.push(`<tr><td>CRS Code: </td><td>${selectedCRS.crs_code}</td></tr>`)
-        crsInfoList.push(`<tr><td>CRS Type: </td><td>${selectedCRS.proj_table}</td></tr>`)
-        crsInfoList.push(`<tr><td>Unit: </td><td>${selectedCRS.unit}</td></tr>`)
-        crsInfoList.push(`<tr><td>South: </td><td>${selectedCRS.south_lat}</td></tr>`)
-        crsInfoList.push(`<tr><td>North: </td><td>${selectedCRS.north_lat}</td></tr>`)
-        crsInfoList.push(`<tr><td>West: </td><td>${selectedCRS.west_lon}</td></tr>`)
-        crsInfoList.push(`<tr><td>East: </td><td>${selectedCRS.east_lon}</td></tr>`)
-        crsInfoList.push(`<tr><td>Area: </td><td>${Math.round(selectedCRS.area_sqkm)}</td></tr>`)
-        crsInfo.innerHTML = crsInfoList.join('');
-
-        console.log(coors)
-
-        drawCRSBBox(coors)
-
-    }
-
-
-    var queryResults = null;
-
-    // Use main logic function to query on events.
-    function sendQuery() {
-        var data = geomsLayer.toGeoJSON()
-        var logicalOp = document.querySelector('input[name="logical_op"]:checked').value
-        data.logicalOperator = logicalOp
-        console.log(typeof data)
-        $.ajax({
-                url: 'http://localhost:8000/query',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                type: 'POST',
-                dataType : 'json',
-                // XML Parsing Error: not well-formed Location: http://localhost:8000/query Line Number 1, Column 1:
-                // https://stackoverflow.com/a/4234006/16079666
-                beforeSend: function(xhr) {
-                    if (xhr.overrideMimeType)
-                        xhr.overrideMimeType("application/json");
-                },
-        }).done(data => {
-            queryResults = data;
-            populateCRSList(Object.keys(queryResults));
-        });
-    };
-
-    function onClick(logicalOp) {
-        sendQuery();
-    }
-
-    // Intial empty bbox geometry; Seperate layer group from geomsLayer so as to not
-    // interfere with ProjPicker query.
-    var bboxLayer = L.geoJSON(null, {
-        style: {
-            color: 'red',
-            opacity: 0.3
-        }
-    }).addTo(map);
-
-    function drawGeometries(geoms, push=false) {
-        geomsLayer.clearLayers();
-        geomsLayer.addData(geoms);
-        map.fitBounds(geomsLayer.getBounds());
-        if (push)
-            pushGeometries();
-    }
-
-    function drawCRSBBox(geom) {
-        bboxLayer.clearLayers();
-        bboxLayer.addData({
-            "type": "Polygon",
-            "coordinates": geom
-        });
-        map.fitBounds(bboxLayer.getBounds());
-    }
-</script>
 </html>
