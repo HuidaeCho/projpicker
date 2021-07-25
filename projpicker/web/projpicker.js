@@ -52,9 +52,8 @@ map.on(L.Draw.Event.CREATED, function (e) {
 
 function populateCRSList(crsKeys) {
     const list = document.getElementById('crs-list');
-    while (list.firstChild) {
+    while (list.firstChild)
         list.removeChild(list.firstChild);
-    }
     const listItems = crsKeys.map( function(element) {
         return `<li tabindex="1" id="${element}" onclick="onSelectCRS('${element}')">${element}</li>` });
 
@@ -62,28 +61,43 @@ function populateCRSList(crsKeys) {
 }
 
 function onSelectCRS(id) {
-    var selectedCRS = queryResults[id];
+    var crs = queryResults[id];
 
-    var s = selectedCRS.south_lat
-    var n = selectedCRS.north_lat
-    var w = selectedCRS.west_lon
-    var e = selectedCRS.east_lon
+    var s = crs.south_lat
+    var n = crs.north_lat
+    var w = crs.west_lon
+    var e = crs.east_lon
 
     var coors = [[[w, n], [e, n], [e, s], [w, s]]]
 
     var crsInfo = document.getElementById('crs-info')
-    var crsInfoList = [];
-        crsInfoList.push(`<tr><td>Name</td><td>${id}</td></tr>`)
-    crsInfoList.push(`<tr><td>CRS Authority: </td><td>${selectedCRS.crs_auth_name}</td></tr>`)
-    crsInfoList.push(`<tr><td>CRS Code: </td><td>${selectedCRS.crs_code}</td></tr>`)
-    crsInfoList.push(`<tr><td>CRS Type: </td><td>${selectedCRS.proj_table}</td></tr>`)
-    crsInfoList.push(`<tr><td>Unit: </td><td>${selectedCRS.unit}</td></tr>`)
-    crsInfoList.push(`<tr><td>South: </td><td>${selectedCRS.south_lat}</td></tr>`)
-    crsInfoList.push(`<tr><td>North: </td><td>${selectedCRS.north_lat}</td></tr>`)
-    crsInfoList.push(`<tr><td>West: </td><td>${selectedCRS.west_lon}</td></tr>`)
-    crsInfoList.push(`<tr><td>East: </td><td>${selectedCRS.east_lon}</td></tr>`)
-    crsInfoList.push(`<tr><td>Area: </td><td>${Math.round(selectedCRS.area_sqkm)}</td></tr>`)
-    crsInfo.innerHTML = crsInfoList.join('');
+
+    var crsItems = {
+        'CRS ID': id,
+        'CRS Authority': crs.crs_auth_name,
+        'CRS Code': crs.crs_code,
+        'CRS Type': crs.proj_table,
+        'Unit': crs.unit,
+        'South': crs.south_lat,
+        'North': crs.north_lat,
+        'West': crs.west_lon,
+        'East': crs.east_lon,
+        'Area': Math.round(crs.area_sqkm)
+    }
+
+    while (crsInfo.firstChild)
+        crsInfo.removeChild(crsInfo.firstChild);
+
+    for (var key in crsItems) {
+        console.log(key, crsItems[key]);
+        var row = crsInfo.insertRow();
+
+        var cell = row.insertCell()
+        cell.appendChild(document.createTextNode(key));
+
+        cell = row.insertCell()
+        cell.appendChild(document.createTextNode(crsItems[key]));
+    }
 
     console.log(coors)
 
