@@ -39,13 +39,11 @@ class Geometry:
 
 
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-    def message(self, *args):
-        if hasattr(self.server, "message"):
-            self.server.message(*args)
-        else:
-            print(*args)
-
     def do_POST(self):
+        def message(*args):
+            if hasattr(self.server, "verbose") and self.server.verbose:
+                ppik.message(*args)
+
         if self.path == "/query":
             # http.client.HTTPResponse stores headers and implements
             # email.message.Message class
@@ -53,21 +51,22 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             headers = self.headers
             length = int(headers.get("content-length"))
             charset = headers.get_content_charset(failobj="utf-8")
-            query = self.rfile.read(length).decode(charset)
+            geoms = self.rfile.read(length).decode(charset)
 
-            geoms = create_parsable_geoms(json.loads(query))
-            self.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
-            self.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-            self.message(geoms)
-            self.message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+            geoms = create_parsable_geoms(json.loads(geoms))
+            message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
+            message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+            message(geoms)
+            message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
 
             geoms = ppik.parse_mixed_geoms(geoms)
-            self.message(f"Query geometries: {geoms}")
+            message(f"Query geometries: {geoms}")
 
-            crs_list = ppik.query_mixed_geoms(geoms)
-            self.message(f"Number of queried CRSs: {len(crs_list)}")
+            bbox = ppik.query_mixed_geoms(geoms)
+            message(f"Number of queried CRSs: {len(bbox)}")
 
-            outjson = bbox_to_json(crs_list)
+            outjson = bbox_to_json(bbox)
+
             self.wfile.write(json.dumps(outjson).encode())
 
 
@@ -107,7 +106,7 @@ def start(
         verbose=False):
     server_address = (address, port)
     httpd = server_class(server_address, handler_class)
-    httpd.message = lambda *args: ppik.message(*args) if verbose else None
+    httpd.verbose = verbose
 
     try:
         ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}:{port}{Color.ENDC}")
