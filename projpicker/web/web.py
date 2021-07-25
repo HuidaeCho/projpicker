@@ -45,15 +45,6 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         else:
             print(*args)
 
-    def do_GET(self):
-        if self.path == "/":
-            self.path = "index.html"
-            return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        else:
-            self.send_response(301)
-            self.send_header('Location', '/')
-            self.end_headers()
-
     def do_POST(self):
         if self.path == "/query":
             # http.client.HTTPResponse stores headers and implements
