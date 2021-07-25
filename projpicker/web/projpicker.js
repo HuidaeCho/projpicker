@@ -56,14 +56,13 @@ function populateCRSList(crsKeys) {
         list.removeChild(list.firstChild);
     }
     const listItems = crsKeys.map( function(element) {
-            return `<li tabindex='1' id='${element}' onclick='onCRSSelect()'>${element}</li>` });
+        return `<li tabindex="1" id="${element}" onclick="onSelectCRS('${element}')">${element}</li>` });
 
     list.innerHTML = listItems.join('');
 }
 
-function onCRSSelect() {
-    var selectedId = document.activeElement.id;
-    selectedCRS = queryResults[selectedId];
+function onSelectCRS(id) {
+    var selectedCRS = queryResults[id];
 
     var s = selectedCRS.south_lat
     var n = selectedCRS.north_lat
@@ -74,7 +73,7 @@ function onCRSSelect() {
 
     var crsInfo = document.getElementById('crs-info')
     var crsInfoList = [];
-        crsInfoList.push(`<tr><td>Name</td><td>Value</td></tr>`)
+        crsInfoList.push(`<tr><td>Name</td><td>${id}</td></tr>`)
     crsInfoList.push(`<tr><td>CRS Authority: </td><td>${selectedCRS.crs_auth_name}</td></tr>`)
     crsInfoList.push(`<tr><td>CRS Code: </td><td>${selectedCRS.crs_code}</td></tr>`)
     crsInfoList.push(`<tr><td>CRS Type: </td><td>${selectedCRS.proj_table}</td></tr>`)

@@ -48,14 +48,12 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/query":
             # http.client.HTTPResponse stores headers and implements
-            # email.message.Message class'
+            # email.message.Message class
             # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
-            header = self.headers
-
-            content_len = int(header.get("content-length"))
-            content_charset = header.get_content_charset(failobj="utf-8")
-            content_bytes = self.rfile.read(content_len)
-            query = content_bytes.decode(content_charset)
+            headers = self.headers
+            length = int(headers.get("content-length"))
+            charset = headers.get_content_charset(failobj="utf-8")
+            query = self.rfile.read(length).decode(charset)
 
             geoms = create_parsable_geoms(json.loads(query))
             self.message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
