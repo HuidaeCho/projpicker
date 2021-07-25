@@ -49,8 +49,6 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             # email.message.Message class
             # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
 
-            application = projpicker_web
-
             # https://www.python.org/dev/peps/pep-0333/#the-server-gateway-side
             environ = {}
             environ["REMOTE_ADDR"]       = self.client_address
@@ -148,7 +146,7 @@ def bbox_to_json(bbox_list):
 
 # Python Web Server Gateway Interface (WSGI)
 # https://www.python.org/dev/peps/pep-0333/#the-application-framework-side
-def projpicker_web(environ, start_response):
+def application(environ, start_response):
     remote_addr = environ["REMOTE_ADDR"]
     request_method = environ["REQUEST_METHOD"]
     path_info = environ["PATH_INFO"]
