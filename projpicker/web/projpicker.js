@@ -1,3 +1,5 @@
+// vim: set tabstop=4 shiftwidth=4 expandtab:
+
 var map = L.map(
     'map', {
         center: [34.2347566, -83.8676613],
