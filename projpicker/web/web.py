@@ -98,22 +98,21 @@ def bbox_to_json(bbox_list):
     return crs_json
 
 
-def run(server_class=http.server.HTTPServer,
+def start(
+        server_class=http.server.HTTPServer,
         handler_class=HTTPRequestHandler,
         address="localhost",
         port=8000,
         start_client=False,
         verbose=False):
     server_address = (address, port)
-    if address == "localhost":
-        address += ":"
     httpd = server_class(server_address, handler_class)
     httpd.message = lambda *args: ppik.message(*args) if verbose else None
 
     try:
-        ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}{port}{Color.ENDC}")
+        ppik.message(f"{Color.OKGREEN}Starting httpd server on {address}:{port}{Color.ENDC}")
         if start_client is True:
-            webbrowser.open_new(f"{address}{port}")
+            webbrowser.open_new(f"{address}:{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
@@ -149,7 +148,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    run(address=args.listen,
-        port=args.port,
-        start_client=args.client,
-        verbose=args.verbose)
+    start(address=args.listen,
+          port=args.port,
+          start_client=args.client,
+          verbose=args.verbose)
