@@ -34,17 +34,17 @@
             <!-- fieldset to group label and button -->
             <fieldset>
                 <input type="radio" id="and" value="and"
-                       name="logical_op" onclick="onClick(this)" checked>
+                       name="logical_op" onclick="sendQuery()" checked>
                 <label for="and">AND</label>
             </fieldset>
             <fieldset>
                 <input type="radio" id="or" value="or"
-                       name="logical_op" onclick="onClick(this)">
+                       name="logical_op" onclick="sendQuery()">
                 <label for="or">OR</label>
             </fieldset>
             <fieldset>
                 <input type="radio" id="xor" value="xor"
-                       name="logical_op" onclick="onClick(this)">
+                       name="logical_op" onclick="sendQuery()">
                 <label for="xor">XOR</label>
             </fieldset>
         </form>
