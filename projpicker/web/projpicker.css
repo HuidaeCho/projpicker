@@ -118,6 +118,11 @@ li:hover {
     font-size: 30px;
     background: #f6f6f6;
 }
+
 li:focus {
     background: #ACACAC;
+}
+
+h1 {
+    font-size: 20px;
 }
