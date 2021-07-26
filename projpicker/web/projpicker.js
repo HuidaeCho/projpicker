@@ -150,17 +150,20 @@ function selectCRS(crs) {
         }
     }
 
-    let s = crs.south_lat
-    let n = crs.north_lat
-    let w = crs.west_lon
-    let e = crs.east_lon
+    let s = crs.south_lat;
+    let n = crs.north_lat;
+    let w = crs.west_lon;
+    let e = crs.east_lon;
 
-    if (w > e)
-        e += 360;
+    let coors;
 
-    let coors = [[[w, n], [e, n], [e, s], [w, s]]]
+    if (w > e) {
+        coors = [[[w, n], [180, n], [180, s], [w, s]],
+                 [[-180, n], [e, n], [e, s], [-180, s]]];
+    } else
+        coors = [[[w, n], [e, n], [e, s], [w, s]]];
 
-    drawCRSBBox(coors)
+    drawCRSBBox(coors);
 }
 
 function drawCRSBBox(geom) {
@@ -203,7 +206,7 @@ let tileLayer = L.tileLayer(
         'maxNativeZoom': 18,
         'maxZoom': 18,
         'minZoom': 0,
-        'noWrap': false,
+        'noWrap': true,
         'opacity': 1,
         'subdomains': 'abc',
         'tms': false
