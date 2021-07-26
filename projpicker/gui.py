@@ -4,10 +4,11 @@ This module implements the GUI of ProjPicker.
 
 import tkinter as tk
 from tkinter import ttk
-import threading
-import queue
+import os
 import textwrap
 import webbrowser
+import threading
+import queue
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -17,10 +18,13 @@ else:
     from getosm import OpenStreetMap
     import projpicker as ppik
 
+projpicker_dzoom_env = "PROJPICKER_DZOOM"
+
 
 def start(
         geoms=None,
         bbox=[],
+        bbox_or_quit=False,
         single=False,
         crs_info_func=None,
         projpicker_db=None):
@@ -33,6 +37,8 @@ def start(
     Args:
         geoms (list or str): Parsable geometries. Defaults to None.
         bbox (list): Queried BBox instances. Defaults to [].
+        bbox_or_quit (bool): Whether or not to quit when bbox queried using
+            input geoms or input bbox is empty. Defaults to False.
         single (bool): Whether or not a single BBox instance is returned.
             Defaults to False.
         crs_info_func (function): User function used for formatting CRS info.
@@ -50,12 +56,15 @@ def start(
     tag_map = "map"
     tag_bbox = "bbox"
     tag_geoms = "geoms"
+    tag_dragged_bbox = "dragged_bbox"
     tag_doc = "doc"
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     zoomer_queue = queue.Queue()
-    dzoom = 1
+    dzoom = float(os.environ.get(projpicker_dzoom_env, 1))
     dragged = False
+    dragging_bbox = False
+    dragged_bbox = []
     drawing_bbox = False
     complete_drawing = False
     sel_bbox = []
@@ -78,7 +87,7 @@ def start(
         point_half_size = point_size // 2
         outline = "blue"
         width = 2
-        fill = "blue"
+        fill = outline
         stipple = "gray12"
 
         map_canvas.delete(tag_geoms)
@@ -93,10 +102,14 @@ def start(
             if drawing_bbox:
                 ng = len(g)
                 if ng > 0:
-                    s = g[ng-1][0]
-                    n = g[0][0]
+                    s = min(g[0][0], g[ng-1][0])
+                    n = max(g[0][0], g[ng-1][0])
                     w = g[0][1]
                     e = g[ng-1][1]
+                    if s == n:
+                        n += 0.0001
+                    if w == e:
+                        e += 0.0001
                     all_geoms.extend(["bbox", [s, n, w, e]])
             elif g:
                 if prev_xy:
@@ -217,22 +230,18 @@ def start(
                         if r > e:
                             e = r
             g += 1
-        if s == n:
-            s -= 0.0001
-            n += 0.0001
-        if w == e:
-            w -= 0.0001
-            e += 0.0001
+        if None not in (s, n, w, e):
+            if s == n:
+                s -= 0.0001
+                n += 0.0001
+            if w == e:
+                w -= 0.0001
+                e += 0.0001
         return s, n, w, e
 
-    # XXX: EXPERIMENTAL! works only in a single-threaded mode without draw()
-    def zoom_map(x, y, dz):
-        osm.rescale(x, y, dz)
-
-    def zoom_map(x, y, dz):
+    def zoom_map(x, y, dz, state):
         def zoom(x, y, dz, cancel_event):
-            if (not cancel_event.wait(0.01) and
-                osm.zoom(x, y, dz, False) and not osm.cancel):
+            if not cancel_event.wait(0.01) and osm.redownload():
                 # ready to draw map; how? event_generate()? maybe...
                 # https://www.tcl.tk/man/tcl8.7/TkCmd/event.html#M7
                 # https://mail.python.org/pipermail/python-list/2003-December/197985.html
@@ -272,10 +281,18 @@ def start(
         # download_map() and draw_map()
         nonlocal zoomer
 
-        if zoomer:
-            # XXX: doesn't work
-            # osm.rescale(x, y, osm.z - zoomer.z)
+        if state & 0x4:
+            # Control + MouseWheel
+            if dz > 0:
+                geoms_bbox = calc_geoms_bbox()
+                if None not in geoms_bbox:
+                    osm.zoom_to_bbox(geoms_bbox, False)
+            else:
+                osm.zoom(x, y, osm.z_min - osm.z, False)
+            draw_map(x, y)
+            return
 
+        if zoomer:
             # cancel the previous zoomer thread
             zoomer.cancel_event.set()
 
@@ -299,10 +316,10 @@ def start(
         else:
             cancel_event = threading.Event()
 
+        osm.rescale(x, y, dz)
         zoomer = threading.Thread(target=zoom, args=(x, y, dz, cancel_event))
         zoomer.cancel_event = cancel_event
         zoomer.checker = map_canvas.after_idle(check_zoomer)
-        zoomer.z = osm.z
         zoomer.start()
 
     def query():
@@ -376,33 +393,74 @@ def start(
         root.destroy()
 
     def on_drag(event):
-        nonlocal dragged
+        nonlocal dragged, dragging_bbox, dragged_bbox
 
-        osm.drag(event.x, event.y)
-        draw_geoms(event.x, event.y)
-        draw_bbox()
+        if event.state & 0x4:
+            # Control + B1-Motion
+            outline = "green"
+            width = 2
+            fill = outline
+            stipple = "gray12"
+
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            if not dragging_bbox:
+                dragging_bbox = True
+                dragged_bbox.append(latlon)
+            else:
+                if len(dragged_bbox) == 2:
+                    del dragged_bbox[1]
+                dragged_bbox.append(latlon)
+
+                ng = len(dragged_bbox)
+                s = dragged_bbox[ng-1][0]
+                n = dragged_bbox[0][0]
+                w = dragged_bbox[0][1]
+                e = dragged_bbox[ng-1][1]
+
+                map_canvas.delete(tag_dragged_bbox)
+                for xy in osm.get_bbox_xy((s, n, w, e)):
+                    map_canvas.create_rectangle(xy, outline=outline,
+                                                width=width, fill=fill,
+                                                stipple=stipple,
+                                                tag=tag_dragged_bbox)
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
+        else:
+            osm.drag(event.x, event.y, False)
+            draw_map(event.x, event.y)
         dragged = True
-
-    def on_zoom(event):
-        osm.draw()
-        draw_geoms(event.x, event.y)
-        draw_bbox()
 
     def on_move(event):
         latlon = osm.canvas_to_latlon(event.x, event.y)
-        coor_label.config(text=f" {latlon[0]:.4f}, {latlon[1]:.4f} ")
+        coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
         draw_geoms(event.x, event.y)
 
     def on_draw(event):
-        nonlocal dragged, drawing_bbox, complete_drawing
+        nonlocal dragged, dragging_bbox, dragged_bbox, drawing_bbox
+        nonlocal complete_drawing
 
-        if complete_drawing:
+        if dragging_bbox:
+            ng = len(dragged_bbox)
+            s = min(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            n = max(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            w = dragged_bbox[0][1]
+            e = dragged_bbox[ng-1][1]
+            if s == n:
+                n += 0.0001
+            if w == e:
+                e += 0.0001
+            osm.zoom_to_bbox([s, n, w, e], False)
+            dragged_bbox.clear()
+            dragging_bbox = False
+            map_canvas.delete(tag_dragged_bbox)
+            draw_map(event.x, event.y)
+        elif complete_drawing:
             query = ""
             geom = []
             if drawing_bbox:
                 if len(curr_geom) == 2:
-                    s = curr_geom[1][0]
-                    n = curr_geom[0][0]
+                    s = min(curr_geom[0][0], curr_geom[1][0])
+                    n = max(curr_geom[0][0], curr_geom[1][0])
                     w = curr_geom[0][1]
                     e = curr_geom[1][1]
                     geom.extend(["bbox", [s, n, w, e]])
@@ -528,7 +586,6 @@ def start(
             sel_bbox.extend([s, n, w, e])
 
             bottom_right_notebook.select(crs_info_frame)
-
         draw_geoms()
         draw_bbox()
 
@@ -571,6 +628,8 @@ def start(
         bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
     else:
         geoms = []
+    if bbox_or_quit and not bbox:
+        return [], bbox, geoms
 
     #####
     # GUI
@@ -601,6 +660,8 @@ def start(
             lambda image, tile, x, y:
                 map_canvas.create_image(x, y, anchor=tk.NW, image=tile,
                                         tag=tag_map),
+            lambda tile, dz: tile.zoom(2**abs(dz)) if dz > 0 else
+                             tile.subsample(2**abs(dz)),
             map_canvas_width, map_canvas_height,
             lat, lon, zoom)
 
@@ -608,13 +669,15 @@ def start(
     map_canvas.bind("<B1-Motion>", on_drag)
     # Linux
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
-    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom))
-    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -dzoom))
+    map_canvas.bind("<Button-4>", lambda e: zoom_map(e.x, e.y, dzoom, e.state))
+    map_canvas.bind("<Button-5>", lambda e: zoom_map(e.x, e.y, -dzoom,
+                                                     e.state))
     # Windows and macOS
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html
     map_canvas.bind("<MouseWheel>",
                     lambda e: zoom_map(e.x, e.y,
-                                       dzoom if e.delta > 0 else -dzoom))
+                                       dzoom if e.delta > 0 else -dzoom,
+                                       e.state))
     map_canvas.bind("<Motion>", on_move)
     map_canvas.bind("<ButtonRelease-1>", on_draw)
     map_canvas.bind("<Double-Button-1>", on_complete_drawing)
@@ -623,7 +686,9 @@ def start(
 
     # draw geometries if given
     if geoms:
-        osm.zoom_to_bbox(calc_geoms_bbox())
+        geoms_bbox = calc_geoms_bbox()
+        if None not in geoms_bbox:
+            osm.zoom_to_bbox(geoms_bbox)
         draw_geoms()
 
     ##############
@@ -803,13 +868,16 @@ def start(
     help_text.insert(tk.END, textwrap.dedent(f"""\
             Map operations
             ==============
-            Pan:                        Drag using left button
+            Pan:                        Left drag
             Zoom:                       Scroll
-            Draw point:                 Double left click
-            Start drawing poly:         Left click
-            Start drawing bbox:         Control + left click
-            Complete drawing poly/bbox: Double left click
-            Cancel drawing poly/bbox:   Right click
+            Zoom to geometries:         Ctrl + scroll up
+            Zoom to the world:          Ctrl + scroll down
+            Draw/zoom to a bbox:        Ctrl + left drag
+            Draw a point:               Double left click
+            Start drawing a poly:       Left click
+            Start drawing a bbox:       Ctrl + left click
+            Complete a poly/bbox:       Double left click
+            Cancel drawing a poly/bbox: Right click
             Clear geometries:           Double right click
 
             Geometry variables

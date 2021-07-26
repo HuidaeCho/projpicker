@@ -116,7 +116,7 @@ def read_file(infile="-"):
 
     if infile == "-":
         f = sys.stdin
-    elif not os.path.exists(infile):
+    elif not os.path.isfile(infile):
         raise Exception(f"{infile}: No such file found")
     else:
         f = open(infile)
@@ -441,10 +441,7 @@ def get_proj_db(proj_db=None):
         if proj_db_env in os.environ:
             proj_db = os.environ[proj_db_env]
         else:
-            if proj_lib_env in os.environ:
-                proj_lib = os.environ[proj_lib_env]
-            else:
-                proj_lib = "/usr/share/proj"
+            proj_lib = os.environ.get(proj_lib_env, "/usr/share/proj")
             proj_db = os.path.join(proj_lib, "proj.db")
     return proj_db
 
@@ -645,7 +642,7 @@ def create_projpicker_db(
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
 
-    if os.path.exists(projpicker_db):
+    if os.path.isfile(projpicker_db):
         if overwrite:
             os.remove(projpicker_db)
         else:
@@ -738,7 +735,7 @@ def write_bbox_db(
         Exception: If bbox_db file already exists when overwriting is not
         requested.
     """
-    if os.path.exists(bbox_db):
+    if os.path.isfile(bbox_db):
         if overwrite:
             os.remove(bbox_db)
         else:
@@ -2673,15 +2670,15 @@ def projpicker(
         raise Exception("Both overwrite and append requested")
 
     if create:
-        if not overwrite and os.path.exists(projpicker_db):
+        if not overwrite and os.path.isfile(projpicker_db):
             raise Exception(f"{projpicker_db}: File already exists")
-        if not os.path.exists(proj_db):
+        if not os.path.isfile(proj_db):
             raise Exception(f"{proj_db}: No such file found")
         create_projpicker_db(overwrite, projpicker_db, proj_db)
-    elif not os.path.exists(projpicker_db):
+    elif not os.path.isfile(projpicker_db):
         raise Exception(f"{projpicker_db}: No such file found")
 
-    if not overwrite and not append and outfile and os.path.exists(outfile):
+    if not overwrite and not append and outfile and os.path.isfile(outfile):
         raise Exception(f"{outfile}: File already exists")
 
     if append and (not outfile or outfile == "-"):
@@ -2701,11 +2698,8 @@ def projpicker(
             pprint.pprint(parse_mixed_geoms(geoms))
             return []
 
-        if len(geoms) == 0:
-            return []
-
         if start_gui == "select":
-            bbox, *_ = gui.start(geoms, single=single)
+            bbox, *_ = gui.start(geoms, bbox_or_quit=True, single=single)
         else:
             bbox = query_mixed_geoms(geoms, projpicker_db)
 
@@ -2717,7 +2711,7 @@ def projpicker(
 
     mode = "w"
     header = not no_header
-    if append and outfile != "-" and os.path.exists(outfile):
+    if append and outfile != "-" and os.path.isfile(outfile):
         if fmt == "plain":
             mode = "a"
             header = False
@@ -2865,13 +2859,14 @@ def parse():
     if has_gui:
         gui_exclusive = parser.add_mutually_exclusive_group()
         gui_exclusive.add_argument(
-                "-g", "--select-gui",
-                action="store_true",
-                help="start GUI for selecting queried CRSs")
-        gui_exclusive.add_argument(
-                "-G", "--gui",
+                "-g", "--gui",
                 action="store_true",
                 help="ignore input geometries and start GUI immediately")
+        gui_exclusive.add_argument(
+                "-u", "--select-gui",
+                action="store_true",
+                help="start GUI for selecting queried CRSs; GUI will not "
+                    "start if no CRSs are queried")
         parser.add_argument(
                 "-1", "--single",
                 action="store_true",
