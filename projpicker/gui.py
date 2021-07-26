@@ -4,10 +4,11 @@ This module implements the GUI of ProjPicker.
 
 import tkinter as tk
 from tkinter import ttk
-import threading
-import queue
+import os
 import textwrap
 import webbrowser
+import threading
+import queue
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -16,6 +17,8 @@ if __package__:
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
+
+projpicker_dzoom_env = "PROJPICKER_DZOOM"
 
 
 def start(
@@ -58,7 +61,7 @@ def start(
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     zoomer_queue = queue.Queue()
-    dzoom = 1
+    dzoom = float(os.environ.get(projpicker_dzoom_env, 1))
     dragged = False
     dragging_bbox = False
     dragged_bbox = []

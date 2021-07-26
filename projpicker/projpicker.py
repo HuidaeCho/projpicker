@@ -441,10 +441,7 @@ def get_proj_db(proj_db=None):
         if proj_db_env in os.environ:
             proj_db = os.environ[proj_db_env]
         else:
-            if proj_lib_env in os.environ:
-                proj_lib = os.environ[proj_lib_env]
-            else:
-                proj_lib = "/usr/share/proj"
+            proj_lib = os.environ.get(proj_lib_env, "/usr/share/proj")
             proj_db = os.path.join(proj_lib, "proj.db")
     return proj_db
 
