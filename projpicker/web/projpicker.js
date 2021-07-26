@@ -154,6 +154,10 @@ function selectCRS(crs) {
     let n = crs.north_lat
     let w = crs.west_lon
     let e = crs.east_lon
+
+    if (w > e)
+        e += 360;
+
     let coors = [[[w, n], [e, n], [e, s], [w, s]]]
 
     drawCRSBBox(coors)
@@ -199,7 +203,7 @@ let tileLayer = L.tileLayer(
         'maxNativeZoom': 18,
         'maxZoom': 18,
         'minZoom': 0,
-        'noWrap': true,
+        'noWrap': false,
         'opacity': 1,
         'subdomains': 'abc',
         'tms': false
