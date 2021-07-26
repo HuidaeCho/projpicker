@@ -58,7 +58,7 @@ def start(
     doc_url = "https://projpicker.readthedocs.io/"
     zoomer = None
     zoomer_queue = queue.Queue()
-    dzoom = 0.1
+    dzoom = 1
     dragged = False
     dragging_bbox = False
     dragged_bbox = []
