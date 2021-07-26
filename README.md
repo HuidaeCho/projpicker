@@ -28,7 +28,7 @@ that wraps around this project is available.
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
-![image](https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png)
+<img src="https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png" width="300" /> <img src="https://user-images.githubusercontent.com/7456117/126957478-069742ea-b5d5-4a4c-a545-ba45dc2fe4ab.png" width="300" />
 
 1. Install [Termux](https://termux.com/) from [F-Droid](https://f-droid.org/packages/com.termux/)
 2. Run it from Android
