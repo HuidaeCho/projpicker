@@ -30,6 +30,11 @@ class Color:
 
 
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    # https://stackoverflow.com/a/52531444/16079666
+    def __init__(self, *args, **kwargs):
+        return http.server.SimpleHTTPRequestHandler.__init__(
+                self, *args, directory=module_path, **kwargs)
+
     def do_POST(self):
         if self.path.endswith("/query"):
             environ = {}
