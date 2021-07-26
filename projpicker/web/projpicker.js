@@ -53,11 +53,34 @@ function removeAllChildNodes(element) {
 
 // Use main logic function to query on events.
 function sendQuery() {
-    let data = geomsLayer.toGeoJSON()
-    let logicalOp = document.querySelector(
-                        'input[name="logical_op"]:checked').value
-    data.logicalOperator = logicalOp
-    ajaxRequest('/query', JSON.stringify(data), xhr => {
+    let query = document.querySelector(
+                    'input[name="logical_op"]:checked').value + '\n';
+    let features = geomsLayer.toGeoJSON().features
+    for (let i in features) {
+        let geom = features[i].geometry;
+        // Reverse coordinates as leaflet returns opposite order of what
+        // ProjPicker takes
+        if (geom.type == 'Point') {
+            // Coordinates in "Point" type are single-depth tuple [i, j]
+            let coor = geom.coordinates;
+            let lat = coor[1];
+            let lon = coor[0];
+            query += `point ${lat},${lon}`;
+        } else {
+            // Coordinates in "Poly" type are in multi-depth array of size
+            // [[[i0, j0], [i1, j1], ...]]; Move down array depth for easier
+            // iteration
+            query += 'poly';
+            for (let j in geom.coordinates[0]) {
+                let coor = geom.coordinates[0][j];
+                let lat = coor[1];
+                let lon = coor[0];
+                query += ` ${lat},${lon}`;
+            }
+        }
+        query += '\n';
+    }
+    ajaxRequest('/query', query, xhr => {
         queryResults = JSON.parse(xhr.response);
         populateCRSList(Object.keys(queryResults));
     });
