@@ -10,7 +10,6 @@ import collections
 import projpicker as ppik
 
 module_path = os.path.dirname(__file__)
-is_verbose = False
 
 
 # https://gist.github.com/dideler/3814182
@@ -48,7 +47,7 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def verbose_args(*args):
-    if is_verbose:
+    if ppik.is_verbose():
         ppik.message(*args)
 
 
@@ -198,12 +197,7 @@ def run_application(
 def start(
         address="localhost",
         port=8000,
-        start_client=False,
-        verbose=False):
-    global is_verbose
-
-    is_verbose = verbose
-
+        start_client=False):
     httpd = http.server.HTTPServer((address, port), HTTPRequestHandler)
 
     url = f"http://{address}:{port}"
@@ -254,16 +248,9 @@ elif __name__ == "__main__":
         action="store_true",
         help="start a new client in the user's default browser",
     )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="print debugging messages verbosely",
-    )
     args = parser.parse_args()
 
     start(address=args.address,
           port=args.port,
-          start_client=args.client,
-          verbose=args.verbose)
+          start_client=args.client)
 # else run WSGI
