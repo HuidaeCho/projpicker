@@ -46,6 +46,11 @@ function ajaxRequest(url, data, func, mimeType) {
     xhr.send(data);
 }
 
+function removeAllChildNodes(element) {
+    while (element.firstChild)
+        element.removeChild(element.firstChild);
+}
+
 // Use main logic function to query on events.
 function sendQuery() {
     let data = geomsLayer.toGeoJSON()
@@ -60,13 +65,19 @@ function sendQuery() {
 
 function populateCRSList(crsIds) {
     let crsList = document.getElementById('crs-list');
-
-    while (crsList.firstChild)
-        crsList.removeChild(crsList.firstChild);
+    removeAllChildNodes(crsList);
 
     crsIds.forEach(crsId => {
+        let crsName = queryResults[crsId].crs_name;
+
         let li = document.createElement('li');
-        li.appendChild(document.createTextNode(crsId));
+        li.appendChild(document.createTextNode(crsName + ' '));
+
+        let span = document.createElement('span');
+        span.appendChild(document.createTextNode(`(${crsId})`));
+        span.classList.add('crs-id');
+        li.appendChild(span);
+
         li.onclick = () => {
             selectCRS(crsId);
         };
@@ -76,13 +87,16 @@ function populateCRSList(crsIds) {
 
 function selectCRS(crsId) {
     let crs = queryResults[crsId];
+
+    let crsName = document.getElementById('crs-name');
+    removeAllChildNodes(crsName);
+    crsName.appendChild(document.createTextNode(crs.crs_name));
+
     let crsType = crs.proj_table.replace('_crs', '');
     crsType = crsType[0].toUpperCase() + crsType.substr(1);
 
     let crsItems = {
         'CRS ID': crsId,
-        'CRS Authority': crs.crs_auth_name,
-        'CRS Code': crs.crs_code,
         'CRS Type': crsType,
         'Unit': crs.unit,
         'South': crs.south_lat,
@@ -92,13 +106,11 @@ function selectCRS(crsId) {
         'Area': Math.round(crs.area_sqkm).toLocaleString()
     }
 
-    let crsInfo = document.getElementById('crs-info')
-
-    while (crsInfo.firstChild)
-        crsInfo.removeChild(crsInfo.firstChild);
+    let crsTable = document.getElementById('crs-table')
+    removeAllChildNodes(crsTable);
 
     for (let key in crsItems) {
-        let row = crsInfo.insertRow();
+        let row = crsTable.insertRow();
 
         let cell = row.insertCell()
         cell.appendChild(document.createTextNode(key + ':'));
