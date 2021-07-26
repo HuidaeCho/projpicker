@@ -23,25 +23,6 @@ class Color:
     UNDERLINE = "\033[4m"
 
 
-class Geometry:
-    def __init__(self, typ, coors):
-        self.type = "poly" if typ == "Polygon" else "point"
-
-        # Reverse coordinates as leaflet returns opposite order of what
-        # ProjPicker takes
-        if self.type == "point":
-            # Coordinates in "Point" type are single-depth tuple [i, j]
-            self.coors = coors[::-1]
-        else:
-            # Coordinates in "Poly" type are in multi-depth array of size
-            # [[[i0, j0], [i1, j1], ...]]; Move down array depth for easier
-            # iteration
-            latlon_coors = []
-            for lonlat in coors[0]:
-                latlon_coors.append(lonlat[::-1])
-            self.coors = list(latlon_coors)
-
-
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/query":
@@ -117,22 +98,6 @@ def message(*args):
         ppik.message(*args)
 
 
-def create_parsable_geoms(geojson):
-    # TODO: Logical operator buttons
-    geoms = geojson["logicalOperator"]
-    for feature in geojson["features"]:
-        json_geom = feature["geometry"]
-        coors = json_geom["coordinates"]
-        geom = Geometry(json_geom["type"], json_geom["coordinates"])
-        geoms += f"\n{geom.type}"
-        if geom.type == "point":
-            geoms += f"\n{geom.coors[0]},{geom.coors[1]}"
-        else:
-            for coors in geom.coors:
-                geoms += f"\n{coors[0]},{coors[1]}"
-    return geoms
-
-
 def bbox_to_json(bbox_list):
     crs_json = {}
     for crs in bbox_list:
@@ -177,9 +142,8 @@ def application(environ, start_response):
                 response = f.read()
     elif request_method == "POST" and path_info == "/query":
         content_length = int(environ["CONTENT_LENGTH"])
-        geoms = environ["wsgi.input"].read(content_length)
+        geoms = environ["wsgi.input"].read(content_length).decode()
 
-        geoms = create_parsable_geoms(json.loads(geoms))
         message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
         message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
         message(geoms)
