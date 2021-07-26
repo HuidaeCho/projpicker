@@ -1,10 +1,11 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 import argparse
 import os
 import sys
 import json
 import webbrowser
 import http.server
+import collections
 
 import projpicker as ppik
 
@@ -29,71 +30,21 @@ class Color:
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path.endswith("/query"):
-            # http.client.HTTPResponse stores headers and implements
-            # email.message.Message class
-            # https://docs.python.org/3/library/email.compat32-message.html#email.message.Message
-
-            # https://www.python.org/dev/peps/pep-0333/#the-server-gateway-side
             environ = {}
-            environ["REMOTE_ADDR"]       = self.client_address
-            environ["REQUEST_METHOD"]    = self.command
-            environ["REQUEST_URI"]       = self.path
-            environ["CONTENT_LENGTH"]    = self.headers.get("content-length")
+            environ["REMOTE_ADDR"]    = self.client_address
+            environ["REQUEST_METHOD"] = self.command
+            environ["REQUEST_URI"]    = self.path
+            environ["CONTENT_LENGTH"] = self.headers.get("content-length")
 
-            environ["wsgi.input"]        = self.rfile
-            environ["wsgi.errors"]       = sys.stderr
-            environ["wsgi.version"]      = (1, 0)
-            environ["wsgi.multithread"]  = False
-            environ["wsgi.multiprocess"] = True
-            environ["wsgi.run_once"]     = True
-            environ["wsgi.url_scheme"]   = "http"
-
-            headers_set = []
-            headers_sent = []
-
-            def write(data):
-                if not headers_set:
-                    raise AssertionError("write() before start_response()")
-
-                elif not headers_sent:
-                    # Before the first output, send the stored headers
-                    status, response_headers = headers_sent[:] = headers_set
-                    s = status.split()
-                    code = int(s[0])
-                    message = " ".join(s[1:])
-                    self.send_response(code, message)
-                    for header in response_headers:
-                        self.send_header(*header)
-                    self.end_headers()
-                self.wfile.write(data)
-
-            def start_response(status, response_headers, exc_info=None):
-                if exc_info:
-                    try:
-                        if headers_sent:
-                            # Re-raise original exception if headers sent
-                            # https://www.python.org/dev/peps/pep-3109/#compatibility-issues
-                            e = exc_info[0](exc_info[1])
-                            e.__traceback__ = exc_info[2]
-                            raise e
-                    finally:
-                        exc_info = None     # avoid dangling circular ref
-                elif headers_set:
-                    raise AssertionError("Headers already set!")
-
-                headers_set[:] = [status, response_headers]
-                return write
-
-            result = application(environ, start_response)
-            try:
-                for data in result:
-                    if data:    # don't send headers until body appears
-                        write(data)
-                if not headers_sent:
-                    write("")   # send headers now if body was empty
-            finally:
-                if hasattr(result, "close"):
-                    result.close()
+            run_application(
+                environ,
+                self.rfile,
+                self.send_response,
+                self.send_header,
+                self.end_headers,
+                self.wfile.write,
+                lambda: None,
+                False)
 
 
 def verbose_args(*args):
@@ -178,6 +129,72 @@ def application(environ, start_response):
     return [response.encode()]
 
 
+def run_application(
+        environ,
+        reader,
+        send_response,
+        send_header,
+        end_headers,
+        write_data,
+        flush_data,
+        https=False):
+    # https://www.python.org/dev/peps/pep-0333/#the-server-gateway-side
+    def write(data):
+        if not headers_set:
+            raise AssertionError("write() before start_response()")
+        elif not headers_sent:
+            # Before the first output, send the stored headers
+            status, response_headers = headers_sent[:] = headers_set
+            s = status.split()
+            code = int(s[0])
+            message = " ".join(s[1:])
+            send_response(code, message)
+            for header in response_headers:
+                send_header(*header)
+            end_headers()
+        write_data(data)
+        flush_data()
+
+    def start_response(status, response_headers, exc_info=None):
+        if exc_info:
+            try:
+                if headers_sent:
+                    # Re-raise original exception if headers sent
+                    # https://www.python.org/dev/peps/pep-3109/#compatibility-issues
+                    e = exc_info[0](exc_info[1])
+                    e.__traceback__ = exc_info[2]
+                    raise e
+            finally:
+                exc_info = None     # avoid dangling circular ref
+        elif headers_set:
+            raise AssertionError("Headers already set!")
+
+        headers_set[:] = [status, response_headers]
+        return write
+
+    environ["wsgi.input"]        = reader
+    environ["wsgi.errors"]       = sys.stderr
+    environ["wsgi.version"]      = (1, 0)
+    environ["wsgi.multithread"]  = False
+    environ["wsgi.multiprocess"] = True
+    environ["wsgi.run_once"]     = True
+    environ["wsgi.url_scheme"]   = "https" if https else "http"
+
+    headers_set = []
+    headers_sent = []
+
+    result = application(environ, start_response)
+    try:
+        for data in result:
+            if data:    # don't send headers until body appears
+                write(data)
+        if not headers_sent:
+            write("")   # send headers now if body was empty
+    finally:
+        if hasattr(result, "close"):
+            result.close()
+
+
 def start(
         address="localhost",
         port=8000,
@@ -201,7 +218,21 @@ def start(
         print_color(Color.FAIL, f"\nClosed httpd server on {url}")
 
 
-if __name__ == "__main__":
+if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
+    # run CGI
+    SysStdinEncode = collections.namedtuple("SysStdinEncode", "read")
+
+    run_application(
+        os.environ.copy(),
+        SysStdinEncode(lambda n: sys.stdin.read(n).encode()),
+        lambda code, msg: sys.stdout.write(f"Status: {code} {msg}\r\n"),
+        lambda *header: sys.stdout.write(f"{header[0]}: {header[1]}\r\n"),
+        lambda: sys.stdout.write("\r\n"),
+        lambda data: sys.stdout.write(data.decode()),
+        sys.stdout.flush,
+        os.environ["HTTPS"] == "on")
+elif __name__ == "__main__":
+    # run CLI
     parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
         "-a",
@@ -235,3 +266,4 @@ if __name__ == "__main__":
           port=args.port,
           start_client=args.client,
           verbose=args.verbose)
+# else run WSGI
