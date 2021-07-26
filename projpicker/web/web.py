@@ -11,6 +11,8 @@ import projpicker as ppik
 is_verbose = False
 
 
+# https://gist.github.com/dideler/3814182
+# https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
 class Color:
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
@@ -93,20 +95,29 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     result.close()
 
 
-def message(*args):
+def verbose_args(*args):
     if is_verbose:
         ppik.message(*args)
 
 
-def bbox_to_json(bbox_list):
-    crs_json = {}
-    for crs in bbox_list:
-        entry = {}
-        crs_dict = crs._asdict()
-        for key in list(crs_dict.keys()):
-            entry[key] = crs_dict[key]
-        crs_json[f"{crs.crs_auth_name}:{crs.crs_code}"] = entry
-    return crs_json
+def verbose_color(color, *args):
+    verbose_args(color + "".join(*args) + Color.ENDC)
+
+
+def verbose_line():
+    verbose_color(Color.BOLD, "-" * 79)
+
+
+def verbose_header(*args):
+    verbose_color(Color.BOLD, *args)
+
+
+def verbose_key_value(key, value):
+    verbose_args(Color.BOLD + key + ": " + Color.ENDC + str(value))
+
+
+def print_color(color, *args):
+    ppik.message(color + "".join(*args) + Color.ENDC)
 
 
 # Python Web Server Gateway Interface (WSGI)
@@ -142,20 +153,21 @@ def application(environ, start_response):
                 response = f.read()
     elif request_method == "POST" and path_info == "/query":
         content_length = int(environ["CONTENT_LENGTH"])
-        geoms = environ["wsgi.input"].read(content_length).decode()
+        geoms = environ["wsgi.input"].read(content_length).decode().strip()
 
-        message(f"{Color.BOLD}ProjPicker query{Color.ENDC}")
-        message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
-        message(geoms)
-        message(f"{Color.BOLD}{'-'*79}{Color.ENDC}")
+        verbose_line()
+        verbose_header("Requested query")
+        verbose_args(geoms)
 
         geoms = ppik.parse_mixed_geoms(geoms)
-        message(f"Query geometries: {geoms}")
+        verbose_header("Parsed geometries")
+        verbose_args(geoms)
 
         bbox = ppik.query_mixed_geoms(geoms)
-        message(f"Number of queried CRSs: {len(bbox)}")
+        verbose_key_value("Number of queried CRSs", len(bbox))
+        verbose_line()
 
-        response = json.dumps(bbox_to_json(bbox))
+        response = ppik.jsonify_bbox(bbox)
 
         status = "200 OK"
         content_type = "application/json"
@@ -174,20 +186,18 @@ def start(
 
     is_verbose = verbose
 
-    server_address = (address, port)
-    httpd = http.server.HTTPServer(server_address, HTTPRequestHandler)
+    httpd = http.server.HTTPServer((address, port), HTTPRequestHandler)
 
+    url = f"http://{address}:{port}"
     if start_client is True:
-        webbrowser.open_new(f"{address}:{port}")
+        webbrowser.open(url)
 
     try:
-        ppik.message(f"{Color.OKGREEN}Starting httpd server on "
-                     f"{address}:{port}{Color.ENDC}")
+        print_color(Color.OKGREEN, f"Starting httpd server on {url}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        ppik.message(f"\n{Color.FAIL}Closed httpd server on "
-                     f"{address}:{port}{Color.ENDC}")
+        print_color(Color.FAIL, f"\nClosed httpd server on {url}")
 
 
 if __name__ == "__main__":

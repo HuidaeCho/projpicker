@@ -81,36 +81,35 @@ function sendQuery() {
         query += '\n';
     }
     ajaxRequest('/query', query, xhr => {
-        queryResults = JSON.parse(xhr.response);
-        populateCRSList(Object.keys(queryResults));
+        let queryResults = JSON.parse(xhr.response);
+        populateCRSList(queryResults);
     });
 };
 
-function populateCRSList(crsIds) {
+function populateCRSList(queryResults) {
     let crsList = document.getElementById('crs-list');
     removeAllChildNodes(crsList);
 
-    crsIds.forEach(crsId => {
-        let crsName = queryResults[crsId].crs_name;
-
+    for (let i = 0; i < queryResults.length; i++) {
+        let crs = queryResults[i];
         let li = document.createElement('li');
-        li.appendChild(document.createTextNode(crsName + ' '));
+        li.appendChild(document.createTextNode(crs.crs_name + ' '));
 
+        let crsId = `${crs.crs_auth_name}:${crs.crs_code}`;
         let span = document.createElement('span');
         span.appendChild(document.createTextNode(`(${crsId})`));
         span.classList.add('crs-id');
         li.appendChild(span);
 
         li.onclick = () => {
-            selectCRS(crsId);
+            selectCRS(crs);
         };
         crsList.appendChild(li);
-    });
+    }
 }
 
-function selectCRS(crsId) {
-    let crs = queryResults[crsId];
-
+function selectCRS(crs) {
+    let crsId = `${crs.crs_auth_name}:${crs.crs_code}`;
     let crsName = document.getElementById('crs-name');
     removeAllChildNodes(crsName);
     crsName.appendChild(document.createTextNode(crs.crs_name));
@@ -176,8 +175,6 @@ function drawGeometries(geoms) {
 }
 
 /********** MAIN CODE **********/
-
-let queryResults = null;
 
 let map = L.map(
     'map', {
