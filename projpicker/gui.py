@@ -420,6 +420,8 @@ def start(
                                                 width=width, fill=fill,
                                                 stipple=stipple,
                                                 tag=tag_dragged_bbox)
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
         else:
             osm.drag(event.x, event.y, False)
             draw_map(event.x, event.y)
@@ -427,7 +429,7 @@ def start(
 
     def on_move(event):
         latlon = osm.canvas_to_latlon(event.x, event.y)
-        coor_label.config(text=f" {latlon[0]:.4f}, {latlon[1]:.4f} ")
+        coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
         draw_geoms(event.x, event.y)
 
     def on_draw(event):
