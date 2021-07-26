@@ -29,7 +29,7 @@ function ajaxRequest(url, data, func, mimeType) {
     }
 
     // this function has no arguments
-    xhr.onreadystatechange = function () {
+    xhr.onreadystatechange = () => {
         if (xhr.readyState != 4)
             return;
         if (func)
@@ -67,7 +67,7 @@ function populateCRSList(crsIds) {
     crsIds.forEach(crsId => {
         let li = document.createElement('li');
         li.appendChild(document.createTextNode(crsId));
-        li.onclick = function () {
+        li.onclick = () => {
             selectCRS(crsId);
         };
         crsList.appendChild(li);
@@ -146,13 +146,19 @@ let queryResults = null;
 
 let map = L.map(
     'map', {
-        center: [34.2347566, -83.8676613],
+        center: [0, 0],
         crs: L.CRS.EPSG3857,
-        zoom: 5,
+        zoom: 2,
         zoomControl: true,
         preferCanvas: false,
     }
 );
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        map.setView([position.coords.latitude, position.coords.longitude], 10);
+    });
+}
 
 let tileLayer = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -189,7 +195,7 @@ new L.Control.Draw({
     },
 }).addTo(map);
 
-map.on(L.Draw.Event.CREATED, function (e) {
+map.on(L.Draw.Event.CREATED, e => {
     geomsLayer.addLayer(e.layer);
     sendQuery();
 });
