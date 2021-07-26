@@ -80,7 +80,7 @@ function sendQuery() {
         }
         query += '\n';
     }
-    ajaxRequest('/query', query, xhr => {
+    ajaxRequest('query', query, xhr => {
         let queryResults = JSON.parse(xhr.response);
         populateCRSList(queryResults);
     });
