@@ -14,7 +14,7 @@ body {
     font-family: 'IBM Plex Sans Condensed', sans-serif;
     display: grid;
     grid-template-columns: 1fr 400px;
-    grid-template-rows: 110px 1fr 2fr 50px;
+    grid-template-rows: 110px 280px 1fr 50px;
     grid-column-gap: 10px;
     grid-row-gap: 10px;
 }
@@ -46,6 +46,7 @@ body {
     border-collapse: collapse;
     background: #fdfdfd;
     margin: 0;
+    padding-top: 10px;
     font-size: 20px;
     table-layout: fixed;
     line-height: 1.2em;
@@ -63,7 +64,7 @@ body {
     background: #fdfdfd;
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 10px 0 10px 0;
 }
 
 #crs-list li {
