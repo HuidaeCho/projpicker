@@ -33,7 +33,7 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             environ = {}
             environ["REMOTE_ADDR"]    = self.client_address
             environ["REQUEST_METHOD"] = self.command
-            environ["REQUEST_URI"]    = self.path
+            environ["PATH_INFO"]      = self.path
             environ["CONTENT_LENGTH"] = self.headers.get("content-length")
 
             run_application(
@@ -77,7 +77,7 @@ def print_color(color, *args):
 def application(environ, start_response):
     remote_addr = environ["REMOTE_ADDR"]
     request_method = environ["REQUEST_METHOD"]
-    request_uri = environ["REQUEST_URI"]
+    path_info = environ.get("PATH_INFO", environ.get("REQUEST_URI"))
 
     status = "404 Not Found"
     content_type = "text/plain"
@@ -85,13 +85,13 @@ def application(environ, start_response):
 
     if request_method == "GET":
         file_path = None
-        if request_uri == "/":
-            request_uri = "/index.html"
-        if request_uri in ("/index.html",
-                           "/projpicker.css",
-                           "/utils.js",
-                           "/projpicker.js"):
-            file_path = os.path.join(module_path, request_uri[1:])
+        if path_info == "/":
+            path_info = "/index.html"
+        if path_info in ("/index.html",
+                         "/projpicker.css",
+                         "/utils.js",
+                         "/projpicker.js"):
+            file_path = os.path.join(module_path, path_info[1:])
 
         if file_path and os.path.isfile(file_path):
             status = "200 OK"
@@ -103,7 +103,7 @@ def application(environ, start_response):
                 content_type = "text/javascript"
             with open(file_path) as f:
                 response = f.read()
-    elif request_method == "POST" and request_uri.endswith("/query"):
+    elif request_method == "POST" and path_info.endswith("/query"):
         content_length = int(environ["CONTENT_LENGTH"])
         geoms = environ["wsgi.input"].read(content_length).decode().strip()
 
