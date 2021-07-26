@@ -35,7 +35,7 @@ body {
     padding: 0;
 }
 
-#info-block .mobile h1 {
+#info-block h1 {
     margin: 0;
     padding: 7px 10px;
     font-size: 20px;
@@ -44,6 +44,15 @@ body {
 #info-block a {
     text-decoration: none;
     color: blue;
+}
+
+.iconify {
+    color: black;
+    font-size: larger;
+}
+
+.iconify:hover {
+    color: #65b5cf;
 }
 
 #map {
@@ -160,7 +169,8 @@ body {
         padding-left: 20px;
     }
 
-    #info-block .desktop h1 {
+    #info-block h1 {
+        padding: 15px 0 10px 0;
         font-size: 20px;
     }
 
