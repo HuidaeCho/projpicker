@@ -76,18 +76,20 @@ function populateCRSList(crsIds) {
 
 function selectCRS(crsId) {
     let crs = queryResults[crsId];
+    let crsType = crs.proj_table.replace('_crs', '');
+    crsType = crsType[0].toUpperCase() + crsType.substr(1);
 
     let crsItems = {
         'CRS ID': crsId,
         'CRS Authority': crs.crs_auth_name,
         'CRS Code': crs.crs_code,
-        'CRS Type': crs.proj_table,
+        'CRS Type': crsType,
         'Unit': crs.unit,
         'South': crs.south_lat,
         'North': crs.north_lat,
         'West': crs.west_lon,
         'East': crs.east_lon,
-        'Area': Math.round(crs.area_sqkm)
+        'Area': Math.round(crs.area_sqkm).toLocaleString()
     }
 
     let crsInfo = document.getElementById('crs-info')
@@ -99,10 +101,17 @@ function selectCRS(crsId) {
         let row = crsInfo.insertRow();
 
         let cell = row.insertCell()
-        cell.appendChild(document.createTextNode(key));
+        cell.appendChild(document.createTextNode(key + ':'));
 
         cell = row.insertCell()
         cell.appendChild(document.createTextNode(crsItems[key]));
+
+        if (key == "Area") {
+            cell.appendChild(document.createTextNode(" km"));
+            squared = document.createElement('sup');
+            squared.appendChild(document.createTextNode("2"));
+            cell.appendChild(squared);
+        }
     }
 
     let s = crs.south_lat

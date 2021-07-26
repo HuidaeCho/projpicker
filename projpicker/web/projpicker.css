@@ -34,10 +34,13 @@ body {
     border-collapse: collapse;
     background: #fdfdfd;
     margin: 0;
-    padding-left: 20px;
     font-size: 20px;
     table-layout: fixed;
     line-height: 1.2em;
+}
+
+#crs-info td {
+    padding-left: 20px;
 }
 
 #crs-list {
@@ -46,6 +49,32 @@ body {
     overflow: auto;
     border-radius: 5px;
     background: #fdfdfd;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#crs-list li {
+    font-size: 20px;
+    padding-left: 20px;
+    text-decoration: none;
+    color: #000;
+    display: block;
+
+    -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+    transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+#crs-list li:hover {
+    font-size: 30px;
+    background: #f6f6f6;
+}
+
+#crs-list li:focus {
+    background: #acacac;
 }
 
 #logic-buttons {
@@ -58,6 +87,10 @@ body {
     background: #fdfdfd;
 }
 
+#logic-buttons fieldset {
+    border: 0;
+}
+
 #info-block {
     grid-area: 11 / 1 / 12 / 7;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
@@ -66,47 +99,6 @@ body {
     background: #fdfdfd;
 }
 
-fieldset {
-    border: 0;
-}
-
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-li {
-    font-size: 20px;
-    padding-left: 20px;
-}
-
-li:last-child {
-    border: none;
-}
-
-li {
-    text-decoration: none;
-    color: #000;
-    display: block;
-
-    -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
-    -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
-    -o-transition: font-size 0.3s ease, background-color 0.3s ease;
-    -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
-    transition: font-size 0.3s ease, background-color 0.3s ease;
-}
-
-li:hover {
-    font-size: 30px;
-    background: #f6f6f6;
-}
-
-li:focus {
-    background: #acacac;
-}
-
-h1 {
+#info-block h1 {
     font-size: 20px;
 }
