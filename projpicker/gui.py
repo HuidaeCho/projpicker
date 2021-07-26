@@ -663,7 +663,7 @@ def start(
             lambda tile, dz: tile.zoom(2**abs(dz)) if dz > 0 else
                              tile.subsample(2**abs(dz)),
             map_canvas_width, map_canvas_height,
-            lat, lon, zoom)
+            lat, lon, zoom, ppik.is_verbose())
 
     map_canvas.bind("<ButtonPress-1>", lambda e: osm.grab(e.x, e.y))
     map_canvas.bind("<B1-Motion>", on_drag)

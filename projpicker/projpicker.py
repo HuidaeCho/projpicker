@@ -41,8 +41,8 @@ has_gui = True
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .common import (pos_float_pat, coor_sep, bbox_schema, bbox_columns,
-                         get_float, BBox)
+    from .common import (BBox, coor_sep, pos_float_pat, bbox_schema,
+                         bbox_columns, is_verbose, get_float)
     from . import coor_latlon
     from . import coor_xy
     try:
@@ -50,8 +50,8 @@ if __package__:
     except:
         has_gui = False
 else:
-    from common import (pos_float_pat, coor_sep, bbox_schema, bbox_columns,
-                        get_float, BBox)
+    from common import (BBox, coor_sep, pos_float_pat, bbox_schema,
+                        bbox_columns, is_verbose, get_float)
     import coor_latlon
     import coor_xy
     try:

@@ -3,8 +3,11 @@ This module provides common variables and functions for other ProjPicker
 modules.
 """
 
+import os
 import re
 import collections
+
+projpicker_verbose_env = "PROJPICKER_VERBOSE"
 
 # regular expression patterns
 # coordinate separator
@@ -53,6 +56,10 @@ bbox_columns = re.sub("^ +| +$", "",
 
 # BBox namedtuple class
 BBox = collections.namedtuple("BBox", bbox_columns)
+
+
+def is_verbose():
+    return os.environ.get(projpicker_verbose_env, "NO") == "YES"
 
 
 def get_float(x):
