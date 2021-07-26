@@ -203,8 +203,8 @@ def start(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
-        "-l",
-        "--listen",
+        "-a",
+        "--address",
         default="localhost",
         help="specify the IP address on which the server listens (default: "
             "localhost)",
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    start(address=args.listen,
+    start(address=args.address,
           port=args.port,
           start_client=args.client,
           verbose=args.verbose)
