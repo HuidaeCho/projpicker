@@ -11,6 +11,9 @@ import projpicker as ppik
 
 module_path = os.path.dirname(__file__)
 
+default_address = "localhost"
+default_port = 8000
+
 
 # https://gist.github.com/dideler/3814182
 # https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
@@ -194,10 +197,19 @@ def run_application(
             result.close()
 
 
-def start(
-        address="localhost",
-        port=8000,
-        start_client=False):
+def start(server=f"{default_address}:{default_port}", start_client=False):
+    if ":" in server:
+        address, port, *_ = server.split(":")
+        if not address:
+            address = default_address
+        if port:
+            try:
+                port = int(port)
+            except:
+                port = default_port
+        else:
+            port = default_port
+
     httpd = http.server.HTTPServer((address, port), HTTPRequestHandler)
 
     url = f"http://{address}:{port}"
@@ -229,18 +241,11 @@ elif __name__ == "__main__":
     # run CLI
     parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
-        "-a",
-        "--address",
-        default="localhost",
-        help="specify the IP address on which the server listens (default: "
-            "localhost)",
-    )
-    parser.add_argument(
-        "-p",
-        "--port",
-        type=int,
-        default=8000,
-        help="specify the port on which the server listens (port: 8000)",
+        "-S",
+        "--server",
+        default="localhost:8000",
+        help="specify the IP address and port on which the server listens "
+            "(default: localhost:8000)",
     )
     parser.add_argument(
         "-c",
@@ -250,7 +255,5 @@ elif __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    start(address=args.address,
-          port=args.port,
-          start_client=args.client)
+    start(server=args.server, start_client=args.client)
 # else run WSGI
