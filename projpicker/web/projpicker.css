@@ -20,7 +20,7 @@ body {
 }
 
 #info-block {
-    grid-area: 1 / 1 / 2 / 4;
+    grid-area: 1 / 1 / 2 / 3;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     padding-left: 20px;
