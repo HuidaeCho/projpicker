@@ -106,10 +106,12 @@ function selectCRS(crsId) {
         cell = row.insertCell()
         cell.appendChild(document.createTextNode(crsItems[key]));
 
-        if (key == "Area") {
-            cell.appendChild(document.createTextNode(" km"));
-            squared = document.createElement('sup');
-            squared.appendChild(document.createTextNode("2"));
+        if (['South', 'North', 'West', 'East'].indexOf(key) >= 0)
+            cell.appendChild(document.createTextNode('\u00b0'));
+        else if (key == 'Area') {
+            cell.appendChild(document.createTextNode(' km'));
+            let squared = document.createElement('sup');
+            squared.appendChild(document.createTextNode('2'));
             cell.appendChild(squared);
         }
     }

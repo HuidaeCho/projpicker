@@ -13,14 +13,26 @@ body {
     margin: 0;
     font-family: 'IBM Plex Sans Condensed', sans-serif;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(11, 1fr);
+    grid-template-columns: 1fr 400px;
+    grid-template-rows: 110px 1fr 2fr 50px;
     grid-column-gap: 10px;
     grid-row-gap: 10px;
 }
 
+#info-block {
+    grid-area: 1 / 1 / 2 / 4;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    padding-left: 20px;
+    background: #fdfdfd;
+}
+
+#info-block h1 {
+    font-size: 20px;
+}
+
 #map {
-    grid-area: 1 / 1 / 11 / 5;
+    grid-area: 2 / 1 / 5 / 2;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     background: #fdfdfd;
@@ -28,7 +40,7 @@ body {
 
 #crs-info {
     display: flex;
-    grid-area: 1 / 5 / 4 / 7;
+    grid-area: 2 / 2 / 3 / 3;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     border-collapse: collapse;
@@ -44,7 +56,7 @@ body {
 }
 
 #crs-list {
-    grid-area: 4 / 5 / 10 / 7;
+    grid-area: 3 / 2 / 4 / 3;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     overflow: auto;
     border-radius: 5px;
@@ -78,7 +90,7 @@ body {
 }
 
 #logic-buttons {
-    grid-area: 10 / 5 / 11 / 7;
+    grid-area: 4 / 2 / 5 / 3;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -89,16 +101,4 @@ body {
 
 #logic-buttons fieldset {
     border: 0;
-}
-
-#info-block {
-    grid-area: 11 / 1 / 12 / 7;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    padding-left: 20px;
-    background: #fdfdfd;
-}
-
-#info-block h1 {
-    font-size: 20px;
 }
