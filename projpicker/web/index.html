@@ -21,42 +21,36 @@
 <script defer src="projpicker.js"></script>
 </head>
 <body>
-    <div class="parent">
-        <div id="map" class="map"> </div>
-        <div class="crs-info">
-            <table id="crs-info" ></table>
-        </div>
-        <div class="crs-list">
-            <ul id="crs-list"></ul>
-        </div>
-        <form class="logic-buttons" method="POST">
-            <!-- fieldset to group label and button -->
-            <fieldset>
-                <input type="radio" id="and" value="and"
-                       name="logical_op" onclick="sendQuery()" checked>
-                <label for="and">AND</label>
-            </fieldset>
-            <fieldset>
-                <input type="radio" id="or" value="or"
-                       name="logical_op" onclick="sendQuery()">
-                <label for="or">OR</label>
-            </fieldset>
-            <fieldset>
-                <input type="radio" id="xor" value="xor"
-                       name="logical_op" onclick="sendQuery()">
-                <label for="xor">XOR</label>
-            </fieldset>
-        </form>
-        <div class="info-block">
-            <h1>ProjPicker Web</h1>
-            <p>This web application uses
-            <a href="http://projpicker.rtfd.io/">the ProjPicker Python API</a>
-            and provides an interactive user interface to perform spatial
-            querying of Coordinate Reference Systems (CRS). Its development was
-            kindly funded by <a href="https://ung.edu/iesa/">the Institute of
-            Environmental and Spatial Analysis</a> (IESA) at
-            <a href="https://ung.edu/">the University of North Georgia</a>.</p>
-        </div>
+    <div id="map"></div>
+    <table id="crs-info"></table>
+    <ul id="crs-list"></ul>
+    <form id="logic-buttons" method="POST">
+        <!-- fieldset to group label and button -->
+        <fieldset>
+            <input type="radio" id="and" value="and"
+                   name="logical_op" onclick="sendQuery()" checked>
+            <label for="and">AND</label>
+        </fieldset>
+        <fieldset>
+            <input type="radio" id="or" value="or"
+                   name="logical_op" onclick="sendQuery()">
+            <label for="or">OR</label>
+        </fieldset>
+        <fieldset>
+            <input type="radio" id="xor" value="xor"
+                   name="logical_op" onclick="sendQuery()">
+            <label for="xor">XOR</label>
+        </fieldset>
+    </form>
+    <div id="info-block">
+        <h1>ProjPicker Web</h1>
+        <p>This web application uses
+        <a href="http://projpicker.rtfd.io/">the ProjPicker Python API</a>
+        and provides an interactive user interface to perform spatial
+        querying of Coordinate Reference Systems (CRS). Its development was
+        kindly funded by <a href="https://ung.edu/iesa/">the Institute of
+        Environmental and Spatial Analysis</a> (IESA) at
+        <a href="https://ung.edu/">the University of North Georgia</a>.</p>
     </div>
 </body>
 </html>
