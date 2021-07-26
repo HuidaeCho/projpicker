@@ -8,6 +8,7 @@ import http.server
 
 import projpicker as ppik
 
+module_path = os.path.dirname(__file__)
 is_verbose = False
 
 
@@ -132,24 +133,24 @@ def application(environ, start_response):
     response = "Invalid request"
 
     if request_method == "GET":
-        filename = None
+        file_path = None
         if path_info == "/":
-            filename = "index.html"
-        elif path_info in ("/index.html",
+            path_info = "/index.html"
+        if path_info in ("/index.html",
                            "/projpicker.css",
                            "/utils.js",
                            "/projpicker.js"):
-            filename = path_info[1:]
+            file_path = os.path.join(module_path, path_info[1:])
 
-        if filename and os.path.isfile(filename):
+        if file_path and os.path.isfile(file_path):
             status = "200 OK"
-            if filename.endswith(".html"):
+            if file_path.endswith(".html"):
                 content_type = "text/html"
-            elif filename.endswith(".css"):
+            elif file_path.endswith(".css"):
                 content_type = "text/css"
             else:
                 content_type = "text/javascript"
-            with open(filename) as f:
+            with open(file_path) as f:
                 response = f.read()
     elif request_method == "POST" and path_info == "/query":
         content_length = int(environ["CONTENT_LENGTH"])
