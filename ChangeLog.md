@@ -1,8 +1,21 @@
 # Change log
 
 ## HEAD
-Fri Jul 23 03:13:05 2021 -0400
+Sun Jul 25 23:39:38 2021 -0400
 
+* [`44f704a`](https://github.com/HuidaeCho/projpicker/commit/44f704a)  Add PROJPICKER\_DZOOM env variable to control scroll sensitivity
+* [`f0aff7f`](https://github.com/HuidaeCho/projpicker/commit/f0aff7f)  Refresh coordinates on dragging zoom
+* [`aa98e96`](https://github.com/HuidaeCho/projpicker/commit/aa98e96)  dzoom = 1; Zooming using the wheel is too slow; Using the trackpoint can be a little fast
+* [`a90517d`](https://github.com/HuidaeCho/projpicker/commit/a90517d)  Use more specific os.path.isfile() instead of os.path.exists()
+* [`e122a7f`](https://github.com/HuidaeCho/projpicker/commit/e122a7f)  docs: Use - to be consistent
+* [`cc1740a`](https://github.com/HuidaeCho/projpicker/commit/cc1740a)  Mention default values for draw
+* [`81d9c0a`](https://github.com/HuidaeCho/projpicker/commit/81d9c0a)  getosm: Document the API
+* [`7cebd19`](https://github.com/HuidaeCho/projpicker/commit/7cebd19)  Update README.md
+
+## v0.1.13
+Fri Jul 23 03:15:18 2021 -0400
+
+* [`c9d82b7`](https://github.com/HuidaeCho/projpicker/commit/c9d82b7)  v0.1.13: Zoom to dragged bbox/all geoms/world; Bug fixes
 * [`a155f11`](https://github.com/HuidaeCho/projpicker/commit/a155f11)  Support multiple delta zoom levels
 * [`a7e381c`](https://github.com/HuidaeCho/projpicker/commit/a7e381c)  Bbox query string fixed
 * [`ecb6122`](https://github.com/HuidaeCho/projpicker/commit/ecb6122)  Implement draw/zoom to bbox
