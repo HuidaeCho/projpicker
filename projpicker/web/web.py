@@ -98,13 +98,13 @@ def application(environ, start_response):
 
     if request_method == "GET":
         file_path = None
-        if path_info == "/":
-            path_info = "/index.html"
-        if path_info in ("/index.html",
-                         "/projpicker.css",
-                         "/utils.js",
-                         "/projpicker.js"):
-            file_path = os.path.join(module_path, path_info[1:])
+        basename = os.path.basename(path_info)
+        if basename == "":
+            basename = "index.html"
+        if basename in ("index.html",
+                        "projpicker.css",
+                        "projpicker.js"):
+            file_path = os.path.join(module_path, basename)
 
         if file_path and os.path.isfile(file_path):
             status = "200 OK"
