@@ -49,6 +49,7 @@ if __package__:
         from . import gui
     except:
         has_gui = False
+    from . import web
 else:
     from common import (pos_float_pat, coor_sep, bbox_schema, bbox_columns,
                         get_float, BBox)
@@ -58,6 +59,7 @@ else:
         import gui
     except:
         has_gui = False
+    import web
 
 # module path
 module_path = os.path.dirname(__file__)
@@ -2878,12 +2880,29 @@ def parse():
                 "south, north, west, and east (bbox); each point or bbox is a "
                 "separate argument and multiple polys are separated by any "
                 "non-coordinate argument such as a comma")
+    # web server
+    parser.add_argument(
+            "-S",
+            "--server",
+            nargs="?",
+            const=web.default_server,
+            help="start the standalone web server; optionally, specify the IP "
+                "address and port on which the server listens (default: "
+                f"{web.default_server}); other options except --client are "
+                "ignored")
+    parser.add_argument(
+            "-c",
+            "--client",
+            action="store_true",
+            help="start a new client in the user's default browser; only used "
+                "with the web server")
     return parser
 
 
 def main():
     """
-    Implement the command-line interface to projpicker().
+    Implement the command-line interface to projpicker() and the standalone web
+    server.
     """
 
     args = parse().parse_args()
@@ -2913,6 +2932,9 @@ def main():
         start_gui = None
         single = False
     geoms = args.geometry
+    # web server
+    server = args.server
+    client = args.client
 
     if version:
         print(
@@ -2922,7 +2944,7 @@ Copyright (C) 2021 Huidae Cho and Owen Smith, IESA, UNG
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.""")
-    else:
+    elif server is None:
         projpicker(
             geoms,
             infile,
@@ -2939,6 +2961,8 @@ There is NO WARRANTY, to the extent permitted by law.""")
             projpicker_db,
             proj_db,
             create)
+    else:
+        web.start(server, client)
 
 
 ################################################################################

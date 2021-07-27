@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""
+This module implements the standalone HTTP server, WSGI and CGI interfaces to
+the ProjPicker Web client, index.html.
+"""
+
 import argparse
 import os
 import sys
@@ -13,6 +18,7 @@ module_path = os.path.dirname(__file__)
 
 default_address = "localhost"
 default_port = 8000
+default_server = f"{default_address}:{default_port}"
 
 
 # https://gist.github.com/dideler/3814182
@@ -203,6 +209,27 @@ def run_application(
 
 
 def start(server=f"{default_address}:{default_port}", start_client=False):
+    """
+    Start the standalone HTTP server for the ProjPicker Web client. It should
+    be only used for localhost desktop uses because it uses the standard
+    http.server module, which is not recommended for production because it only
+    implements basic security checks
+    (https://docs.python.org/3/library/http.server.html). This server does not
+    go into the background and uses the PROJPICKER_VERBOSE environment variable
+    to verbosely print debugging messages. Set it to YES to print requested
+    queries, parsed geometries, and queried CRSs. Do not set it or set it to NO
+    to avoid these extra messages.
+
+    Args:
+        server (str): Server address and port number joined by a colon.
+            Defaults to localhost:8000.
+        start_client (bool): Whether or not to start the client in the browser.
+            Defaults to False.
+    """
+    server = server.strip()
+    if not server:
+        raise Exception("server:port is not specified")
+
     if ":" in server:
         address, port, *_ = server.split(":")
         if not address:
@@ -215,21 +242,24 @@ def start(server=f"{default_address}:{default_port}", start_client=False):
         else:
             port = default_port
 
-    httpd = http.server.HTTPServer((address, port), HTTPRequestHandler)
+    try:
+        httpd = http.server.HTTPServer((address, port), HTTPRequestHandler)
+    except:
+        raise Exception(f"Failed to start HTTP server on {server}")
 
     url = f"http://{address}:{port}"
     if start_client is True:
         webbrowser.open(url)
 
     try:
-        print_color(Color.OKGREEN, f"Starting httpd server on {url}")
+        print_color(Color.OKGREEN, f"Starting HTTP server on {url}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        print_color(Color.FAIL, f"\nClosed httpd server on {url}")
+        print_color(Color.FAIL, f"\nClosed HTTP server on {url}")
 
 
-if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
+def cgi():
     # run CGI
     SysStdinEncode = collections.namedtuple("SysStdinEncode", "read")
 
@@ -241,24 +271,30 @@ if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
         lambda: sys.stdout.write("\r\n"),
         lambda data: sys.stdout.write(data.decode()),
         sys.stdout.flush,
-        os.environ["HTTPS"] == "on")
-elif __name__ == "__main__":
+        os.environ.get("HTTPS", "off") == "on")
+
+
+def main():
     # run CLI
     parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
-        "-S",
-        "--server",
-        default="localhost:8000",
-        help="specify the IP address and port on which the server listens "
-            "(default: localhost:8000)",
-    )
+            "-S",
+            "--server",
+            default=default_server,
+            help="specify the IP address and port on which the server listens "
+                f"(default: {default_server})")
     parser.add_argument(
-        "-c",
-        "--client",
-        action="store_true",
-        help="start a new client in the user's default browser",
-    )
+            "-c",
+            "--client",
+            action="store_true",
+            help="start a new client in the user's default browser")
     args = parser.parse_args()
 
     start(server=args.server, start_client=args.client)
+
+
+if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
+    sys.exit(cgi())
+elif __name__ == "__main__":
+    sys.exit(main())
 # else run WSGI
