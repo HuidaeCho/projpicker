@@ -293,8 +293,8 @@ def main():
     start(server=args.server, start_client=args.client)
 
 
-if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
-    sys.exit(cgi())
-elif __name__ == "__main__":
-    sys.exit(main())
-# else run WSGI
+if __name__ == "__main__":
+    if os.environ.get("GATEWAY_INTERFACE") == "CGI/1.1":
+        sys.exit(cgi())
+    else:
+        sys.exit(main())
