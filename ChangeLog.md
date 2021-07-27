@@ -1,8 +1,10 @@
 # Change log
 
 ## HEAD
-Tue Jul 27 01:07:30 2021 -0400
+Tue Jul 27 01:32:01 2021 -0400
 
+* [`4997cb9`](https://github.com/HuidaeCho/projpicker/commit/4997cb9)  v0.2.0: Handle subdir url
+* [`01037d3`](https://github.com/HuidaeCho/projpicker/commit/01037d3)  v0.2.0: Support web server/WSGI/CGI
 * [`a071eb2`](https://github.com/HuidaeCho/projpicker/commit/a071eb2)  Fix recursive cgi() calls
 * [`e1356c7`](https://github.com/HuidaeCho/projpicker/commit/e1356c7)  WIP: Web app with standard libraries (#40)
 * [`47e14c8`](https://github.com/HuidaeCho/projpicker/commit/47e14c8)  Update README.md
