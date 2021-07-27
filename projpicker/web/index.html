@@ -1,0 +1,66 @@
+<!-- vim: set tabstop=4 shiftwidth=4 expandtab: -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ProjPicker Web</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.css" integrity="sha512-gc3xjCmIy673V6MyOAZhIW93xhM9ei1I+gLbmFjUHIjocENRsLX/QUE1htk5q1XV2D/iie/VQ8DXI6Vu8bexvQ==" crossorigin="" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap">
+
+<link rel="stylesheet" href="projpicker.css">
+
+<script defer src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js" integrity="sha512-Grx+plkced1H9wNDvyEhO4EVPMgWmkCAlicKaCyu6rtLUr002kZj543DqBB1NULXSg0dFYur+UHwRc25FCeD+g==" crossorigin=""></script>
+
+<script src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
+
+<script defer src="projpicker.js"></script>
+</head>
+<body>
+    <div id="info-block">
+        <h1>
+            <a href="https://projpicker.rtfd.io/">ProjPicker</a> Web
+            <a href="https://github.com/HuidaeCho/projpicker"><span class="iconify" data-icon="fa-brands:github"></span></a>
+        </h1>
+        <div class="desktop">
+            This web application provides an interactive user interface to
+            perform spatial querying of coordinate reference systems (CRS)
+            using
+            <a href="https://projpicker.rtfd.io/">the ProjPicker Python API</a>.
+            Its development was kindly funded by
+            <a href="https://ung.edu/iesa/">the Institute of Environmental and Spatial Analysis</a> (IESA) at
+            <a href="https://ung.edu/">the University of North Georgia</a>.
+        </div>
+    </div>
+    <div id="map"></div>
+    <div id="crs-info">
+        <h2 id="crs-name"></h2>
+        <table id="crs-table"></table>
+    </div>
+    <ul id="crs-list"></ul>
+    <form id="logic-buttons" method="POST">
+        <!-- fieldset to group label and button -->
+        <fieldset>
+            <input type="radio" id="and" value="and"
+                   name="logical_op" onclick="sendQuery()" checked>
+            <label for="and">AND</label>
+        </fieldset>
+        <fieldset>
+            <input type="radio" id="or" value="or"
+                   name="logical_op" onclick="sendQuery()">
+            <label for="or">OR</label>
+        </fieldset>
+        <fieldset>
+            <input type="radio" id="xor" value="xor"
+                   name="logical_op" onclick="sendQuery()">
+            <label for="xor">XOR</label>
+        </fieldset>
+    </form>
+</body>
+</html>
