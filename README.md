@@ -41,7 +41,7 @@ that wraps around this project is available.
 
 See [here](https://github.com/HuidaeCho/projpicker/blob/main/ChangeLog.md).
 
-## TODO
+## Ideas
 
 1. [JavaScript API](https://github.com/HuidaeCho/projpicker-js)
 2. Client-only web UI
