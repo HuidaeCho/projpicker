@@ -32,7 +32,13 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3",
-    package_data={"projpicker": ["VERSION", "projpicker.db"]},
+    package_data={"projpicker": [
+        "VERSION",
+        "projpicker.db",
+        "web/index.html",
+        "web/projpicker.css",
+        "web/projpicker.js",
+    ]},
     entry_points={"console_scripts": ["projpicker=projpicker:main"]},
 )
 EOT
