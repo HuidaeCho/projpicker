@@ -36,6 +36,8 @@ that wraps around this project is available.
 2. Run it from Android
 3. Install Python: `pkg install python`
 4. Install ProjPicker: `pip install projpicker`
+5. Start the ProjPicker web server: `projpicker -S`
+6. Open `http://localhost:8000/` in the browser
 
 ## Change log
 
