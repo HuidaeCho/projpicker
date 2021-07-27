@@ -1,8 +1,14 @@
 # Change log
 
 ## HEAD
-Sun Jul 25 23:39:38 2021 -0400
+Tue Jul 27 01:07:30 2021 -0400
 
+* [`a071eb2`](https://github.com/HuidaeCho/projpicker/commit/a071eb2)  Fix recursive cgi() calls
+* [`e1356c7`](https://github.com/HuidaeCho/projpicker/commit/e1356c7)  WIP: Web app with standard libraries (#40)
+* [`47e14c8`](https://github.com/HuidaeCho/projpicker/commit/47e14c8)  Update README.md
+* [`527c555`](https://github.com/HuidaeCho/projpicker/commit/527c555)  Define PROJPICKER\_VERBOSE for verbosity
+* [`531cbc4`](https://github.com/HuidaeCho/projpicker/commit/531cbc4)  Update README.md
+* [`6dc8f70`](https://github.com/HuidaeCho/projpicker/commit/6dc8f70)  changelog
 * [`44f704a`](https://github.com/HuidaeCho/projpicker/commit/44f704a)  Add PROJPICKER\_DZOOM env variable to control scroll sensitivity
 * [`f0aff7f`](https://github.com/HuidaeCho/projpicker/commit/f0aff7f)  Refresh coordinates on dragging zoom
 * [`aa98e96`](https://github.com/HuidaeCho/projpicker/commit/aa98e96)  dzoom = 1; Zooming using the wheel is too slow; Using the trackpoint can be a little fast
