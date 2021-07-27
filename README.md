@@ -14,6 +14,8 @@ See [its documentation](https://projpicker.readthedocs.io/en/latest/).
 The project uses a copy of [GetOSM](https://github.com/HuidaeCho/getosm) to
 download OpenStreetMap tiles.
 
+ProjPicker Web is online at https://projpicker.pythonanywhere.com/.
+
 For [GRASS GIS](https://grass.osgeo.org/), a new module
 [g.projpicker](https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html)
 that wraps around this project is available.
