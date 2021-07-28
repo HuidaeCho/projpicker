@@ -94,7 +94,7 @@ def message(*args, end=None):
     Print args to stderr immediately.
 
     Args:
-        args (str): Arguments to print. Passed to print().
+        *args (arguments): Arguments to print. Passed to print().
         end (str): Passed to print(). Defaults to None.
     """
     print(*args, end=end, file=sys.stderr, flush=True)

@@ -24,6 +24,9 @@ default_server = f"{default_address}:{default_port}"
 # https://gist.github.com/dideler/3814182
 # https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
 class Color:
+    """
+    Define color constants using ANSI color codes.
+    """
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -36,12 +39,23 @@ class Color:
 
 
 class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    """
+    Implement the HTTP request handler for the standalone server.
+    """
     # https://stackoverflow.com/a/52531444/16079666
+    # how to specify a target directory?
     def __init__(self, *args, **kwargs):
+        """
+        Implement the constructor of the HTTP request handler.
+        """
         return http.server.SimpleHTTPRequestHandler.__init__(
                 self, *args, directory=module_path, **kwargs)
 
     def do_POST(self):
+        """
+        Override the do_POST method of the base class,
+        http.server.SimpleHTTPRequestHandler.
+        """
         if self.path.endswith("/query"):
             environ = {}
             environ["REMOTE_ADDR"]    = self.client_address
@@ -61,33 +75,80 @@ class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def verbose_args(*args):
+    """
+    Print arguments if verbose printing is requested.
+
+    Args:
+        *args (arguments): Arguments to print.
+    """
     if ppik.is_verbose():
         ppik.message(*args)
 
 
 def verbose_color(color, *args):
+    """
+    Print colorized arguments if verbose printing is requested.
+
+    Args:
+        color (Color constant): Color for arguments.
+        *args (arguments): Arguments to print.
+    """
     verbose_args(color + "".join(*args) + Color.ENDC)
 
 
 def verbose_line():
+    """
+    Print a bold line that is 79 columns wide if verbose printing is requested.
+    """
     verbose_color(Color.BOLD, "-" * 79)
 
 
 def verbose_header(*args):
+    """
+    Print arguments in bold if verbose printing is requested.
+
+    Args:
+        *args (arguments): Arguments to print.
+    """
     verbose_color(Color.BOLD, *args)
 
 
 def verbose_key_value(key, value):
+    """
+    Print a key-value pair if verbose printing is requested.
+
+    Args:
+        key (str): Key string.
+        value (any type): Value object.
+    """
     verbose_args(Color.BOLD + key + ": " + Color.ENDC + str(value))
 
 
 def print_color(color, *args):
+    """
+    Print colorized arguments.
+
+    Args:
+        color (Color constant): Color for arguments.
+        *args (arguments): Arguments to print.
+    """
     ppik.message(color + "".join(*args) + Color.ENDC)
 
 
 # Python Web Server Gateway Interface (WSGI)
 # https://www.python.org/dev/peps/pep-0333/#the-application-framework-side
 def application(environ, start_response):
+    """
+    Implement the application function for the Web Server Gateway Interface
+    (WSGI).
+
+    Args:
+        environ (dict): Dictionary of environment variables.
+        start_response (function): Function to start a response.
+
+    Returns:
+        list: List of bytes responses.
+    """
     remote_addr = environ["REMOTE_ADDR"]
     request_method = environ["REQUEST_METHOD"]
     path_info = environ.get("PATH_INFO", environ.get("REQUEST_URI"))
@@ -151,6 +212,28 @@ def run_application(
         write_data,
         flush_data,
         https=False):
+    """
+    Run the main application function for the standalone HTTP server and Common
+    Gateway Interface (CGI).
+
+    Args:
+        environ (dict): Dictionary of environment variables.
+        reader (function): Function to read data from the client. It should be
+            able to read bytes data.
+        send_response (function): Function to send the response to the client.
+        send_header (function): Function to send headers to the client.
+        end_headers (function): Function to stop sending headers to the client.
+        write_data (function): Function to write data to the client. It should
+            be able to write bytes data.
+        flush_data (function): Function to top writing data to the client.
+        https (bool): Whether or not the HTTP connection is secured. Defaults
+            to False.
+
+    Raises:
+        AssertionError: If writing data is attempted before a new response is
+            triggered or headers are being sent more than once.
+        Exception: If exceptions are raised by the start_response() caller.
+    """
     # https://www.python.org/dev/peps/pep-0333/#the-server-gateway-side
     def write(data):
         if not headers_set:
@@ -225,6 +308,10 @@ def start(server=f"{default_address}:{default_port}", start_client=False):
             Defaults to localhost:8000.
         start_client (bool): Whether or not to start the client in the browser.
             Defaults to False.
+
+    Raises:
+        Exception: If the server argument is not specified or the start fails
+        to start.
     """
     server = server.strip()
     if not server:
@@ -260,7 +347,9 @@ def start(server=f"{default_address}:{default_port}", start_client=False):
 
 
 def cgi():
-    # run CGI
+    """
+    Implement the Common Gateway Interface (CGI) of the web module.
+    """
     SysStdinEncode = collections.namedtuple("SysStdinEncode", "read")
 
     run_application(
@@ -275,7 +364,9 @@ def cgi():
 
 
 def main():
-    # run CLI
+    """
+    Implement the command-line interface to the standalone HTTP server.
+    """
     parser = argparse.ArgumentParser(description="ProjPicker Web Server")
     parser.add_argument(
             "-S",
