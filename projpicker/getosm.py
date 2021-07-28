@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 # Project:  GetOSM <https://github.com/HuidaeCho/getosm>
 # Authors:  Huidae Cho
 # Since:    July 11, 2021
@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-################################################################################
+###############################################################################
 """
 This module provides an OpenStreetMap downloader.
 """

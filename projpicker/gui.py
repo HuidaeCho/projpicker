@@ -901,8 +901,8 @@ def start(
     # buttons
     ttk.Button(crs_info_bottom_frame, text="Select", command=select).pack(
                side=tk.LEFT, expand=True)
-    ttk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
-               side=tk.LEFT, expand=True)
+    ttk.Button(crs_info_bottom_frame, text="Cancel",
+               command=root.destroy).pack(side=tk.LEFT, expand=True)
 
 
     ###########

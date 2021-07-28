@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-################################################################################
+###############################################################################
 # Project:  ProjPicker (Projection Picker)
 #           <https://github.com/HuidaeCho/projpicker>
 # Authors:  Huidae Cho, Owen Smith
@@ -22,7 +22,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-################################################################################
+###############################################################################
 """
 This module implements the CLI and API of ProjPicker.
 """
@@ -86,7 +86,7 @@ GeomBBox = collections.namedtuple("GeomBBox", "is_latlon type geom bbox")
 Geom = collections.namedtuple("Geom", "is_latlon type geom")
 
 
-################################################################################
+###############################################################################
 # generic
 
 def message(*args, end=None):
@@ -242,7 +242,7 @@ def get_separator(separator):
     return separator
 
 
-################################################################################
+###############################################################################
 # Earth parameters
 
 def calc_xy_at_lat_scaling(lat):
@@ -389,7 +389,7 @@ def calc_area(bbox):
     return area
 
 
-################################################################################
+###############################################################################
 # version and default paths
 
 def get_version():
@@ -448,7 +448,7 @@ def get_proj_db(proj_db=None):
     return proj_db
 
 
-################################################################################
+###############################################################################
 # projpicker.db creation
 
 def find_unit(proj_table, crs_auth, crs_code, proj_cur):
@@ -699,8 +699,8 @@ def create_projpicker_db(
                     # XXX: might be incorrect!
                     b, t, l, r = s, n, w, e
                 else:
-                    b, t, l, r = transform_latlon_bbox(bbox,
-                                                       f"{crs_auth}:{crs_code}")
+                    b, t, l, r = transform_latlon_bbox(
+                                                bbox, f"{crs_auth}:{crs_code}")
 
                 sql = """INSERT INTO bbox
                          VALUES (?, ?,
@@ -822,7 +822,7 @@ def read_bbox_db(
     return outbbox
 
 
-################################################################################
+###############################################################################
 # coordinate systems
 
 def set_coordinate_system(coor_sys="latlon"):
@@ -884,7 +884,7 @@ def is_latlon():
     return coor_mod == coor_latlon
 
 
-################################################################################
+###############################################################################
 # parsing
 
 def parse_points(points):
@@ -1245,7 +1245,7 @@ def parse_mixed_geoms(geoms):
     return outgeoms
 
 
-################################################################################
+###############################################################################
 # bbox operators
 
 def bbox_not(bbox, bbox_all):
@@ -1364,7 +1364,7 @@ def sort_bbox(bbox):
                              x.usage_auth_name, x.usage_code,
                              x.extent_auth_name, x.extent_code))
 
-################################################################################
+###############################################################################
 # geometry operators
 
 def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
@@ -1458,7 +1458,7 @@ def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
     return outbbox
 
 
-################################################################################
+###############################################################################
 # queries
 
 def query_point(
@@ -2437,7 +2437,7 @@ def query_mixed_geoms(
     return outbbox
 
 
-################################################################################
+###############################################################################
 # conversions
 
 def stringify_bbox(bbox, header=True, separator="|"):
@@ -2528,7 +2528,7 @@ def extract_srids(bbox):
     return srids
 
 
-################################################################################
+###############################################################################
 # plain printing
 
 def print_bbox(bbox, outfile=sys.stdout, header=True, separator="|"):
@@ -2573,7 +2573,7 @@ def print_srids(bbox, outfile=sys.stdout, separator="\n"):
     print(file=outfile)
 
 
-################################################################################
+###############################################################################
 # main
 
 def projpicker(
@@ -2775,7 +2775,7 @@ def projpicker(
     return bbox
 
 
-################################################################################
+###############################################################################
 # command-line interface
 
 def parse():
@@ -2852,8 +2852,8 @@ def parse():
             "-i", "--input",
             default="-",
             help="input geometry file path (default: stdin); use - for stdin; "
-                "appended to geometries from arguments unless it is stdin with "
-                "no incoming data")
+                "appended to geometries from arguments unless it is stdin "
+                "with no incoming data")
     parser.add_argument(
             "-o", "--output",
             default="-",
@@ -2965,7 +2965,7 @@ There is NO WARRANTY, to the extent permitted by law.""")
         web.start(server, client)
 
 
-################################################################################
+###############################################################################
 # go!
 
 set_latlon()
