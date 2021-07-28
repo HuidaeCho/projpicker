@@ -3,8 +3,8 @@ This module implements the GUI of ProjPicker.
 """
 
 import tkinter as tk
-from tkinter import filedialog
 from tkinter import ttk
+from tkinter import filedialog
 import os
 import textwrap
 import webbrowser
@@ -322,6 +322,24 @@ def start(
         zoomer.cancel_event = cancel_event
         zoomer.checker = map_canvas.after_idle(check_zoomer)
         zoomer.start()
+
+    def import_query():
+        f = filedialog.askopenfile(title="Import query",
+                                   filetypes=(("ProjPicker files", "*.ppik"),
+                                              ("All files", "*.*")))
+        if f:
+            query_text.delete("1.0", tk.END)
+            query_text.insert(tk.INSERT, f.read())
+            f.close()
+
+    def export_query():
+        f = filedialog.asksaveasfile(title="Export query",
+                                     filetypes=(("ProjPicker files", "*.ppik"),
+                                                ("All files", "*.*")))
+        if f:
+            query_to_export = query_text.get("1.0", tk.END)
+            f.write(query_to_export)
+            f.close()
 
     def query():
         nonlocal bbox
@@ -791,54 +809,19 @@ def start(
     query_top_frame = ttk.Frame(query_frame)
     query_top_frame.pack(fill=tk.BOTH, expand=True)
 
-
-
     # text for query
     query_text = tk.Text(query_top_frame, width=20, height=1, wrap=tk.NONE)
     query_text.insert(tk.INSERT, query_string)
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-
-    # Pop up menu
-    def query_popup_menu(e):
-        menu.post(e.x_root, e.y_root)
-
-    def export_query():
-        filename = tk.filedialog.asksaveasfile(mode="w",
-                                               initialdir = "./",
-                                               title = "Import Query",
-                                               filetypes = (("Text files",
-                                                            "*.ppik"),
-                                                           ("all files",
-                                                            "*.*")))
-
-        query_to_export = query_text.get("1.0", tk.END)
-        # tk.filedialog.asksaveasfile opens file as a IO class in write mode
-        # so no need to open.
-        with filename as file:
-            file.write(query_to_export)
-            file.close()
-
-    def import_query():
-        filename = tk.filedialog.askopenfilename(initialdir = "./",
-                                                 title = "Import Query",
-                                                 filetypes = (("Text files",
-                                                            "*.ppik"),
-                                                           ("all files",
-                                                            "*.*")))
-        query_text.delete("1.0", tk.END)
-        # tk.filedialog.askopenfilename only returns the path string of the
-        # selected file so it needs to be opened.
-        file = open(filename, 'r')
-        for line in file.readlines():
-            query_text.insert(tk.INSERT, str(line))
-
+    # pop-up menu
     menu = tk.Menu(root, tearoff=0)
-    menu.add_command(label="Import", command=import_query)
-    menu.add_command(label="Export", command=export_query)
+    menu.add_command(label="Import query", command=import_query)
+    menu.add_command(label="Export query", command=export_query)
 
-    # Bind to right click
-    query_text.bind("<Button-3>", query_popup_menu)
+    # bind to right click
+    query_text.bind("<Button-3>", lambda e: menu.post(e.x_root, e.y_root))
+    query_text.bind("<Button-1>", lambda e: menu.unpost())
 
     # vertical scroll bar for query
     query_vscrollbar = ttk.Scrollbar(query_top_frame)
