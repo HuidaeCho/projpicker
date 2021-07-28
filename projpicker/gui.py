@@ -4,6 +4,7 @@ This module implements the GUI of ProjPicker.
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import os
 import textwrap
 import webbrowser
@@ -359,6 +360,21 @@ def start(
         zoomer.checker = map_canvas.after_idle(check_zoomer)
         zoomer.start()
 
+    def import_query():
+        f = filedialog.askopenfile(title="Import query", filetypes=file_types)
+        if f:
+            query_text.delete("1.0", tk.END)
+            query_text.insert(tk.INSERT, f.read())
+            f.close()
+
+    def export_query():
+        f = filedialog.asksaveasfile(title="Export query",
+                                     filetypes=file_types)
+        if f:
+            query_to_export = query_text.get("1.0", tk.END)
+            f.write(query_to_export)
+            f.close()
+
     def query():
         nonlocal bbox
 
@@ -682,6 +698,7 @@ def start(
     root.bind_class("Text", "<Control-a>",
                     lambda e: e.widget.tag_add(tk.SEL, "1.0", tk.END))
 
+
     ###########
     # top frame
     map_canvas_width = root_width
@@ -831,6 +848,16 @@ def start(
     query_text.insert(tk.INSERT, query_string)
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+    # pop-up menu
+    file_types = (("ProjPicker query files", "*.ppik"), ("All files", "*.*"))
+    menu = tk.Menu(root, tearoff=0)
+    menu.add_command(label="Import query", command=import_query)
+    menu.add_command(label="Export query", command=export_query)
+
+    # bind to right click
+    query_text.bind("<Button-3>", lambda e: menu.post(e.x_root, e.y_root))
+    query_text.bind("<Button-1>", lambda e: menu.unpost())
+
     # vertical scroll bar for query
     query_vscrollbar = AutoScrollbar(query_top_frame)
     query_vscrollbar.config(command=query_text.yview)
@@ -874,6 +901,7 @@ def start(
                side=tk.LEFT, expand=True)
     ttk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
                side=tk.LEFT, expand=True)
+
 
     ###########
     # log frame
@@ -920,7 +948,12 @@ def start(
             Geometry variables
             ==================
             To define a geometry variable, type and highlight
-            a name, then create a geometry.
+            a name in the query builder, then create a geometry.
+
+            Query import & export
+            =====================
+            Query files (*.ppik) can be imported or exported
+            by right clicking on the query builder.
 
             Documentation
             =============
@@ -934,7 +967,12 @@ def start(
     help_text.tag_bind(tag_doc, "<Button-1>",
                        lambda e: webbrowser.open(doc_url))
     help_text.config(state=tk.DISABLED)
-    help_text.pack(fill=tk.BOTH, expand=True)
+    help_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    help_vscrollbar = ttk.Scrollbar(help_frame)
+    help_vscrollbar.config(command=help_text.yview)
+    help_vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    help_text.config(yscrollcommand=help_vscrollbar.set)
 
     # label for coordinates
     coor_label = ttk.Label(bottom_right_notebook)
