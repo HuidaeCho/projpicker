@@ -374,8 +374,6 @@ def start(
             # https://stackoverflow.com/a/66753640/16079666
             # text widget always appends a new line at the end
             query_to_export = query_text.get("1.0", "end-1c")
-            if query_to_export[-1] == "\n":
-                print("NEW")
             f.write(query_to_export)
             f.close()
 
