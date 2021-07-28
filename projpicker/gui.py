@@ -813,7 +813,9 @@ def start(
                                                             "*.*")))
 
         query_to_export = query_text.get("1.0", tk.END)
-        filename.write(query_to_export)
+        with filename as file:
+            file.write(query_to_export)
+            file.close()
 
     def import_query():
         filename = tk.filedialog.askopenfilename(initialdir = "./",
@@ -822,7 +824,9 @@ def start(
                                                             "*.ppik"),
                                                            ("all files",
                                                             "*.*")))
-        for line in filename:
+        query_text.delete("1.0", tk.END)
+        file = open(filename, 'r')
+        for line in file.readlines():
             query_text.insert(tk.INSERT, str(line))
 
     menu = tk.Menu(root, tearoff=0)
@@ -923,6 +927,11 @@ def start(
             ==================
             To define a geometry variable, type and highlight
             a name, then create a geometry.
+
+            Import & Export
+            ===============
+            Query files (*.ppik) can be imported with exported
+            by right clicking on the query builder widget.
 
             Documentation
             =============
