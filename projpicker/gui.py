@@ -930,8 +930,8 @@ def start(
 
             Import & Export
             ===============
-            Query files (*.ppik) can be imported with exported
-            by right clicking on the query builder widget.
+            Query files (*.ppik) can be imported and exported
+            by right clicking on the Query builder widget.
 
             Documentation
             =============
