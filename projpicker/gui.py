@@ -853,10 +853,10 @@ def start(
     menu = tk.Menu(root, tearoff=0)
     menu.add_command(label="Import query", command=import_query)
     menu.add_command(label="Export query", command=export_query)
-
-    # bind to right click
     query_text.bind("<Button-3>", lambda e: menu.post(e.x_root, e.y_root))
-    query_text.bind("<Button-1>", lambda e: menu.unpost())
+    # left click or escape anywhere to close the menu
+    root.bind("<Button-1>", lambda e: menu.unpost())
+    root.bind("<Escape>", lambda e: menu.unpost())
 
     # vertical scroll bar for query
     query_vscrollbar = AutoScrollbar(query_top_frame)
