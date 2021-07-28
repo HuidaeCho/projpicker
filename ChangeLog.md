@@ -1,8 +1,32 @@
 # Change log
 
 ## HEAD
-Tue Jul 27 01:32:01 2021 -0400
+Wed Jul 28 19:49:48 2021 -0400
 
+* [`4182e82`](https://github.com/HuidaeCho/projpicker/commit/4182e82)  Strict 79 column wrapping
+* [`cdb4fe3`](https://github.com/HuidaeCho/projpicker/commit/cdb4fe3)  Delete debugging lines
+* [`2c2bef3`](https://github.com/HuidaeCho/projpicker/commit/2c2bef3)  Repeating export/import keeps adding a new line; Fix it
+* [`e4f04af`](https://github.com/HuidaeCho/projpicker/commit/e4f04af)  Both escape and button-1 anywhere to close the menu
+* [`ca4068d`](https://github.com/HuidaeCho/projpicker/commit/ca4068d)  Squeeze help in one screen
+* [`eacc9d5`](https://github.com/HuidaeCho/projpicker/commit/eacc9d5)  Use AutoScrollbar for help
+* [`1c43537`](https://github.com/HuidaeCho/projpicker/commit/1c43537)  Export/Import context menu  (#46)
+* [`11a2552`](https://github.com/HuidaeCho/projpicker/commit/11a2552)  Fully document the web module
+* [`c6e17e2`](https://github.com/HuidaeCho/projpicker/commit/c6e17e2)  Add web module to docs
+* [`d9063cb`](https://github.com/HuidaeCho/projpicker/commit/d9063cb)  Fix forgetting/packing orders
+* [`1030ede`](https://github.com/HuidaeCho/projpicker/commit/1030ede)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`dbc6e81`](https://github.com/HuidaeCho/projpicker/commit/dbc6e81)  Implement auto-hiding scrollbars
+* [`029e4b8`](https://github.com/HuidaeCho/projpicker/commit/029e4b8)  Core GUI documentation
+* [`813073a`](https://github.com/HuidaeCho/projpicker/commit/813073a)  GUI: Replace tk widgets with ttk widgets when possible for better user experience
+* [`df00cba`](https://github.com/HuidaeCho/projpicker/commit/df00cba)  Drop only (sounds negative)
+* [`f78f66b`](https://github.com/HuidaeCho/projpicker/commit/f78f66b)  Android standalone web usage
+* [`99e2390`](https://github.com/HuidaeCho/projpicker/commit/99e2390)  TODO to Ideas
+* [`597f16a`](https://github.com/HuidaeCho/projpicker/commit/597f16a)  Update subprojects
+* [`c975126`](https://github.com/HuidaeCho/projpicker/commit/c975126)  Update package.sh
+
+## v0.2.0
+Tue Jul 27 01:32:40 2021 -0400
+
+* [`2fc6334`](https://github.com/HuidaeCho/projpicker/commit/2fc6334)  ChangeLog
 * [`4997cb9`](https://github.com/HuidaeCho/projpicker/commit/4997cb9)  v0.2.0: Handle subdir url
 * [`01037d3`](https://github.com/HuidaeCho/projpicker/commit/01037d3)  v0.2.0: Support web server/WSGI/CGI
 * [`a071eb2`](https://github.com/HuidaeCho/projpicker/commit/a071eb2)  Fix recursive cgi() calls
