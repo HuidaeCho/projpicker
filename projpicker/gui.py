@@ -911,12 +911,12 @@ def start(
             Geometry variables
             ==================
             To define a geometry variable, type and highlight
-            a name, then create a geometry.
+            a name in the query builder, then create a geometry.
 
-            Import & Export
-            ===============
-            Query files (*.ppik) can be imported and exported
-            by right clicking on the Query builder widget.
+            Query import & export
+            =====================
+            Query files (*.ppik) can be imported or exported
+            by right clicking on the query builder.
 
             Documentation
             =============
@@ -930,7 +930,12 @@ def start(
     help_text.tag_bind(tag_doc, "<Button-1>",
                        lambda e: webbrowser.open(doc_url))
     help_text.config(state=tk.DISABLED)
-    help_text.pack(fill=tk.BOTH, expand=True)
+    help_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    help_vscrollbar = ttk.Scrollbar(help_frame)
+    help_vscrollbar.config(command=help_text.yview)
+    help_vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    help_text.config(yscrollcommand=help_vscrollbar.set)
 
     # label for coordinates
     coor_label = ttk.Label(bottom_right_notebook)
