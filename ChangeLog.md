@@ -1,9 +1,7 @@
 # Change log
 
-## HEAD
-Wed Jul 28 19:49:48 2021 -0400
-
-* [`4182e82`](https://github.com/HuidaeCho/projpicker/commit/4182e82)  Strict 79 column wrapping
+* [`acc1545`](https://github.com/HuidaeCho/projpicker/commit/acc1545)  (HEAD -> main) changelog
+* [`4182e82`](https://github.com/HuidaeCho/projpicker/commit/4182e82)  (origin/main, origin/HEAD) Strict 79 column wrapping
 * [`cdb4fe3`](https://github.com/HuidaeCho/projpicker/commit/cdb4fe3)  Delete debugging lines
 * [`2c2bef3`](https://github.com/HuidaeCho/projpicker/commit/2c2bef3)  Repeating export/import keeps adding a new line; Fix it
 * [`e4f04af`](https://github.com/HuidaeCho/projpicker/commit/e4f04af)  Both escape and button-1 anywhere to close the menu
