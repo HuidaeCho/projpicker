@@ -324,9 +324,7 @@ def start(
         zoomer.start()
 
     def import_query():
-        f = filedialog.askopenfile(title="Import query",
-                                   filetypes=(("ProjPicker files", "*.ppik"),
-                                              ("All files", "*.*")))
+        f = filedialog.askopenfile(title="Import query", filetypes=file_types)
         if f:
             query_text.delete("1.0", tk.END)
             query_text.insert(tk.INSERT, f.read())
@@ -334,8 +332,7 @@ def start(
 
     def export_query():
         f = filedialog.asksaveasfile(title="Export query",
-                                     filetypes=(("ProjPicker files", "*.ppik"),
-                                                ("All files", "*.*")))
+                                     filetypes=file_types)
         if f:
             query_to_export = query_text.get("1.0", tk.END)
             f.write(query_to_export)
@@ -815,6 +812,7 @@ def start(
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # pop-up menu
+    file_types = (("ProjPicker query files", "*.ppik"), ("All files", "*.*"))
     menu = tk.Menu(root, tearoff=0)
     menu.add_command(label="Import query", command=import_query)
     menu.add_command(label="Export query", command=export_query)
@@ -917,8 +915,8 @@ def start(
 
             Import & Export
             ===============
-            Query files (*.ppik) can be imported with exported
-            by right clicking on the query builder widget.
+            Query files (*.ppik) can be imported and exported
+            by right clicking on the Query builder widget.
 
             Documentation
             =============
