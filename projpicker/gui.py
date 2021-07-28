@@ -969,7 +969,7 @@ def start(
     help_text.config(state=tk.DISABLED)
     help_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    help_vscrollbar = ttk.Scrollbar(help_frame)
+    help_vscrollbar = AutoScrollbar(help_frame)
     help_vscrollbar.config(command=help_text.yview)
     help_vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     help_text.config(yscrollcommand=help_vscrollbar.set)
