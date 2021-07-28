@@ -44,7 +44,13 @@ class AutoScrollbar(ttk.Scrollbar):
         self.geometry_manager_forget = super().grid_forget
 
     def pack(self, **kwargs):
-        self.geometry_manager_add = functools.partial(super().pack, **kwargs)
+        # this method is called only once; let's remember its packing order now
+        # https://stackoverflow.com/a/58456449/16079666
+        siblings = self.master.pack_slaves()
+        n = len(siblings)
+        after = siblings[n - 1] if n > 0 else None
+        self.geometry_manager_add = functools.partial(super().pack,
+                                                      after=after, **kwargs)
         self.geometry_manager_forget = super().pack_forget
 
     def place(self, **kwargs):
@@ -767,11 +773,8 @@ def start(
     ##########################
     # bottom-left-middle frame
 
-    bottom_left_middle_frame = ttk.Frame(bottom_left_frame)
-    bottom_left_middle_frame.pack(fill=tk.X)
-
     # horizontal scroll bar for CRS list
-    crs_list_hscrollbar = AutoScrollbar(bottom_left_middle_frame,
+    crs_list_hscrollbar = AutoScrollbar(bottom_left_frame,
                                         orient=tk.HORIZONTAL)
     crs_list_hscrollbar.config(command=crs_treeview.xview)
     crs_list_hscrollbar.pack(fill=tk.X)
