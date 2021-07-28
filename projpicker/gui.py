@@ -9,6 +9,7 @@ import textwrap
 import webbrowser
 import threading
 import queue
+import functools
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -19,6 +20,36 @@ else:
     import projpicker as ppik
 
 projpicker_dzoom_env = "PROJPICKER_DZOOM"
+
+
+class AutoScrollbar(ttk.Scrollbar):
+    """
+    Implement the auto-hiding scrollbar widget.
+    https://stackoverflow.com/a/66338658/16079666
+    """
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.geometry_manager_add = lambda: None
+        self.geometry_manager_forget = lambda: None
+
+    def set(self, low, high):
+        if float(low) <= 0.0 and float(high) >= 1.0:
+            self.geometry_manager_forget()
+        else:
+            self.geometry_manager_add()
+        super().set(low, high)
+
+    def grid(self, **kwargs):
+        self.geometry_manager_add = functools.partial(super().grid, **kwargs)
+        self.geometry_manager_forget = super().grid_forget
+
+    def pack(self, **kwargs):
+        self.geometry_manager_add = functools.partial(super().pack, **kwargs)
+        self.geometry_manager_forget = super().pack_forget
+
+    def place(self, **kwargs):
+        self.geometry_manager_add = functools.partial(super().place, **kwargs)
+        self.geometry_manager_forget = super().place_forget
 
 
 def start(
@@ -728,7 +759,7 @@ def start(
     crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    crs_list_vscrollbar = ttk.Scrollbar(bottom_left_top_frame)
+    crs_list_vscrollbar = AutoScrollbar(bottom_left_top_frame)
     crs_list_vscrollbar.config(command=crs_treeview.yview)
     crs_list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     crs_treeview.config(yscrollcommand=crs_list_vscrollbar.set)
@@ -736,8 +767,11 @@ def start(
     ##########################
     # bottom-left-middle frame
 
+    bottom_left_middle_frame = ttk.Frame(bottom_left_frame)
+    bottom_left_middle_frame.pack(fill=tk.X)
+
     # horizontal scroll bar for CRS list
-    crs_list_hscrollbar = ttk.Scrollbar(bottom_left_frame,
+    crs_list_hscrollbar = AutoScrollbar(bottom_left_middle_frame,
                                         orient=tk.HORIZONTAL)
     crs_list_hscrollbar.config(command=crs_treeview.xview)
     crs_list_hscrollbar.pack(fill=tk.X)
@@ -795,13 +829,13 @@ def start(
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for query
-    query_vscrollbar = ttk.Scrollbar(query_top_frame)
+    query_vscrollbar = AutoScrollbar(query_top_frame)
     query_vscrollbar.config(command=query_text.yview)
     query_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     query_text.config(yscrollcommand=query_vscrollbar.set)
 
     # horizontal scroll bar for query
-    query_hscrollbar = ttk.Scrollbar(query_frame, orient=tk.HORIZONTAL)
+    query_hscrollbar = AutoScrollbar(query_frame, orient=tk.HORIZONTAL)
     query_hscrollbar.config(command=query_text.xview)
     query_hscrollbar.pack(fill=tk.X)
     query_text.config(xscrollcommand=query_hscrollbar.set)
@@ -824,7 +858,7 @@ def start(
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    crs_info_hscrollbar = ttk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
+    crs_info_hscrollbar = AutoScrollbar(crs_info_frame, orient=tk.HORIZONTAL)
     crs_info_hscrollbar.config(command=crs_text.xview)
     crs_info_hscrollbar.pack(fill=tk.X)
     crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
@@ -849,13 +883,13 @@ def start(
     log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for log
-    log_vscrollbar = ttk.Scrollbar(log_top_frame)
+    log_vscrollbar = AutoScrollbar(log_top_frame)
     log_vscrollbar.config(command=log_text.yview)
     log_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     log_text.config(yscrollcommand=log_vscrollbar.set)
 
     # horizontal scroll bar for log
-    log_hscrollbar = ttk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    log_hscrollbar = AutoScrollbar(log_frame, orient=tk.HORIZONTAL)
     log_hscrollbar.config(command=log_text.xview)
     log_hscrollbar.pack(fill=tk.X)
     log_text.config(xscrollcommand=log_hscrollbar.set)
