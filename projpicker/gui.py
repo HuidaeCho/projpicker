@@ -3,6 +3,7 @@ This module implements the GUI of ProjPicker.
 """
 
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 import os
 import textwrap
@@ -645,6 +646,7 @@ def start(
     root.bind_class("Text", "<Control-a>",
                     lambda e: e.widget.tag_add(tk.SEL, "1.0", tk.END))
 
+
     ###########
     # top frame
     map_canvas_width = root_width
@@ -789,10 +791,46 @@ def start(
     query_top_frame = ttk.Frame(query_frame)
     query_top_frame.pack(fill=tk.BOTH, expand=True)
 
+
+
     # text for query
     query_text = tk.Text(query_top_frame, width=20, height=1, wrap=tk.NONE)
     query_text.insert(tk.INSERT, query_string)
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+
+    # Pop up menu
+    def query_popup_menu(e):
+        menu.post(e.x_root, e.y_root)
+
+    def export_query():
+        filename = tk.filedialog.asksaveasfile(mode="w",
+                                               initialdir = "./",
+                                               title = "Import Query",
+                                               filetypes = (("Text files",
+                                                            "*.ppik"),
+                                                           ("all files",
+                                                            "*.*")))
+
+        query_to_export = query_text.get("1.0", tk.END)
+        filename.write(query_to_export)
+
+    def import_query():
+        filename = tk.filedialog.askopenfilename(initialdir = "./",
+                                                 title = "Import Query",
+                                                 filetypes = (("Text files",
+                                                            "*.ppik"),
+                                                           ("all files",
+                                                            "*.*")))
+        for line in filename:
+            query_text.insert(tk.INSERT, str(line))
+
+    menu = tk.Menu(root, tearoff=0)
+    menu.add_command(label="Import", command=import_query)
+    menu.add_command(label="Export", command=export_query)
+
+    # Bind to right click
+    query_text.bind("<Button-3>", query_popup_menu)
 
     # vertical scroll bar for query
     query_vscrollbar = ttk.Scrollbar(query_top_frame)
@@ -837,6 +875,7 @@ def start(
                side=tk.LEFT, expand=True)
     ttk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
                side=tk.LEFT, expand=True)
+
 
     ###########
     # log frame
