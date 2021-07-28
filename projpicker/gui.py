@@ -694,20 +694,20 @@ def start(
     ##############
     # bottom frame
     bottom_frame_height = root_height - map_canvas_height
-    bottom_frame = tk.Frame(root, height=400)
+    bottom_frame = ttk.Frame(root, height=400)
     bottom_frame.pack_propagate(False)
     bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
     ###################
     # bottom-left frame
     bottom_left_frame_width = root_width // 2
-    bottom_left_frame = tk.Frame(bottom_frame, width=bottom_left_frame_width)
+    bottom_left_frame = ttk.Frame(bottom_frame, width=bottom_left_frame_width)
     bottom_left_frame.pack_propagate(False)
     bottom_left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #######################
     # bottom-left-top frame
-    bottom_left_top_frame = tk.Frame(bottom_left_frame)
+    bottom_left_top_frame = ttk.Frame(bottom_left_frame)
     bottom_left_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
@@ -728,7 +728,7 @@ def start(
     crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    crs_list_vscrollbar = tk.Scrollbar(bottom_left_top_frame)
+    crs_list_vscrollbar = ttk.Scrollbar(bottom_left_top_frame)
     crs_list_vscrollbar.config(command=crs_treeview.yview)
     crs_list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     crs_treeview.config(yscrollcommand=crs_list_vscrollbar.set)
@@ -737,15 +737,15 @@ def start(
     # bottom-left-middle frame
 
     # horizontal scroll bar for CRS list
-    crs_list_hscrollbar = tk.Scrollbar(bottom_left_frame,
-                                   orient=tk.HORIZONTAL)
+    crs_list_hscrollbar = ttk.Scrollbar(bottom_left_frame,
+                                        orient=tk.HORIZONTAL)
     crs_list_hscrollbar.config(command=crs_treeview.xview)
     crs_list_hscrollbar.pack(fill=tk.X)
     crs_treeview.config(xscrollcommand=crs_list_hscrollbar.set)
 
     ##########################
     # bottom-left-bottom frame
-    bottom_left_bottom_frame = tk.Frame(bottom_left_frame)
+    bottom_left_bottom_frame = ttk.Frame(bottom_left_frame)
     bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
 
     # list of proj_tables
@@ -770,23 +770,23 @@ def start(
                                          width=bottom_right_notebook_width)
     bottom_right_notebook.pack_propagate(False)
 
-    query_frame = tk.Frame(bottom_right_notebook)
+    query_frame = ttk.Frame(bottom_right_notebook)
     bottom_right_notebook.add(query_frame, text="Query")
 
-    crs_info_frame = tk.Frame(bottom_right_notebook)
+    crs_info_frame = ttk.Frame(bottom_right_notebook)
     bottom_right_notebook.add(crs_info_frame, text="CRS Info")
 
-    log_frame = tk.Frame(bottom_right_notebook)
+    log_frame = ttk.Frame(bottom_right_notebook)
     bottom_right_notebook.add(log_frame, text="Log")
 
-    help_frame = tk.Frame(bottom_right_notebook)
+    help_frame = ttk.Frame(bottom_right_notebook)
     bottom_right_notebook.add(help_frame, text="Help")
 
     bottom_right_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #############
     # query frame
-    query_top_frame = tk.Frame(query_frame)
+    query_top_frame = ttk.Frame(query_frame)
     query_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for query
@@ -795,25 +795,25 @@ def start(
     query_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for query
-    query_vscrollbar = tk.Scrollbar(query_top_frame)
+    query_vscrollbar = ttk.Scrollbar(query_top_frame)
     query_vscrollbar.config(command=query_text.yview)
     query_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     query_text.config(yscrollcommand=query_vscrollbar.set)
 
     # horizontal scroll bar for query
-    query_hscrollbar = tk.Scrollbar(query_frame, orient=tk.HORIZONTAL)
+    query_hscrollbar = ttk.Scrollbar(query_frame, orient=tk.HORIZONTAL)
     query_hscrollbar.config(command=query_text.xview)
     query_hscrollbar.pack(fill=tk.X)
     query_text.config(xscrollcommand=query_hscrollbar.set)
 
-    query_bottom_frame = tk.Frame(query_frame)
+    query_bottom_frame = ttk.Frame(query_frame)
     query_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    tk.Button(query_bottom_frame, text="Query", command=query).pack(
-            side=tk.LEFT, expand=True)
-    tk.Button(query_bottom_frame, text="Cancel", command=root.destroy).pack(
-            side=tk.LEFT, expand=True)
+    ttk.Button(query_bottom_frame, text="Query", command=query).pack(
+               side=tk.LEFT, expand=True)
+    ttk.Button(query_bottom_frame, text="Cancel", command=root.destroy).pack(
+               side=tk.LEFT, expand=True)
 
     ################
     # CRS info frame
@@ -824,23 +824,23 @@ def start(
     crs_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
-    crs_info_hscrollbar = tk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
+    crs_info_hscrollbar = ttk.Scrollbar(crs_info_frame, orient=tk.HORIZONTAL)
     crs_info_hscrollbar.config(command=crs_text.xview)
     crs_info_hscrollbar.pack(fill=tk.X)
     crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
 
-    crs_info_bottom_frame = tk.Frame(crs_info_frame)
+    crs_info_bottom_frame = ttk.Frame(crs_info_frame)
     crs_info_bottom_frame.pack(fill=tk.BOTH)
 
     # buttons
-    tk.Button(crs_info_bottom_frame, text="Select", command=select).pack(
-            side=tk.LEFT, expand=True)
-    tk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
-            side=tk.LEFT, expand=True)
+    ttk.Button(crs_info_bottom_frame, text="Select", command=select).pack(
+               side=tk.LEFT, expand=True)
+    ttk.Button(crs_info_bottom_frame, text="Cancel", command=root.destroy).pack(
+               side=tk.LEFT, expand=True)
 
     ###########
     # log frame
-    log_top_frame = tk.Frame(log_frame)
+    log_top_frame = ttk.Frame(log_frame)
     log_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # text for log
@@ -849,13 +849,13 @@ def start(
     log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for log
-    log_vscrollbar = tk.Scrollbar(log_top_frame)
+    log_vscrollbar = ttk.Scrollbar(log_top_frame)
     log_vscrollbar.config(command=log_text.yview)
     log_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
     log_text.config(yscrollcommand=log_vscrollbar.set)
 
     # horizontal scroll bar for log
-    log_hscrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    log_hscrollbar = ttk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
     log_hscrollbar.config(command=log_text.xview)
     log_hscrollbar.pack(fill=tk.X)
     log_text.config(xscrollcommand=log_hscrollbar.set)
@@ -900,7 +900,7 @@ def start(
     help_text.pack(fill=tk.BOTH, expand=True)
 
     # label for coordinates
-    coor_label = tk.Label(bottom_right_notebook)
+    coor_label = ttk.Label(bottom_right_notebook)
     coor_label.place(relx=1, rely=0, anchor=tk.NE)
 
     #########
