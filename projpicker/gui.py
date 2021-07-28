@@ -371,7 +371,11 @@ def start(
         f = filedialog.asksaveasfile(title="Export query",
                                      filetypes=file_types)
         if f:
-            query_to_export = query_text.get("1.0", tk.END)
+            # https://stackoverflow.com/a/66753640/16079666
+            # text widget always appends a new line at the end
+            query_to_export = query_text.get("1.0", "end-1c")
+            if query_to_export[-1] == "\n":
+                print("NEW")
             f.write(query_to_export)
             f.close()
 
@@ -957,7 +961,7 @@ def start(
 
 
             See {doc_url} to learn more."""))
-    help_text.tag_add(tag_doc, "end - 1 line + 4 chars", "end - 16 chars")
+    help_text.tag_add(tag_doc, "end-1l+4c", "end-16c")
     help_text.tag_config(tag_doc, foreground="blue", underline=True)
     help_text.tag_bind(tag_doc, "<Enter>",
                        lambda e: help_text.config(cursor="hand2"))
