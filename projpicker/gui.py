@@ -813,6 +813,8 @@ def start(
                                                             "*.*")))
 
         query_to_export = query_text.get("1.0", tk.END)
+        # tk.filedialog.asksaveasfile opens file as a IO class in write mode
+        # so no need to open.
         with filename as file:
             file.write(query_to_export)
             file.close()
@@ -825,6 +827,8 @@ def start(
                                                            ("all files",
                                                             "*.*")))
         query_text.delete("1.0", tk.END)
+        # tk.filedialog.askopenfilename only returns the path string of the
+        # selected file so it needs to be opened.
         file = open(filename, 'r')
         for line in file.readlines():
             query_text.insert(tk.INSERT, str(line))
