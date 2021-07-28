@@ -803,14 +803,13 @@ def start(
     def query_popup_menu(e):
         menu.post(e.x_root, e.y_root)
 
+    filetypes = (("ProjPicker Query Files ", "*.ppik"), ("all files", "*.*"))
+
     def export_query():
         filename = tk.filedialog.asksaveasfile(mode="w",
                                                initialdir = "./",
                                                title = "Import Query",
-                                               filetypes = (("Text files",
-                                                            "*.ppik"),
-                                                           ("all files",
-                                                            "*.*")))
+                                               filetypes=filetypes)
 
         query_to_export = query_text.get("1.0", tk.END)
         # tk.filedialog.asksaveasfile opens file as a IO class in write mode
@@ -822,10 +821,7 @@ def start(
     def import_query():
         filename = tk.filedialog.askopenfilename(initialdir = "./",
                                                  title = "Import Query",
-                                                 filetypes = (("Text files",
-                                                            "*.ppik"),
-                                                           ("all files",
-                                                            "*.*")))
+                                                 filetypes=filetypes)
         query_text.delete("1.0", tk.END)
         # tk.filedialog.askopenfilename only returns the path string of the
         # selected file so it needs to be opened.
