@@ -955,10 +955,9 @@ def start(
             Query files (*.ppik) can be imported or exported
             by right clicking on the query builder.
 
-            Documentation
-            =============
-            {doc_url}"""))
-    help_text.tag_add(tag_doc, "end - 1 line", "end")
+
+            See {doc_url} to learn more."""))
+    help_text.tag_add(tag_doc, "end - 1 line + 4 chars", "end - 16 chars")
     help_text.tag_config(tag_doc, foreground="blue", underline=True)
     help_text.tag_bind(tag_doc, "<Enter>",
                        lambda e: help_text.config(cursor="hand2"))
