@@ -64,7 +64,7 @@ def start(
         bbox=[],
         bbox_or_quit=False,
         single=False,
-        crs_info_func=None,
+        format_crs_info=None,
         projpicker_db=None):
     """
     Start the GUI. Parsable geometries by geoms or queried BBox instances by
@@ -79,7 +79,7 @@ def start(
             input geoms or input bbox is empty. Defaults to False.
         single (bool): Whether or not a single BBox instance is returned.
             Defaults to False.
-        crs_info_func (function): User function used for formatting CRS info.
+        format_crs_info (function): User function used for formatting CRS info.
             Defaults to None in which case the default function is provided.
         projpicker_db (str): projpicker.db path. Defaults to None.
 
@@ -416,7 +416,7 @@ def start(
         unit_combobox.set(all_units)
 
     def create_crs_info(bbox):
-        if crs_info_func is None:
+        if format_crs_info is None:
             dic = bbox._asdict()
             l = 0
             for key in dic.keys():
@@ -428,7 +428,7 @@ def start(
                 k = key + ":"
                 txt += f"{k:{l}} {dic[key]}\n"
         else:
-            txt = crs_info_func(bbox)
+            txt = format_crs_info(bbox)
         return txt
 
     def find_bbox(crs):
