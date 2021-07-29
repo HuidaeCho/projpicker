@@ -2576,7 +2576,7 @@ def print_srids(bbox, outfile=sys.stdout, separator="\n"):
 ###############################################################################
 # main
 
-def projpicker(
+def start(
         geoms=[],
         infile="-",
         outfile="-",
@@ -2901,7 +2901,7 @@ def parse():
 
 def main():
     """
-    Implement the command-line interface to projpicker() and the standalone web
+    Implement the command-line interface to start() and the standalone web
     server.
     """
 
@@ -2945,7 +2945,7 @@ License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.""")
     elif server is None:
-        projpicker(
+        start(
             geoms,
             infile,
             outfile,
