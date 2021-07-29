@@ -29,22 +29,49 @@ class AutoScrollbar(ttk.Scrollbar):
     https://stackoverflow.com/a/66338658/16079666
     """
     def __init__(self, master, **kwargs):
+        """
+        Construct an auto scrollbar.
+
+        Args:
+            master (widget): Parent widget.
+            **kwargs (keyword arguments): Keyword arguments for the auto
+                scrollbar widget.
+        """
         super().__init__(master, **kwargs)
         self.geometry_manager_add = lambda: None
         self.geometry_manager_forget = lambda: None
 
-    def set(self, low, high):
-        if float(low) <= 0.0 and float(high) >= 1.0:
+    def set(self, first, last):
+        """
+        Override the set() method.
+
+        Args:
+            first (float): First slider position between 0 and 1.
+            last (float): Last slider position between 0 and 1.
+        """
+        if float(first) <= 0.0 and float(last) >= 1.0:
             self.geometry_manager_forget()
         else:
             self.geometry_manager_add()
-        super().set(low, high)
+        super().set(first, last)
 
     def grid(self, **kwargs):
+        """
+        Override the grid() method.
+
+        Args:
+            **kwargs (keyword arguments): Keyword arguments for grid().
+        """
         self.geometry_manager_add = functools.partial(super().grid, **kwargs)
         self.geometry_manager_forget = super().grid_forget
 
     def pack(self, **kwargs):
+        """
+        Override the pack() method.
+
+        Args:
+            **kwargs (keyword arguments): Keyword arguments for pack().
+        """
         # this method is called only once; let's remember its packing order now
         # https://stackoverflow.com/a/58456449/16079666
         siblings = self.master.pack_slaves()
@@ -55,6 +82,12 @@ class AutoScrollbar(ttk.Scrollbar):
         self.geometry_manager_forget = super().pack_forget
 
     def place(self, **kwargs):
+        """
+        Override the place() method.
+
+        Args:
+            **kwargs (keyword arguments): Keyword arguments for place().
+        """
         self.geometry_manager_add = functools.partial(super().place, **kwargs)
         self.geometry_manager_forget = super().place_forget
 

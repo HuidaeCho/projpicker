@@ -28,5 +28,5 @@ gui
 
 web
 ---
-.. automodule:: web
+.. automodule:: web.web
    :members:
