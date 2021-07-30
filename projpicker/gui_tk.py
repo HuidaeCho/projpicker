@@ -993,7 +993,6 @@ def start(
             Query files (*.ppik) can be imported or exported
             by right clicking on the query builder.
 
-
             See {doc_url} to learn more."""))
     help_text.tag_add(tag_doc, "end-1l+4c", "end-16c")
     help_text.tag_config(tag_doc, foreground="blue", underline=True)

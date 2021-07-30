@@ -78,6 +78,7 @@ def start(
     fill_alpha = 50
     geoms_color = "blue"
     dragged_bbox_color = "green"
+    sel_bbox_color = "red"
 
     lat = 0
     lon = 0
@@ -360,22 +361,26 @@ def start(
         zoomer.start()
 
     def on_paint(event):
+        def set_pen_brush(color):
+            outline = wx.Colour(color)
+            fill = wx.Colour(outline.Red(), outline.Green(), outline.Blue(),
+                             fill_alpha)
+
+            dc.SetPen(wx.Pen(outline, width=line_width))
+
+            # not all platforms support alpha?
+            # https://wxpython.org/Phoenix/docs/html/wx.Colour.html#wx.Colour.Alpha
+            if fill.Alpha() == wx.ALPHA_OPAQUE:
+                dc.SetBrush(wx.Brush(fill, wx.BRUSHSTYLE_TRANSPARENT))
+            else:
+                dc.SetBrush(wx.Brush(fill))
+
         point_half_size = point_size // 2
-        outline = wx.Colour(geoms_color)
-        fill = wx.Colour(outline.Red(), outline.Green(), outline.Blue(),
-                         fill_alpha)
 
         map_canvas.OnPaint(event)
         dc = wx.PaintDC(map_canvas)
 
-        dc.SetPen(wx.Pen(outline, width=line_width))
-
-        # not all platforms support alpha?
-        # https://wxpython.org/Phoenix/docs/html/wx.Colour.html#wx.Colour.Alpha
-        if fill.Alpha() == wx.ALPHA_OPAQUE:
-            dc.SetBrush(wx.Brush(fill, wx.BRUSHSTYLE_TRANSPARENT))
-        else:
-            dc.SetBrush(wx.Brush(fill))
+        set_pen_brush(geoms_color)
 
         geom_type = "point"
         g = 0
@@ -401,16 +406,7 @@ def start(
             g += 1
 
         if dragged_bbox:
-            outline = wx.Colour(dragged_bbox_color)
-            fill = wx.Colour(outline.Red(), outline.Green(), outline.Blue(),
-                             fill_alpha)
-
-            dc.SetPen(wx.Pen(outline, width=line_width))
-
-            if fill.Alpha() == wx.ALPHA_OPAQUE:
-                dc.SetBrush(wx.Brush(fill, wx.BRUSHSTYLE_TRANSPARENT))
-            else:
-                dc.SetBrush(wx.Brush(fill))
+            set_pen_brush(dragged_bbox_color)
 
             ng = len(dragged_bbox)
             s = dragged_bbox[ng-1][0]
@@ -419,6 +415,14 @@ def start(
             e = dragged_bbox[ng-1][1]
 
             for xy in osm.get_bbox_xy((s, n, w, e)):
+                x, y = xy[0]
+                w, h = xy[1][0] - x, xy[1][1] - y
+                dc.DrawRectangle(x, y, w, h)
+
+        if sel_bbox:
+            set_pen_brush(sel_bbox_color)
+
+            for xy in osm.get_bbox_xy(sel_bbox):
                 x, y = xy[0]
                 w, h = xy[1][0] - x, xy[1][1] - y
                 dc.DrawRectangle(x, y, w, h)
@@ -455,25 +459,24 @@ def start(
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
-        crs_text.Clear()
+        crs_info_text.Clear()
         sel_bbox.clear()
-        if curr_crs_item:
-            crs = w.item(curr_crs_item)["values"][1]
+        if curr_crs_item >= 0:
+            crs = w.GetItemText(curr_crs_item, 1)
             b = find_bbox(crs)
             crs_info = create_crs_info(b)
-            crs_text.insert(tk.END, crs_info)
+            crs_info_text.SetValue(crs_info)
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            bottom_right_notebook.select(crs_info_frame)
+            bottom_right_notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
-        draw_bbox()
 
     def on_select_proj_table_or_unit(event):
-        proj_table = proj_tables[proj_table_combobox.current()]
-        unit = units[unit_combobox.current()]
+        proj_table = proj_tables[proj_table_choice.GetSelection()]
+        unit = units[unit_choice.GetSelection()]
 
         if proj_table == all_proj_tables and unit == all_units:
             filt_bbox = bbox
@@ -507,15 +510,16 @@ def start(
     def query():
         nonlocal bbox
 
-        query = query_text.get("1.0", tk.END)
+        query = query_text.GetValue()
         geoms.clear()
-        log_text.SetValue("")
         try:
             geoms.extend(ppik.parse_mixed_geoms(query))
             bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
         except Exception as e:
-            log_text.insert(tk.END, e)
-            bottom_right_notebook.select(log_frame)
+            log_text.SetValue(str(e))
+            bottom_right_notebook.ChangeSelection(log_panel.page)
+        else:
+            log_text.SetValue("")
 
         populate_crs_list(bbox)
         populate_filters(bbox)
@@ -531,14 +535,18 @@ def start(
         proj_tables.clear()
         proj_tables.append(all_proj_tables)
         proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
-        proj_table_combobox["values"] = proj_tables
-        proj_table_combobox.set(all_proj_tables)
+        proj_table_choice.Clear()
+        for proj_table in proj_tables:
+            proj_table_choice.Append(proj_table)
+        proj_table_choice.Select(0)
 
         units.clear()
         units.append(all_units)
         units.extend(sorted(set([b.unit for b in bbox])))
-        unit_combobox["values"] = units
-        unit_combobox.set(all_units)
+        unit_choice.Clear()
+        for unit in units:
+            unit_choice.Append(unit)
+        unit_choice.Select(0)
 
     def create_crs_info(bbox):
         if format_crs_info is None:
@@ -681,11 +689,14 @@ def start(
     # bottom-left-bottom frame
     bottom_left_bottom_box = wx.BoxSizer(wx.HORIZONTAL)
 
-    proj_table_combobox = wx.ComboBox(root, size=(crs_list_width // 2, 30))
-    unit_combobox = wx.ComboBox(root, size=(crs_list_width // 2, 30))
+    proj_table_choice = wx.Choice(root, size=(crs_list_width // 2, 30))
+    proj_table_choice.Bind(wx.EVT_CHOICE, on_select_proj_table_or_unit)
 
-    bottom_left_bottom_box.Add(proj_table_combobox)
-    bottom_left_bottom_box.Add(unit_combobox)
+    unit_choice = wx.Choice(root, size=(crs_list_width // 2, 30))
+    unit_choice.Bind(wx.EVT_CHOICE, on_select_proj_table_or_unit)
+
+    bottom_left_bottom_box.Add(proj_table_choice)
+    bottom_left_bottom_box.Add(unit_choice)
     bottom_left_box.Add(bottom_left_bottom_box)
     bottom_box.Add(bottom_left_box)
 
@@ -720,7 +731,7 @@ def start(
                              size=(bottom_right_notebook_width,
                                    bottom_right_notebook_height - 75))
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    query_text.SetFont(wx.Font(10, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
+    query_text.SetFont(wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
                                wx.FONTWEIGHT_NORMAL))
     query_box.Add(query_text)
 
@@ -772,7 +783,8 @@ def start(
     # text for CRS info
     log_text = wx.TextCtrl(
             log_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
-            size=(bottom_right_notebook_width, bottom_right_notebook_height))
+            size=(bottom_right_notebook_width,
+                  bottom_right_notebook_height - 45))
     # https://dzone.com/articles/wxpython-learning-use-fonts
     log_text.SetFont(query_text.GetFont())
 
@@ -796,11 +808,20 @@ def start(
             Cancel drawing a poly/bbox: Right click
             Clear geometries:           Double right click
 
-            GitHub repository
-            =================
-            {doc_url}"""),
+            Geometry variables
+            ==================
+            To define a geometry variable, type and highlight
+            a name in the query builder, then create a geometry.
+
+            Query import & export
+            =====================
+            Query files (*.ppik) can be imported or exported
+            by right clicking on the query builder.
+
+            See {doc_url} to learn more."""),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL,
-            size=(bottom_right_notebook_width, bottom_right_notebook_height))
+            size=(bottom_right_notebook_width,
+                  bottom_right_notebook_height - 45))
     help_text.Bind(wx.EVT_TEXT_URL,
                    lambda e: webbrowser.open(github_url)
                              if e.GetMouseEvent().LeftIsDown() else None)
