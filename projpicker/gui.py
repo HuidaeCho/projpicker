@@ -479,7 +479,7 @@ def start(
         root.destroy()
 
     def on_drag(event):
-        nonlocal dragged, dragging_bbox, dragged_bbox
+        nonlocal dragged, dragging_bbox
 
         if event.state & 0x4:
             # Control + B1-Motion
@@ -522,8 +522,7 @@ def start(
         draw_geoms(event.x, event.y)
 
     def on_draw(event):
-        nonlocal dragged, dragging_bbox, dragged_bbox, drawing_bbox
-        nonlocal complete_drawing
+        nonlocal dragged, dragging_bbox, drawing_bbox, complete_drawing
 
         if dragging_bbox:
             ng = len(dragged_bbox)
