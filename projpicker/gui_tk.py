@@ -664,13 +664,13 @@ def start(
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
-        crs_text.delete("1.0", tk.END)
+        crs_info_text.delete("1.0", tk.END)
         sel_bbox.clear()
         if curr_crs_item:
             crs = w.item(curr_crs_item)["values"][1]
             b = find_bbox(crs)
             crs_info = create_crs_info(b)
-            crs_text.insert(tk.END, crs_info)
+            crs_info_text.insert(tk.END, crs_info)
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
@@ -820,20 +820,20 @@ def start(
     crs_treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for CRS list
-    crs_list_vscrollbar = AutoScrollbar(bottom_left_top_frame)
-    crs_list_vscrollbar.config(command=crs_treeview.yview)
-    crs_list_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
-    crs_treeview.config(yscrollcommand=crs_list_vscrollbar.set)
+    crs_treeview_vscrollbar = AutoScrollbar(bottom_left_top_frame)
+    crs_treeview_vscrollbar.config(command=crs_treeview.yview)
+    crs_treeview_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    crs_treeview.config(yscrollcommand=crs_treeview_vscrollbar.set)
 
     ##########################
     # bottom-left-middle frame
 
     # horizontal scroll bar for CRS list
-    crs_list_hscrollbar = AutoScrollbar(bottom_left_frame,
+    crs_treeview_hscrollbar = AutoScrollbar(bottom_left_frame,
                                         orient=tk.HORIZONTAL)
-    crs_list_hscrollbar.config(command=crs_treeview.xview)
-    crs_list_hscrollbar.pack(fill=tk.X)
-    crs_treeview.config(xscrollcommand=crs_list_hscrollbar.set)
+    crs_treeview_hscrollbar.config(command=crs_treeview.xview)
+    crs_treeview_hscrollbar.pack(fill=tk.X)
+    crs_treeview.config(xscrollcommand=crs_treeview_hscrollbar.set)
 
     ##########################
     # bottom-left-bottom frame
@@ -921,15 +921,15 @@ def start(
     # CRS info frame
 
     # text for CRS info
-    crs_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
-    crs_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
-    crs_text.pack(fill=tk.BOTH, expand=True)
+    crs_info_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
+    crs_info_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
+    crs_info_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
     crs_info_hscrollbar = AutoScrollbar(crs_info_frame, orient=tk.HORIZONTAL)
-    crs_info_hscrollbar.config(command=crs_text.xview)
+    crs_info_hscrollbar.config(command=crs_info_text.xview)
     crs_info_hscrollbar.pack(fill=tk.X)
-    crs_text.config(xscrollcommand=crs_info_hscrollbar.set)
+    crs_info_text.config(xscrollcommand=crs_info_hscrollbar.set)
 
     crs_info_bottom_frame = ttk.Frame(crs_info_frame)
     crs_info_bottom_frame.pack(fill=tk.BOTH)
