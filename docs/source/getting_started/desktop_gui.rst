@@ -42,3 +42,11 @@ Filtering
 ^^^^^^^^^
 
 Both CRS type and unit filtering are made available.
+
+Import / Export Queries
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The GUI allows for the import and export of ProjPicker queries saved as a .ppik file.
+The file format is a plain text format and can be edited both within the GUI and through other conventional text editors.
+Import and export can be chosen by right clicking on the Query editor.
+
