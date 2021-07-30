@@ -161,8 +161,6 @@ def start(
         fill = outline
         stipple = "gray12"
 
-        map_canvas.delete(tag_geoms)
-
         all_geoms = geoms.copy()
         if curr_geom and x and y:
             latlon = list(osm.canvas_to_latlon(x, y))
@@ -189,6 +187,8 @@ def start(
                                            latlon[1])
                 g.append(latlon)
                 all_geoms.extend(["poly", g])
+
+        map_canvas.delete(tag_geoms)
 
         geom_type = "point"
         g = 0
