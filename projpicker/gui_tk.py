@@ -641,8 +641,7 @@ def start(
     def on_select_crs(event):
         nonlocal prev_crs_items
 
-        w = event.widget
-        curr_crs_items = w.selection()
+        curr_crs_items = crs_treeview.selection()
 
         if single:
             prev_crs_items.clear()
@@ -667,7 +666,7 @@ def start(
         crs_info_text.delete("1.0", tk.END)
         sel_bbox.clear()
         if curr_crs_item:
-            crs = w.item(curr_crs_item)["values"][1]
+            crs = crs_treeview.item(curr_crs_item)["values"][1]
             b = find_bbox(crs)
             crs_info = create_crs_info(b)
             crs_info_text.insert(tk.END, crs_info)

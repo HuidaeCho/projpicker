@@ -430,19 +430,16 @@ def start(
     def on_select_crs(event):
         nonlocal prev_crs_items
 
-        w = event.GetEventObject()
         curr_crs_items = []
-
-        item = w.GetFirstSelected()
-
+        item = crs_list.GetFirstSelected()
         while item != -1:
             curr_crs_items.append(item)
-            item = w.GetNextSelected(item)
+            item = crs_list.GetNextSelected(item)
 
         if single:
             prev_crs_items.clear()
 
-        curr_crs_item = None
+        curr_crs_item = -1
         if len(curr_crs_items) > len(prev_crs_items):
             # selected a new crs
             curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
@@ -462,7 +459,7 @@ def start(
         crs_info_text.Clear()
         sel_bbox.clear()
         if curr_crs_item >= 0:
-            crs = w.GetItemText(curr_crs_item, 1)
+            crs = crs_list.GetItemText(curr_crs_item, 1)
             b = find_bbox(crs)
             crs_info = create_crs_info(b)
             crs_info_text.SetValue(crs_info)
@@ -576,9 +573,11 @@ def start(
     def select():
         nonlocal sel_crs
 
-        for item in crs_treeview.selection():
-            sel_crs.append(crs_treeview.item(item)["values"][1])
-        root.destroy()
+        item = crs_list.GetFirstSelected()
+        while item != -1:
+            sel_crs.append(crs_list.GetItemText(item, 1))
+            item = crs_list.GetNextSelected(item)
+        root.Close()
 
     # parse geometries if given
     query_string = ""
@@ -684,6 +683,7 @@ def start(
     populate_crs_list(bbox)
 
     crs_list.Bind(wx.EVT_LIST_ITEM_SELECTED, on_select_crs)
+    crs_list.Bind(wx.EVT_LIST_ITEM_DESELECTED, on_select_crs)
 
     ##########################
     # bottom-left-bottom frame
@@ -836,3 +836,5 @@ def start(
     # run GUI
     root.Show()
     app.MainLoop()
+
+    return [find_bbox(crs) for crs in sel_crs], bbox, geoms
