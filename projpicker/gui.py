@@ -163,10 +163,10 @@ def start(
 
         map_canvas.delete(tag_geoms)
 
+        all_geoms = geoms.copy()
         if curr_geom and x and y:
             latlon = list(osm.canvas_to_latlon(x, y))
 
-            all_geoms = geoms.copy()
             g = curr_geom.copy()
             g.append(latlon)
 
@@ -189,8 +189,6 @@ def start(
                                            latlon[1])
                 g.append(latlon)
                 all_geoms.extend(["poly", g])
-        else:
-            all_geoms = geoms.copy()
 
         geom_type = "point"
         g = 0
