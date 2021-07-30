@@ -122,27 +122,39 @@ def start(
     """
     sel_crs = []
     prev_crs_items = []
+    sel_bbox = []
+
+    proj_tables = []
+    units = []
     all_proj_tables = "all proj_tables"
     all_units = "all units"
+
+    doc_url = "https://projpicker.readthedocs.io/"
+
     tag_map = "map"
     tag_bbox = "bbox"
     tag_geoms = "geoms"
     tag_dragged_bbox = "dragged_bbox"
     tag_doc = "doc"
-    doc_url = "https://projpicker.readthedocs.io/"
+
     zoomer = None
     zoomer_queue = queue.Queue()
     dzoom = float(os.environ.get(projpicker_dzoom_env, 1))
+
     dragged = False
     dragging_bbox = False
     dragged_bbox = []
     drawing_bbox = False
     complete_drawing = False
-    sel_bbox = []
     prev_xy = []
     curr_geom = []
-    proj_tables = []
-    units = []
+
+    point_size = 4
+    line_width = 2
+    fill_stipple = "gray12"
+    geoms_color = "blue"
+    dragged_bbox_color = "green"
+    sel_bbox_color = "red"
 
     lat = 0
     lon = 0
@@ -154,12 +166,7 @@ def start(
         draw_bbox()
 
     def draw_geoms(x=None, y=None):
-        point_size = 4
         point_half_size = point_size // 2
-        outline = "blue"
-        width = 2
-        fill = outline
-        stipple = "gray12"
 
         all_geoms = geoms.copy()
         if curr_geom and x and y:
@@ -205,28 +212,31 @@ def start(
                         x, y = xy[0]
                         oval = (x - point_half_size, y - point_half_size,
                                 x + point_half_size, y + point_half_size)
-                        map_canvas.create_oval(oval, outline=outline,
-                                               width=width, fill=fill,
-                                               tag=tag_geoms)
+                        map_canvas.create_oval(oval, outline=geoms_color,
+                                               width=line_width,
+                                               fill=geoms_color, tag=tag_geoms)
                 elif geom_type == "poly":
                     for xy in osm.get_xy(geom):
-                        map_canvas.create_polygon(xy, outline=outline,
-                                                  width=width, fill=fill,
-                                                  stipple=stipple,
+                        map_canvas.create_polygon(xy, outline=geoms_color,
+                                                  width=line_width,
+                                                  fill=geoms_color,
+                                                  stipple=fill_stipple,
                                                   tag=tag_geoms)
                 else:
                     for xy in osm.get_bbox_xy(geom):
-                        map_canvas.create_rectangle(xy, outline=outline,
-                                                    width=width, fill=fill,
-                                                    stipple=stipple,
+                        map_canvas.create_rectangle(xy, outline=geoms_color,
+                                                    width=line_width,
+                                                    fill=geoms_color,
+                                                    stipple=fill_stipple,
                                                     tag=tag_geoms)
             g += 1
 
     def draw_bbox():
         map_canvas.delete(tag_bbox)
         for xy in osm.get_bbox_xy(sel_bbox):
-            map_canvas.create_rectangle(xy, outline="red", width=2, fill="red",
-                                        stipple="gray12", tag=tag_bbox)
+            map_canvas.create_rectangle(xy, outline=sel_bbox_color,
+                                        width=line_width, fill=sel_bbox_color,
+                                        stipple=fill_stipple, tag=tag_bbox)
 
     def adjust_lon(prev_x, x, prev_lon, lon):
         dlon = lon - prev_lon
@@ -483,11 +493,6 @@ def start(
 
         if event.state & 0x4:
             # Control + B1-Motion
-            outline = "green"
-            width = 2
-            fill = outline
-            stipple = "gray12"
-
             latlon = osm.canvas_to_latlon(event.x, event.y)
             if not dragging_bbox:
                 dragging_bbox = True
@@ -505,9 +510,10 @@ def start(
 
                 map_canvas.delete(tag_dragged_bbox)
                 for xy in osm.get_bbox_xy((s, n, w, e)):
-                    map_canvas.create_rectangle(xy, outline=outline,
-                                                width=width, fill=fill,
-                                                stipple=stipple,
+                    map_canvas.create_rectangle(xy, outline=dragged_bbox_color,
+                                                width=line_width,
+                                                fill=dragged_bbox_color,
+                                                stipple=fill_stipple,
                                                 tag=tag_dragged_bbox)
             latlon = osm.canvas_to_latlon(event.x, event.y)
             coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
