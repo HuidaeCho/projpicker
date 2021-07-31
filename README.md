@@ -21,7 +21,7 @@ For [GRASS GIS](https://grass.osgeo.org/), a new module
 that wraps around this project is available.
 
 ![image](https://user-images.githubusercontent.com/7456117/127734423-75f33c76-2734-411f-8637-9e6b86a9d4a9.png)
-![image](https://user-images.githubusercontent.com/7456117/127734444-6d547ef8-0459-4d84-996c-75772f3e7020.png)
+![image](https://user-images.githubusercontent.com/7456117/127734470-7964a7a8-6c89-4885-8dcd-d3526b40f733.png)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
