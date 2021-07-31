@@ -465,13 +465,13 @@ def start(
                 ranges = query_text.tag_ranges(tk.SEL)
                 if ranges:
                     name = query_text.get(*ranges).strip()
-                    if not name.endswith(":"):
+                    if name and not name.endswith(":"):
                         if not name.startswith(":"):
                             name = f":{name}:"
                         else:
                             name = ""
                     if name and ppik.geom_var_re.match(name):
-                        query = query.replace(" ", f" {name} ")
+                        query = query.replace(" ", f" {name} ", 1)
                     index = ranges[0].string
                 else:
                     index = query_text.index(tk.INSERT)

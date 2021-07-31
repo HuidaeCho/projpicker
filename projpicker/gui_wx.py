@@ -165,6 +165,15 @@ def start(
             if query:
                 query += "\n"
                 sel = query_text.GetSelection()
+                if sel[0] != sel[1]:
+                    name = query_text.GetValue()[sel[0]:sel[1]].strip()
+                    if name and not name.endswith(":"):
+                        if not name.startswith(":"):
+                            name = f":{name}:"
+                        else:
+                            name = ""
+                    if name and ppik.geom_var_re.match(name):
+                        query = query.replace(" ", f" {name} ", 1)
                 if sel[0] > 0 and query_text.GetValue()[sel[0] - 1] != "\n":
                     query = "\n" + query
                 query_text.Replace(sel[0], sel[1], query)
