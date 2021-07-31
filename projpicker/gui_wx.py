@@ -287,6 +287,10 @@ def start(
         zoomer.checker = wx.CallLater(0, check_zoomer)
         zoomer.start()
 
+    def on_resize(event):
+        osm.resize(event.Size.Width, event.Size.Height)
+        osm.draw()
+
     def on_paint(event):
         def set_pen_brush(color):
             outline = wx.Colour(color)
@@ -514,10 +518,9 @@ def start(
     map_canvas.Bind(wx.EVT_RIGHT_DCLICK, on_clear_drawing)
     map_canvas.Bind(wx.EVT_MOTION, on_move)
     map_canvas.Bind(wx.EVT_MOUSEWHEEL, on_zoom)
-    map_canvas.Bind(wx.EVT_SIZE, lambda e: osm.resize(e.Size.Width,
-                                                      e.Size.Height))
+    map_canvas.Bind(wx.EVT_SIZE, on_resize)
     map_canvas.Bind(wx.EVT_PAINT, on_paint)
-    main_box.Add(map_canvas)
+    main_box.Add(map_canvas, 1, wx.EXPAND)
 
     # draw geometries if given
     if geoms:
@@ -537,39 +540,37 @@ def start(
 
     ###################
     # bottom-left frame
+    bottom_left_width = root_width // 2
+    bottom_left_height = root_height - map_canvas_height
+
     bottom_left_box = wx.BoxSizer(wx.VERTICAL)
 
     # list of CRSs
-    crs_list_width = root_width // 2
-    crs_list_height = root_height - map_canvas_height - 45
-    crs_list_size = (crs_list_width, crs_list_height)
     crs_list = wx.ListCtrl(
-            root, size=crs_list_size,
+            root,
             style=wx.LC_REPORT | (wx.LC_SINGLE_SEL if single else 0))
 
     id_width = 110
-    name_width = crs_list_width - id_width
+    name_width = bottom_left_width - id_width
     crs_list.AppendColumn("Name", width=name_width)
     crs_list.AppendColumn("ID", width=id_width)
-    bottom_left_box.Add(crs_list)
+    bottom_left_box.Add(crs_list, 1, wx.EXPAND)
 
     populate_crs_list(bbox)
 
     crs_list.Bind(wx.EVT_LIST_ITEM_SELECTED, on_select_crs)
     crs_list.Bind(wx.EVT_LIST_ITEM_DESELECTED, on_select_crs)
 
-    # text for search
-    search_text = wx.SearchCtrl(root, size=(crs_list_width, 30))
-    search_text.Bind(wx.EVT_TEXT, on_search)
-    bottom_left_box.Add(search_text)
+    # add text for search later to get the button height
 
-    bottom_box.Add(bottom_left_box)
+    bottom_box.Add(bottom_left_box, 1, wx.EXPAND)
 
     ####################
     # bottom-right frame
-    bottom_right_notebook_width = root_width - crs_list_width
-    bottom_right_notebook_height = root_height - map_canvas_height
-    bottom_right_notebook = wx.Notebook(root)
+    bottom_right_width = root_width - bottom_left_width
+    bottom_right_height = bottom_left_height
+    bottom_right_size = (bottom_right_width, bottom_right_height)
+    bottom_right_notebook = wx.Notebook(root, size=bottom_right_size)
 
     # query tab
     query_panel = wx.Panel(bottom_right_notebook)
@@ -596,14 +597,12 @@ def start(
     query_box = wx.BoxSizer(wx.VERTICAL)
 
     # text for query
-    query_text = wx.TextCtrl(query_panel, style=wx.TE_MULTILINE | wx.HSCROLL,
-                             size=(bottom_right_notebook_width,
-                                   bottom_right_notebook_height - 75))
+    query_text = wx.TextCtrl(query_panel, style=wx.TE_MULTILINE | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
     query_text.SetFont(wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
                                wx.FONTWEIGHT_NORMAL))
     query_text.SetValue(query_string)
-    query_box.Add(query_text)
+    query_box.Add(query_text, 1, wx.EXPAND)
 
     # pop-up menu
     menu = wx.Menu()
@@ -633,6 +632,12 @@ def start(
     query_box.Add(query_bottom_box, 0, wx.ALIGN_CENTER)
     query_panel.SetSizer(query_box)
 
+    # back to bottom-left frame to use the button height
+    # text for search
+    search_text = wx.SearchCtrl(root, size=(0, query_button.Size.Height + 1))
+    search_text.Bind(wx.EVT_TEXT, on_search)
+    bottom_left_box.Add(search_text, 0, wx.EXPAND)
+
     ################
     # CRS info panel
     crs_info_box = wx.BoxSizer(wx.VERTICAL)
@@ -640,12 +645,10 @@ def start(
     # text for CRS info
     crs_info_text = wx.TextCtrl(
             crs_info_panel,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
-            size=(bottom_right_notebook_width,
-                  bottom_right_notebook_height - 75))
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
     crs_info_text.SetFont(query_text.GetFont())
-    crs_info_box.Add(crs_info_text)
+    crs_info_box.Add(crs_info_text, 1, wx.EXPAND)
 
     # buttons
     select_button = wx.Button(crs_info_panel, label="Select")
@@ -663,17 +666,19 @@ def start(
 
     ###########
     # log panel
+    log_box = wx.BoxSizer()
 
     # text for CRS info
-    log_text = wx.TextCtrl(
-            log_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
-            size=(bottom_right_notebook_width,
-                  bottom_right_notebook_height - 45))
+    log_text = wx.TextCtrl(log_panel,
+                           style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
     log_text.SetFont(query_text.GetFont())
+    log_box.Add(log_text, 1, wx.EXPAND)
+    log_panel.SetSizer(log_box)
 
     ############
     # help panel
+    help_box = wx.BoxSizer()
 
     # text for help
     help_text = wx.TextCtrl(
@@ -701,16 +706,16 @@ def start(
             the logical AND operator.
 
             See {doc_url} to learn more."""),
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL,
-            size=(bottom_right_notebook_width,
-                  bottom_right_notebook_height - 45))
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL)
     help_text.Bind(wx.EVT_TEXT_URL,
                    lambda e: webbrowser.open(github_url)
                              if e.GetMouseEvent().LeftIsDown() else None)
     help_text.SetFont(query_text.GetFont())
+    help_box.Add(help_text, 1, wx.EXPAND)
+    help_panel.SetSizer(help_box)
 
-    bottom_box.Add(bottom_right_notebook)
-    main_box.Add(bottom_box)
+    bottom_box.Add(bottom_right_notebook, 1, wx.EXPAND)
+    main_box.Add(bottom_box, 1, wx.EXPAND)
 
     root.SetSizer(main_box)
 
