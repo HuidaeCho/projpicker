@@ -4,4 +4,5 @@ git+https://github.com/ocsmit/sphinx-argparse.git@master
 git+https://github.com/HuidaeCho/sphinx_press_theme.git@projpicker
 #sphinx_rtd_theme
 six
-wxPython
+# Fails to install
+#wxPython
