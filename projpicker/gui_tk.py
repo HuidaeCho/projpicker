@@ -594,7 +594,7 @@ def start(
     # GUI
 
     # root window
-    root = tk.Tk()#className="ProjPickerGUI")
+    root = tk.Tk(className="ProjPickerGUI")
     root_width = 800
     root_height = root_width
     root.geometry(f"{root_width}x{root_height}")
