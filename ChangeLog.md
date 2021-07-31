@@ -1,7 +1,62 @@
 # Change log
 
-* [`acc1545`](https://github.com/HuidaeCho/projpicker/commit/acc1545)  (HEAD -> main) changelog
-* [`4182e82`](https://github.com/HuidaeCho/projpicker/commit/4182e82)  (origin/main, origin/HEAD) Strict 79 column wrapping
+## HEAD
+Sat Jul 31 03:40:10 2021 -0400
+
+* [`ba018a1`](https://github.com/HuidaeCho/projpicker/commit/ba018a1)  wxgui: wider ID column
+* [`a1dc763`](https://github.com/HuidaeCho/projpicker/commit/a1dc763)  gui: query string bug fixed
+* [`3b0e76b`](https://github.com/HuidaeCho/projpicker/commit/3b0e76b)  Code => ID (crs\_code has no authority name)
+* [`8a883f0`](https://github.com/HuidaeCho/projpicker/commit/8a883f0)  gui: Replace filters with search
+* [`6328d12`](https://github.com/HuidaeCho/projpicker/commit/6328d12)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`8d900d6`](https://github.com/HuidaeCho/projpicker/commit/8d900d6)  wxgui: Fix single mode
+* [`73d0ac5`](https://github.com/HuidaeCho/projpicker/commit/73d0ac5)  Update README.md
+* [`f8917ff`](https://github.com/HuidaeCho/projpicker/commit/f8917ff)  Move subprojects above ideas
+* [`1867cf2`](https://github.com/HuidaeCho/projpicker/commit/1867cf2)  List still alive ArcGIS Pro toolbox first
+* [`8e25ac4`](https://github.com/HuidaeCho/projpicker/commit/8e25ac4)  projpicker-gui is replaced by the core wxPython GUI
+* [`d635aec`](https://github.com/HuidaeCho/projpicker/commit/d635aec)  Comment out wxPython
+* [`44a8ac0`](https://github.com/HuidaeCho/projpicker/commit/44a8ac0)  Add wx to docs requirements
+* [`675a916`](https://github.com/HuidaeCho/projpicker/commit/675a916)  Add wx to docs requirements
+* [`de4a514`](https://github.com/HuidaeCho/projpicker/commit/de4a514)  test gui\_wx doc
+* [`fecfeef`](https://github.com/HuidaeCho/projpicker/commit/fecfeef)  test gui\_wx doc
+* [`16ec805`](https://github.com/HuidaeCho/projpicker/commit/16ec805)  test gui\_wx doc
+* [`5d46a8f`](https://github.com/HuidaeCho/projpicker/commit/5d46a8f)  docs header lines
+* [`82ef7d6`](https://github.com/HuidaeCho/projpicker/commit/82ef7d6)  wxgui: Fix zoom to geoms #48
+* [`8797ce2`](https://github.com/HuidaeCho/projpicker/commit/8797ce2)  Add gui modules to docs
+* [`24894a7`](https://github.com/HuidaeCho/projpicker/commit/24894a7)  wxgui: Replace black background to the default background color
+* [`4657471`](https://github.com/HuidaeCho/projpicker/commit/4657471)  wxgui: populate filters on startup
+* [`c5aac63`](https://github.com/HuidaeCho/projpicker/commit/c5aac63)  gui: minor refactoring
+* [`a0b262f`](https://github.com/HuidaeCho/projpicker/commit/a0b262f)  gui: Move more common functions to gui\_common.py
+* [`46eb134`](https://github.com/HuidaeCho/projpicker/commit/46eb134)  tkgui: Add import/export error messages
+* [`1c63561`](https://github.com/HuidaeCho/projpicker/commit/1c63561)  Update README.md
+* [`63969db`](https://github.com/HuidaeCho/projpicker/commit/63969db)  Update README.md
+* [`2efb5b6`](https://github.com/HuidaeCho/projpicker/commit/2efb5b6)  Add a new wxGUI screenshot
+* [`52da70d`](https://github.com/HuidaeCho/projpicker/commit/52da70d)  wxgui: Suggest a default filename to add .ppik automatically
+* [`3294fd2`](https://github.com/HuidaeCho/projpicker/commit/3294fd2)  wxgui: Implement import/export
+* [`0a7ec39`](https://github.com/HuidaeCho/projpicker/commit/0a7ec39)  Fix gui\_tk.py; Reparent popup menu to query\_text
+* [`1930b9b`](https://github.com/HuidaeCho/projpicker/commit/1930b9b)  Add PROJPICKER\_(LATITUDE|LONGITUDE|ZOOM) env vars
+* [`fdd53a6`](https://github.com/HuidaeCho/projpicker/commit/fdd53a6)  Add PROJPICKER\_GUI env var to select wx or tk GUI
+* [`43d9a1b`](https://github.com/HuidaeCho/projpicker/commit/43d9a1b)  Move common GUI code to gui\_common.py
+* [`ccfffba`](https://github.com/HuidaeCho/projpicker/commit/ccfffba)  wxgui: Implement on select/deselect
+* [`7ceb063`](https://github.com/HuidaeCho/projpicker/commit/7ceb063)  wxgui: Implement filters
+* [`b855073`](https://github.com/HuidaeCho/projpicker/commit/b855073)  WIP: Add gui\_wx.py (use gui\_tk.py if wx is not available)
+* [`14627bc`](https://github.com/HuidaeCho/projpicker/commit/14627bc)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`0423cdf`](https://github.com/HuidaeCho/projpicker/commit/0423cdf)  WIP: Add gui\_wx.py (use gui\_tk.py if wx is not available)
+* [`1880c7e`](https://github.com/HuidaeCho/projpicker/commit/1880c7e)  Server / client docs
+* [`c363b49`](https://github.com/HuidaeCho/projpicker/commit/c363b49)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`36f241f`](https://github.com/HuidaeCho/projpicker/commit/36f241f)  Color code refactored
+* [`c3b5e4c`](https://github.com/HuidaeCho/projpicker/commit/c3b5e4c)  GUI Docs for import/export
+* [`6b1f4f0`](https://github.com/HuidaeCho/projpicker/commit/6b1f4f0)  Move map\_canvas.delete() closer to redrawing code
+* [`2bf41fd`](https://github.com/HuidaeCho/projpicker/commit/2bf41fd)  Remove unnecessary nonlocal dragged\_bbox
+* [`2af3f88`](https://github.com/HuidaeCho/projpicker/commit/2af3f88)  gui: minor refactoring
+* [`9411223`](https://github.com/HuidaeCho/projpicker/commit/9411223)  Add a figure
+* [`e013ce0`](https://github.com/HuidaeCho/projpicker/commit/e013ce0)  Minor updates and add web application
+* [`9e1ac0b`](https://github.com/HuidaeCho/projpicker/commit/9e1ac0b)  Fix web.web doc
+* [`5e515f6`](https://github.com/HuidaeCho/projpicker/commit/5e515f6)  (restructure) Rename a callback function for consistency
+* [`1091772`](https://github.com/HuidaeCho/projpicker/commit/1091772)  Do not delete the module web from the package web; hides help and need a better solution
+* [`ed78d6c`](https://github.com/HuidaeCho/projpicker/commit/ed78d6c)  Rename projpicker() to start() to avoid overwriting the module namespace
+* [`3a94e50`](https://github.com/HuidaeCho/projpicker/commit/3a94e50)  changelog
+* [`acc1545`](https://github.com/HuidaeCho/projpicker/commit/acc1545)  changelog
+* [`4182e82`](https://github.com/HuidaeCho/projpicker/commit/4182e82)  Strict 79 column wrapping
 * [`cdb4fe3`](https://github.com/HuidaeCho/projpicker/commit/cdb4fe3)  Delete debugging lines
 * [`2c2bef3`](https://github.com/HuidaeCho/projpicker/commit/2c2bef3)  Repeating export/import keeps adding a new line; Fix it
 * [`e4f04af`](https://github.com/HuidaeCho/projpicker/commit/e4f04af)  Both escape and button-1 anywhere to close the menu
