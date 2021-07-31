@@ -418,7 +418,8 @@ def start(
                         query_text.SetValue(f.read())
                         f.close()
                 except Exception as e:
-                    wx.MessageDialog(query_text, str(e)).ShowModal()
+                    wx.MessageDialog(query_text, str(e),
+                                     "Import query error").ShowModal()
 
     def export_query():
         with wx.FileDialog(query_text, "Export query", wildcard=file_types,
@@ -430,7 +431,8 @@ def start(
                     with open(fd.GetPath(), "w") as f:
                         f.write(query_to_export)
                 except Exception as e:
-                    wx.MessageDialog(query_text, str(e)).ShowModal()
+                    wx.MessageDialog(query_text, str(e),
+                                     "Export query error").ShowModal()
 
     def query():
         nonlocal bbox

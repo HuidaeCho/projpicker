@@ -5,6 +5,7 @@ This module implements the ProjPicker GUI using tkinter.
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 import textwrap
 import webbrowser
 import threading
@@ -324,21 +325,28 @@ def start(
         zoomer.start()
 
     def import_query():
-        f = filedialog.askopenfile(title="Import query", filetypes=file_types)
-        if f:
-            query_text.delete("1.0", tk.END)
-            query_text.insert(tk.INSERT, f.read())
-            f.close()
+        try:
+            f = filedialog.askopenfile(title="Import query",
+                                       filetypes=file_types)
+            if f:
+                query_text.delete("1.0", tk.END)
+                query_text.insert(tk.INSERT, f.read())
+                f.close()
+        except Exception as e:
+            messagebox.showerror("Import query error", e)
 
     def export_query():
-        f = filedialog.asksaveasfile(title="Export query",
-                                     filetypes=file_types)
-        if f:
-            # https://stackoverflow.com/a/66753640/16079666
-            # text widget always appends a new line at the end
-            query_to_export = query_text.get("1.0", "end-1c")
-            f.write(query_to_export)
-            f.close()
+        try:
+            f = filedialog.asksaveasfile(title="Export query",
+                                         filetypes=file_types)
+            if f:
+                # https://stackoverflow.com/a/66753640/16079666
+                # text widget always appends a new line at the end
+                query_to_export = query_text.get("1.0", "end-1c")
+                f.write(query_to_export)
+                f.close()
+        except Exception as e:
+            messagebox.showerror("Export query error", e)
 
     def query():
         nonlocal bbox
