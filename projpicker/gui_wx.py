@@ -422,6 +422,7 @@ def start(
 
     def export_query():
         with wx.FileDialog(query_text, "Export query", wildcard=file_types,
+                           defaultFile="query",
                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fd:
             if fd.ShowModal() != wx.ID_CANCEL:
                 query_to_export = query_text.GetValue()
