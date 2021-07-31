@@ -166,7 +166,7 @@ def start(
                 query += "\n"
                 sel = query_text.GetSelection()
                 if sel[0] != sel[1]:
-                    name = query_text.GetValue()[sel[0]:sel[1]].strip()
+                    name = query_text.GetRange(*sel).strip()
                     if name and not name.endswith(":"):
                         if not name.startswith(":"):
                             name = f":{name}:"
@@ -174,7 +174,8 @@ def start(
                             name = ""
                     if name and ppik.geom_var_re.match(name):
                         query = query.replace(" ", f" {name} ", 1)
-                if sel[0] > 0 and query_text.GetValue()[sel[0] - 1] != "\n":
+                if (sel[0] > 0 and
+                    query_text.GetRange(sel[0] - 1, sel[0]) != "\n"):
                     query = "\n" + query
                 query_text.Replace(sel[0], sel[1], query)
                 bottom_right_notebook.ChangeSelection(query_panel.page)
@@ -304,7 +305,7 @@ def start(
             # not all platforms support alpha?
             # https://wxpython.org/Phoenix/docs/html/wx.Colour.html#wx.Colour.Alpha
             if fill.Alpha() == wx.ALPHA_OPAQUE:
-                dc.SetBrush(wx.Brush(fill, wx.BRUSHSTYLE_TRANSPARENT))
+                dc.SetBrush(wx.Brush(fill, wx.BRUSHSTYLE_CROSSDIAG_HATCH))
             else:
                 dc.SetBrush(wx.Brush(fill))
 
