@@ -1364,6 +1364,7 @@ def sort_bbox(bbox):
                              x.usage_auth_name, x.usage_code,
                              x.extent_auth_name, x.extent_code))
 
+
 ###############################################################################
 # geometry operators
 

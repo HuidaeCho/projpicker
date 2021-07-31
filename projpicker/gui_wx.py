@@ -3,7 +3,6 @@ This module implements the ProjPicker GUI using wxPython.
 """
 
 import wx.lib.statbmp
-import os
 import io
 import threading
 import queue
@@ -14,11 +13,11 @@ import webbrowser
 if __package__:
     from .getosm import OpenStreetMap
     from . import projpicker as ppik
+    from .gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
-
-projpicker_dzoom_env = "PROJPICKER_DZOOM"
+    from gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
 
 
 def start(
@@ -62,7 +61,7 @@ def start(
 
     zoomer = None
     zoomer_queue = queue.Queue()
-    dzoom = float(os.environ.get(projpicker_dzoom_env, 1))
+    dzoom = get_dzoom()
 
     dragged = False
     dragging_bbox = False
@@ -118,86 +117,6 @@ def start(
                 all_geoms.extend(["poly", g])
 
         map_canvas.Refresh()
-
-    def adjust_lon(prev_x, x, prev_lon, lon):
-        dlon = lon - prev_lon
-        if x - prev_x > 0:
-            if dlon < 0:
-                lon += 360
-            elif dlon > 360:
-                lon -= 360
-        elif dlon > 0:
-            lon -= 360
-        elif dlon < -360:
-            lon += 360
-        return lon
-
-    def calc_geoms_bbox():
-        s = n = w = e = None
-        geom_type = "point"
-        g = 0
-        ngeoms = len(geoms)
-        while g < ngeoms:
-            geom = geoms[g]
-            if geom in ("point", "poly", "bbox"):
-                geom_type = geom
-                g += 1
-                geom = geoms[g]
-            if type(geom) == list:
-                if geom_type == "point":
-                    lat, lon = geom
-                    if s is None:
-                        s = n = lat
-                        w = e = lon
-                    else:
-                        if lat < s:
-                            s = lat
-                        elif lat > n:
-                            n = lat
-                        if lon < w:
-                            w = lon
-                        elif lon > e:
-                            e = lon
-                elif geom_type == "poly":
-                    for coor in geom:
-                        lat, lon = coor
-                        if s is None:
-                            s = n = lat
-                            w = e = lon
-                        else:
-                            if lat < s:
-                                s = lat
-                            elif lat > n:
-                                n = lat
-                            if lon < w:
-                                w = lon
-                            elif lon > e:
-                                e = lon
-                else:
-                    b, t, l, r = geom
-                    if s is None:
-                        s = b
-                        n = t
-                        w = l
-                        e = r
-                    else:
-                        if b < s:
-                            s = b
-                        if t > n:
-                            n = t
-                        if l < w:
-                            w = l
-                        if r > e:
-                            e = r
-            g += 1
-        if None not in (s, n, w, e):
-            if s == n:
-                s -= 0.0001
-                n += 0.0001
-            if w == e:
-                w -= 0.0001
-                e += 0.0001
-        return s, n, w, e
 
     def on_grab(event):
         osm.grab(event.x, event.y)
@@ -580,27 +499,8 @@ def start(
         root.Close()
 
     # parse geometries if given
-    query_string = ""
-    if geoms:
-        geoms = ppik.parse_mixed_geoms(geoms)
-        geom_type = "point"
-        for geom in geoms:
-            if geom in ("point", "poly", "bbox"):
-                line = geom_type = geom
-            elif type(geom) == str:
-                line = geom
-            else:
-                line = ""
-                if geom_type == "poly":
-                    for coor in geom:
-                        line += (" " if line else "") + f"{coor[0]},{coor[1]}"
-                else:
-                    for coor in geom:
-                        line += ("," if line else "") + f"{coor}"
-            query_string += line + "\n"
-        bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
-    else:
-        geoms = []
+    geoms, query_string = parse_geoms(geoms)
+
     if bbox_or_quit and not bbox:
         return [], bbox, geoms
 
