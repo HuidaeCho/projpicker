@@ -410,20 +410,26 @@ def start(
         prev_crs_items.clear()
 
     def import_query():
-        f = filedialog.askopenfile(title="Import query", filetypes=file_types)
-        if f:
-            query_text.SetValue(f.read())
-            f.close()
+        with wx.FileDialog(query_text, "Import query", wildcard=file_types,
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
+            if fd.ShowModal() != wx.ID_CANCEL:
+                try:
+                    with open(fd.GetPath()) as f:
+                        query_text.SetValue(f.read())
+                        f.close()
+                except Exception as e:
+                    wx.MessageDialog(query_text, str(e)).ShowModal()
 
     def export_query():
-        f = filedialog.asksaveasfile(title="Export query",
-                                     filetypes=file_types)
-        if f:
-            # https://stackoverflow.com/a/66753640/16079666
-            # text widget always appends a new line at the end
-            query_to_export = query_text.get("1.0", "end-1c")
-            f.write(query_to_export)
-            f.close()
+        with wx.FileDialog(query_text, "Export query", wildcard=file_types,
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fd:
+            if fd.ShowModal() != wx.ID_CANCEL:
+                query_to_export = query_text.GetValue()
+                try:
+                    with open(fd.GetPath(), "w") as f:
+                        f.write(query_to_export)
+                except Exception as e:
+                    wx.MessageDialog(query_text, str(e)).ShowModal()
 
     def query():
         nonlocal bbox
@@ -636,6 +642,20 @@ def start(
     query_text.SetFont(wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
                                wx.FONTWEIGHT_NORMAL))
     query_box.Add(query_text)
+
+    # pop-up menu
+    menu = wx.Menu()
+    import_menuitem = wx.MenuItem(menu, wx.NewId(), "Import query")
+    export_menuitem = wx.MenuItem(menu, wx.NewId(), "Export query")
+    menu.Append(import_menuitem)
+    menu.Append(export_menuitem)
+
+    file_types = "ProjPicker query files (*.ppik)|*.ppik|All files (*.*)|*.*"
+    query_text.Bind(wx.EVT_MENU, lambda e: import_query(), import_menuitem)
+    query_text.Bind(wx.EVT_MENU, lambda e: export_query(), export_menuitem)
+
+    query_text.Bind(wx.EVT_RIGHT_DOWN,
+                    lambda e: query_text.PopupMenu(menu, e.GetPosition()))
 
     # buttons
     query_button = wx.Button(query_panel, label="Query")
