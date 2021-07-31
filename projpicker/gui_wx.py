@@ -13,11 +13,13 @@ import webbrowser
 if __package__:
     from .getosm import OpenStreetMap
     from . import projpicker as ppik
-    from .gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
+    from .gui_common import (get_lat, get_lon, get_zoom, get_dzoom,
+                             parse_geoms, adjust_lon, calc_geoms_bbox)
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
-    from gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
+    from gui_common import (get_lat, get_lon, get_zoom, get_dzoom, parse_geoms,
+                            adjust_lon, calc_geoms_bbox)
 
 
 def start(
@@ -79,9 +81,9 @@ def start(
     dragged_bbox_color = "green"
     sel_bbox_color = "red"
 
-    lat = 0
-    lon = 0
-    zoom = 0
+    lat = get_lat()
+    lon = get_lon()
+    zoom = get_zoom()
 
     def draw_map(x, y):
         osm.draw()

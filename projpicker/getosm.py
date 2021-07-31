@@ -198,7 +198,7 @@ class OpenStreetMap:
             float, float: Tile x, y starting from lon,lon=-180,85.0511 growing
             towards the east and south by 1 for each tile.
         """
-        lat = max(min(lat, self.lat_max), self.lat_min)
+        lat = min(max(lat, self.lat_min), self.lat_max)
         lat = math.radians(lat)
         n = 2**z
         x = (lon+180)/360*n

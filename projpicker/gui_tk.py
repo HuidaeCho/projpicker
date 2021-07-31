@@ -157,9 +157,9 @@ def start(
     dragged_bbox_color = "green"
     sel_bbox_color = "red"
 
-    lat = 0
-    lon = 0
-    zoom = 0
+    lat = get_lat()
+    lon = get_lon()
+    zoom = get_zoom()
 
     def draw_map(x, y):
         osm.draw()

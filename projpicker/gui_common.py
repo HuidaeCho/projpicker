@@ -4,7 +4,47 @@ This module implements common functions for the gui modules.
 
 import os
 
+projpicker_latitude_env = "PROJPICKER_LATITUDE"
+projpicker_longitude_env = "PROJPICKER_LONGITUDE"
+projpicker_zoom_env = "PROJPICKER_ZOOM"
 projpicker_dzoom_env = "PROJPICKER_DZOOM"
+
+
+def get_lat():
+    """
+    Get the initial latitude in decimal degrees from the PROJPICKER_LATITUDE
+    environment variable. If this environment variable is not available, return
+    0.
+
+    Returns:
+        float: Initial latitude in decimal degrees.
+    """
+    return min(max(float(os.environ.get(projpicker_latitude_env, 0)),
+                   -85.0511), 85.0511)
+
+
+def get_lon():
+    """
+    Get the initial longitude in decimal degrees from the PROJPICKER_LONGITUDE
+    environment variable. If this environment variable is not available, return
+    0.
+
+    Returns:
+        float: Initial longitude in decimal degrees.
+    """
+    return min(max(float(os.environ.get(projpicker_longitude_env, 0)),
+                   -180), 180)
+
+
+def get_zoom():
+    """
+    Get the initial zoom level from the PROJPICKER_ZOOM environment variable.
+    If this environment variable is not available, return 0.
+
+    Returns:
+        float: Delta zoom level.
+    """
+    return min(max(int(os.environ.get(projpicker_zoom_env, 0)), 0), 18)
 
 
 def get_dzoom():
@@ -15,7 +55,7 @@ def get_dzoom():
     Returns:
         float: Delta zoom level.
     """
-    return float(os.environ.get(projpicker_dzoom_env, 1))
+    return min(max(float(os.environ.get(projpicker_dzoom_env, 1)), -18), 18)
 
 
 def parse_geoms(geoms):
