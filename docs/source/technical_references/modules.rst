@@ -38,8 +38,6 @@ gui_tk
 
 gui_wx
 ------
-test
-
 .. automodule:: gui_wx
    :members:
 
