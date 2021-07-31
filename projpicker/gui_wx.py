@@ -463,6 +463,7 @@ def start(
         bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
     else:
         geoms = []
+        query_string = ""
 
     if bbox_or_quit and not bbox:
         return [], bbox, geoms
@@ -594,6 +595,7 @@ def start(
     # https://dzone.com/articles/wxpython-learning-use-fonts
     query_text.SetFont(wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
                                wx.FONTWEIGHT_NORMAL))
+    query_text.SetValue(query_string)
     query_box.Add(query_text)
 
     # pop-up menu

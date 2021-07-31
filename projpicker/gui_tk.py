@@ -579,6 +579,7 @@ def start(
         bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
     else:
         geoms = []
+        query_string = ""
 
     if bbox_or_quit and not bbox:
         return [], bbox, geoms
