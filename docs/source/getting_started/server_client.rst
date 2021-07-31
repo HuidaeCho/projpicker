@@ -1,24 +1,28 @@
-Server / Client
+Server / client
 ===============
 
-A server can be started capable of performing ProjPicker Queries with the **-S** flag.
-It can be accessed either through a local client at the specified local host or used as a public facing site such as is available at `projpicker.pythonanywhere.com <https://projpicker.pythonanywhere.com/>`_
+ProjPicker supports different web technologies to provide its query capabilities on the internet.
+It implements its own standalone web server, the Web Server Gateway Interface (WSGI), and the Common Gateway Interface (CGI).
+`ProjPicker Web <https://projpicker.pythonanywhere.com/>`_ runs as a WSGI application instance.
 
+Standalone web server
+---------------------
 
-Server uses
------------
-
-Local desktop
-^^^^^^^^^^^^^
+The standalone web server is only recommended for desktop usage because of its limited security checks and lack of HTTPS support.
+A local server can be started capable of performing ProjPicker queries with the **-S** flag.
 
 .. code-block::
 
-   projpicker -S
+   projpicker -cS
 
-Python web framework
-^^^^^^^^^^^^^^^^^^^^
+In the above example, the **-c** flag is used together to start the client automatically.
+Without this flag, it is the user's responsibility to browse to the correct local URL that the server responds to.
 
-With `bottle <https://bottlepy.org/docs/dev/>`_
+As a WSGI application
+---------------------
+
+A WSGI instance can be started using any Python web framework that supports this web technology.
+For example, using `bottle <https://bottlepy.org/docs/dev/>`_:
 
 .. code-block:: python
 
@@ -27,22 +31,22 @@ With `bottle <https://bottlepy.org/docs/dev/>`_
 
    bottle.run(web.application, port=8000)
 
-
-With uwsgi
-^^^^^^^^^^
-
+The following command line starts ProjPicker as a WSGI application running on a new HTTP server provided by uwsgi.
 .. code-block::
 
-    uwsgi --http :8000 --wsgi-fe web.py
+    uwsgi --http :8000 --wsgi-file web.py
 
-or with a web server and its uwsgi module
+If there is already an HTTP server that is configured to use its uwsgi module, a server can be started as follows:
 
 .. code-block::
 
    uwsgi --socket :8000 --wsgi-file web.py
 
-As a CGI script with Apache
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+As a CGI script
+---------------
+
+ProjPicker can also be used as a CGI script.
+For example, with Apchae, the following .htaccess file turns ProjPicker's `web.py` into a CGI script.
 
 .. code-block:: shell
 
@@ -54,13 +58,3 @@ As a CGI script with Apache
 
     RewriteEngine On
     RewriteRule ^query$ web.py
-
-
-Client
-------
-
-The local server can be started and opened with
-
-.. code-block::
-
-   projpicker -c
