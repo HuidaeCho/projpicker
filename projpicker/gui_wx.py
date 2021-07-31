@@ -485,7 +485,8 @@ def start(
     root_width = 800
     root_height = root_width
     root_size = (root_width, root_height)
-    root = wx.Frame(None, title="ProjPicker wxGUI", size=root_size)
+    root = wx.Frame(None, title="ProjPicker wxGUI")
+    root.SetClientSize(root_size)
     main_box = wx.BoxSizer(wx.VERTICAL)
 
     ###########
@@ -537,9 +538,6 @@ def start(
     ###################
     # bottom-left frame
     bottom_left_box = wx.BoxSizer(wx.VERTICAL)
-
-    #######################
-    # bottom-left-top frame
 
     # list of CRSs
     crs_list_width = root_width // 2
