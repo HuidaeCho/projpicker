@@ -594,11 +594,10 @@ def start(
     # GUI
 
     # root window
-    root = tk.Tk()
+    root = tk.Tk()#className="ProjPickerGUI")
     root_width = 800
     root_height = root_width
     root.geometry(f"{root_width}x{root_height}")
-    root.resizable(False, False)
     root.title("ProjPicker tkGUI")
     # https://stackoverflow.com/a/5871414/16079666
     root.bind_class("Text", "<Control-a>",

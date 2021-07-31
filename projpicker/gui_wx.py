@@ -288,9 +288,10 @@ def start(
         zoomer.start()
 
     def on_resize(event):
-        osm.resize(event.Size.Width, event.Size.Height)
-        x, y = root.ScreenToClient(wx.GetMousePosition())
-        draw_map(x, y)
+        if root.IsShown():
+            osm.resize(event.Size.Width, event.Size.Height)
+            x, y = root.ScreenToClient(wx.GetMousePosition())
+            draw_map(x, y)
 
     def on_paint(event):
         def set_pen_brush(color):
@@ -487,6 +488,10 @@ def start(
 
     # root window
     app = wx.App()
+    # https://trac.wxwidgets.org/ticket/12778
+    # https://wxpython.org/Phoenix/docs/html/wx.AppConsole.html#wx.AppConsole.SetClassName
+    # cannot set WM_CLASS? this line doesn't work
+    app.SetClassName("ProjPickerGUI")
     root_width = 800
     root_height = root_width
     root_size = (root_width, root_height)
