@@ -14,12 +14,14 @@ if __package__:
     from .getosm import OpenStreetMap
     from . import projpicker as ppik
     from .gui_common import (get_lat, get_lon, get_zoom, get_dzoom,
-                             parse_geoms, adjust_lon, calc_geoms_bbox)
+                             parse_geoms, adjust_lon, calc_geoms_bbox,
+                             create_crs_info, find_bbox)
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
     from gui_common import (get_lat, get_lon, get_zoom, get_dzoom, parse_geoms,
-                            adjust_lon, calc_geoms_bbox)
+                            adjust_lon, calc_geoms_bbox, create_crs_info,
+                            find_bbox)
 
 
 def start(
@@ -381,8 +383,8 @@ def start(
         sel_bbox.clear()
         if curr_crs_item >= 0:
             crs = crs_list.GetItemText(curr_crs_item, 1)
-            b = find_bbox(crs)
-            crs_info = create_crs_info(b)
+            b = find_bbox(crs, bbox)
+            crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.SetValue(crs_info)
 
             s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
@@ -474,31 +476,6 @@ def start(
         for unit in units:
             unit_choice.Append(unit)
         unit_choice.Select(0)
-
-    def create_crs_info(bbox):
-        if format_crs_info is None:
-            dic = bbox._asdict()
-            l = 0
-            for key in dic.keys():
-                if len(key) > l:
-                    l = len(key)
-            l += 1
-            txt = ""
-            for key in dic.keys():
-                k = key + ":"
-                txt += f"{k:{l}} {dic[key]}\n"
-        else:
-            txt = format_crs_info(bbox)
-        return txt
-
-    def find_bbox(crs):
-        if crs is None:
-            return None
-
-        auth, code = crs.split(":")
-        b = list(filter(lambda b: b.crs_auth_name==auth and
-                                  b.crs_code==code, bbox))[0]
-        return b
 
     def select():
         nonlocal sel_crs
@@ -762,4 +739,4 @@ def start(
     root.Show()
     app.MainLoop()
 
-    return [find_bbox(crs) for crs in sel_crs], bbox, geoms
+    return [find_bbox(crs, bbox) for crs in sel_crs], bbox, geoms

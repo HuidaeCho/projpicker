@@ -198,3 +198,52 @@ def calc_geoms_bbox(geoms):
             w -= 0.0001
             e += 0.0001
     return s, n, w, e
+
+
+def create_crs_info(bbox, format_crs_info=None):
+    """
+    Create CRS info text optionally using format_crs_info().
+
+    Args:
+        bbox (BBox): BBox instance.
+        format_crs_info (function): Function that takes a BBox instance and
+            formats it to a string.
+
+    Returns:
+        str: Formatted CRS info text.
+    """
+    if format_crs_info is None:
+        dic = bbox._asdict()
+        l = 0
+        for key in dic.keys():
+            if len(key) > l:
+                l = len(key)
+        l += 1
+        txt = ""
+        for key in dic.keys():
+            k = key + ":"
+            txt += f"{k:{l}} {dic[key]}\n"
+    else:
+        txt = format_crs_info(bbox)
+    return txt
+
+
+def find_bbox(crs, bbox):
+    """
+    Find a BBox instance from a list of BBox instances that matches a CRS ID.
+
+    Args:
+        crs (str): CRS ID with the authority name and code delimited by a
+            colon.
+        bbox (list): List of BBox instances.
+
+    Returns:
+        BBox: BBox instance.
+    """
+    if crs is None:
+        return None
+
+    auth, code = crs.split(":")
+    b = list(filter(lambda b: b.crs_auth_name==auth and
+                              b.crs_code==code, bbox))[0]
+    return b
