@@ -20,8 +20,8 @@ For [GRASS GIS](https://grass.osgeo.org/), a new module
 [g.projpicker](https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html)
 that wraps around this project is available.
 
-![image](https://user-images.githubusercontent.com/7456117/127734423-75f33c76-2734-411f-8637-9e6b86a9d4a9.png)
-![image](https://user-images.githubusercontent.com/7456117/127734470-7964a7a8-6c89-4885-8dcd-d3526b40f733.png)
+![image](https://user-images.githubusercontent.com/7456117/127744475-93c2210d-ef3d-4065-9cd8-cdbc8f3320cb.png)
+![image](https://user-images.githubusercontent.com/7456117/127744497-aaaf8608-10c8-43f5-8bce-e6a8625d9010.png)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
