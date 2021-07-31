@@ -664,9 +664,9 @@ def start(
     bottom_left_top_frame.pack(fill=tk.BOTH, expand=True)
 
     # list of CRSs
-    code_width = 100
-    name_width = bottom_left_frame_width - code_width - 15
-    crs_cols = {"Name": name_width, "Code": code_width}
+    id_width = 100
+    name_width = bottom_left_frame_width - id_width - 15
+    crs_cols = {"Name": name_width, "ID": id_width}
 
     crs_treeview = ttk.Treeview(
             bottom_left_top_frame, columns=list(crs_cols.keys()),
