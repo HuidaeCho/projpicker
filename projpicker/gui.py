@@ -1,5 +1,5 @@
 """
-This module imports the gui_wx or gui_tk module.
+This module imports the gui_tk or gui_wx module.
 """
 
 import os

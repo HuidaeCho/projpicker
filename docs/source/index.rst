@@ -41,7 +41,7 @@ Table of contents
 
 .. toctree::
 
-   program_references/index
+   technical_references/index
 
 Indices and tables
 ------------------
