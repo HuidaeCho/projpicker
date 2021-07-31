@@ -130,11 +130,6 @@ def start(
     prev_crs_items = []
     sel_bbox = []
 
-    proj_tables = []
-    units = []
-    all_proj_tables = "all proj_tables"
-    all_units = "all units"
-
     doc_url = "https://projpicker.readthedocs.io/"
 
     tag_map = "map"
@@ -364,7 +359,6 @@ def start(
             bottom_right_notebook.select(log_frame)
 
         populate_crs_list(bbox)
-        populate_filters(bbox)
         draw_geoms()
 
     def populate_crs_list(bbox):
@@ -374,19 +368,6 @@ def start(
                                 b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
         sel_bbox.clear()
         draw_bbox()
-
-    def populate_filters(bbox):
-        proj_tables.clear()
-        proj_tables.append(all_proj_tables)
-        proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
-        proj_table_combobox["values"] = proj_tables
-        proj_table_combobox.set(all_proj_tables)
-
-        units.clear()
-        units.append(all_units)
-        units.extend(sorted(set([b.unit for b in bbox])))
-        unit_combobox["values"] = units
-        unit_combobox.set(all_units)
 
     def select():
         nonlocal sel_crs
@@ -573,8 +554,8 @@ def start(
         crs_info_text.delete("1.0", tk.END)
         sel_bbox.clear()
         if curr_crs_item:
-            crs = crs_treeview.item(curr_crs_item)["values"][1]
-            b = find_bbox(crs, bbox)
+            crs_id = crs_treeview.item(curr_crs_item)["values"][1]
+            b = find_bbox(crs_id, bbox)
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.insert(tk.END, crs_info)
 
@@ -586,25 +567,18 @@ def start(
         draw_geoms()
         draw_bbox()
 
-    def on_select_proj_table_or_unit(event):
-        proj_table = proj_tables[proj_table_combobox.current()]
-        unit = units[unit_combobox.current()]
-
-        if proj_table == all_proj_tables and unit == all_units:
-            filt_bbox = bbox
-        elif proj_table == all_proj_tables:
-            filt_bbox = filter(lambda b: b.unit==unit, bbox)
-        elif unit == all_units:
-            filt_bbox = filter(lambda b: b.proj_table==proj_table, bbox)
-        else:
-            filt_bbox = filter(lambda b: b.proj_table==proj_table and
-                                         b.unit==unit, bbox)
-
+    def on_search(event):
+        text = [x.strip() for x in search_text.get().split(";")]
+        filt_bbox = ppik.search_bbox(bbox, text)
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
     # parse geometries if given
-    geoms, query_string = parse_geoms(geoms)
+    if geoms:
+        geoms, query_string = parse_geoms(geoms)
+        bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
+    else:
+        geoms = []
 
     if bbox_or_quit and not bbox:
         return [], bbox, geoms
@@ -722,25 +696,10 @@ def start(
     crs_treeview_hscrollbar.pack(fill=tk.X)
     crs_treeview.config(xscrollcommand=crs_treeview_hscrollbar.set)
 
-    ##########################
-    # bottom-left-bottom frame
-    bottom_left_bottom_frame = ttk.Frame(bottom_left_frame)
-    bottom_left_bottom_frame.pack(fill=tk.X, ipady=3, pady=2, padx=2)
-
-    # list of proj_tables
-    proj_table_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10,
-                                       state="readonly")
-    proj_table_combobox.bind("<<ComboboxSelected>>",
-                             on_select_proj_table_or_unit)
-    proj_table_combobox.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-
-    # list of units
-    unit_combobox = ttk.Combobox(bottom_left_bottom_frame, width=10,
-                                 state="readonly")
-    unit_combobox.bind("<<ComboboxSelected>>", on_select_proj_table_or_unit)
-    unit_combobox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-    populate_filters(bbox)
+    # text for search
+    search_text = tk.Entry(bottom_left_frame)
+    search_text.pack(fill=tk.X, ipady=4)
+    search_text.bind("<KeyRelease>", on_search)
 
     ####################
     # bottom-right frame
@@ -856,8 +815,6 @@ def start(
     # text for help
     help_text = tk.Text(help_frame, width=20, height=1, wrap=tk.NONE)
     help_text.insert(tk.END, textwrap.dedent(f"""\
-            Map operations
-            ==============
             Pan:                        Left drag
             Zoom:                       Scroll
             Zoom to geometries:         Ctrl + scroll up
@@ -870,15 +827,15 @@ def start(
             Cancel drawing a poly/bbox: Right click
             Clear geometries:           Double right click
 
-            Geometry variables
-            ==================
             To define a geometry variable, type and highlight
             a name in the query builder, then create a geometry.
 
-            Query import & export
-            =====================
             Query files (*.ppik) can be imported or exported
             by right clicking on the query builder.
+
+            Search words can be a CRS ID or separated by
+            a semicolon to search multiple fields using
+            the logical AND operator.
 
             See {doc_url} to learn more."""))
     help_text.tag_add(tag_doc, "end-1l+4c", "end-16c")
@@ -905,4 +862,4 @@ def start(
     # run GUI
     root.mainloop()
 
-    return [find_bbox(crs, bbox) for crs in sel_crs], bbox, geoms
+    return [find_bbox(crs_id, bbox) for crs_id in sel_crs], bbox, geoms

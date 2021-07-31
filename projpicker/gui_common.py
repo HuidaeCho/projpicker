@@ -4,6 +4,12 @@ This module implements common functions for the gui modules.
 
 import os
 
+# https://stackoverflow.com/a/49480246/16079666
+if __package__:
+    from . import projpicker as ppik
+else:
+    import projpicker as ppik
+
 projpicker_latitude_env = "PROJPICKER_LATITUDE"
 projpicker_longitude_env = "PROJPICKER_LONGITUDE"
 projpicker_zoom_env = "PROJPICKER_ZOOM"
@@ -69,26 +75,22 @@ def parse_geoms(geoms):
         list, str: List of parsed geometries and query string.
     """
     query_string = ""
-    if geoms:
-        geoms = ppik.parse_mixed_geoms(geoms)
-        geom_type = "point"
-        for geom in geoms:
-            if geom in ("point", "poly", "bbox"):
-                line = geom_type = geom
-            elif type(geom) == str:
-                line = geom
+    geoms = ppik.parse_mixed_geoms(geoms)
+    geom_type = "point"
+    for geom in geoms:
+        if geom in ("point", "poly", "bbox"):
+            line = geom_type = geom
+        elif type(geom) == str:
+            line = geom
+        else:
+            line = ""
+            if geom_type == "poly":
+                for coor in geom:
+                    line += (" " if line else "") + f"{coor[0]},{coor[1]}"
             else:
-                line = ""
-                if geom_type == "poly":
-                    for coor in geom:
-                        line += (" " if line else "") + f"{coor[0]},{coor[1]}"
-                else:
-                    for coor in geom:
-                        line += ("," if line else "") + f"{coor}"
-            query_string += line + "\n"
-        bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
-    else:
-        geoms = []
+                for coor in geom:
+                    line += ("," if line else "") + f"{coor}"
+        query_string += line + "\n"
     return geoms, query_string
 
 
@@ -228,21 +230,21 @@ def create_crs_info(bbox, format_crs_info=None):
     return txt
 
 
-def find_bbox(crs, bbox):
+def find_bbox(crs_id, bbox):
     """
     Find a BBox instance from a list of BBox instances that matches a CRS ID.
 
     Args:
-        crs (str): CRS ID with the authority name and code delimited by a
+        crs_id (str): CRS ID with the authority name and code delimited by a
             colon.
         bbox (list): List of BBox instances.
 
     Returns:
-        BBox: BBox instance.
+        BBox: BBox instance whose CRS ID is crs_id.
     """
-    if crs is None:
+    if crs_id is None:
         return None
 
-    auth, code = crs.split(":")
+    auth, code = crs_id.split(":")
     return list(filter(lambda b: b.crs_auth_name==auth and
                                  b.crs_code==code, bbox))[0]

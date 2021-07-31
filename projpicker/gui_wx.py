@@ -56,11 +56,6 @@ def start(
     prev_crs_items = []
     sel_bbox = []
 
-    proj_tables = []
-    units = []
-    all_proj_tables = "all proj_tables"
-    all_units = "all units"
-
     doc_url = "https://projpicker.readthedocs.io/"
 
     zoomer = None
@@ -382,8 +377,8 @@ def start(
         crs_info_text.Clear()
         sel_bbox.clear()
         if curr_crs_item >= 0:
-            crs = crs_list.GetItemText(curr_crs_item, 1)
-            b = find_bbox(crs, bbox)
+            crs_id = crs_list.GetItemText(curr_crs_item, 1)
+            b = find_bbox(crs_id, bbox)
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.SetValue(crs_info)
 
@@ -394,20 +389,9 @@ def start(
             bottom_right_notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
 
-    def on_select_proj_table_or_unit(event):
-        proj_table = proj_tables[proj_table_choice.GetSelection()]
-        unit = units[unit_choice.GetSelection()]
-
-        if proj_table == all_proj_tables and unit == all_units:
-            filt_bbox = bbox
-        elif proj_table == all_proj_tables:
-            filt_bbox = filter(lambda b: b.unit==unit, bbox)
-        elif unit == all_units:
-            filt_bbox = filter(lambda b: b.proj_table==proj_table, bbox)
-        else:
-            filt_bbox = filter(lambda b: b.proj_table==proj_table and
-                                         b.unit==unit, bbox)
-
+    def on_search(event):
+        text = [x.strip() for x in search_text.GetValue().split(";")]
+        filt_bbox = ppik.search_bbox(bbox, text)
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
@@ -456,7 +440,6 @@ def start(
             log_text.SetValue("")
 
         populate_crs_list(bbox)
-        populate_filters(bbox)
         draw_geoms()
 
     def populate_crs_list(bbox):
@@ -464,23 +447,6 @@ def start(
         for b in bbox:
             crs_list.Append((b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
         sel_bbox.clear()
-
-    def populate_filters(bbox):
-        proj_tables.clear()
-        proj_tables.append(all_proj_tables)
-        proj_tables.extend(sorted(set([b.proj_table for b in bbox])))
-        proj_table_choice.Clear()
-        for proj_table in proj_tables:
-            proj_table_choice.Append(proj_table)
-        proj_table_choice.Select(0)
-
-        units.clear()
-        units.append(all_units)
-        units.extend(sorted(set([b.unit for b in bbox])))
-        unit_choice.Clear()
-        for unit in units:
-            unit_choice.Append(unit)
-        unit_choice.Select(0)
 
     def select():
         nonlocal sel_crs
@@ -492,7 +458,11 @@ def start(
         root.Close()
 
     # parse geometries if given
-    geoms, query_string = parse_geoms(geoms)
+    if geoms:
+        geoms, query_string = parse_geoms(geoms)
+        bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
+    else:
+        geoms = []
 
     if bbox_or_quit and not bbox:
         return [], bbox, geoms
@@ -580,21 +550,11 @@ def start(
     crs_list.Bind(wx.EVT_LIST_ITEM_SELECTED, on_select_crs)
     crs_list.Bind(wx.EVT_LIST_ITEM_DESELECTED, on_select_crs)
 
-    ##########################
-    # bottom-left-bottom frame
-    bottom_left_bottom_box = wx.BoxSizer(wx.HORIZONTAL)
+    # text for search
+    search_text = wx.SearchCtrl(root, size=(crs_list_width, 30))
+    search_text.Bind(wx.EVT_TEXT, on_search)
+    bottom_left_box.Add(search_text)
 
-    proj_table_choice = wx.Choice(root, size=(crs_list_width // 2, 30))
-    proj_table_choice.Bind(wx.EVT_CHOICE, on_select_proj_table_or_unit)
-
-    unit_choice = wx.Choice(root, size=(crs_list_width // 2, 30))
-    unit_choice.Bind(wx.EVT_CHOICE, on_select_proj_table_or_unit)
-
-    populate_filters(bbox)
-
-    bottom_left_bottom_box.Add(proj_table_choice)
-    bottom_left_bottom_box.Add(unit_choice)
-    bottom_left_box.Add(bottom_left_bottom_box)
     bottom_box.Add(bottom_left_box)
 
     ####################
@@ -603,18 +563,22 @@ def start(
     bottom_right_notebook_height = root_height - map_canvas_height
     bottom_right_notebook = wx.Notebook(root)
 
+    # query tab
     query_panel = wx.Panel(bottom_right_notebook)
     query_panel.page = bottom_right_notebook.GetPageCount()
     bottom_right_notebook.AddPage(query_panel, "Query")
 
+    # CRS info tab
     crs_info_panel = wx.Panel(bottom_right_notebook)
     crs_info_panel.page = bottom_right_notebook.GetPageCount()
     bottom_right_notebook.AddPage(crs_info_panel, "CRS Info")
 
+    # log tab
     log_panel = wx.Panel(bottom_right_notebook)
     log_panel.page = bottom_right_notebook.GetPageCount()
     bottom_right_notebook.AddPage(log_panel, "Log")
 
+    # help tab
     help_panel = wx.Panel(bottom_right_notebook)
     help_panel.page = bottom_right_notebook.GetPageCount()
     bottom_right_notebook.AddPage(help_panel, "Help")
@@ -705,8 +669,6 @@ def start(
     # text for help
     help_text = wx.TextCtrl(
             help_panel, value=textwrap.dedent(f"""\
-            Map operations
-            ==============
             Pan:                        Left drag
             Zoom:                       Scroll
             Zoom to geometries:         Ctrl + scroll up
@@ -719,15 +681,15 @@ def start(
             Cancel drawing a poly/bbox: Right click
             Clear geometries:           Double right click
 
-            Geometry variables
-            ==================
             To define a geometry variable, type and highlight
             a name in the query builder, then create a geometry.
 
-            Query import & export
-            =====================
             Query files (*.ppik) can be imported or exported
             by right clicking on the query builder.
+
+            Search words can be a CRS ID or separated by
+            a semicolon to search multiple fields using
+            the logical AND operator.
 
             See {doc_url} to learn more."""),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL,
@@ -748,4 +710,4 @@ def start(
     root.Show()
     app.MainLoop()
 
-    return [find_bbox(crs, bbox) for crs in sel_crs], bbox, geoms
+    return [find_bbox(crs_id, bbox) for crs_id in sel_crs], bbox, geoms

@@ -2439,6 +2439,72 @@ def query_mixed_geoms(
 
 
 ###############################################################################
+# search
+
+def search_bbox(bbox, text, ignore_case=True, search_op="and"):
+    """
+    Search a list of BBox instances for text in any string fields. Text can be
+    a CRS ID in crs_auth_name:crs_code.
+
+    Args:
+        bbox (list): List of BBox instances.
+        text (list or str): List of strings or a string to search for.
+        ignore_case (bool): Whether or not to ignore case. Defaults to True.
+        search_op (str): Search operator (and, or). Defaults to "and".
+
+    Returns:
+        list: List of BBox instances any of whose string field values contain
+        text.
+    """
+    def compare_crs_id(crs_id, b):
+        auth, code = crs_id.split(":")
+        b_auth, b_code = b.crs_auth_name, b.crs_code
+        if ignore_case:
+            auth = auth.lower()
+            code = code.lower()
+            b_auth = b_auth.lower()
+            b_code = b_code.lower()
+        return b_auth.endswith(auth) and b_code.startswith(code)
+
+    def compare(txt, item):
+        if type(item) == str:
+            if ignore_case:
+                txt = txt.lower()
+                item = item.lower()
+            return txt in item
+        else:
+            return False
+
+    outbbox = []
+    if type(text) == str:
+        text = [text]
+    n = len(text)
+    for b in bbox:
+        found = False
+        c = 0
+        for txt in text:
+            item_found = False
+            if ":" in txt:
+                if compare_crs_id(txt, b):
+                    item_found = True
+            if not item_found:
+                for item in b:
+                    if compare(txt, item):
+                        item_found = True
+                        break
+            if item_found:
+                c += 1
+                if search_op == "or":
+                    found = True
+                    break
+        if search_op == "and" and c == n:
+            found = True
+        if found:
+            outbbox.append(b)
+    return outbbox
+
+
+###############################################################################
 # conversions
 
 def stringify_bbox(bbox, header=True, separator="|"):
