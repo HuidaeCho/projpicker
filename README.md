@@ -23,12 +23,6 @@ that wraps around this project is available.
 ![image](https://user-images.githubusercontent.com/7456117/127724954-ab630e50-9ffa-4f41-bdb8-0b9e011bb1ec.png)
 ![image](https://user-images.githubusercontent.com/7456117/126412749-f15a8da9-da87-4cc2-abdc-8eebc1572768.png)
 
-## Subprojects
-
-* [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro) (Windows)
-* [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui) (Linux and macOS; Replaced by the core wxPython-based GUI)
-* [ProjPicker JavaScript](https://github.com/HuidaeCho/projpicker-js) (not under active development)
-
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
 <img src="https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png" width="300" /> <img src="https://user-images.githubusercontent.com/7456117/126957478-069742ea-b5d5-4a4c-a545-ba45dc2fe4ab.png" width="300" />
@@ -44,11 +38,16 @@ that wraps around this project is available.
 
 See [here](https://github.com/HuidaeCho/projpicker/blob/main/ChangeLog.md).
 
+## Subprojects
+
+* [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro) (Windows)
+* [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui) (Linux and macOS; Replaced by the core wxPython-based GUI)
+* [ProjPicker JavaScript](https://github.com/HuidaeCho/projpicker-js) (not under active development)
+
 ## Ideas
 
-1. [JavaScript API](https://github.com/HuidaeCho/projpicker-js)
-2. Client-only web UI
-3. CRS hints: Crowdsourcing agency and product information? Is usage from PROJ enough?
+1. Client-only web application that doesn't require Python in the backend
+2. CRS hints: Crowdsourcing agency and product information? Is usage from PROJ enough?
 
 ## Versioning
 
