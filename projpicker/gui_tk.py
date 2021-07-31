@@ -15,11 +15,13 @@ import functools
 if __package__:
     from .getosm import OpenStreetMap
     from . import projpicker as ppik
-    from .gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
+    from .gui_common import (get_lat, get_lon, get_zoom, get_dzoom,
+                             parse_geoms, adjust_lon, calc_geoms_bbox)
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
-    from gui_common import get_dzoom, parse_geoms, adjust_lon, calc_geoms_bbox
+    from gui_common import (get_lat, get_lon, get_zoom, get_dzoom, parse_geoms,
+                            adjust_lon, calc_geoms_bbox)
 
 projpicker_dzoom_env = "PROJPICKER_DZOOM"
 
@@ -788,7 +790,7 @@ def start(
 
     # pop-up menu
     file_types = (("ProjPicker query files", "*.ppik"), ("All files", "*.*"))
-    menu = tk.Menu(root, tearoff=0)
+    menu = tk.Menu(query_text, tearoff=0)
     menu.add_command(label="Import query", command=import_query)
     menu.add_command(label="Export query", command=export_query)
     query_text.bind("<Button-3>", lambda e: menu.post(e.x_root, e.y_root))
