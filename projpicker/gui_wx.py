@@ -411,6 +411,11 @@ def start(
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
+    def create_image(width, height):
+        image = wx.Image(width, height)
+        image.Replace(0, 0, 0, *root.GetBackgroundColour()[:3])
+        return image
+
     def import_query():
         with wx.FileDialog(query_text, "Import query", wildcard=file_types,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
@@ -513,7 +518,7 @@ def start(
                                                 size=map_canvas_size)
 
     osm = OpenStreetMap(
-            wx.Image,
+            create_image,
             lambda image: map_canvas.SetBitmap(wx.Bitmap(image)),
             lambda data: wx.Image(io.BytesIO(data)),
             lambda image, tile, x, y: image.Paste(tile, x, y),
