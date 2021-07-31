@@ -41,7 +41,7 @@ See [here](https://github.com/HuidaeCho/projpicker/blob/main/ChangeLog.md).
 ## Subprojects
 
 * [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro) (Windows)
-* [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui) (Linux and macOS; Replaced by the core wxPython-based GUI)
+* [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui) (Linux and macOS; replaced by the core wxPython-based GUI)
 * [ProjPicker JavaScript](https://github.com/HuidaeCho/projpicker-js) (not under active development)
 
 ## Ideas
