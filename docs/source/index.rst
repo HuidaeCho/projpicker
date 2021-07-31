@@ -3,6 +3,7 @@ ProjPicker documentation
 
 ProjPicker (Projection Picker) allows the user to select all coordinate reference systems (CRSs) whose extent completely contains given points, polylines, polygons, and bounding boxes.
 The goal is to make it easy and visual to select a desired projection by location.
+Its web application is available at https://projpicker.pythonanywhere.com/.
 
 .. figure:: works_want.png
    :align: center
@@ -13,7 +14,7 @@ The goal is to make it easy and visual to select a desired projection by locatio
 Sponsor
 -------
 
-This project is kindly funded by `the Institute for Environmental and Spatial Analysis <https://ung.edu/institute-environmental-spatial-analysis/>`_ (IESA) at `the University of North Georgia <https://ung.edu/>`_ (UNG).
+This project was kindly funded by `the Institute for Environmental and Spatial Analysis <https://ung.edu/institute-environmental-spatial-analysis/>`_ (IESA) at `the University of North Georgia <https://ung.edu/>`_ (UNG).
 
 License
 -------

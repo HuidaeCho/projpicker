@@ -7,7 +7,6 @@ Getting started
    command_line_options
    query_syntax
    desktop_gui
-   web_application
+   server_client
    GRASS GIS module <https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html>
    arcgis_pro_toolbox
-   server_client
