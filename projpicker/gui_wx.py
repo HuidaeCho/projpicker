@@ -565,7 +565,9 @@ def start(
     crs_list_width = root_width // 2
     crs_list_height = root_height - map_canvas_height - 45
     crs_list_size = (crs_list_width, crs_list_height)
-    crs_list = wx.ListCtrl(root, size=crs_list_size, style=wx.LC_REPORT)
+    crs_list = wx.ListCtrl(
+            root, size=crs_list_size,
+            style=wx.LC_REPORT | (wx.LC_SINGLE_SEL if single else 0))
 
     code_width = 150
     name_width = crs_list_width - code_width
