@@ -540,7 +540,7 @@ def start(
             root, size=crs_list_size,
             style=wx.LC_REPORT | (wx.LC_SINGLE_SEL if single else 0))
 
-    id_width = 150
+    id_width = 110
     name_width = crs_list_width - id_width
     crs_list.AppendColumn("Name", width=name_width)
     crs_list.AppendColumn("ID", width=id_width)
