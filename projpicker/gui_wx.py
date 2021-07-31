@@ -254,7 +254,7 @@ def start(
 
         if event.ControlDown():
             if dz > 0:
-                geoms_bbox = calc_geoms_bbox()
+                geoms_bbox = calc_geoms_bbox(geoms)
                 if None not in geoms_bbox:
                     osm.zoom_to_bbox(geoms_bbox, False)
             else:
@@ -540,7 +540,7 @@ def start(
 
     # draw geometries if given
     if geoms:
-        geoms_bbox = calc_geoms_bbox()
+        geoms_bbox = calc_geoms_bbox(geoms)
         if None not in geoms_bbox:
             osm.zoom_to_bbox(geoms_bbox)
         draw_geoms()
