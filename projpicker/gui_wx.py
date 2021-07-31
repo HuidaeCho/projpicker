@@ -583,6 +583,8 @@ def start(
     unit_choice = wx.Choice(root, size=(crs_list_width // 2, 30))
     unit_choice.Bind(wx.EVT_CHOICE, on_select_proj_table_or_unit)
 
+    populate_filters(bbox)
+
     bottom_left_bottom_box.Add(proj_table_choice)
     bottom_left_bottom_box.Add(unit_choice)
     bottom_left_box.Add(bottom_left_bottom_box)
