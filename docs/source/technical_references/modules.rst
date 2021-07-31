@@ -32,12 +32,12 @@ gui_common
    :members:
 
 gui_tk
-----------
+------
 .. automodule:: gui_tk
    :members:
 
 gui_wx
-----------
+------
 .. automodule:: gui_wx
    :members:
 
