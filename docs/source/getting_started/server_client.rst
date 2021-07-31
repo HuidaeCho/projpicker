@@ -55,7 +55,7 @@ For example, with Apchae, the following .htaccess file turns ProjPicker's `web.p
         SetHandler cgi-script
     </Files>
 
-    SetEnv PYTHONPATH /home/user/usr/local/src/projpicker/projpicker
+    SetEnv PYTHONPATH /usr/local/src/projpicker/projpicker
 
     RewriteEngine On
     RewriteRule ^query$ web.py
