@@ -25,9 +25,9 @@ that wraps around this project is available.
 
 ## Subprojects
 
+* [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro) (Windows)
 * [ProjPicker GUI](https://github.com/HuidaeCho/projpicker-gui) (Linux and macOS; Replaced by the core wxPython-based GUI)
 * [ProjPicker JavaScript](https://github.com/HuidaeCho/projpicker-js) (not under active development)
-* [ProjPicker ArcGIS Pro toolbox](https://github.com/HuidaeCho/projpicker-arcgispro) (Windows)
 
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
