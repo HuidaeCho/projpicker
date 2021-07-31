@@ -244,6 +244,5 @@ def find_bbox(crs, bbox):
         return None
 
     auth, code = crs.split(":")
-    b = list(filter(lambda b: b.crs_auth_name==auth and
-                              b.crs_code==code, bbox))[0]
-    return b
+    return list(filter(lambda b: b.crs_auth_name==auth and
+                                 b.crs_code==code, bbox))[0]
