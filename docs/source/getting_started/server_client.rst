@@ -32,6 +32,7 @@ For example, using `bottle <https://bottlepy.org/docs/dev/>`_:
    bottle.run(web.application, port=8000)
 
 The following command line starts ProjPicker as a WSGI application running on a new HTTP server provided by uwsgi.
+
 .. code-block::
 
     uwsgi --http :8000 --wsgi-file web.py
