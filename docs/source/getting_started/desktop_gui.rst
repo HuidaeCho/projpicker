@@ -25,37 +25,34 @@ and appears on Linux as
 
    ProjPicker desktop GUI
 
-Features
---------
-
 OpenStreetMap tiling
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 The GUI utilizes `GetOSM <https://github.com/HuidaeCho/getosm>`_ for `OpenStreeMap <https://www.openstreetmap.org/>`_ tile fetching and visualization.
 No JavaScript is needed!
 While GetOSM was initially created as a part of ProjPicker, it is now an independent package that can be installed from `PyPI <https://pypi.org/project/getosm/>`_.
 
 Geometry drawing
-^^^^^^^^^^^^^^^^
+----------------
 
 Geometry can be drawn over the OpenStreetMap tiles and are added to the query builder.
 Supported geometries are `point` (points), `poly` (polygons), and `bbox` (bounding boxes).
 
 Query builder
-^^^^^^^^^^^^^
+-------------
 
 The ProjPicker GUI helps construct the query syntax with the provided query builder.
 It allows for custom queries to be created from drawn geometries in addition to editing and writing one's own queries with ProjPicker's flexible syntax.
 
 Searching
-^^^^^^^^^
+---------
 
 CRS IDs or any string fields in the CRS info tab can be searched for using the search box below the CRS list.
 Multiple words can be searched for by separating them with a semicolon, in which case all the words must be found in any string fields in CRSs.
 Search words are case-insensitive.
 
 Import / export queries
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 The GUI allows for the import and export of ProjPicker queries saved as a .ppik file.
 The file format is a plaintext format and can be edited both within the GUI and through other conventional text editors.
