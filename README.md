@@ -20,7 +20,7 @@ For [GRASS GIS](https://grass.osgeo.org/), a new module
 [g.projpicker](https://grass.osgeo.org/grass78/manuals/addons/g.projpicker.html)
 that wraps around this project is available.
 
-![image](https://user-images.githubusercontent.com/7456117/126412749-f15a8da9-da87-4cc2-abdc-8eebc1572768.png)
+<img src="https://user-images.githubusercontent.com/7456117/127724910-79fa86f1-fc08-4b0a-b865-e78ee49c67a9.png" width="300" /> <img src="https://user-images.githubusercontent.com/7456117/126412749-f15a8da9-da87-4cc2-abdc-8eebc1572768.png" width="300" />
 
 ## Subprojects
 
