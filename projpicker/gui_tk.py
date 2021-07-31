@@ -365,7 +365,7 @@ def start(
         crs_treeview.delete(*crs_treeview.get_children())
         for b in bbox:
             crs_treeview.insert("", tk.END, values=(
-                                b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+                                f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
         sel_bbox.clear()
         draw_bbox()
 
@@ -373,7 +373,7 @@ def start(
         nonlocal sel_crs
 
         for item in crs_treeview.selection():
-            sel_crs.append(crs_treeview.item(item)["values"][1])
+            sel_crs.append(crs_treeview.item(item)["values"][0])
         root.destroy()
 
     def on_drag(event):
@@ -526,6 +526,12 @@ def start(
         prev_xy.clear()
         draw_geoms()
 
+    def on_resize(event):
+        osm.resize(event.width, event.height)
+        x = root.winfo_pointerx() - root.winfo_rootx()
+        y = root.winfo_pointery() - root.winfo_rooty()
+        draw_map(x, y)
+
     def on_select_crs(event):
         nonlocal prev_crs_items
 
@@ -554,7 +560,7 @@ def start(
         crs_info_text.delete("1.0", tk.END)
         sel_bbox.clear()
         if curr_crs_item:
-            crs_id = crs_treeview.item(curr_crs_item)["values"][1]
+            crs_id = crs_treeview.item(curr_crs_item)["values"][0]
             b = find_bbox(crs_id, bbox)
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.insert(tk.END, crs_info)
@@ -637,6 +643,7 @@ def start(
     map_canvas.bind("<Double-Button-1>", on_complete_drawing)
     map_canvas.bind("<ButtonRelease-3>", on_cancel_drawing)
     map_canvas.bind("<Double-Button-3>", lambda e: geoms.clear())
+    map_canvas.bind("<Configure>", on_resize)
 
     # draw geometries if given
     if geoms:
@@ -648,7 +655,7 @@ def start(
     ##############
     # bottom frame
     bottom_frame_height = root_height - map_canvas_height
-    bottom_frame = ttk.Frame(root, height=400)
+    bottom_frame = ttk.Frame(root, height=bottom_frame_height)
     bottom_frame.pack_propagate(False)
     bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
@@ -667,7 +674,7 @@ def start(
     # list of CRSs
     id_width = 100
     name_width = bottom_left_frame_width - id_width - 15
-    crs_cols = {"Name": name_width, "ID": id_width}
+    crs_cols = {"ID": id_width, "Name": name_width}
 
     crs_treeview = ttk.Treeview(
             bottom_left_top_frame, columns=list(crs_cols.keys()),

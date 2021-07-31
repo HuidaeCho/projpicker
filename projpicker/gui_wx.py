@@ -289,7 +289,8 @@ def start(
 
     def on_resize(event):
         osm.resize(event.Size.Width, event.Size.Height)
-        osm.draw()
+        x, y = root.ScreenToClient(wx.GetMousePosition())
+        draw_map(x, y)
 
     def on_paint(event):
         def set_pen_brush(color):
@@ -390,7 +391,7 @@ def start(
         crs_info_text.Clear()
         sel_bbox.clear()
         if curr_crs_item >= 0:
-            crs_id = crs_list.GetItemText(curr_crs_item, 1)
+            crs_id = crs_list.GetItemText(curr_crs_item, 0)
             b = find_bbox(crs_id, bbox)
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.SetValue(crs_info)
@@ -458,7 +459,7 @@ def start(
     def populate_crs_list(bbox):
         crs_list.DeleteAllItems()
         for b in bbox:
-            crs_list.Append((b.crs_name, f"{b.crs_auth_name}:{b.crs_code}"))
+            crs_list.Append((f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
         sel_bbox.clear()
 
     def select():
@@ -466,7 +467,7 @@ def start(
 
         item = crs_list.GetFirstSelected()
         while item != -1:
-            sel_crs.append(crs_list.GetItemText(item, 1))
+            sel_crs.append(crs_list.GetItemText(item, 0))
             item = crs_list.GetNextSelected(item)
         root.Close()
 
@@ -540,9 +541,6 @@ def start(
 
     ###################
     # bottom-left frame
-    bottom_left_width = root_width // 2
-    bottom_left_height = root_height - map_canvas_height
-
     bottom_left_box = wx.BoxSizer(wx.VERTICAL)
 
     # list of CRSs
@@ -551,9 +549,8 @@ def start(
             style=wx.LC_REPORT | (wx.LC_SINGLE_SEL if single else 0))
 
     id_width = 110
-    name_width = bottom_left_width - id_width
-    crs_list.AppendColumn("Name", width=name_width)
     crs_list.AppendColumn("ID", width=id_width)
+    crs_list.AppendColumn("Name", width=crs_list.Size.Width - id_width)
     bottom_left_box.Add(crs_list, 1, wx.EXPAND)
 
     populate_crs_list(bbox)
@@ -567,10 +564,7 @@ def start(
 
     ####################
     # bottom-right frame
-    bottom_right_width = root_width - bottom_left_width
-    bottom_right_height = bottom_left_height
-    bottom_right_size = (bottom_right_width, bottom_right_height)
-    bottom_right_notebook = wx.Notebook(root, size=bottom_right_size)
+    bottom_right_notebook = wx.Notebook(root)
 
     # query tab
     query_panel = wx.Panel(bottom_right_notebook)
