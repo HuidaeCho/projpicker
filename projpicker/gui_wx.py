@@ -312,7 +312,7 @@ def start(
         point_half_size = point_size // 2
 
         map_canvas.OnPaint(event)
-        dc = wx.PaintDC(map_canvas)
+        dc = wx.GCDC(wx.PaintDC(map_canvas))
 
         set_pen_brush(geoms_color)
 
