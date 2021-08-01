@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Sat Jul 31 22:41:18 2021 -0400
+Sat Jul 31 22:41:49 2021 -0400
 
+* [`6c91dd0`](https://github.com/HuidaeCho/projpicker/commit/6c91dd0)  changelog
 * [`e2b5918`](https://github.com/HuidaeCho/projpicker/commit/e2b5918)  docs: Update a screenshot
 * [`1c6fafd`](https://github.com/HuidaeCho/projpicker/commit/1c6fafd)  Update screenshots
 * [`d184707`](https://github.com/HuidaeCho/projpicker/commit/d184707)  wxgui: Name field width
