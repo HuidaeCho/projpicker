@@ -163,16 +163,15 @@ def start(
             prev_xy.clear()
             if query:
                 query += "\n"
+                name = query_text.StringSelection
+                if name and not name.endswith(":"):
+                    if not name.startswith(":"):
+                        name = f":{name}:"
+                    else:
+                        name = ""
+                if name and ppik.geom_var_re.match(name):
+                    query = query.replace(" ", f" {name} ", 1)
                 sel = query_text.GetSelection()
-                if sel[0] != sel[1]:
-                    name = query_text.GetRange(*sel).strip()
-                    if name and not name.endswith(":"):
-                        if not name.startswith(":"):
-                            name = f":{name}:"
-                        else:
-                            name = ""
-                    if name and ppik.geom_var_re.match(name):
-                        query = query.replace(" ", f" {name} ", 1)
                 if (sel[0] > 0 and
                     query_text.GetRange(sel[0] - 1, sel[0]) != "\n"):
                     query = "\n" + query
