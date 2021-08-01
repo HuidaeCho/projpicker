@@ -529,8 +529,8 @@ def start(
             lambda data: wx.Image(io.BytesIO(data)),
             lambda image, tile, x, y: image.Paste(tile, x, y),
             lambda tile, dz: tile.Scale(tile.Width*2**dz, tile.Height*2**dz),
-            map_canvas.Size.Width, map_canvas.Size.Height,
-            lat, lon, zoom)
+            map_canvas_width, map_canvas_height,
+            lat, lon, zoom, ppik.is_verbose())
 
     map_canvas.Bind(wx.EVT_LEFT_DOWN, on_grab)
     map_canvas.Bind(wx.EVT_LEFT_UP, on_draw)
