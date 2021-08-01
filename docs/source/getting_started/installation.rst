@@ -39,16 +39,7 @@ Installation with pip is the recommended way to install both the CLI appliction 
 
 .. code-block:: shell
 
-    pip3 install projpicker
-
-    # or if you're not a root
-    pip3 install --user projpicker
-
-    # to install development versions
-    pip3 install --pre projpicker
-
-    # or if you're not a root
-    pip3 install --pre --user projpicker
+    pip install projpicker
 
 From source
 -----------
@@ -60,4 +51,4 @@ Use pip to install ProjPicker from the source directory.
 
     git clone https://github.com/HuidaeCho/projpicker.git
     cd projpicker
-    pip3 install -e .
+    pip install -e .
