@@ -29,14 +29,12 @@ __________
 
    curl https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/install.bat -o install.bat
 
-
 Using Wget
 __________
 
 .. code-block:: bash
 
    wget https://raw.githubusercontent.com/HuidaeCho/projpicker/main/guis/arcgispro/install.bat
-
 
 Included tools
 ^^^^^^^^^^^^^^
@@ -127,7 +125,7 @@ Reprojecting a feature class / raster
 
 When new projects are undertaken it is integral to choose the most appropriate CRS.
 Often when working with new data in the United States, county level boundaries will dictate the region of interest which all analysis will fall in.
-The US Census bureau provides :ref:`nation wide county data`_ which can be used to query counties.
+The US Census bureau provides nation-wide county data which can be used to query counties.
 However the data is provided in EPSG:4269 which is unsuitable for analysis at a county scales.
 ProjPicker can be used to reproject the nationwide data into the proper county level CRS.
 Take for instance reprojecting King county, Washington.
