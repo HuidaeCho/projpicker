@@ -36,23 +36,36 @@ def get_latlon():
 def get_zoom():
     """
     Get the initial zoom level from the PROJPICKER_ZOOM environment variable.
-    If this environment variable is not available, return 0.
+    If this environment variable is not available or not a number, return 0. If
+    it is a float, it is rounded to the nearest even integer. The returned zoom
+    level is always an integer between 0 and 18.
 
     Returns:
-        float: Delta zoom level.
+        int: Initial zoom level.
     """
-    return min(max(int(os.environ.get(projpicker_zoom_env, 0)), 0), 18)
+    try:
+        zoom = min(max(round(float(os.environ.get(projpicker_zoom_env, 0))),
+                       0), 18)
+    except:
+        zoom = 0
+    return zoom
 
 
 def get_dzoom():
     """
     Get the delta zoom level from the PROJPICKER_DZOOM environment variable. If
-    this environment variable is not available, return 1.
+    this environment variable is not available or not a number, return 1. The
+    returned delta zoom level is always between -18 and 18.
 
     Returns:
         float: Delta zoom level.
     """
-    return min(max(float(os.environ.get(projpicker_dzoom_env, 1)), -18), 18)
+    try:
+        dzoom = min(max(float(os.environ.get(projpicker_dzoom_env, 1)), -18),
+                    18)
+    except:
+        dzoom = 1
+    return dzoom
 
 
 def parse_geoms(geoms):
