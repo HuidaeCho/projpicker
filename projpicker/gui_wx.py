@@ -512,6 +512,7 @@ def start(
     root_size = (root_width, root_height)
     root = wx.Frame(None, title="ProjPicker wxGUI")
     root.SetClientSize(root_size)
+    root.SetBackgroundColour(wx.Colour("lightgray"))
     main_box = wx.BoxSizer(wx.VERTICAL)
 
     ###########
