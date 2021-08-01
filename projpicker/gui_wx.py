@@ -236,7 +236,6 @@ def start(
             latlon = osm.canvas_to_latlon(event.x, event.y)
             coor_label.SetLabel(f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
             main_box.Layout()
-            draw_map(event.x, event.y)
 
     def on_zoom(event):
         def zoom(x, y, dz, cancel_event):

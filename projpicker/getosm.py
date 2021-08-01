@@ -167,10 +167,11 @@ class OpenStreetMap:
             width (int): New canvas width in pixels.
             height (int): New canvas height in pixels.
         """
-        self.width = width
-        self.height = height
-        self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
-        self.redownload()
+        if width != self.width or height != self.height:
+            self.width = width
+            self.height = height
+            self.max_cached_tiles = int(2 * (width / 256) * (height / 256))
+            self.redownload()
 
     # Adapted from https://stackoverflow.com/a/62607111/16079666
     # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
