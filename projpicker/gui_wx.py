@@ -312,8 +312,15 @@ def start(
 
         point_half_size = point_size // 2
 
-        map_canvas.OnPaint(event)
-        dc = wx.GCDC(wx.PaintDC(map_canvas))
+        # https://wxpython.org/Phoenix/docs/html/wx.BufferedPaintDC.html
+        # use wx.BufferedPaintDC() to enable automatic double-buffered drawing;
+        # then use wx.GCDC() to enable the alpha channel; ideally,
+        # wx.AutoBufferedPaintDC() would be better because it is only enabled
+        # when the native platform does not support double-buffered drawing,
+        # but wx.GCDC() does not aceept it;
+        # map_canvas.SetBackgroundStyle(wx.BG_STYLE_PAINT) was not needed
+        dc = wx.GCDC(wx.BufferedPaintDC(map_canvas))
+        dc.DrawBitmap(map_canvas.bitmap, 0, 0)
 
         set_pen_brush(geoms_color)
 
@@ -417,6 +424,12 @@ def start(
         image.Replace(0, 0, 0, *root.GetBackgroundColour()[:3])
         return image
 
+    def draw_image(image):
+        # just save the map image for now; later, double-buffered drawing will
+        # be done in on_paint() triggered by map_canvas.Refresh()
+        map_canvas.bitmap = wx.Bitmap(image)
+        map_canvas.Refresh()
+
     def import_query():
         with wx.FileDialog(query_text, "Import query", wildcard=file_types,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
@@ -512,7 +525,7 @@ def start(
 
     osm = OpenStreetMap(
             create_image,
-            lambda image: map_canvas.SetBitmap(wx.Bitmap(image)),
+            draw_image,
             lambda data: wx.Image(io.BytesIO(data)),
             lambda image, tile, x, y: image.Paste(tile, x, y),
             lambda tile, dz: tile.Scale(tile.Width*2**dz, tile.Height*2**dz),
