@@ -235,7 +235,8 @@ def start(
         else:
             latlon = osm.canvas_to_latlon(event.x, event.y)
             coor_label.SetLabel(f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
-            main_box.Layout()
+            coor_box.Layout()
+            draw_map(event.x, event.y)
 
     def on_zoom(event):
         def zoom(x, y, dz, cancel_event):
@@ -537,8 +538,15 @@ def start(
 
     #######################
     # label for coordinates
-    coor_label = wx.StaticText(root)
-    main_box.Add(coor_label, 0, wx.ALIGN_RIGHT)
+
+    # to avoid redrawing the entire map just to refresh coordinates; use a
+    # vertical box sizer for right alignment, which is not allowed with a
+    # horizontal box sizer
+    coor_box = wx.BoxSizer(wx.VERTICAL)
+    # label=" "*40 hack to reserve enough space for coordinates
+    coor_label = wx.StaticText(root, label=" "*40)
+    coor_box.Add(coor_label, 0, wx.ALIGN_RIGHT)
+    main_box.Add(coor_box, 0, wx.ALIGN_RIGHT)
 
     ##############
     # bottom frame
