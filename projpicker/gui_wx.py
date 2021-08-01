@@ -730,7 +730,7 @@ def start(
             See {doc_url} to learn more."""),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL)
     help_text.Bind(wx.EVT_TEXT_URL,
-                   lambda e: webbrowser.open(github_url)
+                   lambda e: webbrowser.open(doc_url)
                              if e.GetMouseEvent().LeftIsDown() else None)
     help_text.SetFont(query_text.GetFont())
     help_box.Add(help_text, 1, wx.EXPAND)
