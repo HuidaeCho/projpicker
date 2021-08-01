@@ -23,6 +23,11 @@ If installed with pip, ProjPicker uses the following standard modules:
 - `webbrowser <https://docs.python.org/3/library/webbrowser.html>`_
 - `urllib.request <https://docs.python.org/3/library/urllib.request.html>`_
 
+Optionally to use the wxPython-based GUI, install `wxPython <https://wxpython.org/>`_ from `PyPi <https://pypi.org/project/wxPython/>`_.
+Without this optional module, the tkinter-based GUI will be used as a fallback.
+The former looks and feels more native, and supports semi-transparency on all platforms while the latter looks uniform across platforms.
+Since tkinter is a part of the Python standard library, at least the tkinter GUI will always be available.
+
 The ProjPicker `SQLite <https://sqlite.org/>`_ database (``projpicker.db``) will come packaged when installed with pip.
 However, if any problems should arise and the ``projpicker.db`` should need to be recreated, the additional dependency of `pyproj <https://pypi.org/project/pyproj/>`_ will be needed.
 For more information about ``projpicker.db``, see :doc:`here </program_references/database>`.
