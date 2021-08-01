@@ -628,8 +628,8 @@ def start(
 
     # pop-up menu
     menu = wx.Menu()
-    import_menuitem = wx.MenuItem(menu, wx.NewId(), "Import query")
-    export_menuitem = wx.MenuItem(menu, wx.NewId(), "Export query")
+    import_menuitem = wx.MenuItem(menu, wx.ID_ANY, "Import query")
+    export_menuitem = wx.MenuItem(menu, wx.ID_ANY, "Export query")
     menu.Append(import_menuitem)
     menu.Append(export_menuitem)
 
