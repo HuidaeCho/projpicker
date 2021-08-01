@@ -1,8 +1,36 @@
 # Change log
 
 ## HEAD
-Sat Jul 31 03:40:10 2021 -0400
+Sat Jul 31 22:41:18 2021 -0400
 
+* [`e2b5918`](https://github.com/HuidaeCho/projpicker/commit/e2b5918)  docs: Update a screenshot
+* [`1c6fafd`](https://github.com/HuidaeCho/projpicker/commit/1c6fafd)  Update screenshots
+* [`d184707`](https://github.com/HuidaeCho/projpicker/commit/d184707)  wxgui: Name field width
+* [`ad4c837`](https://github.com/HuidaeCho/projpicker/commit/ad4c837)  wxgui: Use consistent background color across platforms
+* [`4b5b871`](https://github.com/HuidaeCho/projpicker/commit/4b5b871)  wxgui: Enable double-buffered drawing to eliminate flickering
+* [`b047f6b`](https://github.com/HuidaeCho/projpicker/commit/b047f6b)  wxgui: Redraw the map on move only if there is a geom being drawn
+* [`c46b7dd`](https://github.com/HuidaeCho/projpicker/commit/c46b7dd)  wxgui: main\_box.Layout() was too heavy just to refresh the coordinate label
+* [`b610d24`](https://github.com/HuidaeCho/projpicker/commit/b610d24)  Update getosm.py; main\_box.Layout() calls on\_resize(), which redraws the map
+* [`ebe0164`](https://github.com/HuidaeCho/projpicker/commit/ebe0164)  wxgui: Use GCDC to support semi-transparency on Windows
+* [`e025385`](https://github.com/HuidaeCho/projpicker/commit/e025385)  wxgui: Fix named geoms on Windows; Use a hash style when alpha is not supported
+* [`8e5c2f7`](https://github.com/HuidaeCho/projpicker/commit/8e5c2f7)  Docs: Remove Features section
+* [`3638666`](https://github.com/HuidaeCho/projpicker/commit/3638666)  Source path
+* [`c94d1b9`](https://github.com/HuidaeCho/projpicker/commit/c94d1b9)  Fix code block
+* [`ab56f24`](https://github.com/HuidaeCho/projpicker/commit/ab56f24)  tkgui: mistake
+* [`8b7d4cf`](https://github.com/HuidaeCho/projpicker/commit/8b7d4cf)  wxgui: on\_resize only after shown; tkgui: resizable, set class name (does not work for wxgui)
+* [`15be4a1`](https://github.com/HuidaeCho/projpicker/commit/15be4a1)  gui: Redraw on resize
+* [`6a90e6d`](https://github.com/HuidaeCho/projpicker/commit/6a90e6d)  wxgui: Improved sizing; Redraw on resizng the window
+* [`8a428d3`](https://github.com/HuidaeCho/projpicker/commit/8a428d3)  wxgui: Set the client size to 800x800; Size includes the title bar and borders
+* [`6584e47`](https://github.com/HuidaeCho/projpicker/commit/6584e47)  Screenshot in English locale
+* [`e717085`](https://github.com/HuidaeCho/projpicker/commit/e717085)  Update README.md
+* [`e3ac776`](https://github.com/HuidaeCho/projpicker/commit/e3ac776)  wxgui: Implement missing geom vars; gui: Fix named poly
+* [`f763f86`](https://github.com/HuidaeCho/projpicker/commit/f763f86)  docs: Update the desktop GUI screenshot
+* [`c4f918d`](https://github.com/HuidaeCho/projpicker/commit/c4f918d)  tkgui screenshot again
+* [`d8c9bce`](https://github.com/HuidaeCho/projpicker/commit/d8c9bce)  New screenshots
+* [`87ea483`](https://github.com/HuidaeCho/projpicker/commit/87ea483)  Web link in the front page; is funded => was funded
+* [`cf2324d`](https://github.com/HuidaeCho/projpicker/commit/cf2324d)  docs: Minor refactoring
+* [`584b265`](https://github.com/HuidaeCho/projpicker/commit/584b265)  OSM *tile* downloader
+* [`ac6e51e`](https://github.com/HuidaeCho/projpicker/commit/ac6e51e)  changelog
 * [`ba018a1`](https://github.com/HuidaeCho/projpicker/commit/ba018a1)  wxgui: wider ID column
 * [`a1dc763`](https://github.com/HuidaeCho/projpicker/commit/a1dc763)  gui: query string bug fixed
 * [`3b0e76b`](https://github.com/HuidaeCho/projpicker/commit/3b0e76b)  Code => ID (crs\_code has no authority name)
