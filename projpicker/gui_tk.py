@@ -16,13 +16,13 @@ import functools
 if __package__:
     from .getosm import OpenStreetMap
     from . import projpicker as ppik
-    from .gui_common import (get_lat, get_lon, get_zoom, get_dzoom,
-                             parse_geoms, adjust_lon, calc_geoms_bbox,
-                             create_crs_info, find_bbox)
+    from .gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
+                             adjust_lon, calc_geoms_bbox, create_crs_info,
+                             find_bbox)
 else:
     from getosm import OpenStreetMap
     import projpicker as ppik
-    from gui_common import (get_lat, get_lon, get_zoom, get_dzoom, parse_geoms,
+    from gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
                             adjust_lon, calc_geoms_bbox, create_crs_info,
                             find_bbox)
 
@@ -157,8 +157,7 @@ def start(
     dragged_bbox_color = "green"
     sel_bbox_color = "red"
 
-    lat = get_lat()
-    lon = get_lon()
+    lat, lon = get_latlon()
     zoom = get_zoom()
 
     def draw_map(x, y):

@@ -44,17 +44,15 @@ PROJPICKER_GUI
 ProjPicker implements the wxPython-based and tkinter-based GUIs.
 If this variable is set to ``tk`` or the wxPython module is not availble, the tkinter-based GUI is used.
 
-PROJPICKER_LATITUDE
-^^^^^^^^^^^^^^^^^^^
+PROJPICKER_COORDINATES
+^^^^^^^^^^^^^^^^^^^^^^
 
-This variable is used to set the initial latitude for the GUI.
-If it is not set or outside -85.0511 and 85.0511, which are the minimum and maximum limits supported by OpenStreetMap, 0 is used.
-
-PROJPICKER_LONGITUDE
-^^^^^^^^^^^^^^^^^^^^
-
-This variable is used to set the initial longitude for the GUI.
-If it is not set or outside -180 and 180, 0 is used.
+This variable is used to set the initial latitude and longitude for the GUI.
+Its coordinates must be in :doc:`parsable coordinate formats </getting_started/query_syntax>`.
+If it is not set, latitude 0 and longitude 0 are used.
+If the latitude is less than -85.0511, the minimum latitude supported by OpenStreetMap, -85.0511 is used.
+If it is greater than the maximum supported latitude 85.0511, 85.0511 is used.
+Similarly, if the longitude is less than -180 or greater than 180, -180 or 180 is used respectively.
 
 PROJPICKER_ZOOM
 ^^^^^^^^^^^^^^^

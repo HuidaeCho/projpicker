@@ -10,37 +10,28 @@ if __package__:
 else:
     import projpicker as ppik
 
-projpicker_latitude_env = "PROJPICKER_LATITUDE"
-projpicker_longitude_env = "PROJPICKER_LONGITUDE"
+projpicker_coordinates_env = "PROJPICKER_COORDINATES"
 projpicker_zoom_env = "PROJPICKER_ZOOM"
 projpicker_dzoom_env = "PROJPICKER_DZOOM"
 
 
-def get_lat():
+def get_latlon():
     """
-    Get the initial latitude in decimal degrees from the PROJPICKER_LATITUDE
-    environment variable. If this environment variable is not available, return
-    0.
+    Get the initial latitude and longitude in decimal degrees from the
+    PROJPICKER_COORDINATES environment variable. If this environment variable
+    is not available, return 0 and 0.
 
     Returns:
-        float: Initial latitude in decimal degrees.
+        float, float: Initial latitude and longitude in decimal degrees.
     """
-    return min(max(float(os.environ.get(projpicker_latitude_env, 0)),
-                   -85.0511), 85.0511)
-
-
-def get_lon():
-    """
-    Get the initial longitude in decimal degrees from the PROJPICKER_LONGITUDE
-    environment variable. If this environment variable is not available, return
-    0.
-
-    Returns:
-        float: Initial longitude in decimal degrees.
-    """
-    return min(max(float(os.environ.get(projpicker_longitude_env, 0)),
-                   -180), 180)
-
+    coor = os.environ.get(projpicker_coordinates_env, "0,0")
+    lat, lon = ppik.parse_point(coor)
+    if None in (lat, lon):
+        lat = lon = 0
+    else:
+        lat = min(max(lat, -85.0511), 85.0511)
+        lon = min(max(lon, -180), 180)
+    return lat, lon
 
 def get_zoom():
     """
