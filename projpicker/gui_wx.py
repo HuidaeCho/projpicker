@@ -564,6 +564,9 @@ def start(
     # bottom frame
     bottom_box = wx.BoxSizer(wx.HORIZONTAL)
 
+    mono_font = wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
+                        wx.FONTWEIGHT_NORMAL)
+
     ###################
     # bottom-left frame
     bottom_left_box = wx.BoxSizer(wx.VERTICAL)
@@ -619,8 +622,7 @@ def start(
     # text for query
     query_text = wx.TextCtrl(query_panel, style=wx.TE_MULTILINE | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    query_text.SetFont(wx.Font(9, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL,
-                               wx.FONTWEIGHT_NORMAL))
+    query_text.SetFont(mono_font)
     query_text.SetValue(query_string)
     query_box.Add(query_text, 1, wx.EXPAND)
 
@@ -667,7 +669,7 @@ def start(
             crs_info_panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    crs_info_text.SetFont(query_text.Font)
+    crs_info_text.SetFont(mono_font)
     crs_info_box.Add(crs_info_text, 1, wx.EXPAND)
 
     # buttons
@@ -692,7 +694,7 @@ def start(
     log_text = wx.TextCtrl(log_panel,
                            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    log_text.SetFont(query_text.Font)
+    log_text.SetFont(mono_font)
     log_box.Add(log_text, 1, wx.EXPAND)
     log_panel.SetSizer(log_box)
 
@@ -730,7 +732,7 @@ def start(
     help_text.Bind(wx.EVT_TEXT_URL,
                    lambda e: webbrowser.open(doc_url)
                              if e.MouseEvent.LeftIsDown() else None)
-    help_text.SetFont(query_text.Font)
+    help_text.SetFont(mono_font)
     help_box.Add(help_text, 1, wx.EXPAND)
     help_panel.SetSizer(help_box)
 
