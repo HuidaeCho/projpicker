@@ -14,17 +14,17 @@ import functools
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
-    from .getosm import OpenStreetMap
     from . import projpicker as ppik
     from .gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
                              adjust_lon, calc_geoms_bbox, create_crs_info,
                              find_bbox)
+    from .getosm import OpenStreetMap
 else:
-    from getosm import OpenStreetMap
     import projpicker as ppik
     from gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
                             adjust_lon, calc_geoms_bbox, create_crs_info,
                             find_bbox)
+    from getosm import OpenStreetMap
 
 
 class AutoScrollbar(ttk.Scrollbar):
