@@ -410,12 +410,6 @@ def start(
             notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
 
-    def on_search(event):
-        text = [x.strip() for x in search_text.Value.split(";")]
-        filt_bbox = ppik.search_bbox(bbox, text)
-        populate_crs_list(filt_bbox)
-        prev_crs_items.clear()
-
     def create_image(width, height):
         image = wx.Image(width, height)
         image.Replace(0, 0, 0, *root.BackgroundColour[:3])
@@ -467,6 +461,7 @@ def start(
             log_text.SetValue("")
 
         populate_crs_list(bbox)
+        search()
         draw_geoms()
 
     def populate_crs_list(bbox):
@@ -474,6 +469,12 @@ def start(
         for b in bbox:
             crs_list.Append((f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
         sel_bbox.clear()
+
+    def search():
+        text = [x.strip() for x in search_text.Value.split(";")]
+        filt_bbox = ppik.search_bbox(bbox, text)
+        populate_crs_list(filt_bbox)
+        prev_crs_items.clear()
 
     def select():
         nonlocal sel_crs
@@ -509,7 +510,7 @@ def start(
     root_size = (root_width, root_height)
     root = wx.Frame(None, title="ProjPicker wxGUI")
     root.SetClientSize(root_size)
-    root.SetBackgroundColour(wx.Colour("lightgray"))
+#    root.SetBackgroundColour(wx.Colour("lightgray"))
     main_box = wx.BoxSizer(wx.VERTICAL)
 
     ###########
@@ -657,7 +658,8 @@ def start(
     # back to bottom-left frame to use the button height
     # text for search
     search_text = wx.SearchCtrl(root, size=(0, query_button.Size.Height + 1))
-    search_text.Bind(wx.EVT_TEXT, on_search)
+    search_text.ShowCancelButton(True)
+    search_text.Bind(wx.EVT_TEXT, lambda e: search())
     bottom_left_box.Add(search_text, 0, wx.EXPAND)
 
     ################

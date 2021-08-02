@@ -358,6 +358,7 @@ def start(
             notebook.select(log_frame)
 
         populate_crs_list(bbox)
+        search()
         draw_geoms()
 
     def populate_crs_list(bbox):
@@ -367,6 +368,12 @@ def start(
                                 f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
         sel_bbox.clear()
         draw_bbox()
+
+    def search():
+        text = [x.strip() for x in search_text.get().split(";")]
+        filt_bbox = ppik.search_bbox(bbox, text)
+        populate_crs_list(filt_bbox)
+        prev_crs_items.clear()
 
     def select():
         nonlocal sel_crs
@@ -571,12 +578,6 @@ def start(
         draw_geoms()
         draw_bbox()
 
-    def on_search(event):
-        text = [x.strip() for x in search_text.get().split(";")]
-        filt_bbox = ppik.search_bbox(bbox, text)
-        populate_crs_list(filt_bbox)
-        prev_crs_items.clear()
-
     # parse geometries if given
     if geoms:
         geoms, query_string = parse_geoms(geoms)
@@ -704,7 +705,7 @@ def start(
     # text for search
     search_text = tk.Entry(bottom_left_frame)
     search_text.pack(fill=tk.X, ipady=4)
-    search_text.bind("<KeyRelease>", on_search)
+    search_text.bind("<KeyRelease>", lambda e: search())
 
     ####################
     # bottom-right frame
