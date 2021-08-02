@@ -472,10 +472,11 @@ def start(
         sel_bbox.clear()
 
     def search():
-        text = search_text.Value.split(";")
-        filt_bbox = ppik.search_bbox(bbox, text)
-        populate_crs_list(filt_bbox)
-        prev_crs_items.clear()
+        text = [x.strip() for x in search_text.Value.split(";")]
+        if "".join(text):
+            filt_bbox = ppik.search_bbox(bbox, text)
+            populate_crs_list(filt_bbox)
+            prev_crs_items.clear()
 
     def select():
         nonlocal sel_crs
