@@ -226,6 +226,7 @@ class ProjPickerPanel(wx.Panel):
             # text for search
             self.search_text = wx.SearchCtrl(
                                 self, size=(0, query_button.Size.Height + 1))
+            self.search_text.ShowCancelButton(True)
             self.search_text.Bind(wx.EVT_TEXT, lambda e: self.search())
             bottom_left_box.Add(self.search_text, 0, wx.EXPAND)
 
