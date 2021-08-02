@@ -26,8 +26,6 @@ else:
                             adjust_lon, calc_geoms_bbox, create_crs_info,
                             find_bbox)
 
-projpicker_dzoom_env = "PROJPICKER_DZOOM"
-
 
 class AutoScrollbar(ttk.Scrollbar):
     """
