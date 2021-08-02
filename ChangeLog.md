@@ -1,8 +1,37 @@
 # Change log
 
 ## HEAD
-Sat Jul 31 22:41:49 2021 -0400
+Mon Aug 2 05:30:19 2021 -0400
 
+* [`e45daeb`](https://github.com/HuidaeCho/projpicker/commit/e45daeb)  wxgui: Implement the ProjPickerPanel widget for wxPython with an example
+* [`af8c006`](https://github.com/HuidaeCho/projpicker/commit/af8c006)  gui: Do not clear selection on empty searching
+* [`3edc641`](https://github.com/HuidaeCho/projpicker/commit/3edc641)  gui: better searching code
+* [`c6cc18b`](https://github.com/HuidaeCho/projpicker/commit/c6cc18b)  wxgui: Add hscrollbar for help (for resizing)
+* [`a93b144`](https://github.com/HuidaeCho/projpicker/commit/a93b144)  gui: Handlers at top
+* [`f0fcb82`](https://github.com/HuidaeCho/projpicker/commit/f0fcb82)  wxgui: Move non-event handlers to top
+* [`65e962c`](https://github.com/HuidaeCho/projpicker/commit/65e962c)  gui: Keep search text on a new query
+* [`ce62d36`](https://github.com/HuidaeCho/projpicker/commit/ce62d36)  wxgui: Define mono\_font
+* [`422c0db`](https://github.com/HuidaeCho/projpicker/commit/422c0db)  gui: do not need to draw geoms again because the last vertice was already drawn by on\_move()
+* [`ab75dc6`](https://github.com/HuidaeCho/projpicker/commit/ab75dc6)  wxgui: Only fix ID width
+* [`aa990d2`](https://github.com/HuidaeCho/projpicker/commit/aa990d2)  gui: rename the only notebook to notebook
+* [`6d44f51`](https://github.com/HuidaeCho/projpicker/commit/6d44f51)  wxgui: Use properties instead of getters when possible; Still use setters (feels better?)
+* [`4186a52`](https://github.com/HuidaeCho/projpicker/commit/4186a52)  wxgui: minor refactoring
+* [`1c0c302`](https://github.com/HuidaeCho/projpicker/commit/1c0c302)  wxgui: Fix link
+* [`9c52df4`](https://github.com/HuidaeCho/projpicker/commit/9c52df4)  wxgui: Avoid using deprecated wx.NewId()
+* [`2542378`](https://github.com/HuidaeCho/projpicker/commit/2542378)  wxgui: verbose support
+* [`35a616b`](https://github.com/HuidaeCho/projpicker/commit/35a616b)  gui: Handle exceptions when reading env vars
+* [`1070967`](https://github.com/HuidaeCho/projpicker/commit/1070967)  gui: Consolidate PROJPICKER\_(LATITUDE|LONGITUDE) in PROJPICKER\_COORDINATES and support coordinate parsing
+* [`ff56814`](https://github.com/HuidaeCho/projpicker/commit/ff56814)  docs: Add Environment variables
+* [`23b7beb`](https://github.com/HuidaeCho/projpicker/commit/23b7beb)  docs: Mention wxPython vs. tkinter GUI options
+* [`2e01117`](https://github.com/HuidaeCho/projpicker/commit/2e01117)  docs: English locale screenshot
+* [`a267124`](https://github.com/HuidaeCho/projpicker/commit/a267124)  README: English locale screenshot
+* [`a644fd0`](https://github.com/HuidaeCho/projpicker/commit/a644fd0)  docs: Just keep pip install
+* [`881edc6`](https://github.com/HuidaeCho/projpicker/commit/881edc6)  docs: Searching at the bottom
+
+## v0.3.0
+Sun Aug 1 11:53:50 2021 -0400
+
+* [`ef62d79`](https://github.com/HuidaeCho/projpicker/commit/ef62d79)  v0.3.0: wxgui
 * [`6c91dd0`](https://github.com/HuidaeCho/projpicker/commit/6c91dd0)  changelog
 * [`e2b5918`](https://github.com/HuidaeCho/projpicker/commit/e2b5918)  docs: Update a screenshot
 * [`1c6fafd`](https://github.com/HuidaeCho/projpicker/commit/1c6fafd)  Update screenshots
