@@ -38,6 +38,7 @@ import json
 import pprint
 
 has_gui = True
+has_web = True
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -49,7 +50,10 @@ if __package__:
         from . import gui
     except:
         has_gui = False
-    from . import web
+    try:
+        from . import web
+    except:
+        has_web = False
 else:
     from common import (BBox, coor_sep, pos_float_pat, bbox_schema,
                         bbox_columns, is_verbose, get_float)
@@ -59,7 +63,10 @@ else:
         import gui
     except:
         has_gui = False
-    import web
+    try:
+        import web
+    except:
+        has_web = False
 
 # module path
 module_path = os.path.dirname(__file__)
@@ -2954,22 +2961,22 @@ def parse():
                 "south, north, west, and east (bbox); each point or bbox is a "
                 "separate argument and multiple polys are separated by any "
                 "non-coordinate argument such as a comma")
-    # web server
-    parser.add_argument(
-            "-S",
-            "--server",
-            nargs="?",
-            const=web.default_server,
-            help="start the standalone web server; optionally, specify the IP "
-                "address and port on which the server listens (default: "
-                f"{web.default_server}); other options except --client are "
-                "ignored")
-    parser.add_argument(
-            "-c",
-            "--client",
-            action="store_true",
-            help="start a new client in the user's default browser; only used "
-                "with the web server")
+    if has_web:
+        parser.add_argument(
+                "-S",
+                "--server",
+                nargs="?",
+                const=web.default_server,
+                help="start the standalone web server; optionally, specify "
+                    "the IP address and port on which the server listens "
+                    f"(default: {web.default_server}); other options except "
+                    "--client are ignored")
+        parser.add_argument(
+                "-c",
+                "--client",
+                action="store_true",
+                help="start a new client in the user's default browser; only "
+                    "used with the web server")
     return parser
 
 
@@ -3006,9 +3013,12 @@ def main():
         start_gui = None
         single = False
     geoms = args.geometry
-    # web server
-    server = args.server
-    client = args.client
+
+    if has_web:
+        server = args.server
+        client = args.client
+    else:
+        server = client = None
 
     if version:
         print(
