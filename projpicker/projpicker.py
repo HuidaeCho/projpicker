@@ -2466,30 +2466,37 @@ def search_bbox(bbox, text, ignore_case=True, search_op="and"):
             b_code = b_code.lower()
         return b_auth.endswith(auth) and b_code.startswith(code)
 
-    def compare(txt, item):
+    def compare(word, item):
         if type(item) == str:
             if ignore_case:
-                txt = txt.lower()
+                word = word.lower()
                 item = item.lower()
-            return txt in item
+            return word in item
         else:
             return False
 
     outbbox = []
     if type(text) == str:
         text = [text]
-    n = len(text)
+
+    words = []
+    for txt in text:
+        txt = txt.strip()
+        if txt and txt not in words:
+            words.append(txt)
+
+    n = len(words)
     for b in bbox:
         found = False
         c = 0
-        for txt in text:
+        for word in words:
             item_found = False
-            if ":" in txt:
-                if compare_crs_id(txt, b):
+            if ":" in word:
+                if compare_crs_id(word, b):
                     item_found = True
             if not item_found:
                 for item in b:
-                    if compare(txt, item):
+                    if compare(word, item):
                         item_found = True
                         break
             if item_found:

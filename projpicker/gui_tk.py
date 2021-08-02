@@ -567,7 +567,7 @@ def start(
         draw_bbox()
 
     def search():
-        text = [x.strip() for x in search_text.get().split(";")]
+        text = search_text.get().split(";")
         filt_bbox = ppik.search_bbox(bbox, text)
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
