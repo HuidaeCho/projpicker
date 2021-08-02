@@ -1,8 +1,15 @@
 # Change log
 
 ## HEAD
-Mon Aug 2 05:30:19 2021 -0400
+Mon Aug 2 05:44:22 2021 -0400
 
+* [`596d1d5`](https://github.com/HuidaeCho/projpicker/commit/596d1d5)  web optional
+
+## v0.3.1
+Mon Aug 2 05:31:50 2021 -0400
+
+* [`d6b2931`](https://github.com/HuidaeCho/projpicker/commit/d6b2931)  v0.3.1: wxPython widget
+* [`52e8b53`](https://github.com/HuidaeCho/projpicker/commit/52e8b53)  changelog
 * [`e45daeb`](https://github.com/HuidaeCho/projpicker/commit/e45daeb)  wxgui: Implement the ProjPickerPanel widget for wxPython with an example
 * [`af8c006`](https://github.com/HuidaeCho/projpicker/commit/af8c006)  gui: Do not clear selection on empty searching
 * [`3edc641`](https://github.com/HuidaeCho/projpicker/commit/3edc641)  gui: better searching code
