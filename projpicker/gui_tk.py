@@ -355,7 +355,7 @@ def start(
             bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
         except Exception as e:
             log_text.insert(tk.END, e)
-            bottom_right_notebook.select(log_frame)
+            notebook.select(log_frame)
 
         populate_crs_list(bbox)
         draw_geoms()
@@ -483,7 +483,7 @@ def start(
                 else:
                     query_text.insert(tk.INSERT, query)
                 query_text.mark_set(tk.INSERT, f"{line+1}.0")
-                bottom_right_notebook.select(query_frame)
+                notebook.select(query_frame)
                 draw_geoms()
         elif not dragged:
             # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
@@ -568,7 +568,7 @@ def start(
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            bottom_right_notebook.select(crs_info_frame)
+            notebook.select(crs_info_frame)
         draw_geoms()
         draw_bbox()
 
@@ -709,24 +709,23 @@ def start(
 
     ####################
     # bottom-right frame
-    bottom_right_notebook_width = root_width - bottom_left_frame_width
-    bottom_right_notebook = ttk.Notebook(bottom_frame,
-                                         width=bottom_right_notebook_width)
-    bottom_right_notebook.pack_propagate(False)
+    notebook_width = root_width - bottom_left_frame_width
+    notebook = ttk.Notebook(bottom_frame, width=notebook_width)
+    notebook.pack_propagate(False)
 
-    query_frame = ttk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(query_frame, text="Query")
+    query_frame = ttk.Frame(notebook)
+    notebook.add(query_frame, text="Query")
 
-    crs_info_frame = ttk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(crs_info_frame, text="CRS Info")
+    crs_info_frame = ttk.Frame(notebook)
+    notebook.add(crs_info_frame, text="CRS Info")
 
-    log_frame = ttk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(log_frame, text="Log")
+    log_frame = ttk.Frame(notebook)
+    notebook.add(log_frame, text="Log")
 
-    help_frame = ttk.Frame(bottom_right_notebook)
-    bottom_right_notebook.add(help_frame, text="Help")
+    help_frame = ttk.Frame(notebook)
+    notebook.add(help_frame, text="Help")
 
-    bottom_right_notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     #############
     # query frame
@@ -861,7 +860,7 @@ def start(
     help_text.config(yscrollcommand=help_vscrollbar.set)
 
     # label for coordinates
-    coor_label = ttk.Label(bottom_right_notebook)
+    coor_label = ttk.Label(notebook)
     coor_label.place(relx=1, rely=0, anchor=tk.NE)
 
     #########

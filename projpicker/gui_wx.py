@@ -176,7 +176,7 @@ def start(
                     query_text.GetRange(sel[0] - 1, sel[0]) != "\n"):
                     query = "\n" + query
                 query_text.Replace(sel[0], sel[1], query)
-                bottom_right_notebook.ChangeSelection(query_panel.page)
+                notebook.ChangeSelection(query_panel.page)
                 draw_geoms()
         elif not dragged:
             if event.ControlDown():
@@ -408,7 +408,7 @@ def start(
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            bottom_right_notebook.ChangeSelection(crs_info_panel.page)
+            notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
 
     def on_search(event):
@@ -463,7 +463,7 @@ def start(
             bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
         except Exception as e:
             log_text.SetValue(str(e))
-            bottom_right_notebook.ChangeSelection(log_panel.page)
+            notebook.ChangeSelection(log_panel.page)
         else:
             log_text.SetValue("")
 
@@ -591,27 +591,27 @@ def start(
 
     ####################
     # bottom-right frame
-    bottom_right_notebook = wx.Notebook(root)
+    notebook = wx.Notebook(root)
 
     # query tab
-    query_panel = wx.Panel(bottom_right_notebook)
-    query_panel.page = bottom_right_notebook.PageCount
-    bottom_right_notebook.AddPage(query_panel, "Query")
+    query_panel = wx.Panel(notebook)
+    query_panel.page = notebook.PageCount
+    notebook.AddPage(query_panel, "Query")
 
     # CRS info tab
-    crs_info_panel = wx.Panel(bottom_right_notebook)
-    crs_info_panel.page = bottom_right_notebook.PageCount
-    bottom_right_notebook.AddPage(crs_info_panel, "CRS Info")
+    crs_info_panel = wx.Panel(notebook)
+    crs_info_panel.page = notebook.PageCount
+    notebook.AddPage(crs_info_panel, "CRS Info")
 
     # log tab
-    log_panel = wx.Panel(bottom_right_notebook)
-    log_panel.page = bottom_right_notebook.PageCount
-    bottom_right_notebook.AddPage(log_panel, "Log")
+    log_panel = wx.Panel(notebook)
+    log_panel.page = notebook.PageCount
+    notebook.AddPage(log_panel, "Log")
 
     # help tab
-    help_panel = wx.Panel(bottom_right_notebook)
-    help_panel.page = bottom_right_notebook.PageCount
-    bottom_right_notebook.AddPage(help_panel, "Help")
+    help_panel = wx.Panel(notebook)
+    help_panel.page = notebook.PageCount
+    notebook.AddPage(help_panel, "Help")
 
     #############
     # query panel
@@ -735,7 +735,7 @@ def start(
     help_box.Add(help_text, 1, wx.EXPAND)
     help_panel.SetSizer(help_box)
 
-    bottom_box.Add(bottom_right_notebook, 1, wx.EXPAND)
+    bottom_box.Add(notebook, 1, wx.EXPAND)
     main_box.Add(bottom_box, 1, wx.EXPAND)
 
     root.SetSizer(main_box)
