@@ -289,7 +289,7 @@ def start(
 
     def on_resize(event):
         if root.IsShown():
-            osm.resize(event.Size.Width, event.Size.Height)
+            osm.resize(*event.Size)
             x, y = root.ScreenToClient(wx.GetMousePosition())
             draw_map(x, y)
 
@@ -412,14 +412,14 @@ def start(
         draw_geoms()
 
     def on_search(event):
-        text = [x.strip() for x in search_text.GetValue().split(";")]
+        text = [x.strip() for x in search_text.Value.split(";")]
         filt_bbox = ppik.search_bbox(bbox, text)
         populate_crs_list(filt_bbox)
         prev_crs_items.clear()
 
     def create_image(width, height):
         image = wx.Image(width, height)
-        image.Replace(0, 0, 0, *root.GetBackgroundColour()[:3])
+        image.Replace(0, 0, 0, *root.BackgroundColour[:3])
         return image
 
     def draw_image(image):
@@ -433,7 +433,7 @@ def start(
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
             if fd.ShowModal() != wx.ID_CANCEL:
                 try:
-                    with open(fd.GetPath()) as f:
+                    with open(fd.Path) as f:
                         query_text.SetValue(f.read())
                         f.close()
                 except Exception as e:
@@ -445,9 +445,9 @@ def start(
                            defaultFile="query",
                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fd:
             if fd.ShowModal() != wx.ID_CANCEL:
-                query_to_export = query_text.GetValue()
+                query_to_export = query_text.Value
                 try:
-                    with open(fd.GetPath(), "w") as f:
+                    with open(fd.Path, "w") as f:
                         f.write(query_to_export)
                 except Exception as e:
                     wx.MessageDialog(query_text, str(e),
@@ -456,7 +456,7 @@ def start(
     def query():
         nonlocal bbox
 
-        query = query_text.GetValue()
+        query = query_text.Value
         geoms.clear()
         try:
             geoms.extend(ppik.parse_mixed_geoms(query))
@@ -595,22 +595,22 @@ def start(
 
     # query tab
     query_panel = wx.Panel(bottom_right_notebook)
-    query_panel.page = bottom_right_notebook.GetPageCount()
+    query_panel.page = bottom_right_notebook.PageCount
     bottom_right_notebook.AddPage(query_panel, "Query")
 
     # CRS info tab
     crs_info_panel = wx.Panel(bottom_right_notebook)
-    crs_info_panel.page = bottom_right_notebook.GetPageCount()
+    crs_info_panel.page = bottom_right_notebook.PageCount
     bottom_right_notebook.AddPage(crs_info_panel, "CRS Info")
 
     # log tab
     log_panel = wx.Panel(bottom_right_notebook)
-    log_panel.page = bottom_right_notebook.GetPageCount()
+    log_panel.page = bottom_right_notebook.PageCount
     bottom_right_notebook.AddPage(log_panel, "Log")
 
     # help tab
     help_panel = wx.Panel(bottom_right_notebook)
-    help_panel.page = bottom_right_notebook.GetPageCount()
+    help_panel.page = bottom_right_notebook.PageCount
     bottom_right_notebook.AddPage(help_panel, "Help")
 
     #############
@@ -637,7 +637,7 @@ def start(
     query_text.Bind(wx.EVT_MENU, lambda e: export_query(), export_menuitem)
 
     query_text.Bind(wx.EVT_RIGHT_DOWN,
-                    lambda e: query_text.PopupMenu(menu, e.GetPosition()))
+                    lambda e: query_text.PopupMenu(menu, e.Position))
 
     # buttons
     query_button = wx.Button(query_panel, label="Query")
@@ -668,7 +668,7 @@ def start(
             crs_info_panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    crs_info_text.SetFont(query_text.GetFont())
+    crs_info_text.SetFont(query_text.Font)
     crs_info_box.Add(crs_info_text, 1, wx.EXPAND)
 
     # buttons
@@ -693,7 +693,7 @@ def start(
     log_text = wx.TextCtrl(log_panel,
                            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts
-    log_text.SetFont(query_text.GetFont())
+    log_text.SetFont(query_text.Font)
     log_box.Add(log_text, 1, wx.EXPAND)
     log_panel.SetSizer(log_box)
 
@@ -730,8 +730,8 @@ def start(
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL)
     help_text.Bind(wx.EVT_TEXT_URL,
                    lambda e: webbrowser.open(doc_url)
-                             if e.GetMouseEvent().LeftIsDown() else None)
-    help_text.SetFont(query_text.GetFont())
+                             if e.MouseEvent.LeftIsDown() else None)
+    help_text.SetFont(query_text.Font)
     help_box.Add(help_text, 1, wx.EXPAND)
     help_panel.SetSizer(help_box)
 
