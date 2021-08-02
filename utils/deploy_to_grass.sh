@@ -23,7 +23,7 @@ except:\
 /^    import coor_xy$/i\
     import coor_xy
 /^    import coor_xy$/,+4d
-' projpicker.py > l
+' projpicker.py > $CORE_DIR/projpicker.py
 
 cp getosm.py $GUI_DIR
 
