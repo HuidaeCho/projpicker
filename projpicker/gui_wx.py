@@ -574,10 +574,10 @@ def start(
             root,
             style=wx.LC_REPORT | (wx.LC_SINGLE_SEL if single else 0))
 
-    id_width = 110
-    name_width = root_width // 2 - id_width - 20
-    crs_list.AppendColumn("ID", width=id_width)
-    crs_list.AppendColumn("Name", width=name_width)
+    crs_list.AppendColumn("ID")
+    crs_list.AppendColumn("Name")
+    crs_list.SetColumnWidth(0, 110)
+    crs_list.SetColumnWidth(1, wx.LIST_AUTOSIZE_USEHEADER)
     bottom_left_box.Add(crs_list, 1, wx.EXPAND)
 
     populate_crs_list(bbox)
