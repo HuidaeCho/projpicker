@@ -62,7 +62,7 @@ See [here](https://github.com/HuidaeCho/projpicker/blob/main/ChangeLog.md).
 
 ## Sponsor
 
-This project is kindly funded by [the Institute for Environmental and Spatial
+This project was kindly funded by [the Institute for Environmental and Spatial
 Analysis](https://ung.edu/institute-environmental-spatial-analysis/) (IESA) at
 [the University of North Georgia](https://ung.edu/) (UNG).
 
