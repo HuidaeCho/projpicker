@@ -484,7 +484,6 @@ def start(
                     query_text.insert(tk.INSERT, query)
                 query_text.mark_set(tk.INSERT, f"{line+1}.0")
                 notebook.select(query_frame)
-                draw_geoms()
         elif not dragged:
             # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
             if event.state & 0x4:

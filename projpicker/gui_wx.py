@@ -177,7 +177,6 @@ def start(
                     query = "\n" + query
                 query_text.Replace(sel[0], sel[1], query)
                 notebook.ChangeSelection(query_panel.page)
-                draw_geoms()
         elif not dragged:
             if event.ControlDown():
                 drawing_bbox = True
