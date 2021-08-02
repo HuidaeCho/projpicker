@@ -12,7 +12,6 @@ import threading
 import queue
 import functools
 
-# https://stackoverflow.com/a/49480246/16079666
 if __package__:
     from . import projpicker as ppik
     from .gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,

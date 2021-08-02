@@ -4,7 +4,6 @@ This module implements common functions for the gui modules.
 
 import os
 
-# https://stackoverflow.com/a/49480246/16079666
 if __package__:
     from . import projpicker as ppik
 else:
