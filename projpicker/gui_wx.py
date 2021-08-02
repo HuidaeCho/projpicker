@@ -116,6 +116,81 @@ def start(
 
         map_canvas.Refresh()
 
+    def create_image(width, height):
+        image = wx.Image(width, height)
+        image.Replace(0, 0, 0, *root.BackgroundColour[:3])
+        return image
+
+    def draw_image(image):
+        # just save the map image for now; later, double-buffered drawing will
+        # be done in on_paint() triggered by map_canvas.Refresh()
+        map_canvas.bitmap = wx.Bitmap(image)
+        map_canvas.Refresh()
+
+    def import_query():
+        with wx.FileDialog(query_text, "Import query", wildcard=file_types,
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
+            if fd.ShowModal() != wx.ID_CANCEL:
+                try:
+                    with open(fd.Path) as f:
+                        query_text.SetValue(f.read())
+                        f.close()
+                except Exception as e:
+                    wx.MessageDialog(query_text, str(e),
+                                     "Import query error").ShowModal()
+
+    def export_query():
+        with wx.FileDialog(query_text, "Export query", wildcard=file_types,
+                           defaultFile="query",
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fd:
+            if fd.ShowModal() != wx.ID_CANCEL:
+                query_to_export = query_text.Value
+                try:
+                    with open(fd.Path, "w") as f:
+                        f.write(query_to_export)
+                except Exception as e:
+                    wx.MessageDialog(query_text, str(e),
+                                     "Export query error").ShowModal()
+
+    def query():
+        nonlocal bbox
+
+        query = query_text.Value
+        geoms.clear()
+        try:
+            geoms.extend(ppik.parse_mixed_geoms(query))
+            bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
+        except Exception as e:
+            log_text.SetValue(str(e))
+            notebook.ChangeSelection(log_panel.page)
+        else:
+            log_text.SetValue("")
+
+        populate_crs_list(bbox)
+        search()
+        draw_geoms()
+
+    def populate_crs_list(bbox):
+        crs_list.DeleteAllItems()
+        for b in bbox:
+            crs_list.Append((f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
+        sel_bbox.clear()
+
+    def search():
+        text = [x.strip() for x in search_text.Value.split(";")]
+        filt_bbox = ppik.search_bbox(bbox, text)
+        populate_crs_list(filt_bbox)
+        prev_crs_items.clear()
+
+    def select():
+        nonlocal sel_crs
+
+        item = crs_list.GetFirstSelected()
+        while item != -1:
+            sel_crs.append(crs_list.GetItemText(item, 0))
+            item = crs_list.GetNextSelected(item)
+        root.Close()
+
     def on_grab(event):
         osm.grab(event.x, event.y)
 
@@ -409,81 +484,6 @@ def start(
 
             notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
-
-    def create_image(width, height):
-        image = wx.Image(width, height)
-        image.Replace(0, 0, 0, *root.BackgroundColour[:3])
-        return image
-
-    def draw_image(image):
-        # just save the map image for now; later, double-buffered drawing will
-        # be done in on_paint() triggered by map_canvas.Refresh()
-        map_canvas.bitmap = wx.Bitmap(image)
-        map_canvas.Refresh()
-
-    def import_query():
-        with wx.FileDialog(query_text, "Import query", wildcard=file_types,
-                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
-            if fd.ShowModal() != wx.ID_CANCEL:
-                try:
-                    with open(fd.Path) as f:
-                        query_text.SetValue(f.read())
-                        f.close()
-                except Exception as e:
-                    wx.MessageDialog(query_text, str(e),
-                                     "Import query error").ShowModal()
-
-    def export_query():
-        with wx.FileDialog(query_text, "Export query", wildcard=file_types,
-                           defaultFile="query",
-                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fd:
-            if fd.ShowModal() != wx.ID_CANCEL:
-                query_to_export = query_text.Value
-                try:
-                    with open(fd.Path, "w") as f:
-                        f.write(query_to_export)
-                except Exception as e:
-                    wx.MessageDialog(query_text, str(e),
-                                     "Export query error").ShowModal()
-
-    def query():
-        nonlocal bbox
-
-        query = query_text.Value
-        geoms.clear()
-        try:
-            geoms.extend(ppik.parse_mixed_geoms(query))
-            bbox = ppik.query_mixed_geoms(geoms, projpicker_db)
-        except Exception as e:
-            log_text.SetValue(str(e))
-            notebook.ChangeSelection(log_panel.page)
-        else:
-            log_text.SetValue("")
-
-        populate_crs_list(bbox)
-        search()
-        draw_geoms()
-
-    def populate_crs_list(bbox):
-        crs_list.DeleteAllItems()
-        for b in bbox:
-            crs_list.Append((f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
-        sel_bbox.clear()
-
-    def search():
-        text = [x.strip() for x in search_text.Value.split(";")]
-        filt_bbox = ppik.search_bbox(bbox, text)
-        populate_crs_list(filt_bbox)
-        prev_crs_items.clear()
-
-    def select():
-        nonlocal sel_crs
-
-        item = crs_list.GetFirstSelected()
-        while item != -1:
-            sel_crs.append(crs_list.GetItemText(item, 0))
-            item = crs_list.GetNextSelected(item)
-        root.Close()
 
     # parse geometries if given
     if geoms:
