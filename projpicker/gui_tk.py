@@ -160,6 +160,203 @@ def start(
     lat, lon = get_latlon()
     zoom = get_zoom()
 
+    def on_drag(event):
+        nonlocal dragged, dragging_bbox
+
+        if event.state & 0x4:
+            # Control + B1-Motion
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            if not dragging_bbox:
+                dragging_bbox = True
+                dragged_bbox.append(latlon)
+            else:
+                if len(dragged_bbox) == 2:
+                    del dragged_bbox[1]
+                dragged_bbox.append(latlon)
+
+                ng = len(dragged_bbox)
+                s = dragged_bbox[ng-1][0]
+                n = dragged_bbox[0][0]
+                w = dragged_bbox[0][1]
+                e = dragged_bbox[ng-1][1]
+
+                map_canvas.delete(tag_dragged_bbox)
+                for xy in osm.get_bbox_xy((s, n, w, e)):
+                    map_canvas.create_rectangle(xy, outline=dragged_bbox_color,
+                                                width=line_width,
+                                                fill=dragged_bbox_color,
+                                                stipple=fill_stipple,
+                                                tag=tag_dragged_bbox)
+            latlon = osm.canvas_to_latlon(event.x, event.y)
+            coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
+        else:
+            osm.drag(event.x, event.y, False)
+            draw_map(event.x, event.y)
+        dragged = True
+
+    def on_move(event):
+        latlon = osm.canvas_to_latlon(event.x, event.y)
+        coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
+        draw_geoms(event.x, event.y)
+
+    def on_draw(event):
+        nonlocal dragged, dragging_bbox, drawing_bbox, complete_drawing
+
+        if dragging_bbox:
+            ng = len(dragged_bbox)
+            s = min(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            n = max(dragged_bbox[0][0], dragged_bbox[ng-1][0])
+            w = dragged_bbox[0][1]
+            e = dragged_bbox[ng-1][1]
+            if s == n:
+                n += 0.0001
+            if w == e:
+                e += 0.0001
+            osm.zoom_to_bbox([s, n, w, e], False)
+            dragged_bbox.clear()
+            dragging_bbox = False
+            map_canvas.delete(tag_dragged_bbox)
+            draw_map(event.x, event.y)
+        elif complete_drawing:
+            query = ""
+            geom = []
+            if drawing_bbox:
+                if len(curr_geom) == 2:
+                    s = min(curr_geom[0][0], curr_geom[1][0])
+                    n = max(curr_geom[0][0], curr_geom[1][0])
+                    w = curr_geom[0][1]
+                    e = curr_geom[1][1]
+                    geom.extend(["bbox", [s, n, w, e]])
+                    query = f"bbox {s:.4f},{n:.4f},{w:.4f},{e:.4f}"
+                drawing_bbox = False
+            elif len(curr_geom) == 1:
+                lat, lon = curr_geom[0]
+                geom.extend(["point", [lat, lon]])
+                query = f"point {lat:.4f},{lon:.4f}"
+            elif curr_geom:
+                geom.extend(["poly", curr_geom.copy()])
+                query = "poly"
+                for g in curr_geom:
+                    lat, lon = g
+                    query += f" {lat:.4f},{lon:.4f}"
+            geoms.extend(geom)
+            curr_geom.clear()
+            prev_xy.clear()
+            if query:
+                query += "\n"
+                # https://stackoverflow.com/a/35855352/16079666
+                # don't use .selection_get()
+                ranges = query_text.tag_ranges(tk.SEL)
+                if ranges:
+                    name = query_text.get(*ranges).strip()
+                    if name and not name.endswith(":"):
+                        if not name.startswith(":"):
+                            name = f":{name}:"
+                        else:
+                            name = ""
+                    if name and ppik.geom_var_re.match(name):
+                        query = query.replace(" ", f" {name} ", 1)
+                    index = ranges[0].string
+                else:
+                    index = query_text.index(tk.INSERT)
+                line, col = list(map(lambda x: int(x), index.split(".")))
+                if col > 0:
+                    query = "\n" + query
+                    line += 1
+                if ranges:
+                    query_text.replace(*ranges, query)
+                else:
+                    query_text.insert(tk.INSERT, query)
+                query_text.mark_set(tk.INSERT, f"{line+1}.0")
+                notebook.select(query_frame)
+                draw_geoms()
+        elif not dragged:
+            # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
+            if event.state & 0x4:
+                # Control + ButtonRelease-1
+                drawing_bbox = True
+                curr_geom.clear()
+            elif drawing_bbox and len(curr_geom) == 2:
+                del curr_geom[1]
+            latlon = list(osm.canvas_to_latlon(event.x, event.y))
+            if not drawing_bbox:
+                if prev_xy:
+                    latlon[1] = adjust_lon(prev_xy[0], event.x,
+                                           curr_geom[len(curr_geom)-1][1],
+                                           latlon[1])
+                prev_xy.clear()
+                prev_xy.extend([event.x, event.y])
+            curr_geom.append(latlon)
+
+        dragged = False
+        complete_drawing = False
+
+    def on_complete_drawing(event):
+        nonlocal complete_drawing
+
+        # XXX: sometimes, double-click events occur for both clicks and there
+        # is no reliable way to register the first click only using
+        # complete_drawing; a hacky way to handle such cases
+        if not curr_geom:
+            curr_geom.append(osm.canvas_to_latlon(event.x, event.y))
+            prev_xy = [event.x, event.y]
+        complete_drawing = True
+
+    def on_cancel_drawing(event):
+        nonlocal drawing_bbox
+
+        drawing_bbox = False
+        curr_geom.clear()
+        prev_xy.clear()
+        draw_geoms()
+
+    def on_resize(event):
+        osm.resize(event.width, event.height)
+        x = root.winfo_pointerx() - root.winfo_rootx()
+        y = root.winfo_pointery() - root.winfo_rooty()
+        draw_map(x, y)
+
+    def on_select_crs(event):
+        nonlocal prev_crs_items
+
+        curr_crs_items = crs_treeview.selection()
+
+        if single:
+            prev_crs_items.clear()
+
+        curr_crs_item = None
+        if len(curr_crs_items) > len(prev_crs_items):
+            # selected a new crs
+            curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
+            prev_crs_items.append(curr_crs_item)
+        elif len(curr_crs_items) < len(prev_crs_items):
+            # deselected an existing crs
+            item = list(set(prev_crs_items) - set(curr_crs_items))[0]
+            del prev_crs_items[prev_crs_items.index(item)]
+            l = len(prev_crs_items)
+            if l > 0:
+                curr_crs_item = prev_crs_items[l-1]
+        elif curr_crs_items:
+            prev_crs_items.clear()
+            prev_crs_items.extend(curr_crs_items)
+            curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
+
+        crs_info_text.delete("1.0", tk.END)
+        sel_bbox.clear()
+        if curr_crs_item:
+            crs_id = crs_treeview.item(curr_crs_item)["values"][0]
+            b = find_bbox(crs_id, bbox)
+            crs_info = create_crs_info(b, format_crs_info)
+            crs_info_text.insert(tk.END, crs_info)
+
+            s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
+            s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
+            sel_bbox.extend([s, n, w, e])
+
+            notebook.select(crs_info_frame)
+        draw_geoms()
+        draw_bbox()
+
     def draw_map(x, y):
         osm.draw()
         draw_geoms(x, y)
@@ -381,202 +578,6 @@ def start(
         for item in crs_treeview.selection():
             sel_crs.append(crs_treeview.item(item)["values"][0])
         root.destroy()
-
-    def on_drag(event):
-        nonlocal dragged, dragging_bbox
-
-        if event.state & 0x4:
-            # Control + B1-Motion
-            latlon = osm.canvas_to_latlon(event.x, event.y)
-            if not dragging_bbox:
-                dragging_bbox = True
-                dragged_bbox.append(latlon)
-            else:
-                if len(dragged_bbox) == 2:
-                    del dragged_bbox[1]
-                dragged_bbox.append(latlon)
-
-                ng = len(dragged_bbox)
-                s = dragged_bbox[ng-1][0]
-                n = dragged_bbox[0][0]
-                w = dragged_bbox[0][1]
-                e = dragged_bbox[ng-1][1]
-
-                map_canvas.delete(tag_dragged_bbox)
-                for xy in osm.get_bbox_xy((s, n, w, e)):
-                    map_canvas.create_rectangle(xy, outline=dragged_bbox_color,
-                                                width=line_width,
-                                                fill=dragged_bbox_color,
-                                                stipple=fill_stipple,
-                                                tag=tag_dragged_bbox)
-            latlon = osm.canvas_to_latlon(event.x, event.y)
-            coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
-        else:
-            osm.drag(event.x, event.y, False)
-            draw_map(event.x, event.y)
-        dragged = True
-
-    def on_move(event):
-        latlon = osm.canvas_to_latlon(event.x, event.y)
-        coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
-        draw_geoms(event.x, event.y)
-
-    def on_draw(event):
-        nonlocal dragged, dragging_bbox, drawing_bbox, complete_drawing
-
-        if dragging_bbox:
-            ng = len(dragged_bbox)
-            s = min(dragged_bbox[0][0], dragged_bbox[ng-1][0])
-            n = max(dragged_bbox[0][0], dragged_bbox[ng-1][0])
-            w = dragged_bbox[0][1]
-            e = dragged_bbox[ng-1][1]
-            if s == n:
-                n += 0.0001
-            if w == e:
-                e += 0.0001
-            osm.zoom_to_bbox([s, n, w, e], False)
-            dragged_bbox.clear()
-            dragging_bbox = False
-            map_canvas.delete(tag_dragged_bbox)
-            draw_map(event.x, event.y)
-        elif complete_drawing:
-            query = ""
-            geom = []
-            if drawing_bbox:
-                if len(curr_geom) == 2:
-                    s = min(curr_geom[0][0], curr_geom[1][0])
-                    n = max(curr_geom[0][0], curr_geom[1][0])
-                    w = curr_geom[0][1]
-                    e = curr_geom[1][1]
-                    geom.extend(["bbox", [s, n, w, e]])
-                    query = f"bbox {s:.4f},{n:.4f},{w:.4f},{e:.4f}"
-                drawing_bbox = False
-            elif len(curr_geom) == 1:
-                lat, lon = curr_geom[0]
-                geom.extend(["point", [lat, lon]])
-                query = f"point {lat:.4f},{lon:.4f}"
-            elif curr_geom:
-                geom.extend(["poly", curr_geom.copy()])
-                query = "poly"
-                for g in curr_geom:
-                    lat, lon = g
-                    query += f" {lat:.4f},{lon:.4f}"
-            geoms.extend(geom)
-            curr_geom.clear()
-            prev_xy.clear()
-            if query:
-                query += "\n"
-                # https://stackoverflow.com/a/35855352/16079666
-                # don't use .selection_get()
-                ranges = query_text.tag_ranges(tk.SEL)
-                if ranges:
-                    name = query_text.get(*ranges).strip()
-                    if name and not name.endswith(":"):
-                        if not name.startswith(":"):
-                            name = f":{name}:"
-                        else:
-                            name = ""
-                    if name and ppik.geom_var_re.match(name):
-                        query = query.replace(" ", f" {name} ", 1)
-                    index = ranges[0].string
-                else:
-                    index = query_text.index(tk.INSERT)
-                line, col = list(map(lambda x: int(x), index.split(".")))
-                if col > 0:
-                    query = "\n" + query
-                    line += 1
-                if ranges:
-                    query_text.replace(*ranges, query)
-                else:
-                    query_text.insert(tk.INSERT, query)
-                query_text.mark_set(tk.INSERT, f"{line+1}.0")
-                notebook.select(query_frame)
-        elif not dragged:
-            # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-handlers.html
-            if event.state & 0x4:
-                # Control + ButtonRelease-1
-                drawing_bbox = True
-                curr_geom.clear()
-            elif drawing_bbox and len(curr_geom) == 2:
-                del curr_geom[1]
-            latlon = list(osm.canvas_to_latlon(event.x, event.y))
-            if not drawing_bbox:
-                if prev_xy:
-                    latlon[1] = adjust_lon(prev_xy[0], event.x,
-                                           curr_geom[len(curr_geom)-1][1],
-                                           latlon[1])
-                prev_xy.clear()
-                prev_xy.extend([event.x, event.y])
-            curr_geom.append(latlon)
-
-        dragged = False
-        complete_drawing = False
-
-    def on_complete_drawing(event):
-        nonlocal complete_drawing
-
-        # XXX: sometimes, double-click events occur for both clicks and there
-        # is no reliable way to register the first click only using
-        # complete_drawing; a hacky way to handle such cases
-        if not curr_geom:
-            curr_geom.append(osm.canvas_to_latlon(event.x, event.y))
-            prev_xy = [event.x, event.y]
-        complete_drawing = True
-
-    def on_cancel_drawing(event):
-        nonlocal drawing_bbox
-
-        drawing_bbox = False
-        curr_geom.clear()
-        prev_xy.clear()
-        draw_geoms()
-
-    def on_resize(event):
-        osm.resize(event.width, event.height)
-        x = root.winfo_pointerx() - root.winfo_rootx()
-        y = root.winfo_pointery() - root.winfo_rooty()
-        draw_map(x, y)
-
-    def on_select_crs(event):
-        nonlocal prev_crs_items
-
-        curr_crs_items = crs_treeview.selection()
-
-        if single:
-            prev_crs_items.clear()
-
-        curr_crs_item = None
-        if len(curr_crs_items) > len(prev_crs_items):
-            # selected a new crs
-            curr_crs_item = list(set(curr_crs_items) - set(prev_crs_items))[0]
-            prev_crs_items.append(curr_crs_item)
-        elif len(curr_crs_items) < len(prev_crs_items):
-            # deselected an existing crs
-            item = list(set(prev_crs_items) - set(curr_crs_items))[0]
-            del prev_crs_items[prev_crs_items.index(item)]
-            l = len(prev_crs_items)
-            if l > 0:
-                curr_crs_item = prev_crs_items[l-1]
-        elif curr_crs_items:
-            prev_crs_items.clear()
-            prev_crs_items.extend(curr_crs_items)
-            curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
-
-        crs_info_text.delete("1.0", tk.END)
-        sel_bbox.clear()
-        if curr_crs_item:
-            crs_id = crs_treeview.item(curr_crs_item)["values"][0]
-            b = find_bbox(crs_id, bbox)
-            crs_info = create_crs_info(b, format_crs_info)
-            crs_info_text.insert(tk.END, crs_info)
-
-            s, n, w, e = b.south_lat, b.north_lat, b.west_lon, b.east_lon
-            s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
-            sel_bbox.extend([s, n, w, e])
-
-            notebook.select(crs_info_frame)
-        draw_geoms()
-        draw_bbox()
 
     # parse geometries if given
     if geoms:
