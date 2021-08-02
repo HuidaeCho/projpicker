@@ -731,7 +731,8 @@ def start(
             the logical AND operator.
 
             See {doc_url} to learn more."""),
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL)
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL |
+                  wx.TE_AUTO_URL)
     help_text.Bind(wx.EVT_TEXT_URL,
                    lambda e: webbrowser.open(doc_url)
                              if e.MouseEvent.LeftIsDown() else None)
