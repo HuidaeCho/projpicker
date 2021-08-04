@@ -187,7 +187,10 @@ def start(
             latlon = osm.canvas_to_latlon(event.x, event.y)
             coor_label.config(text=f"{latlon[0]:.4f}, {latlon[1]:.4f} ")
         else:
-            osm.drag(event.x, event.y, False)
+            dx, dy = osm.drag(event.x, event.y, False)
+            if prev_xy:
+                prev_xy[0] += dx
+                prev_xy[1] += dy
             draw_map(event.x, event.y)
         dragged = True
 
