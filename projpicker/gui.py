@@ -14,7 +14,7 @@ if __package__:
     else:
         try:
             from .gui_wx import *
-        except:
+        except Exception:
             from .gui_tk import *
 else:
     if gui == "tk":
@@ -22,5 +22,5 @@ else:
     else:
         try:
             from gui_wx import *
-        except:
+        except Exception:
             from gui_tk import *

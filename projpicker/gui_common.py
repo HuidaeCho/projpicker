@@ -45,7 +45,7 @@ def get_zoom():
     try:
         zoom = min(max(round(float(os.environ.get(projpicker_zoom_env, 0))),
                        0), 18)
-    except:
+    except ValueError:
         zoom = 0
     return zoom
 
@@ -62,7 +62,7 @@ def get_dzoom():
     try:
         dzoom = min(max(float(os.environ.get(projpicker_dzoom_env, 1)), -18),
                     18)
-    except:
+    except ValueError:
         dzoom = 1
     return dzoom
 

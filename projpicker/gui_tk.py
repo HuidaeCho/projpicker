@@ -458,7 +458,7 @@ def start(
 
             try:
                 draw_map, x, y = zoomer_queue.get_nowait()
-            except:
+            except queue.Empty:
                 zoomer.checker = map_canvas.after_idle(check_zoomer)
             else:
                 draw_map(x, y)

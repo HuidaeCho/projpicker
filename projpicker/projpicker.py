@@ -48,11 +48,11 @@ if __package__:
     from . import coor_xy
     try:
         from . import gui
-    except:
+    except Exception:
         has_gui = False
     try:
         from . import web
-    except:
+    except Exception:
         has_web = False
 else:
     from common import (BBox, coor_sep, pos_float_pat, bbox_schema,
@@ -61,11 +61,11 @@ else:
     import coor_xy
     try:
         import gui
-    except:
+    except Exception:
         has_gui = False
     try:
         import web
-    except:
+    except Exception:
         has_web = False
 
 # module path

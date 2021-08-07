@@ -74,8 +74,8 @@ def get_float(x):
     """
     try:
         return float(x)
-    except:
-        pass
+    except ValueError:
+        return None
 
 
 def query_using_cursor(
