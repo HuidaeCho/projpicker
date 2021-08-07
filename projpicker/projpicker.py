@@ -1111,7 +1111,7 @@ def parse_mixed_geoms(geoms):
         list: List of parsed geometries.
 
     Raises:
-        Exception: If the geometry stack size is not 1 after postfix parsing.
+        Exception: If syntax errors are encountered.
     """
     def parse_next_geom(g):
         if geom_type == "poly":
