@@ -21,18 +21,20 @@ done
 
 sed '
 /^has_web = True$/a\
-from grass.script.setup import set_gui_path\
-set_gui_path()\
-from projpicker_gui import gui
+try:\
+    from grass.script.setup import set_gui_path\
+    set_gui_path()\
+    from projpicker_gui import gui\
+except Exception:\
+    has_gui = False
 /^if __package__:$/,/^else:$/{s/^    //}
 /^if __package__:$/d
 /^else:$/i\
 
 /^else:$/,/^$/d
 /^try:$/,/^    has/d
-/^has/d
+/^has_web = True$/d
 /^# https:\/\/stackoverflow/d
-/if not has_gui:$/,/^$/d
 /^# command-line interface$/,/^##########/d
 /^set_latlon()$/i\
 set_latlon()
