@@ -20,6 +20,7 @@ sed '
 done
 
 sed '
+/^import argparse$/d
 /^has_web = True$/a\
 try:\
     from grass.script.setup import set_gui_path\
