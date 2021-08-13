@@ -606,8 +606,7 @@ def transform_latlon_bbox(bbox, to_crs):
     import pyproj
 
     s, n, w, e = bbox
-    trans = pyproj.Transformer.from_crs("EPSG:4326", to_crs,
-                                        always_xy=True)
+    trans = pyproj.Transformer.from_crs("EPSG:4326", to_crs, always_xy=True)
     x = [w, w, e, e]
     y = [s, n, s, n]
     if s*n < 0:
