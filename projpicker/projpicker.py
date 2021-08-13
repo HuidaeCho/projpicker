@@ -2986,7 +2986,11 @@ def main():
     server.
     """
 
-    args = parse().parse_args()
+    init_parser = parse()
+    args = init_parser.parse_args()
+    if len(sys.argv) == 1:
+        print(arg_parser.print_help(sys.stderr))
+        sys.exit(1)
 
     version = args.version
     create = args.create
