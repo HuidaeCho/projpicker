@@ -7,10 +7,10 @@ import re
 import sqlite3
 
 if __package__:
-    from .common import (coor_sep_pat, pos_float_pat, get_float,
+    from .common import (_coor_sep_pat, _pos_float_pat, get_float,
                          query_using_cursor)
 else:
-    from common import (coor_sep_pat, pos_float_pat, get_float,
+    from common import (_coor_sep_pat, _pos_float_pat, get_float,
                         query_using_cursor)
 
 # symbols for degrees, minutes, and seconds (DMS)
@@ -18,20 +18,20 @@ else:
 # minute: ['′m]
 # second: ["″s]|''
 # decimal degrees
-dd_pat = f"([+-]?{pos_float_pat})[°od]?"
+_dd_pat = f"([+-]?{_pos_float_pat})[°od]?"
 # DMS without [SNWE]
-dms_pat = (f"([0-9]+)(?:[°od](?:[ \t]*(?:({pos_float_pat})['′m]?|"
-           f"""([0-9]+)['′m](?:[ \t]*({pos_float_pat})(?:["″s]|'')?)?))?|"""
-           f":(?:({pos_float_pat})|([0-9]+):({pos_float_pat})))")
+_dms_pat = (f"([0-9]+)(?:[°od](?:[ \t]*(?:({_pos_float_pat})['′m]?|"
+            f"""([0-9]+)['′m](?:[ \t]*({_pos_float_pat})(?:["″s]|'')?)?))?|"""
+            f":(?:({_pos_float_pat})|([0-9]+):({_pos_float_pat})))")
 # coordinate without [SNWE]
-coor_pat = (f"{dd_pat}|([+-])?{dms_pat}|"
-            f"(?:({pos_float_pat})[°od]?|{dms_pat})[ \t]*")
+_coor_pat = (f"{_dd_pat}|([+-])?{_dms_pat}|"
+             f"(?:({_pos_float_pat})[°od]?|{_dms_pat})[ \t]*")
 # latitude
-lat_pat = f"(?:{coor_pat}([SN])?)"
+_lat_pat = f"(?:{_coor_pat}([SN])?)"
 # longitude
-lon_pat = f"(?:{coor_pat}([WE])?)"
+_lon_pat = f"(?:{_coor_pat}([WE])?)"
 # latitude,longitude
-latlon_pat = f"{lat_pat}{coor_sep_pat}{lon_pat}"
+_latlon_pat = f"{_lat_pat}{_coor_sep_pat}{_lon_pat}"
 # matching groups for latitude:
 #   1:              (-1.2)°
 #   2,3,4:          (-)(1)°(2.3)'
@@ -46,10 +46,11 @@ latlon_pat = f"{lat_pat}{coor_sep_pat}{lon_pat}"
 
 # compiled regular expressions
 # latitude,longitude
-latlon_re = re.compile(f"^{latlon_pat}$")
+_latlon_re = re.compile(f"^{_latlon_pat}$")
 # bounding box (south,north,west,east)
-latlon_bbox_re = re.compile(f"^{lat_pat}{coor_sep_pat}{lat_pat}{coor_sep_pat}"
-                            f"{lon_pat}{coor_sep_pat}{lon_pat}$")
+_latlon_bbox_re = re.compile(
+                        f"^{_lat_pat}{_coor_sep_pat}{_lat_pat}{_coor_sep_pat}"
+                        f"{_lon_pat}{_coor_sep_pat}{_lon_pat}$")
 
 
 ###############################################################################
@@ -155,7 +156,7 @@ def parse_point(point):
     lat = lon = None
     typ = type(point)
     if typ == str:
-        m = latlon_re.match(point)
+        m = _latlon_re.match(point)
         if m:
             y = parse_lat(m, 0)
             x = parse_lon(m, 1)
@@ -190,7 +191,7 @@ def parse_bbox(bbox):
     s = n = w = e = None
     typ = type(bbox)
     if typ == str:
-        m = latlon_bbox_re.match(bbox)
+        m = _latlon_bbox_re.match(bbox)
         if m:
             b = parse_lat(m, 0)
             t = parse_lat(m, 1)

@@ -4,12 +4,12 @@ This module imports the gui_tk or gui_wx module.
 
 import os
 
-projpicker_gui_env = "PROJPICKER_GUI"
+_projpicker_gui_env = "PROJPICKER_GUI"
 
-gui = os.environ.get(projpicker_gui_env, "wx")
+_gui = os.environ.get(_projpicker_gui_env, "wx")
 
 if __package__:
-    if gui == "tk":
+    if _gui == "tk":
         from .gui_tk import *
     else:
         try:
@@ -17,7 +17,7 @@ if __package__:
         except Exception:
             from .gui_tk import *
 else:
-    if gui == "tk":
+    if _gui == "tk":
         from gui_tk import *
     else:
         try:
