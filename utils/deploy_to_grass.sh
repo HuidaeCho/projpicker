@@ -68,6 +68,6 @@ from grass.getosm import OpenStreetMap\
 #/^if __package__:$/i\
 #import grass.projpicker as ppik
 #/import projpicker as ppik/d
-#' wxwidgets.py > $GUI_DIR/wxwidgets.py
+#' wxpanel.py > $GUI_DIR/panel.py
 
 cp getosm.py $GETOSM_DIR
