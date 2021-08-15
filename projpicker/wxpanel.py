@@ -755,7 +755,7 @@ class ProjPickerPanel(wx.Panel):
         self.sel_bbox.clear()
         self.post_item_deselected()
 
-        if not self.layout == "full":
+        if self.layout != "full":
             self.crs_list.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
             self.crs_list.SetColumnWidth(1, wx.LIST_AUTOSIZE_USEHEADER)
 
