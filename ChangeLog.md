@@ -1,8 +1,40 @@
 # Change log
 
 ## HEAD
-Mon Aug 2 05:44:22 2021 -0400
+Sat Aug 14 21:33:10 2021 -0400
 
+* [`0097443`](https://github.com/HuidaeCho/projpicker/commit/0097443)  Rename panel.py
+* [`81d1409`](https://github.com/HuidaeCho/projpicker/commit/81d1409)  Minor cleanup & Fix invisible bboxes
+* [`b26013d`](https://github.com/HuidaeCho/projpicker/commit/b26013d)  Minor refactoring
+* [`843978a`](https://github.com/HuidaeCho/projpicker/commit/843978a)  Rename wxwidgets.py to wxpanel.py
+* [`bf2435d`](https://github.com/HuidaeCho/projpicker/commit/bf2435d)  Revert 1cc8ef2 (the original behavior was by design)
+* [`1e61e4d`](https://github.com/HuidaeCho/projpicker/commit/1e61e4d)  Catch ProjError (not all CRSs support transformation)
+* [`21ca9bc`](https://github.com/HuidaeCho/projpicker/commit/21ca9bc)  80 cols
+* [`3d07267`](https://github.com/HuidaeCho/projpicker/commit/3d07267)  argparse is not needed for the GRASS copy
+* [`337cdbb`](https://github.com/HuidaeCho/projpicker/commit/337cdbb)  Make projpicker importable outside a GRASS session for regenerating projpicker.db
+* [`fc9afcf`](https://github.com/HuidaeCho/projpicker/commit/fc9afcf)  Update deploy\_to\_grass.sh (BE careful not to overwrite i18n messages later)
+* [`c6394dd`](https://github.com/HuidaeCho/projpicker/commit/c6394dd)  Make most global variables private except has\_gui and has\_web
+* [`43ab8d2`](https://github.com/HuidaeCho/projpicker/commit/43ab8d2)  Merge branch 'main' of github.com:HuidaeCho/projpicker into main
+* [`89be88e`](https://github.com/HuidaeCho/projpicker/commit/89be88e)  NotImplementedError to ValueError or RuntimeError
+* [`1cc8ef2`](https://github.com/HuidaeCho/projpicker/commit/1cc8ef2)  Check if arguments are provided, if not then print help. Projpicker would hang previously if no cli options given.
+* [`33f1570`](https://github.com/HuidaeCho/projpicker/commit/33f1570)  No more bare except:
+* [`b76179c`](https://github.com/HuidaeCho/projpicker/commit/b76179c)  pyproj.Transformer.from\_crs().transform() does not raise an exception by default
+* [`d594c74`](https://github.com/HuidaeCho/projpicker/commit/d594c74)  Raise more specific errors
+* [`3fa400f`](https://github.com/HuidaeCho/projpicker/commit/3fa400f)  Exception on any syntax errors from parse\_mixed\_geoms()
+* [`0828bf4`](https://github.com/HuidaeCho/projpicker/commit/0828bf4)  Type checking only adds computational time
+* [`8a06ccb`](https://github.com/HuidaeCho/projpicker/commit/8a06ccb)  Fix drawing poly after pan
+* [`8513320`](https://github.com/HuidaeCho/projpicker/commit/8513320)  Funding expired
+* [`bcbb965`](https://github.com/HuidaeCho/projpicker/commit/bcbb965)  Add deploy\_to\_grass.sh script
+* [`f46e7e0`](https://github.com/HuidaeCho/projpicker/commit/f46e7e0)  Add deploy\_to\_grass.sh script
+* [`06bccad`](https://github.com/HuidaeCho/projpicker/commit/06bccad)  One reference URL for \_\_package\_\_ trick is enough
+* [`e19ace2`](https://github.com/HuidaeCho/projpicker/commit/e19ace2)  Reorder module imports
+* [`1862583`](https://github.com/HuidaeCho/projpicker/commit/1862583)  tkgui: Remove an unused variable
+* [`f3369f5`](https://github.com/HuidaeCho/projpicker/commit/f3369f5)  wxwidgets: Show cancel button to the full layout
+
+## v0.3.1.post1
+Mon Aug 2 05:44:53 2021 -0400
+
+* [`8e5beb8`](https://github.com/HuidaeCho/projpicker/commit/8e5beb8)  v0.3.1.post1: web optional
 * [`596d1d5`](https://github.com/HuidaeCho/projpicker/commit/596d1d5)  web optional
 
 ## v0.3.1
