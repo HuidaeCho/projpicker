@@ -379,11 +379,10 @@ class ProjPickerPanel(wx.Panel):
 
     def on_draw(self, event):
         if self.dragging_bbox:
-            ng = len(self.dragged_bbox)
-            s = min(self.dragged_bbox[0][0], self.dragged_bbox[ng-1][0])
-            n = max(self.dragged_bbox[0][0], self.dragged_bbox[ng-1][0])
+            s = min(self.dragged_bbox[0][0], self.dragged_bbox[1][0])
+            n = max(self.dragged_bbox[0][0], self.dragged_bbox[1][0])
             w = self.dragged_bbox[0][1]
-            e = self.dragged_bbox[ng-1][1]
+            e = self.dragged_bbox[1][1]
             if s == n:
                 n += 0.0001
             if w == e:
@@ -401,6 +400,10 @@ class ProjPickerPanel(wx.Panel):
                     n = max(self.curr_geom[0][0], self.curr_geom[1][0])
                     w = self.curr_geom[0][1]
                     e = self.curr_geom[1][1]
+                    if s == n:
+                        n += 0.0001
+                    if w == e:
+                        e += 0.0001
                     geom.extend(["bbox", [s, n, w, e]])
                     query = f"bbox {s:.4f},{n:.4f},{w:.4f},{e:.4f}"
                 self.drawing_bbox = False
@@ -605,11 +608,10 @@ class ProjPickerPanel(wx.Panel):
         if self.dragged_bbox:
             set_pen_brush(self.dragged_bbox_color)
 
-            ng = len(self.dragged_bbox)
-            s = self.dragged_bbox[ng-1][0]
+            s = self.dragged_bbox[1][0]
             n = self.dragged_bbox[0][0]
             w = self.dragged_bbox[0][1]
-            e = self.dragged_bbox[ng-1][1]
+            e = self.dragged_bbox[1][1]
 
             for xy in self.osm.get_bbox_xy((s, n, w, e)):
                 x, y = xy[0]
@@ -665,17 +667,15 @@ class ProjPickerPanel(wx.Panel):
             g.append(latlon)
 
             if self.drawing_bbox:
-                ng = len(g)
-                if ng > 0:
-                    s = min(g[0][0], g[ng-1][0])
-                    n = max(g[0][0], g[ng-1][0])
-                    w = g[0][1]
-                    e = g[ng-1][1]
-                    if s == n:
-                        n += 0.0001
-                    if w == e:
-                        e += 0.0001
-                    self.all_geoms.extend(["bbox", [s, n, w, e]])
+                s = min(g[0][0], g[1][0])
+                n = max(g[0][0], g[1][0])
+                w = g[0][1]
+                e = g[1][1]
+                if s == n:
+                    n += 0.0001
+                if w == e:
+                    e += 0.0001
+                self.all_geoms.extend(["bbox", [s, n, w, e]])
             elif g:
                 if self.prev_xy:
                     latlon[1] = adjust_lon(
