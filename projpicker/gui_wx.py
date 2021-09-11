@@ -58,6 +58,9 @@ def start(
     doc_url = "https://projpicker.readthedocs.io/"
 
     zoomer = None
+    # timer delay must be positive on macOS
+    # https://github.com/wxWidgets/wxWidgets/blob/178ac74596e54a24046c08fcfeb1d65fa8060957/src/osx/core/timer.cpp#L69
+    zoomer_delay = 1 if sys.platform == "darwin" else 0
     zoomer_queue = queue.Queue()
     dzoom = get_dzoom()
 
@@ -219,7 +222,7 @@ def start(
             try:
                 draw_map = zoomer_queue.get_nowait()
             except queue.Empty:
-                zoomer.checker = wx.CallLater(0, check_zoomer)
+                zoomer.checker = wx.CallLater(zoomer_delay, check_zoomer)
             else:
                 draw_map()
 
@@ -255,7 +258,7 @@ def start(
         zoomer = threading.Thread(target=zoom, args=(event.x, event.y, dz,
                                                      cancel_event))
         zoomer.cancel_event = cancel_event
-        zoomer.checker = wx.CallLater(0, check_zoomer)
+        zoomer.checker = wx.CallLater(zoomer_delay, check_zoomer)
         zoomer.start()
 
     def on_resize(event):
