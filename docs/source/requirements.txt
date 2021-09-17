@@ -1,7 +1,8 @@
 # Fork of sphinx-argparse for sentence case headers
 git+https://github.com/ocsmit/sphinx-argparse.git@master
 # Fix external links in the sidebar
-git+https://github.com/HuidaeCho/sphinx_press_theme.git@projpicker
+#git+https://github.com/HuidaeCho/sphinx_press_theme.git@projpicker
+sphinx_press_theme
 #sphinx_rtd_theme
 six
 # Fails to install
