@@ -2,6 +2,7 @@ Getting started
 ===============
 
 .. toctree::
+   :caption: Getting started
 
    installation
    command_line_options

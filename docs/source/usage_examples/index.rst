@@ -2,6 +2,7 @@ Usage examples
 ==============
 
 .. toctree::
+   :caption: Usage examples
 
    querying_crss
    filtering_results
