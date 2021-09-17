@@ -39,12 +39,12 @@ __________
 Included tools
 ^^^^^^^^^^^^^^
 
-- ``ProjPicker Create Feature Class``
-- ``ProjPicker Guess Feature Class Projection``
-- ``ProjPicker Guess Raster Projection``
-- ``Match Coordinates``
-- ``ProjPicker Reproject Feature Class``
-- ``ProjPicker Reproject Raster``
+* ``ProjPicker Create Feature Class``
+* ``ProjPicker Guess Feature Class Projection``
+* ``ProjPicker Guess Raster Projection``
+* ``Match Coordinates``
+* ``ProjPicker Reproject Feature Class``
+* ``ProjPicker Reproject Raster``
 
 Additional GUI
 ^^^^^^^^^^^^^^

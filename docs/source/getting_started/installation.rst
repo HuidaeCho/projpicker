@@ -6,22 +6,22 @@ Requirements
 
 If installed with pip, ProjPicker uses the following standard modules:
 
-- `collections <https://docs.python.org/3/library/collections.html>`_
-- `argparse <https://docs.python.org/3/library/argparse.html>`_
-- `os <https://docs.python.org/3/library/os.html>`_
-- `sys <https://docs.python.org/3/library/sys.html>`_
-- `sqlite3 <https://docs.python.org/3/library/sqlite3.html>`_
-- `re <https://docs.python.org/3/library/re.html>`_
-- `math <https://docs.python.org/3/library/math.html>`_
-- `json <https://docs.python.org/3/library/json.html>`_
-- `pprint <https://docs.python.org/3/library/pprint.html>`_
-- `tkinter <https://docs.python.org/3/library/tkinter.html>`_
-- `tkinter.ttk <https://docs.python.org/3/library/tkinter.ttk.html>`_
-- `threading <https://docs.python.org/3/library/threading.html>`_
-- `queue <https://docs.python.org/3/library/queue.html>`_
-- `textwrap <https://docs.python.org/3/library/textwrap.html>`_
-- `webbrowser <https://docs.python.org/3/library/webbrowser.html>`_
-- `urllib.request <https://docs.python.org/3/library/urllib.request.html>`_
+* `collections <https://docs.python.org/3/library/collections.html>`_
+* `argparse <https://docs.python.org/3/library/argparse.html>`_
+* `os <https://docs.python.org/3/library/os.html>`_
+* `sys <https://docs.python.org/3/library/sys.html>`_
+* `sqlite3 <https://docs.python.org/3/library/sqlite3.html>`_
+* `re <https://docs.python.org/3/library/re.html>`_
+* `math <https://docs.python.org/3/library/math.html>`_
+* `json <https://docs.python.org/3/library/json.html>`_
+* `pprint <https://docs.python.org/3/library/pprint.html>`_
+* `tkinter <https://docs.python.org/3/library/tkinter.html>`_
+* `tkinter.ttk <https://docs.python.org/3/library/tkinter.ttk.html>`_
+* `threading <https://docs.python.org/3/library/threading.html>`_
+* `queue <https://docs.python.org/3/library/queue.html>`_
+* `textwrap <https://docs.python.org/3/library/textwrap.html>`_
+* `webbrowser <https://docs.python.org/3/library/webbrowser.html>`_
+* `urllib.request <https://docs.python.org/3/library/urllib.request.html>`_
 
 Optionally to use the wxPython-based GUI, install `wxPython <https://wxpython.org/>`_ from `PyPi <https://pypi.org/project/wxPython/>`_.
 Without this optional module, the tkinter-based GUI will be used as a fallback.

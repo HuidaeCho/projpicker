@@ -21,9 +21,9 @@ Each type can be use seperatly or in conjunction.
 
 For example,
 
-- Only x-y: ``xy 1323252,396255``
-- Only latitude-longitude: ``latlon 33.7490°N,84.3880°W``
-- Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
+* Only x-y: ``xy 1323252,396255``
+* Only latitude-longitude: ``latlon 33.7490°N,84.3880°W``
+* Both: ``xy 1323252,396255 latlon 33.7490°N,84.3880°W``
 
 Coordinate formats
 ------------------
@@ -99,29 +99,29 @@ Units
 A ``unit=any`` or ``unit=`` followed by any unit in projpicker.db restricts queries and further logical operations in that unit.
 Currently, the following units are supported:
 
-- ``degree``
-- ``degree minute second hemisphere``
-- ``grad``
-- ``meter``
-- ``kilometer``
-- ``50 kilometers``
-- ``150 kilometers``
-- ``link``
-- ``foot``
-- ``US foot``
-- ``British foot (1936)``
-- ``British foot (Sears 1922)``
-- ``British yard (Sears 1922)``
-- ``British chain (Benoit 1895 B)``
-- ``British chain (Sears 1922 truncated)``
-- ``British chain (Sears 1922)``
-- ``Clarke's link``
-- ``Clarke's foot``
-- ``Clarke's yard``
-- ``German legal meter``
-- ``Gold Coast foot``
-- ``Indian yard (1937)``
-- ``Indian yard``
+* ``degree``
+* ``degree minute second hemisphere``
+* ``grad``
+* ``meter``
+* ``kilometer``
+* ``50 kilometers``
+* ``150 kilometers``
+* ``link``
+* ``foot``
+* ``US foot``
+* ``British foot (1936)``
+* ``British foot (Sears 1922)``
+* ``British yard (Sears 1922)``
+* ``British chain (Benoit 1895 B)``
+* ``British chain (Sears 1922 truncated)``
+* ``British chain (Sears 1922)``
+* ``Clarke's link``
+* ``Clarke's foot``
+* ``Clarke's yard``
+* ``German legal meter``
+* ``Gold Coast foot``
+* ``Indian yard (1937)``
+* ``Indian yard``
 
 Commonly used units are ``degree``, ``meter``, and ``US foot``.
 
@@ -132,10 +132,10 @@ The PROJ database defines separate tables for different CRS types and these tabl
 A ``proj_table=any`` or ``proj_table=`` followed by a CRS table name restricts queries to that CRS type.
 Currently, the following PROJ table names are supported:
 
-- ``compound_crs``
-- ``geodetic_crs``
-- ``projected_crs``
-- ``vertical_crs``
+* ``compound_crs``
+* ``geodetic_crs``
+* ``projected_crs``
+* ``vertical_crs``
 
 Commonly used CRS types are ``projected_crs`` and ``geodetic_crs``.
 
