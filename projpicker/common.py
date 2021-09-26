@@ -47,12 +47,12 @@ CREATE TABLE bbox (
 
 # all column names in the bbox table
 _bbox_columns = re.sub("^ +| +$", "",
-               re.sub("\n", " ",
-               re.sub("(?:^[A-Z]| ).*", "",
-               re.sub("\([^(]*\)", "",
-               re.sub("^(?:CREATE TABLE.*|\))$|^ *", "",
-                      _bbox_schema, flags=re.MULTILINE),
-                      flags=re.DOTALL), flags=re.MULTILINE))).split()
+                re.sub("\n", " ",
+                re.sub("(?:^[A-Z]| ).*", "",
+                re.sub("\([^(]*\)", "",
+                re.sub("^(?:CREATE TABLE.*|\))$|^ *", "",
+                       _bbox_schema, flags=re.MULTILINE),
+                       flags=re.DOTALL), flags=re.MULTILINE))).split()
 
 # BBox namedtuple class
 BBox = collections.namedtuple("BBox", _bbox_columns)
