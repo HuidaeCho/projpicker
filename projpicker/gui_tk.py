@@ -777,7 +777,7 @@ def start(
 
     # text for CRS info
     crs_info_text = tk.Text(crs_info_frame, width=20, height=1, wrap=tk.NONE)
-    crs_info_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
+    crs_info_text.bind("<Key>", lambda e: None if e.state & 0x4 else "break")
     crs_info_text.pack(fill=tk.BOTH, expand=True)
 
     # horizontal scroll bar for CRS info
@@ -803,7 +803,7 @@ def start(
 
     # text for log
     log_text = tk.Text(log_top_frame, width=20, height=1, wrap=tk.NONE)
-    log_text.bind("<Key>", lambda e: "break" if e.state == 0 else None)
+    log_text.bind("<Key>", lambda e: None if e.state & 0x4 else "break")
     log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # vertical scroll bar for log
