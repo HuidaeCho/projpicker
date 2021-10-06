@@ -1390,7 +1390,9 @@ def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
         gbbox1 (GeomBBox): Geometry-bbox 1.
         gbbox2 (GeomBBox): Geometry-bbox 2.
         match_max (int): Maximum number of matches to return. 0 to return all.
-        match_tol (float): Positive distance tolerance.
+            Defaults to 0.
+        match_tol (float): Positive distance tolerance in unknown xy units.
+            Defaults to 1.
 
     Returns:
         list: List of matched BBox instances from the BBox instances of the xy
