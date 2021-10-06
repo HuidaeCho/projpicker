@@ -1,6 +1,11 @@
 # Change log
 
 ## HEAD
+Wed Oct 6 14:42:41 2021 -0400
+
+* [`c2e7e1a`](https://github.com/HuidaeCho/projpicker/commit/c2e7e1a)  ChangeLog
+
+## v0.3.2
 Wed Oct 6 14:31:43 2021 -0400
 
 * [`6fcf244`](https://github.com/HuidaeCho/projpicker/commit/6fcf244)  Version 0.3.2
