@@ -814,6 +814,15 @@ def start(
         wkt_hscrollbar.pack(fill=tk.X)
         wkt_text.config(xscrollcommand=wkt_hscrollbar.set)
 
+        wkt_bottom_frame = ttk.Frame(wkt_frame)
+        wkt_bottom_frame.pack(fill=tk.BOTH)
+
+        # buttons
+        ttk.Button(wkt_bottom_frame, text="Select", command=select).pack(
+                   side=tk.LEFT, expand=True)
+        ttk.Button(wkt_bottom_frame, text="Cancel",
+                   command=root.destroy).pack(side=tk.LEFT, expand=True)
+
     ################
     # CRS info frame
 
