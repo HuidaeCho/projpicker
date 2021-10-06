@@ -37,8 +37,10 @@ import math
 import json
 import pprint
 
-has_gui = True
-has_web = True
+try:
+    import pyproj
+except:
+    pyproj = None
 
 # https://stackoverflow.com/a/49480246/16079666
 if __package__:
@@ -49,11 +51,11 @@ if __package__:
     try:
         from . import gui
     except Exception:
-        has_gui = False
+        gui = None
     try:
         from . import web
     except Exception:
-        has_web = False
+        web = None
 else:
     from common import (BBox, _coor_sep, _pos_float_pat, _bbox_schema,
                         _bbox_columns, is_verbose, get_float)
@@ -62,11 +64,11 @@ else:
     try:
         import gui
     except Exception:
-        has_gui = False
+        gui = None
     try:
         import web
     except Exception:
-        has_web = False
+        web = None
 
 # module path
 _module_path = os.path.dirname(__file__)
@@ -557,7 +559,8 @@ def transform_xy_point(point, from_crs):
     Returns:
         float, float: Latitude and longitude in decimal degrees.
     """
-    import pyproj
+    if not pyproj:
+        raise RuntimeError(f"Please install pyproj: pip install pyproj")
 
     x, y = point
     trans = pyproj.Transformer.from_crs(from_crs, "EPSG:4326", always_xy=True)
@@ -578,7 +581,8 @@ def transform_latlon_point(point, to_crs):
     Returns:
         float, float: x and y floats.
     """
-    import pyproj
+    if not pyproj:
+        raise RuntimeError(f"Please install pyproj: pip install pyproj")
 
     lat, lon = point
     trans = pyproj.Transformer.from_crs("EPSG:4326", to_crs, always_xy=True)
@@ -603,7 +607,8 @@ def transform_latlon_bbox(bbox, to_crs):
         float, float, float, float: Bottom, top, left, and right in to_crs
         units or all Nones on failed transformation.
     """
-    import pyproj
+    if not pyproj:
+        raise RuntimeError(f"Please install pyproj: pip install pyproj")
 
     s, n, w, e = bbox
     try:
@@ -2749,7 +2754,7 @@ def start(
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
 
-    if not has_gui:
+    if not gui:
         start_gui = None
 
     if fmt not in ("plain", "json", "pretty", "sqlite", "srid"):
@@ -2945,7 +2950,7 @@ def parse():
             "-o", "--output",
             default="-",
             help="output bbox file path (default: stdout); use - for stdout")
-    if has_gui:
+    if gui:
         gui_exclusive = parser.add_mutually_exclusive_group()
         gui_exclusive.add_argument(
                 "-g", "--gui",
@@ -2967,7 +2972,7 @@ def parse():
                 "south, north, west, and east (bbox); each point or bbox is a "
                 "separate argument and multiple polys are separated by any "
                 "non-coordinate argument such as a comma")
-    if has_web:
+    if web:
         parser.add_argument(
                 "-S",
                 "--server",
@@ -3006,7 +3011,7 @@ def main():
     max_bbox = args.max
     infile = args.input
     outfile = args.output
-    if has_gui:
+    if gui:
         if args.select_gui:
             start_gui = "select"
         elif args.gui:
@@ -3019,7 +3024,7 @@ def main():
         single = False
     geoms = args.geometry
 
-    if has_web:
+    if web:
         server = args.server
         client = args.client
     else:
