@@ -2,12 +2,18 @@
 This module implements the ProjPicker GUI using wxPython.
 """
 
+import sys
 import wx.lib.statbmp
 import io
 import threading
 import queue
 import textwrap
 import webbrowser
+
+try:
+    import pyproj
+except:
+    pyproj = None
 
 if __package__:
     from . import projpicker as ppik
@@ -369,11 +375,21 @@ def start(
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
+        if wkt_panel:
+            wkt_text.Clear()
         crs_info_text.Clear()
         sel_bbox.clear()
+
         if curr_crs_item >= 0:
             crs_id = crs_list.GetItemText(curr_crs_item, 0)
             b = find_bbox(crs_id, bbox)
+
+            if wkt_panel:
+                wkt = pyproj.CRS(f"{b.crs_auth_name}:{b.crs_code}").to_wkt(
+                        pretty=True)
+                wkt_text.SetValue(wkt)
+                notebook.ChangeSelection(wkt_panel.page)
+
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.SetValue(crs_info)
 
@@ -381,7 +397,8 @@ def start(
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            notebook.ChangeSelection(crs_info_panel.page)
+            if not wkt_panel:
+                notebook.ChangeSelection(crs_info_panel.page)
         draw_geoms()
 
     def draw_map(x, y):
@@ -477,6 +494,9 @@ def start(
         for b in bbox:
             crs_list.Append((f"{b.crs_auth_name}:{b.crs_code}", b.crs_name))
         sel_bbox.clear()
+
+        crs_list.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
+        crs_list.SetColumnWidth(1, wx.LIST_AUTOSIZE_USEHEADER)
 
     def search():
         text = [x.strip() for x in search_text.Value.split(";")]
@@ -605,22 +625,30 @@ def start(
     # bottom-right frame
     notebook = wx.Notebook(root)
 
-    # query tab
+    # query panel
     query_panel = wx.Panel(notebook)
     query_panel.page = notebook.PageCount
     notebook.AddPage(query_panel, "Query")
 
-    # CRS info tab
+    # WKT panel
+    if pyproj:
+        wkt_panel = wx.Panel(notebook)
+        wkt_panel.page = notebook.PageCount
+        notebook.AddPage(wkt_panel, "WKT")
+    else:
+        wkt_panel = None
+
+    # CRS info panel
     crs_info_panel = wx.Panel(notebook)
     crs_info_panel.page = notebook.PageCount
     notebook.AddPage(crs_info_panel, "CRS Info")
 
-    # log tab
+    # log panel
     log_panel = wx.Panel(notebook)
     log_panel.page = notebook.PageCount
     notebook.AddPage(log_panel, "Log")
 
-    # help tab
+    # help panel
     help_panel = wx.Panel(notebook)
     help_panel.page = notebook.PageCount
     notebook.AddPage(help_panel, "Help")
@@ -672,6 +700,33 @@ def start(
     bottom_left_box.Add(search_text, 0, wx.EXPAND)
 
     ################
+    # WKT panel
+    if wkt_panel:
+        wkt_box = wx.BoxSizer(wx.VERTICAL)
+
+        # text for CRS info
+        wkt_text = wx.TextCtrl(
+                wkt_panel,
+                style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+        # https://dzone.com/articles/wxpython-learning-use-fonts
+        wkt_text.SetFont(mono_font)
+        wkt_box.Add(wkt_text, 1, wx.EXPAND)
+
+        # buttons
+        select_button = wx.Button(wkt_panel, label="Select")
+        select_button.Bind(wx.EVT_BUTTON, lambda e: select())
+
+        cancel_button = wx.Button(wkt_panel, label="Cancel")
+        cancel_button.Bind(wx.EVT_BUTTON, lambda e: root.Close())
+
+        wkt_bottom_box = wx.BoxSizer(wx.HORIZONTAL)
+        wkt_bottom_box.Add(select_button, 1)
+        wkt_bottom_box.AddStretchSpacer()
+        wkt_bottom_box.Add(cancel_button, 1)
+        wkt_box.Add(wkt_bottom_box, 0, wx.ALIGN_CENTER)
+        wkt_panel.SetSizer(wkt_box)
+
+    ################
     # CRS info panel
     crs_info_box = wx.BoxSizer(wx.VERTICAL)
 
@@ -701,7 +756,7 @@ def start(
     # log panel
     log_box = wx.BoxSizer()
 
-    # text for CRS info
+    # text for log
     log_text = wx.TextCtrl(log_panel,
                            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
     # https://dzone.com/articles/wxpython-learning-use-fonts

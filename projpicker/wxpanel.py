@@ -11,6 +11,11 @@ import queue
 import textwrap
 import webbrowser
 
+try:
+    import pyproj
+except:
+    pyproj = None
+
 if __package__:
     from . import projpicker as ppik
     from .gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
@@ -159,22 +164,30 @@ class ProjPickerPanel(wx.Panel):
             # bottom-right frame
             self.notebook = wx.Notebook(self)
 
-            # query tab
+            # query panel
             self.query_panel = wx.Panel(self.notebook)
             self.query_panel.page = self.notebook.PageCount
             self.notebook.AddPage(self.query_panel, "Query")
 
-            # CRS info tab
+            # WKT panel
+            if pyproj:
+                self.wkt_panel = wx.Panel(self.notebook)
+                self.wkt_panel.page = self.notebook.PageCount
+                self.notebook.AddPage(self.wkt_panel, "WKT")
+            else:
+                self.wkt_panel = None
+
+            # CRS info panel
             self.crs_info_panel = wx.Panel(self.notebook)
             self.crs_info_panel.page = self.notebook.PageCount
             self.notebook.AddPage(self.crs_info_panel, "CRS Info")
 
-            # log tab
+            # log panel
             self.log_panel = wx.Panel(self.notebook)
             self.log_panel.page = self.notebook.PageCount
             self.notebook.AddPage(self.log_panel, "Log")
 
-            # help tab
+            # help panel
             help_panel = wx.Panel(self.notebook)
             help_panel.page = self.notebook.PageCount
             self.notebook.AddPage(help_panel, "Help")
@@ -229,6 +242,25 @@ class ProjPickerPanel(wx.Panel):
             self.search_text.ShowCancelButton(True)
             self.search_text.Bind(wx.EVT_TEXT, lambda e: self.search())
             bottom_left_box.Add(self.search_text, 0, wx.EXPAND)
+
+            ################
+            # WKT panel
+            if self.wkt_panel:
+                wkt_box = wx.BoxSizer(wx.VERTICAL)
+
+                # text for CRS info
+                self.wkt_text = wx.TextCtrl(
+                        self.wkt_panel,
+                        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+                # https://dzone.com/articles/wxpython-learning-use-fonts
+                self.wkt_text.SetFont(mono_font)
+                wkt_box.Add(self.wkt_text, 1, wx.EXPAND)
+
+                # button
+                clear_button = wx.Button(self.wkt_panel, label="Clear")
+                clear_button.Bind(wx.EVT_BUTTON, lambda e: self.clear())
+                wkt_box.Add(clear_button, 0, wx.ALIGN_CENTER)
+                self.wkt_panel.SetSizer(wkt_box)
 
             ################
             # CRS info panel
@@ -305,12 +337,12 @@ class ProjPickerPanel(wx.Panel):
             # bottom/right notebook
             self.notebook = wx.Notebook(self)
 
-            # list of CRSs tab
+            # list of CRSs panel
             self.crs_panel = wx.Panel(self.notebook)
             self.crs_panel.page = self.notebook.PageCount
             self.notebook.AddPage(self.crs_panel, "CRS List")
 
-            # help tab
+            # help panel
             help_panel = wx.Panel(self.notebook)
             help_panel.page = self.notebook.PageCount
             self.notebook.AddPage(help_panel, "Help")
@@ -629,6 +661,8 @@ class ProjPickerPanel(wx.Panel):
 
     def on_select_crs(self, event):
         if self.layout == "full":
+            if self.wkt_panel:
+                self.wkt_text.Clear()
             self.crs_info_text.Clear()
         self.sel_bbox.clear()
 
@@ -641,9 +675,16 @@ class ProjPickerPanel(wx.Panel):
         self.sel_bbox.extend([s, n, w, e])
 
         if self.layout == "full":
+            if self.wkt_panel:
+                wkt = pyproj.CRS(f"{b.crs_auth_name}:{b.crs_code}").to_wkt(
+                        pretty=True)
+                self.wkt_text.SetValue(wkt)
+                self.notebook.ChangeSelection(self.wkt_panel.page)
+
             crs_info = create_crs_info(b)
             self.crs_info_text.SetValue(crs_info)
-            self.notebook.ChangeSelection(self.crs_info_panel.page)
+            if not self.wkt_panel:
+                self.notebook.ChangeSelection(self.crs_info_panel.page)
 
         self.draw_geoms()
         self.post_item_selected(b)
@@ -757,9 +798,8 @@ class ProjPickerPanel(wx.Panel):
         self.sel_bbox.clear()
         self.post_item_deselected()
 
-        if self.layout != "full":
-            self.crs_list.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
-            self.crs_list.SetColumnWidth(1, wx.LIST_AUTOSIZE_USEHEADER)
+        self.crs_list.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
+        self.crs_list.SetColumnWidth(1, wx.LIST_AUTOSIZE_USEHEADER)
 
     def search(self):
         text = [x.strip() for x in self.search_text.Value.split(";")]
@@ -770,6 +810,8 @@ class ProjPickerPanel(wx.Panel):
     def clear(self):
         if self.layout == "full":
             self.query_text.Clear()
+            if self.wkt_panel:
+                self.wkt_text.Clear()
             self.crs_info_text.Clear()
 
         self.sel_crs = None

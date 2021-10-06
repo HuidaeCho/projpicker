@@ -12,6 +12,11 @@ import threading
 import queue
 import functools
 
+try:
+    import pyproj
+except:
+    pyproj = None
+
 if __package__:
     from . import projpicker as ppik
     from .gui_common import (get_latlon, get_zoom, get_dzoom, parse_geoms,
@@ -731,11 +736,10 @@ def start(
     query_frame = ttk.Frame(notebook)
     notebook.add(query_frame, text="Query")
 
-    try:
-        import pyproj
+    if pyproj:
         wkt_frame = ttk.Frame(notebook)
         notebook.add(wkt_frame, text="WKT")
-    except:
+    else:
         wkt_frame = None
 
     crs_info_frame = ttk.Frame(notebook)
