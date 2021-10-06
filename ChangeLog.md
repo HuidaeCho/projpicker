@@ -1,8 +1,9 @@
 # Change log
 
 ## HEAD
-Wed Oct 6 14:30:13 2021 -0400
+Wed Oct 6 14:31:43 2021 -0400
 
+* [`6fcf244`](https://github.com/HuidaeCho/projpicker/commit/6fcf244)  Version 0.3.2
 * [`8bba8f7`](https://github.com/HuidaeCho/projpicker/commit/8bba8f7)  Import pyproj at top
 * [`c845ac3`](https://github.com/HuidaeCho/projpicker/commit/c845ac3)  Implement WKT for wxGUI
 * [`427edab`](https://github.com/HuidaeCho/projpicker/commit/427edab)  Add select/cancel buttons to WKT tab in tkGUI
