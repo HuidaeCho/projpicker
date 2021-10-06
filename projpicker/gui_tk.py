@@ -344,11 +344,21 @@ def start(
             prev_crs_items.extend(curr_crs_items)
             curr_crs_item = prev_crs_items[len(prev_crs_items)-1]
 
+        if wkt_frame:
+            wkt_text.delete("1.0", tk.END)
         crs_info_text.delete("1.0", tk.END)
         sel_bbox.clear()
+
         if curr_crs_item:
             crs_id = crs_treeview.item(curr_crs_item)["values"][0]
             b = find_bbox(crs_id, bbox)
+
+            if wkt_frame:
+                wkt = pyproj.CRS(f"{b.crs_auth_name}:{b.crs_code}").to_wkt(
+                        pretty=True)
+                wkt_text.insert(tk.END, wkt)
+                notebook.select(wkt_frame)
+
             crs_info = create_crs_info(b, format_crs_info)
             crs_info_text.insert(tk.END, crs_info)
 
@@ -356,7 +366,8 @@ def start(
             s, n, w, e = osm.zoom_to_bbox([s, n, w, e])
             sel_bbox.extend([s, n, w, e])
 
-            notebook.select(crs_info_frame)
+            if not wkt_frame:
+                notebook.select(crs_info_frame)
         draw_geoms()
         draw_bbox()
 
@@ -720,6 +731,13 @@ def start(
     query_frame = ttk.Frame(notebook)
     notebook.add(query_frame, text="Query")
 
+    try:
+        import pyproj
+        wkt_frame = ttk.Frame(notebook)
+        notebook.add(wkt_frame, text="WKT")
+    except:
+        wkt_frame = None
+
     crs_info_frame = ttk.Frame(notebook)
     notebook.add(crs_info_frame, text="CRS Info")
 
@@ -771,6 +789,30 @@ def start(
                side=tk.LEFT, expand=True)
     ttk.Button(query_bottom_frame, text="Cancel", command=root.destroy).pack(
                side=tk.LEFT, expand=True)
+
+    ###########
+    # WKT frame
+
+    if wkt_frame:
+        wkt_top_frame = ttk.Frame(wkt_frame)
+        wkt_top_frame.pack(fill=tk.BOTH, expand=True)
+
+        # text for WKT
+        wkt_text = tk.Text(wkt_top_frame, width=20, height=1, wrap=tk.NONE)
+        wkt_text.bind("<Key>", lambda e: None if e.state & 0x4 else "break")
+        wkt_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # vertical scroll bar for WKT
+        wkt_vscrollbar = AutoScrollbar(wkt_top_frame)
+        wkt_vscrollbar.config(command=wkt_text.yview)
+        wkt_vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+        wkt_text.config(yscrollcommand=wkt_vscrollbar.set)
+
+        # horizontal scroll bar for WKT
+        wkt_hscrollbar = AutoScrollbar(wkt_frame, orient=tk.HORIZONTAL)
+        wkt_hscrollbar.config(command=wkt_text.xview)
+        wkt_hscrollbar.pack(fill=tk.X)
+        wkt_text.config(xscrollcommand=wkt_hscrollbar.set)
 
     ################
     # CRS info frame
