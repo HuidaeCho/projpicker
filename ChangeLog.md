@@ -1,8 +1,27 @@
 # Change log
 
 ## HEAD
-Sat Aug 14 21:33:10 2021 -0400
+Wed Oct 6 14:30:13 2021 -0400
 
+* [`8bba8f7`](https://github.com/HuidaeCho/projpicker/commit/8bba8f7)  Import pyproj at top
+* [`c845ac3`](https://github.com/HuidaeCho/projpicker/commit/c845ac3)  Implement WKT for wxGUI
+* [`427edab`](https://github.com/HuidaeCho/projpicker/commit/427edab)  Add select/cancel buttons to WKT tab in tkGUI
+* [`4e23dd1`](https://github.com/HuidaeCho/projpicker/commit/4e23dd1)  Add the WKT tab for tkGUI (requires pyproj)
+* [`39e2df7`](https://github.com/HuidaeCho/projpicker/commit/39e2df7)  Make CRS Info & Log read-only for tkGUI
+* [`3861a6b`](https://github.com/HuidaeCho/projpicker/commit/3861a6b)  Defaults for match\_max and max\_tol
+* [`c87ea52`](https://github.com/HuidaeCho/projpicker/commit/c87ea52)  Indentation
+* [`afe5e94`](https://github.com/HuidaeCho/projpicker/commit/afe5e94)  Clean up requirements.txt
+* [`68696fe`](https://github.com/HuidaeCho/projpicker/commit/68696fe)  Use * for bullet lists as per Python convention
+* [`2184fef`](https://github.com/HuidaeCho/projpicker/commit/2184fef)  Update to the latest Sphinx Press theme
+* [`495f779`](https://github.com/HuidaeCho/projpicker/commit/495f779)  Update to the latest Sphinx Press theme
+* [`3f2ed79`](https://github.com/HuidaeCho/projpicker/commit/3f2ed79)  Use 1ms delay on macOS
+* [`52f1db0`](https://github.com/HuidaeCho/projpicker/commit/52f1db0)  Revert single-point bbox handling
+
+## v0.3.1.post2
+Sat Aug 14 21:39:27 2021 -0400
+
+* [`ca9fade`](https://github.com/HuidaeCho/projpicker/commit/ca9fade)  v0.3.1.post2: Exception cleanup; Minor refactoring
+* [`eed7831`](https://github.com/HuidaeCho/projpicker/commit/eed7831)  changelog
 * [`0097443`](https://github.com/HuidaeCho/projpicker/commit/0097443)  Rename panel.py
 * [`81d1409`](https://github.com/HuidaeCho/projpicker/commit/81d1409)  Minor cleanup & Fix invisible bboxes
 * [`b26013d`](https://github.com/HuidaeCho/projpicker/commit/b26013d)  Minor refactoring
@@ -148,7 +167,7 @@ Sun Aug 1 11:53:50 2021 -0400
 * [`9411223`](https://github.com/HuidaeCho/projpicker/commit/9411223)  Add a figure
 * [`e013ce0`](https://github.com/HuidaeCho/projpicker/commit/e013ce0)  Minor updates and add web application
 * [`9e1ac0b`](https://github.com/HuidaeCho/projpicker/commit/9e1ac0b)  Fix web.web doc
-* [`5e515f6`](https://github.com/HuidaeCho/projpicker/commit/5e515f6)  (restructure) Rename a callback function for consistency
+* [`5e515f6`](https://github.com/HuidaeCho/projpicker/commit/5e515f6)  Rename a callback function for consistency
 * [`1091772`](https://github.com/HuidaeCho/projpicker/commit/1091772)  Do not delete the module web from the package web; hides help and need a better solution
 * [`ed78d6c`](https://github.com/HuidaeCho/projpicker/commit/ed78d6c)  Rename projpicker() to start() to avoid overwriting the module namespace
 * [`3a94e50`](https://github.com/HuidaeCho/projpicker/commit/3a94e50)  changelog
