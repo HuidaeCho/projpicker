@@ -36,7 +36,7 @@ that wraps around this project is available.
 
 ## Workshop
 
-* https://workshop.isnew.info/projpicker
+* https://workshop.isnew.info/projpicker/
 
 ## Change log
 
