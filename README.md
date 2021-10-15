@@ -23,6 +23,10 @@ that wraps around this project is available.
 ![image](https://user-images.githubusercontent.com/7456117/127779380-f8db8904-df17-4418-b7fa-fff17971517d.png)
 ![image](https://user-images.githubusercontent.com/7456117/127757336-d9bca6e0-b51e-4a68-acfc-265ab58b89f7.png)
 
+## Workshop
+
+* https://workshop.isnew.info/projpicker
+
 ## ProjPicker running on Android using [Termux](https://termux.com/)
 
 <img src="https://user-images.githubusercontent.com/7456117/124205470-4bc0f180-daaf-11eb-9632-98068fbe7bde.png" width="300" /> <img src="https://user-images.githubusercontent.com/7456117/126957478-069742ea-b5d5-4a4c-a545-ba45dc2fe4ab.png" width="300" />
