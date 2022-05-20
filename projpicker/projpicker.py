@@ -2138,13 +2138,13 @@ def query_geoms_using_bbox(
         raise ValueError(f"{geom_type}: Invalid geometry type")
 
     if geom_type == "point":
-        outbbox = query_points_using_bbox(prevbbox, geom, query_op, unit,
+        outbbox = query_points_using_bbox(prevbbox, geoms, query_op, unit,
                                           proj_table)
     elif geom_type == "poly":
-        outbbox = query_polys_using_bbox(prevbbox, geom, query_op, unit,
+        outbbox = query_polys_using_bbox(prevbbox, geoms, query_op, unit,
                                          proj_table)
     else:
-        outbbox = query_bboxes_using_bbox(prevbbox, geom, query_op, unit,
+        outbbox = query_bboxes_using_bbox(prevbbox, geoms, query_op, unit,
                                           proj_table)
     return outbbox
 
