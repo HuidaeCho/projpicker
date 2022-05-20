@@ -2312,7 +2312,7 @@ def query_mixed_geoms(
                         sav_geom_type = geom_type
                         geom_type = geom.type
                     else:
-                        save_geom_type = None
+                        sav_geom_type = None
                     geom = geom.geom
                 else:
                     g += 1
