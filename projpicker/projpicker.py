@@ -1453,9 +1453,7 @@ def match_geoms(gbbox1, gbbox2, match_max=0, match_tol=1):
     outbbox = gbbox1.bbox if gbbox2.is_latlon else gbbox2.bbox
 
     if gbbox1.type == "poly":
-        for i in range(len(geom1)):
-            g1 = geom1[i]
-            g2 = geom2[i]
+        for g1, g2 in zip(geom1, geom2):
             if gbbox1.is_latlon:
                 outbbox = find_matching_bbox(g1, g2, outbbox)
             else:
@@ -1534,8 +1532,8 @@ def query_point_using_bbox(
     idx = []
     for i in range(len(prevbbox)):
         if is_point_within_bbox(point, prevbbox[i]) and (
-            unit == "any" or prevbbox[i].unit == unit) and (
-            proj_table == "any" or prevbbox[i].proj_table == proj_table):
+            unit in ("any", prevbbox[i].unit)) and (
+            proj_table in ("any", prevbbox[i].proj_table)):
             idx.append(i)
     outbbox = [prevbbox[i] for i in idx]
     return outbbox
@@ -1659,7 +1657,8 @@ def query_points_using_bbox(
             prevbbox = [prevbbox[i] for i in idx]
             idx.clear()
     if query_op != "and":
-        prevbbox = sort_bbox([prevbbox[i] for i in idx])
+        prevbbox = [prevbbox[i] for i in idx]
+        sort_bbox(prevbbox)
 
     return prevbbox
 
@@ -1839,8 +1838,8 @@ def query_bbox_using_bbox(
 
     for i in range(len(prevbbox)):
         if is_bbox_within_bbox(bbox, prevbbox[i]) and (
-            unit == "any" or prevbbox[i].unit == unit) and (
-            proj_table == "any" or prevbbox[i].proj_table == proj_table):
+            unit in ("any", prevbbox[i].unit)) and (
+            proj_table in ("any", prevbbox[i].proj_table)):
             idx.append(i)
     return [prevbbox[i] for i in idx]
 
@@ -1955,15 +1954,16 @@ def query_bboxes_using_bbox(
     for bbox in bboxes:
         for i in range(len(prevbbox)):
             if is_bbox_within_bbox(bbox, prevbbox[i]) and (
-                unit == "any" or prevbbox[i].unit == unit) and (
-                proj_table == "any" or prevbbox[i].proj_table == proj_table):
+                unit in ("any", prevbbox[i].unit)) and (
+                proj_table in ("any", prevbbox[i].proj_table)):
                 if query_op != "xor" or i not in idx:
                     idx.append(i)
         if query_op == "and":
             prevbbox = [prevbbox[i] for i in idx]
             idx.clear()
     if query_op != "and":
-        prevbbox = sort_bbox([prevbbox[i] for i in idx])
+        prevbbox = [prevbbox[i] for i in idx]
+        sort_bbox(prevbbox)
 
     return prevbbox
 
@@ -2190,8 +2190,8 @@ def query_all_using_bbox(
     """
     idx = []
     for i in range(len(prevbbox)):
-        if (unit == "any" or prevbbox[i].unit == unit) and (
-            proj_table == "any" or prevbbox[i].proj_table == proj_table):
+        if unit in ("any", prevbbox[i].unit) and (
+            proj_table in ("any", prevbbox[i].proj_table)):
             idx.append(i)
     outbbox = [prevbbox[i] for i in idx]
     return outbbox
@@ -2485,8 +2485,7 @@ def search_bbox(bbox, text, ignore_case=True, search_op="and"):
                 word = word.lower()
                 item = item.lower()
             return word in item
-        else:
-            return False
+        return False
 
     outbbox = []
     if type(text) == str:
@@ -2664,7 +2663,7 @@ def print_srids(bbox, outfile=sys.stdout, separator="\n"):
 # main
 
 def start(
-        geoms=[],
+        geoms=None,
         infile="-",
         outfile="-",
         fmt="plain",
@@ -2706,7 +2705,7 @@ def start(
     get_projpicker_db() or get_proj_db() is used, respectively.
 
     Args:
-        geoms (list): List of parsable geometries. Defaults to [].
+        geoms (list): List of parsable geometries. Defaults to None.
         infile (str): Input geometry file. Defaults to "-" for sys.stdin.
         outfile (str): Output file. None for no output file. Defaults to "-"
             for sys.stdout.
@@ -2750,6 +2749,9 @@ def start(
     """
     projpicker_db = get_projpicker_db(projpicker_db)
     proj_db = get_proj_db(proj_db)
+
+    if geoms is None:
+        geoms = []
 
     if not gui:
         start_gui = None
