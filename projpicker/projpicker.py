@@ -1243,7 +1243,7 @@ def parse_mixed_geoms(geoms):
         if query_op == "postfix":
             if stack_size == 0:
                 raise SyntaxError("Nothing to return from postfix stack")
-            elif stack_size > 1:
+            if stack_size > 1:
                 raise SyntaxError(f"{stack_size}: Excessive stack size for "
                                   "postfix operations")
     finally:
