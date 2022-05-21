@@ -220,8 +220,7 @@ def normalize_lines(lines):
                     if m:
                         lines[i] += f" {m[1]}"
                         break
-                    else:
-                        lines[i] += f" {lines[j]}"
+                    lines[i] += f" {lines[j]}"
                 i = j
         i += 1
     for i in reversed(idx):
