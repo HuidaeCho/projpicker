@@ -239,15 +239,13 @@ def get_separator(separator):
     Returns:
         str: Separator character.
     """
-    sep_dic = {
+    return {
             "pipe": "|",
             "comma": ",",
             "space": " ",
             "tab": "\t",
-            "newline": "\n"}
-    if separator in sep_dic:
-        separator = sep_dic[separator]
-    return separator
+            "newline": "\n"
+    }.get(separator, separator)
 
 
 ###############################################################################
